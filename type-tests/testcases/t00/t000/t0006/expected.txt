@@ -1,0 +1,14 @@
+both capslock
+    key_down(capslock)
+    mods_pressed = 0x00000002
+    mods_locked = 0x00000002
+    mods_effective = 0x00000002
+    key_up(capslock)
+    mods_pressed = 0x00000000
+down rightalt
+    key_down(rightalt)
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000022
+down i
+    key_down(i)
+    sym = J, char = 'J'

@@ -1,0 +1,8 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "merge_modes"
+    };
+    xkb_symbols {
+        include "merge_modes(new-augment)"
+    };
+};

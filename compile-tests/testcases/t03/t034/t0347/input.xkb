@@ -1,0 +1,13 @@
+xkb_keymap {
+    xkb_compat {
+        indicator "A" {
+            mods = Mod1;
+            mods[0] = Mod2;
+            mods.mods[0] = Mod2;
+            mods.mods = Mod2;
+            xyz = Mod3;
+            ctrls = StickyKeys;
+            whichmodifierstate = Locked;
+        };
+    };
+};

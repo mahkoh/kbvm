@@ -1,0 +1,39 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 1;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+
+        type "ALPHABETIC" {
+            modifiers = Shift+Lock;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Caps";
+            map[Shift] = Level2;
+            map[Lock] = Level2;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        modmap Mod1 { a }; // <a>
+
+        key.repeat = true;
+
+        key <a> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ]
+        };
+    };
+};

@@ -1,0 +1,12 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <i> { [ i, I ] };
+        key <leftshift> {
+            repeat = false,
+            [ SetMods(mods = shift) ]
+        };
+    };
+};

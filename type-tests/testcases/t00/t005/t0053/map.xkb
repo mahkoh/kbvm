@@ -1,0 +1,43 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_types {
+        type "PC_ALT_LEVEL2" {
+            modifiers = Mod1;
+            map[Mod1] = 2;
+        };
+    };
+    xkb_symbols {
+        virtual_modifiers NumLock = Mod2;
+
+        key <1> { [ 1, exclam ] };
+        key <q> { [ Cyrillic_ya, Cyrillic_YA ] };
+        key <v> { [ Cyrillic_zhe, Cyrillic_ZHE ] };
+        key <compose> { [ LockGroup(group = +1) ] };
+        key <leftshift> {
+            type[Group1] = "PC_ALT_LEVEL2",
+            [ SetMods(mods = Shift, clearLocks), LockGroup(group = +1) ],
+        };
+        key <rightshift> {
+            type[Group1] = "PC_ALT_LEVEL2",
+            [ SetMods(mods = Shift, clearLocks), LockGroup(group = +1) ],
+        };
+        key <capslock> {
+            [ LockMods(mods = Lock) ],
+        };
+        key <leftalt> {
+            [ SetMods(mods = Mod1, clearLocks), LockGroup(group = +1) ],
+        };
+        key <kp1> {
+            [ KP_End, KP_1 ],
+        };
+        key <kp2> {
+            [ KP_Down, KP_1 ],
+        };
+        key <numlock> {
+            [ LockMods(mods = NumLock) ],
+        };
+    };
+};
+

@@ -1,0 +1,8 @@
+xkb_keymap {
+    xkb_compat {
+        indicator "A" {
+            mods = Mod1;
+            whichModState = All-(All-Latched);
+        };
+    };
+};

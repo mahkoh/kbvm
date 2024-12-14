@@ -1,0 +1,3 @@
+xkb_compatibility_map {
+    indicator "Caps Lock" { };
+};

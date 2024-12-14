@@ -1,0 +1,22 @@
+name: generator
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  generator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch xkbcommon
+        run: git submodule update --init
+      - name: Generate
+        run: |
+          cargo run -p generator
+          git diff --exit-code

@@ -1,0 +1,12 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+    };
+    xkb_symbols {
+        include "x.xkb"
+
+        key <a> { };
+        key <b> { };
+    };
+};

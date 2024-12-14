@@ -1,0 +1,11 @@
+rules = "evdev-modern"
+model = "whatever"
+options = []
+
+[[groups]]
+layout = "pt"
+variant = ""
+
+[[groups]]
+layout = "ar"
+variant = ""

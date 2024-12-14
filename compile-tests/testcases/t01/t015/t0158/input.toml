@@ -1,0 +1,6 @@
+rules = "evdev"
+model = "foo"
+
+[[groups]]
+layout = "ar"
+variant = "bar"

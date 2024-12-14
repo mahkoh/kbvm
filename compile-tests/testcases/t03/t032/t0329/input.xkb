@@ -1,0 +1,16 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+    };
+    xkb_symbols {
+        SetMods.clearLocks;
+        key <a> {
+            [ SetMods(mods = Mod1) ],
+        };
+        !SetMods.clearLocks;
+        key <b> {
+            [ SetMods(mods = Mod1) ],
+        };
+    };
+};

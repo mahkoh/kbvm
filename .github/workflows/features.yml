@@ -1,0 +1,27 @@
+name: features
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  features:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: cargo hack
+        run: |
+          cargo install cargo-hack
+      - name: Build
+        run: |
+          cd kbvm
+          cargo hack build --feature-powerset

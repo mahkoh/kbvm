@@ -1,0 +1,14 @@
+both 1
+both q
+down leftshift
+both 1
+both q
+up leftshift
+both v
+both capslock
+both 1
+both v
+down rightshift
+both v
+up rightshift
+both v

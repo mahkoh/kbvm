@@ -1,0 +1,14 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <compose> {
+            [ SetGroup(Group=-1) ],
+        };
+        key <a> {
+            groupsClamp,
+            [ a ], [ b ],
+        };
+    };
+};

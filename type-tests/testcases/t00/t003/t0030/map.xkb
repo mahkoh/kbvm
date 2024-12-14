@@ -1,0 +1,19 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <a> {
+            [ a ],
+            [ b ],
+            [ c ],
+            [ d ],
+        };
+        key <leftshift> {
+            [ LatchGroup(group = +1, latchToLock) ],
+            [ LatchGroup(group = +1, latchToLock) ],
+            [ LatchGroup(group = +1, latchToLock) ],
+            [ LatchGroup(group = +1, latchToLock) ],
+        };
+    };
+};

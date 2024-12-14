@@ -1,0 +1,12 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <h> { [ h, H ] };
+        key <e> { [ e, E ] };
+        key <l> { [ l, L ] };
+        key <o> { [ o, O ] };
+    };
+};
+

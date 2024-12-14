@@ -1,0 +1,3 @@
+both rightshift
+both leftalt
+both leftshift

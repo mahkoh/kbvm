@@ -1,0 +1,39 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+        <c> = 3;
+        <d> = 4;
+        <e> = 5;
+        <f> = 6;
+    };
+    xkb_compat {
+        interpret A + Exactly.Exactly(Mod2) {
+            action = SetMods(mods = Mod1);
+        };
+        interpret B + Exactly[0](Mod2) {
+            action = SetMods(mods = Mod2);
+        };
+        interpret C + Exactly(Mod2) {
+            action = SetMods(mods = Mod3);
+        };
+        interpret D + Unknown(Mod2) {
+            action = SetMods(mods = Mod4);
+        };
+        interpret E + Exactly(Mod2, Mod2) {
+            action = SetMods(mods = Mod5);
+        };
+        interpret F + Exactly(mods = Mod2) {
+            action = SetMods(mods = Shift);
+        };
+    };
+    xkb_symbols {
+        key <a> { [ A ] };
+        key <b> { [ B ] };
+        key <c> { [ C ] };
+        key <d> { [ D ] };
+        key <e> { [ E ] };
+        key <f> { [ F ] };
+        modmap Mod2 { <a>, <b>, <c>, <d>, <e>, <f> };
+    };
+};

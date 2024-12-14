@@ -1,0 +1,8 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        include "a.xkb:1"
+    };
+};

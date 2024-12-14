@@ -1,0 +1,62 @@
+both 5
+    key_down(5)
+    sym = 5, char = '5'
+    key_up(5)
+both kp1
+    key_down(kp1)
+    sym = KP_1, char = '1'
+    key_up(kp1)
+both numlock
+    key_down(numlock)
+    sym = Clear, char = '\u{b}'
+    key_up(numlock)
+down leftshift
+    key_down(leftshift)
+    sym = Shift_L
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+both kp1
+    key_down(kp1)
+    sym = KP_1, char = '1'
+    key_up(kp1)
+up leftshift
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+both capslock
+    key_down(capslock)
+    sym = Caps_Lock
+    mods_pressed = 0x00000002
+    mods_locked = 0x00000002
+    mods_effective = 0x00000002
+    key_up(capslock)
+    mods_pressed = 0x00000000
+both kp1
+    key_down(kp1)
+    sym = KP_1, char = '1'
+    key_up(kp1)
+down leftshift
+    key_down(leftshift)
+    sym = Shift_L
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000003
+both kp1
+    key_down(kp1)
+    sym = KP_1, char = '1'
+    key_up(kp1)
+up leftshift
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000002
+both capslock
+    key_down(capslock)
+    sym = Caps_Lock
+    mods_pressed = 0x00000002
+    key_up(capslock)
+    mods_pressed = 0x00000000
+    mods_locked = 0x00000000
+    mods_effective = 0x00000000
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)

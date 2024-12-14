@@ -1,0 +1,6 @@
+xkb_keymap {
+    xkb_keycodes {
+        hurr durr;
+        indicator 1 = "A";
+    };
+};

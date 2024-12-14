@@ -1,0 +1,7 @@
+xkb_keycodes "" {
+    indicator 1 = "C";
+};
+
+default xkb_keycodes {
+    indicator 1 = "B";
+};

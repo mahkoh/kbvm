@@ -1,0 +1,28 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <y> = 2;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        key.repeat = true;
+
+        key <y> {
+            repeat = false
+        };
+    };
+};

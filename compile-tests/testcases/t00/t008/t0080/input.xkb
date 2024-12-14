@@ -1,0 +1,6 @@
+xkb_keymap {
+    xkb_compat {
+        indicator.modifiers = Mod1;
+        indicator "A" { };
+    };
+};

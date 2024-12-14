@@ -1,0 +1,16 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        virtual_modifiers LevelThree = Mod3;
+
+        key <i> { [ i, I, j ] };
+        key <rightalt> {
+            [ SetMods(mods = LevelThree) ]
+        };
+        key <capslock> {
+            [ LockMods(mods = Lock) ]
+        };
+    };
+};

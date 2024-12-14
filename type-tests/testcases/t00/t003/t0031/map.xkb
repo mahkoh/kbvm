@@ -1,0 +1,17 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <a> {
+            [ a ],
+            [ b ],
+            [ c ],
+            [ d ],
+        };
+        key <leftshift> {
+            actions[Group1] = [ LatchGroup(group = +1) ],
+            actions[Group2] = [ LatchGroup(group = +1) ],
+        };
+    };
+};

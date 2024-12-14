@@ -1,0 +1,11 @@
+down h
+repeat
+repeat
+down leftshift
+repeat
+repeat
+up leftshift
+repeat
+repeat
+up h
+both h

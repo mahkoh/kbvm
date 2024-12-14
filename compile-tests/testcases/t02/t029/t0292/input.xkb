@@ -1,0 +1,8 @@
+xkb_keymap {
+    xkb_compat {
+        indicator "Caps Lock" {
+            mods = Mod1;
+            whichmodstate = Latched + Locked;
+        };
+    };
+};

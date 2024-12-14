@@ -1,0 +1,12 @@
+xkb_keymap {
+    xkb_compat {
+        indicator "A" {
+            mods = Mod1;
+            whichModState = !Latched;
+        };
+        indicator "B" {
+            mods = Mod1;
+            whichModState = ~Latched;
+        };
+    };
+};

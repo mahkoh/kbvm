@@ -1,0 +1,7 @@
+rules = "wildcard"
+model = ""
+options = [""]
+
+[[groups]]
+layout = "a"
+variant = "1"

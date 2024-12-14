@@ -1,0 +1,16 @@
+down leftshift
+    key_down(leftshift)
+    sym = Shift_L
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+down leftalt
+    key_down(leftalt)
+    sym = ISO_Prev_Group
+    group_locked = 2
+    group_effective = 2
+up leftalt
+    key_up(leftalt)
+up leftshift
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000

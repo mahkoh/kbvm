@@ -1,0 +1,6 @@
+[submodule "libxkbcommon"]
+	path = libxkbcommon
+	url = https://github.com/xkbcommon/libxkbcommon.git
+[submodule "xkeyboard-config"]
+	path = xkeyboard-config
+	url = https://gitlab.freedesktop.org/xkeyboard-config/xkeyboard-config.git

@@ -1,0 +1,15 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+    };
+    xkb_symbols {
+        key <b> {
+            [ a ],
+        };
+        key <a> {
+            [ x, a ],
+        };
+        modmap Mod1 { a };
+    };
+};

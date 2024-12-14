@@ -1,0 +1,6 @@
+xkb_keymap {
+    xkb_symbols {
+        name[Group1].x = "X";
+        name = "Y";
+    };
+};

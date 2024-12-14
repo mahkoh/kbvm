@@ -1,0 +1,4 @@
+xkb_keycodes {
+    indicator 1 = "Y";
+    augment "x.xkb"
+};

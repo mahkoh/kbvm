@@ -1,0 +1,27 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        virtual indicator 1 = "Caps Lock";
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+    };
+
+    xkb_compat {
+        indicator "Caps Lock" {
+            modifiers = Lock;
+            whichModState = Locked;
+            groups = 0xfffffffe;
+        };
+
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+    };
+};

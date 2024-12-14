@@ -1,0 +1,26 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <compose> {
+            [ ISO_Group_Latch ],
+            [ LatchGroup(group=2) ],
+        };
+        key <h> {
+            [ h ],
+            [ hebrew_yod ],
+            [ Cyrillic_ha ],
+        };
+        key <e> {
+            [ e ],
+            [ hebrew_qoph ],
+            [ Cyrillic_ie ],
+        };
+        key <scrolllock> {
+            [ ISO_Next_Group ],
+            [ LockGroup(group=+1) ],
+        };
+    };
+};
+

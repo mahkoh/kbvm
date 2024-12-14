@@ -1,0 +1,5 @@
+keycodes = "my_keycodes"
+types = "my_types"
+compat = "my_compat"
+symbols = "base:1+base:2+base:3+base:4+base:5+symbols_a:2+symbols_b:3+default_symbols:4+default_symbols:5"
+geometry = ""

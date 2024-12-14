@@ -1,0 +1,16 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <leftshift> {
+            [ SetMods(mods = Mod1, clearLocks) ]
+        };
+        key <leftalt> {
+            [ LockMods(mods = Mod1) ]
+        };
+        key <capslock> {
+            [ LockMods(mods = Lock) ]
+        };
+    };
+};

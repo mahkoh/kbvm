@@ -1,0 +1,12 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        alias <b> = <a>;
+        alias <c> = <b>;
+        alias <d> = <c>;
+    };
+    xkb_symbols {
+        key <d> { [ A ] };
+        modmap Mod1 { <d> };
+    };
+};

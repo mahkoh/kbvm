@@ -1,0 +1,12 @@
+[package]
+name = "compose-tests"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+kbvm = { path = "../kbvm", features = ["compose"] }
+integration-test-utils = { path = "../integration-test-utils" }
+isnt = "0.1.0"
+parking_lot = "0.12.3"
+thiserror = "2.0.8"
+error_reporter = "1.0.0"

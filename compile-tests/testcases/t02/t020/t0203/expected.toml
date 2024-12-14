@@ -1,0 +1,5 @@
+keycodes = "evdev+aliases(qwertz)"
+types = "complete"
+compat = "complete+caps(caps_lock):1+misc(assign_shift_left_action):1+level5(level5_lock):1"
+symbols = "pc+de(neo)+inet(evdev)"
+geometry = "pc(pc104)"

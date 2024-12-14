@@ -1,0 +1,5 @@
+xkb_keymap {
+    xkb_compat {
+        include "x.xkb"
+    };
+};

@@ -1,0 +1,4 @@
+down leftshift
+down leftalt
+up leftalt
+up leftshift

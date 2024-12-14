@@ -1,0 +1,13 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        key <a> {
+            [ LockMods(mods = Mod1, affect = both) ],
+            [ LockMods(mods = Mod1, affect = xyz) ],
+            [ LockMods(mods = Mod1, affect = 1) ],
+            [ LockMods(mods = Mod1, affect = neither) ],
+        };
+    };
+};

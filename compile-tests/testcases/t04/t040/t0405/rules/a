@@ -1,0 +1,14 @@
+! layout]1] = symbols
+  a         = b
+
+! layout[1[ = symbols
+  a         = c
+
+! layout[99999999999999999999999999999] = symbols
+  a                                     = u
+
+! layout[33] = symbols
+  a          = v
+
+! layout[1] = symbols
+  a         = d

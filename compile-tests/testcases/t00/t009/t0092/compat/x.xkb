@@ -1,0 +1,7 @@
+xkb_compat {
+    interpret B {
+    };
+    interpret A {
+        action = SetMods(mods = Mod1);
+    };
+};

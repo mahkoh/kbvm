@@ -1,0 +1,35 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 1;
+    };
+
+    xkb_types {
+        virtual_modifiers X = Mod1;
+
+        type "A" {
+            modifiers = Mod1;
+            map[Mod1] = Level1;
+            preserve[Mod1] = Mod1;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        key.repeat = true;
+
+        key <a> {
+            type[Group1] = "A",
+            symbols[Group1] = [ A ]
+        };
+    };
+};

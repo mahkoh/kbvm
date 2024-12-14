@@ -1,0 +1,17 @@
+both a
+down rightshift
+both a
+down leftshift
+both a
+up leftshift
+both a
+up rightshift
+both a
+down leftshift
+both a
+down rightshift
+both a
+up leftshift
+both a
+up rightshift
+both a

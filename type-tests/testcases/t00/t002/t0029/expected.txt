@@ -1,0 +1,12 @@
+both rightshift
+    key_down(rightshift)
+    group_locked = 1
+    group_effective = 1
+    key_up(rightshift)
+both leftshift
+    key_down(leftshift)
+    group_pressed = 1
+    group_effective = 2
+    key_up(leftshift)
+    group_pressed = 0
+    group_latched = 1

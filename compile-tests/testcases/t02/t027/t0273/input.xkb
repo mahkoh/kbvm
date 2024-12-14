@@ -1,0 +1,5 @@
+xkb_keymap {
+    xkb_symbols {
+        name[Group2.Group3] = "2";
+    };
+};

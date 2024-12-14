@@ -1,0 +1,25 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+
+        indicator 1 = "A";
+    };
+    xkb_types {
+        virtual_modifiers A = 0x1;
+
+        type "X" {
+            modifiers = Mod1 + Mod2;
+            map[Mod1] = Level1;
+            map[Mod1 + Mod2] = Level2;
+            preserve[Mod1 + Mod2] = Mod1;
+        };
+    };
+    xkb_symbols {
+        key <a> {
+            groupsclamp,
+            type = "X",
+            symbols[Group2] = [ { a, b } ],
+            actions[Group2] = [ NoAction(), SetMods(mods = Mod1) ],
+        };
+    };
+};

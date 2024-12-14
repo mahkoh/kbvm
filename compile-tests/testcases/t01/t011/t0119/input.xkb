@@ -1,0 +1,15 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        key <a> {
+            type[Group1] = "TWO_LEVEL",
+            [ A ]
+        };
+        key <a> {
+            type[Group1] = "ALPHABETIC",
+            [ A ]
+        };
+    };
+};

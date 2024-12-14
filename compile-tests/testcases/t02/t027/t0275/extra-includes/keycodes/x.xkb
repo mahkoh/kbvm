@@ -1,0 +1,3 @@
+default xkb_keycodes {
+    indicator 2 = "B";
+};

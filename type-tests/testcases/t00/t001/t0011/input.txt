@@ -1,0 +1,10 @@
+both capslock
+both leftshift
+both capslock
+down leftshift
+both i
+up leftshift
+down i
+down leftshift
+up i
+up leftshift

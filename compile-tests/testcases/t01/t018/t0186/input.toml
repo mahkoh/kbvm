@@ -1,0 +1,7 @@
+rules = "evdev-modern"
+model = "pc104"
+options = []
+
+[[groups]]
+layout = "es"
+variant = ""

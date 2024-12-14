@@ -1,0 +1,12 @@
+down leftctrl
+    key_down(leftctrl)
+    mods_pressed = 0x00000004
+    mods_effective = 0x00000004
+both i
+    key_down(i)
+    sym = i, char = '\t'
+    key_up(i)
+up leftctrl
+    key_up(leftctrl)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000

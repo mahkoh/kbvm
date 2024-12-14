@@ -1,0 +1,16 @@
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+down compose
+    key_down(compose)
+    group_pressed = -1
+    group_effective = 1
+both a
+    key_down(a)
+    sym = b, char = 'b'
+    key_up(a)
+up compose
+    key_up(compose)
+    group_pressed = 0
+    group_effective = 0

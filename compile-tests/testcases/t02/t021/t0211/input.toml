@@ -1,0 +1,23 @@
+rules = "all_qualifier"
+model = "my_model"
+options = ["my_option"]
+
+[[groups]]
+layout = "layout_a"
+variant = "extra2"
+
+[[groups]]
+layout = "layout_b"
+variant = ""
+
+[[groups]]
+layout = "layout_a"
+variant = "extra3"
+
+[[groups]]
+layout = "layout_b"
+variant = ""
+
+[[groups]]
+layout = "layout_c"
+variant = ""

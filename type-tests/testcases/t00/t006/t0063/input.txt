@@ -1,0 +1,13 @@
+both 5
+both kp1
+both numlock
+down leftshift
+both kp1
+up leftshift
+both capslock
+both kp1
+down leftshift
+both kp1
+up leftshift
+both capslock
+both a

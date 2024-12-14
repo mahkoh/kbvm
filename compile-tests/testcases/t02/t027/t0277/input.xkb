@@ -1,0 +1,6 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "x.xkb"
+        indicator 1 = "A";
+    };
+};

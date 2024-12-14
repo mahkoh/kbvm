@@ -1,0 +1,22 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+    };
+
+    xkb_types {
+        virtual_modifiers x;
+        virtual_modifiers y;
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+    };
+};

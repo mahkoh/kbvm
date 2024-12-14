@@ -1,0 +1,52 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        virtual indicator 1 = "1";
+        virtual indicator 2 = "2";
+        virtual indicator 3 = "3";
+        virtual indicator 4 = "4";
+        virtual indicator 5 = "5";
+        virtual indicator 6 = "6";
+        virtual indicator 7 = "7";
+        virtual indicator 8 = "8";
+        virtual indicator 9 = "9";
+        virtual indicator 10 = "10";
+        virtual indicator 11 = "11";
+        virtual indicator 12 = "12";
+        virtual indicator 13 = "13";
+        virtual indicator 14 = "14";
+        virtual indicator 15 = "15";
+        virtual indicator 16 = "16";
+        virtual indicator 17 = "17";
+        virtual indicator 18 = "18";
+        virtual indicator 19 = "19";
+        virtual indicator 20 = "20";
+        virtual indicator 21 = "21";
+        virtual indicator 22 = "22";
+        virtual indicator 23 = "23";
+        virtual indicator 24 = "24";
+        virtual indicator 25 = "25";
+        virtual indicator 26 = "26";
+        virtual indicator 27 = "27";
+        virtual indicator 28 = "28";
+        virtual indicator 29 = "29";
+        virtual indicator 30 = "30";
+        virtual indicator 31 = "31";
+        virtual indicator 32 = "32";
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+    };
+};

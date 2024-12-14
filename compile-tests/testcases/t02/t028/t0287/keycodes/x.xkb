@@ -1,0 +1,3 @@
+default xkb_keycodes {
+    include "y.xkb"
+};

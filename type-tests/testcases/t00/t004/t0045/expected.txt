@@ -1,0 +1,40 @@
+both h
+    key_down(h)
+    sym = h, char = 'h'
+    key_up(h)
+both e
+    key_down(e)
+    sym = e, char = 'e'
+    key_up(e)
+both compose
+    key_down(compose)
+    group_locked = 1
+    group_effective = 1
+    key_up(compose)
+both k
+    key_down(k)
+    sym = hebrew_lamed, char = 'ל'
+    key_up(k)
+both f
+    key_down(f)
+    sym = hebrew_kaph, char = 'כ'
+    key_up(f)
+both compose
+    key_down(compose)
+    group_locked = 2
+    group_effective = 2
+    key_up(compose)
+both compose
+    key_down(compose)
+    group_locked = 3
+    group_effective = 3
+    key_up(compose)
+both compose
+    key_down(compose)
+    group_locked = 0
+    group_effective = 0
+    key_up(compose)
+both o
+    key_down(o)
+    sym = o, char = 'o'
+    key_up(o)

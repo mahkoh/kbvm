@@ -1,0 +1,4 @@
+both 5
+down rightalt
+both 5
+up rightalt

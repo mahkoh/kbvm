@@ -1,0 +1,11 @@
+both h
+down capslock
+both h
+down capslock
+both h
+up capslock
+both h
+up capslock
+both h
+both capslock
+both h

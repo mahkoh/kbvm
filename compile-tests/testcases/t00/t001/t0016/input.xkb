@@ -1,0 +1,4 @@
+xkb_symbols {
+    virtual_modifiers x;
+    augment virtual_modifiers y = Mod1;
+};

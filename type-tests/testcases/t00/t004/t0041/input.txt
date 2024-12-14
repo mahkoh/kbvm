@@ -1,0 +1,7 @@
+both h
+down leftshift
+both e
+both l
+up rightshift
+both l
+both o

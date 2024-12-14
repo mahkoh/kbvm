@@ -1,0 +1,6 @@
+both kp1
+both numlock
+both kp1
+both kp2
+both numlock
+both kp2

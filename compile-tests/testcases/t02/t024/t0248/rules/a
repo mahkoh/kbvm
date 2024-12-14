@@ -1,0 +1,3 @@
+! layout[any] = symbols
+  *           = 	%l
+              // ^ there is a tab here

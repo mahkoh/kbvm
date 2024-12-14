@@ -1,0 +1,12 @@
+A
+    composed
+        foo X
+A
+    composed
+        foo X
+C
+B
+    pending
+A
+    composed
+        baz Y

@@ -1,0 +1,9 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <capslock> { [ LockMods(mods = Lock) ] };
+        key <a> { [ a ] };
+    };
+};

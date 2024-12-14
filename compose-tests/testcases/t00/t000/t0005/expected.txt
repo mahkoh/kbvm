@@ -1,0 +1,10 @@
+Multi_key
+    pending
+Shift_L
+A
+    pending
+Caps_Lock
+Control_L
+T
+    composed
+        @ at

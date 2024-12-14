@@ -1,0 +1,11 @@
+[package]
+name = "type-tests"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+kbvm = { path = "../kbvm" }
+integration-test-utils = { path = "../integration-test-utils" }
+thiserror = "2.0.8"
+error_reporter = "1.0.0"
+isnt = "0.1.0"

@@ -1,0 +1,12 @@
+default xkb_compatibility "x" {
+    indicator "Caps Lock" {
+        whichModState= Locked;
+        modifiers= Lock;
+    };
+};
+
+xkb_compatibility "y" {
+    indicator "Caps Lock" {
+        groups=All-group1;
+    };
+};

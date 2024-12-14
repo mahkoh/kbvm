@@ -1,0 +1,5 @@
+xkb_keymap {
+    xkb_symbols {
+        name[5 - 1 - 1] = "3";
+    };
+};

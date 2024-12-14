@@ -1,0 +1,6 @@
+xkb_keymap {
+    xkb_symbols {
+        virtual_modifiers A = Mod1;
+        virtual_modifiers B = "Mod1";
+    };
+};

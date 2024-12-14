@@ -1,0 +1,6 @@
+both rightshift
+both leftshift
+both rightshift
+down leftshift
+both a
+up leftshift

@@ -1,0 +1,13 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <leftctrl> { [ SetMods(mods = Control) ] };
+        key <2> { [ 2 ] };
+        key <3> { [ 3 ] };
+        key <7> { [ 7 ] };
+        key <8> { [ 8 ] };
+        key <slash> { [ slash ] };
+    };
+};

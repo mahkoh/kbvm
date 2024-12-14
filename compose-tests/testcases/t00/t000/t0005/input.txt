@@ -1,0 +1,6 @@
+Multi_key
+Shift_L
+A
+Caps_Lock
+Control_L
+T

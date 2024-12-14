@@ -1,0 +1,38 @@
+xkb_keymap {
+    xkb_compat {
+        indicator "1" { };
+        indicator "2" { };
+        indicator "3" { };
+        indicator "4" { };
+        indicator "5" { };
+        indicator "6" { };
+        indicator "7" { };
+        indicator "8" { };
+        indicator "9" { };
+        indicator "10" { };
+        indicator "11" { };
+        indicator "12" { };
+        indicator "13" { };
+        indicator "14" { };
+        indicator "15" { };
+        indicator "16" { };
+        indicator "17" { };
+        indicator "18" { };
+        indicator "19" { };
+        indicator "20" { };
+        indicator "21" { };
+        indicator "22" { };
+        indicator "23" { };
+        indicator "24" { };
+        indicator "25" { };
+        indicator "26" { };
+        indicator "27" { };
+        indicator "28" { };
+        indicator "29" { };
+        indicator "30" { };
+        indicator "30" { };
+        indicator "31" { };
+        indicator "32" { };
+        indicator "33" { };
+    };
+};

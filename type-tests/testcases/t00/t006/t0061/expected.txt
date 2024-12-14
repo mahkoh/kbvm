@@ -1,0 +1,17 @@
+both 5
+    key_down(5)
+    sym = 5, char = '5'
+    key_up(5)
+down rightalt
+    key_down(rightalt)
+    sym = ISO_Level3_Shift
+    mods_pressed = 0x00000080
+    mods_effective = 0x00000080
+both 5
+    key_down(5)
+    sym = EuroSign, char = '€'
+    key_up(5)
+up rightalt
+    key_up(rightalt)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000

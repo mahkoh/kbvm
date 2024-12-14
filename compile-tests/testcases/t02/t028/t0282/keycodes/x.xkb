@@ -1,0 +1,6 @@
+xkb_keycodes "dummy" {
+};
+
+default xkb_keycodes {
+    indicator 1 = "B";
+};

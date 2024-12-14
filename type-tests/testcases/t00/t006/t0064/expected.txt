@@ -1,0 +1,105 @@
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+both b
+    key_down(b)
+    sym = a, char = 'a'
+    key_up(b)
+both c
+    key_down(c)
+    sym = a, char = 'a'
+    key_up(c)
+both d
+    key_down(d)
+    sym = a, char = 'a'
+    key_up(d)
+both compose
+    key_down(compose)
+    group_locked = 1
+    group_effective = 1
+    key_up(compose)
+both compose
+    key_down(compose)
+    group_locked = 2
+    group_effective = 2
+    key_up(compose)
+both a
+    key_down(a)
+    sym = Greek_alpha, char = 'α'
+    key_up(a)
+both b
+    key_down(b)
+    sym = Greek_alpha, char = 'α'
+    key_up(b)
+both c
+    key_down(c)
+    sym = Greek_alpha, char = 'α'
+    key_up(c)
+both d
+    key_down(d)
+    sym = Greek_alpha, char = 'α'
+    key_up(d)
+both compose
+    key_down(compose)
+    group_locked = 3
+    group_effective = 3
+    key_up(compose)
+both a
+    key_down(a)
+    sym = Greek_alpha, char = 'α'
+    key_up(a)
+both b
+    key_down(b)
+    sym = a, char = 'a'
+    key_up(b)
+both c
+    key_down(c)
+    sym = A, char = 'A'
+    key_up(c)
+both d
+    key_down(d)
+    sym = a, char = 'a'
+    key_up(d)
+both compose
+    key_down(compose)
+    group_locked = 4
+    group_effective = 4
+    key_up(compose)
+both a
+    key_down(a)
+    sym = Greek_alpha, char = 'α'
+    key_up(a)
+both b
+    key_down(b)
+    sym = A, char = 'A'
+    key_up(b)
+both c
+    key_down(c)
+    sym = A, char = 'A'
+    key_up(c)
+both d
+    key_down(d)
+    sym = a, char = 'a'
+    key_up(d)
+both compose
+    key_down(compose)
+    group_locked = 5
+    group_effective = 5
+    key_up(compose)
+both a
+    key_down(a)
+    sym = Greek_alpha, char = 'α'
+    key_up(a)
+both b
+    key_down(b)
+    sym = Greek_alpha, char = 'α'
+    key_up(b)
+both c
+    key_down(c)
+    sym = A, char = 'A'
+    key_up(c)
+both d
+    key_down(d)
+    sym = a, char = 'a'
+    key_up(d)

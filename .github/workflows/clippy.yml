@@ -1,0 +1,20 @@
+name: clippy
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Clippy
+        run: |
+          cd kbvm
+          cargo clippy --all-features --verbose -- -Dwarnings

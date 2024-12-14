@@ -1,0 +1,6 @@
+xkb_keymap {
+    xkb_symbols {
+        name[Group1] = "abc";
+        name[Group2] = def;
+    };
+};

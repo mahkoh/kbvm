@@ -1,0 +1,5 @@
+keycodes = "evdev+aliases(qwerty)"
+types = "complete"
+compat = "complete"
+symbols = "xfree68_vndr/ataritt(us)+es+inet(evdev)"
+geometry = "pc(pc104)"

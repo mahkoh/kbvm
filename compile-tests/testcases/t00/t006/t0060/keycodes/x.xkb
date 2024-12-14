@@ -1,0 +1,3 @@
+xkb_keycodes {
+    indicator 1 = "X";
+};

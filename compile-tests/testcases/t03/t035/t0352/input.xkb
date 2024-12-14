@@ -1,0 +1,23 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+    };
+    xkb_symbols {
+        virtual_modifiers A, B;
+        key <a> {
+            virtualmods = A,
+            virtualmods[0] = B,
+            virtualmods.virtualmods = B,
+            virtualmods[0].virtualmods = B,
+            virtualmods.virtualmods[0] = B,
+            [ A ],
+        };
+        modmap Mod1 { <a> };
+        key <b> {
+            virtualmodifiers = A,
+            [ A ],
+        };
+        modmap Mod2 { <b> };
+    };
+};

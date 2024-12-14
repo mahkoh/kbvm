@@ -1,0 +1,16 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_types {
+           type.modifiers = Mod1;
+           type "X" {
+           };
+    };
+    xkb_symbols {
+        key <a> {
+            type = "X",
+            [ A ],
+        };
+    };
+};

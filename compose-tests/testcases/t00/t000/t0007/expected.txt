@@ -1,0 +1,8 @@
+Multi_key
+    pending
+apostrophe
+    pending
+7
+    aborted
+7
+Caps_Lock

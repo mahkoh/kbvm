@@ -1,0 +1,22 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <a> {
+            [ a ],
+            [ b ],
+            [ c ],
+            [ d ],
+        };
+        key <rightshift> {
+            [ SetGroup(group = 2) ],
+            [ SetGroup(group = 2) ],
+            [ SetGroup(group = 2) ],
+        };
+        key <leftshift> {
+            [ LatchGroup(group = 3) ],
+            [ LatchGroup(group = 3) ],
+        };
+    };
+};

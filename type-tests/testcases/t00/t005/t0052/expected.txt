@@ -1,0 +1,30 @@
+both kp1
+    key_down(kp1)
+    sym = KP_End
+    key_up(kp1)
+both numlock
+    key_down(numlock)
+    mods_pressed = 0x00000010
+    mods_locked = 0x00000010
+    mods_effective = 0x00000010
+    key_up(numlock)
+    mods_pressed = 0x00000000
+both kp1
+    key_down(kp1)
+    sym = KP_1, char = '1'
+    key_up(kp1)
+both kp2
+    key_down(kp2)
+    sym = KP_1, char = '1'
+    key_up(kp2)
+both numlock
+    key_down(numlock)
+    mods_pressed = 0x00000010
+    key_up(numlock)
+    mods_pressed = 0x00000000
+    mods_locked = 0x00000000
+    mods_effective = 0x00000000
+both kp2
+    key_down(kp2)
+    sym = KP_Down
+    key_up(kp2)

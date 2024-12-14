@@ -1,0 +1,6 @@
+.*
+!.gitignore
+!.gitmodules
+!.gitattributes
+!.github
+/target

@@ -1,0 +1,96 @@
+both h
+    key_down(h)
+    sym = h, char = 'h'
+    key_up(h)
+both compose
+    key_down(compose)
+    sym = ISO_Next_Group
+    group_locked = 1
+    group_effective = 1
+    key_up(compose)
+down leftalt
+    key_down(leftalt)
+    sym = Mode_switch
+    group_pressed = 1
+    group_effective = 2
+both h
+    key_down(h)
+    sym = Cyrillic_er, char = 'р'
+    key_up(h)
+up leftalt
+    key_up(leftalt)
+    group_pressed = 0
+    group_effective = 1
+both h
+    key_down(h)
+    sym = hebrew_yod, char = 'י'
+    key_up(h)
+both compose
+    key_down(compose)
+    sym = ISO_Next_Group
+    group_locked = 2
+    group_effective = 2
+    key_up(compose)
+down leftalt
+    key_down(leftalt)
+    sym = Mode_switch
+    group_pressed = 1
+    group_effective = 0
+# should wrap back to first group
+both h
+    key_down(h)
+    sym = h, char = 'h'
+    key_up(h)
+up leftalt
+    key_up(leftalt)
+    group_pressed = 0
+    group_effective = 2
+both h
+    key_down(h)
+    sym = Cyrillic_er, char = 'р'
+    key_up(h)
+both compose
+    key_down(compose)
+    sym = ISO_Next_Group
+    group_locked = 0
+    group_effective = 0
+    key_up(compose)
+both h
+    key_down(h)
+    sym = h, char = 'h'
+    key_up(h)
+# two SetGroup(+1+'s should add up
+down rightalt
+    key_down(rightalt)
+    sym = Mode_switch
+    group_pressed = 1
+    group_effective = 1
+both h
+    key_down(h)
+    sym = hebrew_yod, char = 'י'
+    key_up(h)
+down leftalt
+    key_down(leftalt)
+    sym = Mode_switch
+    group_pressed = 2
+    group_effective = 2
+both h
+    key_down(h)
+    sym = Cyrillic_er, char = 'р'
+    key_up(h)
+up leftalt
+    key_up(leftalt)
+    group_pressed = 1
+    group_effective = 1
+both h
+    key_down(h)
+    sym = hebrew_yod, char = 'י'
+    key_up(h)
+up rightalt
+    key_up(rightalt)
+    group_pressed = 0
+    group_effective = 0
+both h
+    key_down(h)
+    sym = h, char = 'h'
+    key_up(h)

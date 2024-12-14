@@ -1,0 +1,3 @@
+xkb_keycodes "a" {
+    indicator 1 = "A";
+};

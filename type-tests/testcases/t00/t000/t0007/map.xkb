@@ -1,0 +1,18 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_types {
+        type "X" {
+            modifiers = Lock;
+            map[Lock] = Level1;
+        };
+    };
+    xkb_symbols {
+        key.type = "X";
+        key <i> { [ i ] };
+        key <capslock> {
+            [ LockMods(mods = Lock) ]
+        };
+    };
+};

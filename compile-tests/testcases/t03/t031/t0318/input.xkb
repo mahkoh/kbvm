@@ -1,0 +1,14 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        key <a> {
+            repeats = false,
+            repeats = 1,
+            repeats = true.true,
+            repeats = true[1],
+            [ A ],
+        };
+    };
+};

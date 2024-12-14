@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = [
+    "compile-tests",
+    "compose-tests",
+    "generator",
+    "integration-test-utils",
+    "kbvm",
+    "kbvm-benches",
+    "kbvm-cli",
+    "kbvm-proc",
+    "libxkbcommon-test-linker",
+    "type-tests",
+    "x11-tests",
+]

@@ -1,0 +1,3 @@
+DEFAULT xkb_keycodes {
+    <a> = 1;
+};

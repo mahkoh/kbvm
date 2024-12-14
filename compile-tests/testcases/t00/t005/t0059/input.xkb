@@ -1,0 +1,3 @@
+xkb_keycodes {
+    augment "x.xkb|y.xkb"
+};

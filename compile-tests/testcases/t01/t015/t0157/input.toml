@@ -1,0 +1,5 @@
+rules = "evdev"
+model = "pc104"
+
+[[groups]]
+layout = "foo"

@@ -1,0 +1,68 @@
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+down rightshift
+    key_down(rightshift)
+    group_pressed = 1
+    group_effective = 1
+both a
+    key_down(a)
+    sym = b, char = 'b'
+    key_up(a)
+down leftshift
+    key_down(leftshift)
+    group_pressed = 3
+    group_effective = 3
+both a
+    key_down(a)
+    sym = d, char = 'd'
+    key_up(a)
+up leftshift
+    key_up(leftshift)
+    group_pressed = 1
+    group_effective = 1
+both a
+    key_down(a)
+    sym = b, char = 'b'
+    key_up(a)
+up rightshift
+    key_up(rightshift)
+    group_pressed = 0
+    group_effective = 0
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+down leftshift
+    key_down(leftshift)
+    group_pressed = 2
+    group_effective = 2
+both a
+    key_down(a)
+    sym = c, char = 'c'
+    key_up(a)
+down rightshift
+    key_down(rightshift)
+    group_pressed = 1
+    group_effective = 1
+both a
+    key_down(a)
+    sym = b, char = 'b'
+    key_up(a)
+up leftshift
+    key_up(leftshift)
+    group_pressed = -1
+    group_effective = 3
+both a
+    key_down(a)
+    sym = d, char = 'd'
+    key_up(a)
+up rightshift
+    key_up(rightshift)
+    group_pressed = 0
+    group_effective = 0
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)

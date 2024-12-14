@@ -1,0 +1,11 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        alias <b> = <a>;
+        alias <d> = <c>;
+    };
+    xkb_symbols {
+        key <b> { [ a ] };
+        key <d> { [ a ] };
+    };
+};

@@ -1,0 +1,13 @@
+A
+    pending
+B
+    composed
+        X
+B
+    pending
+A
+    composed
+        dollar
+C
+    composed
+        dead_acute

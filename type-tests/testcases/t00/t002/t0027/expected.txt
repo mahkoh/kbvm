@@ -1,0 +1,16 @@
+down leftshift
+    key_down(leftshift)
+    group_pressed = 2
+    group_effective = 2
+down rightshift
+    key_down(rightshift)
+    group_pressed = 1
+    group_effective = 1
+up leftshift
+    key_up(leftshift)
+    group_pressed = -1
+    group_effective = 3
+up rightshift
+    key_up(rightshift)
+    group_pressed = 0
+    group_effective = 0

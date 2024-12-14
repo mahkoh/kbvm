@@ -1,0 +1,17 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_types {
+        type "A" {
+            map[Mod2] = Level2;
+            map[Mod1] = Level1;
+        };
+    };
+    xkb_symbols {
+        key <a> {
+            type = "A",
+            [ A ]
+        };
+    };
+};

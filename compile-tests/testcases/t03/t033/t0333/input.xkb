@@ -1,0 +1,15 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        SetMods.mods = Mod1;
+        key <a> {
+            actions[Group1] = [ SetMods ],
+            actions[Group2] = [ SetMods.SetMods() ],
+            actions[Group3] = [ SetMods[0]() ],
+            actions[Group4] = [ SetMods() ],
+            actions[Group5] = [ sETmODS() ],
+        };
+    };
+};

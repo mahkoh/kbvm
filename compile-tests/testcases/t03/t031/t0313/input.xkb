@@ -1,0 +1,17 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        key <a> {
+            [ A ],
+            [ 1 + 1 ],
+            [ A.B ],
+            [ A[0] ],
+            [ 0 ],
+            [ 3 ],
+            [ 9 ],
+            [ 10 ],
+        };
+    };
+};

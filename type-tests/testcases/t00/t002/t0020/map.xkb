@@ -1,0 +1,17 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <leftshift> {
+            [
+                LockMods(mods = Shift, affect = neither),
+            ]
+        };
+        key <rightshift> {
+            [
+                LockMods(mods = Shift),
+            ]
+        };
+    };
+};

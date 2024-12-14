@@ -1,0 +1,22 @@
+name: msrv
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  msrv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: |
+          rustup override set 1.83.0
+          cd kbvm
+          cargo update
+          cargo check --all-features --verbose

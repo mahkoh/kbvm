@@ -1,0 +1,40 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 1;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+
+        type "ONE_LEVEL" {
+            modifiers = None;
+            level_name[Level1] = "Any";
+            map[None] = Level1;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        key.repeat = true;
+
+        key <a> {
+            groupsRedirect = Group1,
+            type[Group1] = "ONE_LEVEL",
+            type[Group2] = "ONE_LEVEL",
+            type[Group3] = "ONE_LEVEL",
+            symbols[Group1] = [ A ],
+            symbols[Group2] = [ A ],
+            symbols[Group3] = [ A ]
+        };
+    };
+};

@@ -1,0 +1,6 @@
+dead_tilde
+    pending
+space
+    composed
+        ~ asciitilde
+Caps_Lock

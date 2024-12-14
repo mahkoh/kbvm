@@ -1,0 +1,10 @@
+both leftshift
+    key_down(leftshift)
+    group_locked = 1
+    group_effective = 1
+    key_up(leftshift)
+both leftshift
+    key_down(leftshift)
+    group_locked = 2
+    group_effective = 2
+    key_up(leftshift)

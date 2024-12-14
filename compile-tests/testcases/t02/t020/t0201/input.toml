@@ -1,0 +1,7 @@
+rules = "evdev-modern"
+model = "olpc"
+options = []
+
+[[groups]]
+layout = "us"
+variant = ""

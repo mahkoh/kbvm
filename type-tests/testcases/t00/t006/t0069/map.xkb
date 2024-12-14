@@ -1,0 +1,18 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_types {
+        type "A" {
+            modifiers = Shift + Lock;
+            map[Shift] = Level2;
+            preserve[Lock] = Lock;
+        };
+    };
+    xkb_symbols {
+        key <leftshift> { [ SetMods(mods = Shift) ] };
+        key <capslock> { [ LockMods(mods = Lock) ] };
+        key <a> { type = "A", [ a, A ] };
+        key <b> { type = "A", [ b ] };
+    };
+};

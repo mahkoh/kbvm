@@ -1,0 +1,16 @@
+xkb_keymap {
+    xkb_compat {
+        indicator "A" {
+            mods = Mod1;
+        };
+        augment indicator "A" {
+            mods = Mod2;
+        };
+        indicator "B" {
+            mods = Mod1;
+        };
+        indicator "B" {
+            mods = Mod2;
+        };
+    };
+};

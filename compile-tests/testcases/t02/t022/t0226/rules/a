@@ -1,0 +1,5 @@
+! layout[any] = keycodes
+  *           = x
+
+! layout[any] = keycodes
+  *           = %+m%l[%i]

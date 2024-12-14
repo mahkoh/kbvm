@@ -1,0 +1,7 @@
+rules = "evdev"
+
+[[groups]]
+layout = "us"
+
+[[groups]]
+layout = "de"

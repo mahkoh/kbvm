@@ -1,0 +1,27 @@
+both h
+    key_down(h)
+    sym = h, char = 'h'
+    key_up(h)
+both compose
+    key_down(compose)
+    sym = ISO_Group_Latch
+    group_pressed = 1
+    group_effective = 1
+    key_up(compose)
+    group_pressed = 0
+    group_latched = 1
+down leftalt
+    key_down(leftalt)
+    sym = Alt_L
+    mods_pressed = 0x00000008
+    mods_effective = 0x00000008
+both h
+    key_down(h)
+    sym = hebrew_yod, char = 'י'
+    group_latched = 0
+    group_effective = 0
+    key_up(h)
+both h
+    key_down(h)
+    sym = h, char = 'h'
+    key_up(h)

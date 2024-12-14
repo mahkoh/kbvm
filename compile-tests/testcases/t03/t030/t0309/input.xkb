@@ -1,0 +1,14 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+    };
+    xkb_symbols {
+        key <a> {
+            groupsWrap = [ true ],
+        };
+        key <b> {
+            groupsWrap = xyz,
+        };
+    };
+};

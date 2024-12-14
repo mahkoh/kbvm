@@ -1,0 +1,54 @@
+[package]
+name = "kbvm"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/mahkoh/kbvm"
+license = "MIT OR Apache-2.0"
+description = "An implementation of the XKB specification"
+keywords = ["parser", "protocol", "linux", "xkb", "wayland"]
+categories = ["api-bindings", "compilers", "parser-implementations"]
+rust-version = "1.83.0"
+
+[features]
+default = ["log"]
+# Enables the WriteToLog diagnostic handler.
+log = ["dep:log"]
+# Enables loading the RMLVO registry.
+registry = ["dep:serde", "dep:quick-xml", "dep:error_reporter"]
+# Enables parsing of XCompose files.
+compose = []
+# Enables loading keymaps from X11 connections.
+x11 = ["dep:x11rb"]
+
+[package.metadata.docs.rs]
+all-features = true
+
+[dependencies]
+kbvm-proc = { path = "../kbvm-proc" }
+thiserror = { version = "2.0.5", default-features = false }
+bstr = { version = "1.11.0", default-features = false, features = ["alloc"] }
+arrayvec = { version = "0.7.6", default-features = false }
+linearize = { version = "0.1.1", default-features = false, features = ["derive"] }
+hashbrown = { version = "0.15.2", default-features = false, features = ["default-hasher"] }
+isnt = { version = "0.1.0", default-features = false }
+debug-fn = { version = "1.0.0", default-features = false }
+smallvec = { version = "1.13.2", default-features = false, features = ["union"] }
+indexmap = { version = "2.7.0", default-features = false }
+cfg-if = { version = "1.0.0", default-features = false }
+secure-execution = { version = "0.1.0", default-features = false }
+unicode-width = { version = "0.2.0", default-features = false }
+# for log feature:
+log = { version = "0.4", default-features = false, optional = true }
+# for registry feature:
+serde = { version = "1.0.217", default-features = false, features = ["derive"], optional = true }
+quick-xml = { version = "0.37.2", default-features = false, features = ["serde", "serialize"], optional = true }
+error_reporter = { version = "1.0.0", default-features = false, optional = true }
+# for x11 feature:
+x11rb = { version = "0.13.1", default-features = false, features = ["xkb"], optional = true }
+
+[build-dependencies]
+pkg-config = "0.3.31"
+
+[dev-dependencies]
+libxkbcommon-test-linker = { path = "../libxkbcommon-test-linker" }
+walkdir = "2.5.0"

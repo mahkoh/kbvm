@@ -1,0 +1,3 @@
+xkb_symbols {
+    key <a> { };
+};

@@ -1,0 +1,17 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        key <a> {
+            [ SetMods(mods = Shift) ],
+            [ SetMods(mods = Lock) ],
+            [ SetMods(mods = Control) ],
+            [ SetMods(mods = Mod1) ],
+            [ SetMods(mods = Mod2) ],
+            [ SetMods(mods = Mod3) ],
+            [ SetMods(mods = Mod4) ],
+            [ SetMods(mods = Mod5) ],
+        };
+    };
+};

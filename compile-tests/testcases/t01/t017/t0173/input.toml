@@ -1,0 +1,6 @@
+rules = "special_indexes"
+options = []
+
+[[groups]]
+layout = "layout_d"
+variant = ""

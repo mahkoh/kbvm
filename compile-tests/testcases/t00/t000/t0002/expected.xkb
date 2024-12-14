@@ -1,0 +1,34 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "X";
+        indicator 2 = "alpha";
+        indicator 3 = "Z";
+        virtual indicator 4 = "beta";
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+    };
+
+    xkb_compat {
+        indicator "X" {
+            modifiers = Mod1+Mod2;
+            whichModState = Latched+Locked;
+            groups = 0x00000006;
+            controls = StickyKeys;
+        };
+        indicator "alpha" {
+            groups = 0x00000003;
+        };
+
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+    };
+};

@@ -1,0 +1,5 @@
+keycodes = "evdev+aliases(qwerty)"
+types = "complete"
+compat = "complete+japan"
+symbols = "xfree68_vndr/ataritt(us)+jp+inet(evdev)"
+geometry = "pc(pc104)"
