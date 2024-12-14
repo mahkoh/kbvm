@@ -1,0 +1,30 @@
+use {
+    crate::{phf, phf::PhfHash},
+    std::{marker::PhantomData, ops::Index},
+};
+
+pub struct IndexMap<K, V>
+where
+    K: ?Sized,
+    V: 'static,
+{
+    pub key: u64,
+    pub disps: &'static [(u32, u32)],
+    pub map: &'static [V],
+    pub _phantom: PhantomData<fn(&K) -> V>,
+}
+
+impl<K, V> Index<&'_ K> for IndexMap<K, V>
+where
+    K: ?Sized + PhfHash,
+    V: 'static,
+{
+    type Output = V;
+
+    #[inline]
+    fn index(&self, index: &'_ K) -> &Self::Output {
+        let hash = phf::hash(index, self.key);
+        let idx = phf::get_unwrapped_index(&hash, self.disps) % self.map.len();
+        &self.map[idx]
+    }
+}

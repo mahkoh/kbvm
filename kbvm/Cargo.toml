@@ -1,0 +1,28 @@
+[package]
+name = "kbvm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+kbvm-proc = { path = "../kbvm-proc" }
+thiserror = "2.0.5"
+bstr = "1.11.0"
+arrayvec = "0.7.6"
+linearize = { version = "0.1.1", features = ["derive"] }
+hashbrown = "0.15.2"
+regex = { version = "1.11.1", default-features = false }
+isnt = "0.1.0"
+debug-fn = "1.0.0"
+
+[dev-dependencies]
+libxkbcommon-test-linker = { path = "../libxkbcommon-test-linker" }
+criterion = "0.5.1"
+walkdir = "2.5.0"
+
+[[bench]]
+name = "benchmark"
+harness = false
+
+[[bench]]
+name = "state_machine"
+harness = false

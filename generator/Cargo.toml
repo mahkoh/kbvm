@@ -1,0 +1,11 @@
+[package]
+name = "generator"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+regex = "1.11.1"
+indexmap = "2.7.0"
+rand = { version = "0.8.5", features = ["small_rng"] }
+permutation = "0.4.1"

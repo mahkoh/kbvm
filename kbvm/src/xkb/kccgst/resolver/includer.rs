@@ -1,0 +1,143 @@
+use {
+    crate::xkb::{
+        code_loader::{CodeLoader, CodeType},
+        code_map::CodeMap,
+        diagnostic::{Diagnostic, Severity},
+        include::parse_include,
+        interner::{Interned, Interner},
+        kccgst::{
+            ast::{
+                Compatmap, CompatmapDecl, ConfigItemType, DirectOrIncluded, Geometry, GeometryDecl,
+                Include, Item, ItemType, KeycodeDecl, Keycodes, ResolvedInclude, Symbols,
+                SymbolsDecl, Types, TypesDecl,
+            },
+            ast_cache::AstCache,
+            meaning::MeaningCache,
+        },
+    },
+    hashbrown::HashSet,
+};
+
+pub fn resolve_includes(
+    diagnostics: &mut Vec<Diagnostic>,
+    map: &mut CodeMap,
+    cache: &mut AstCache,
+    loader: &mut CodeLoader,
+    interner: &mut Interner,
+    meaning_cache: &mut MeaningCache,
+    item: &mut Item,
+) {
+    let mut includer = Includer {
+        diagnostics,
+        map,
+        cache,
+        loader,
+        meaning_cache,
+        active_includes: Default::default(),
+    };
+    includer.process_includes(interner, item);
+}
+
+struct Includer<'a> {
+    diagnostics: &'a mut Vec<Diagnostic>,
+    map: &'a mut CodeMap,
+    cache: &'a mut AstCache,
+    loader: &'a mut CodeLoader,
+    meaning_cache: &'a mut MeaningCache,
+    active_includes: HashSet<(CodeType, Interned, Option<Interned>)>,
+}
+
+macro_rules! process_ct {
+    ($fn:ident, $ty:ident, $decl:ident, $ct:ident) => {
+        fn $fn(&mut self, interner: &mut Interner, item: &mut $ty) {
+            for decl in &mut item.decls.decls {
+                if let DirectOrIncluded::Direct($decl::Include(i)) = &mut decl.val.ty {
+                    self.process_include(interner, i, CodeType::$ct);
+                }
+            }
+        }
+    };
+}
+
+impl Includer<'_> {
+    fn process_includes(&mut self, interner: &mut Interner, item: &mut Item) {
+        match &mut item.ty {
+            ItemType::Composite(c) => {
+                for i in &mut c.config_items {
+                    self.process_config_item_type(interner, &mut i.val.item.specific);
+                }
+            }
+            ItemType::Config(c) => self.process_config_item_type(interner, c),
+        }
+    }
+
+    fn process_config_item_type(&mut self, interner: &mut Interner, ty: &mut ConfigItemType) {
+        match ty {
+            ConfigItemType::Keycodes(e) => self.process_keycodes_includes(interner, e),
+            ConfigItemType::Types(e) => self.process_types_includes(interner, e),
+            ConfigItemType::Compatmap(e) => self.process_compat_includes(interner, e),
+            ConfigItemType::Symbols(e) => self.process_symbols_includes(interner, e),
+            ConfigItemType::Geometry(e) => self.process_geometry_includes(interner, e),
+        }
+    }
+
+    process_ct!(process_keycodes_includes, Keycodes, KeycodeDecl, Keycodes);
+    process_ct!(process_types_includes, Types, TypesDecl, Types);
+    process_ct!(process_compat_includes, Compatmap, CompatmapDecl, Compat);
+    process_ct!(process_symbols_includes, Symbols, SymbolsDecl, Symbols);
+    process_ct!(process_geometry_includes, Geometry, GeometryDecl, Geometry);
+
+    fn process_include(&mut self, interner: &mut Interner, include: &mut Include, ty: CodeType) {
+        let resolved = include.resolved.get_or_insert_default();
+        let mut iter = parse_include(interner, include.path);
+        while let Some(i) = iter.next() {
+            let i = match i {
+                Ok(i) => i,
+                Err(e) => {
+                    self.diagnostics
+                        .push(e.into_diagnostic(self.map, Severity::Warning));
+                    continue;
+                }
+            };
+            let mut span = i.file.span;
+            if let Some(map) = i.map {
+                span.hi = map.span.hi;
+            }
+            let key = (ty, i.file.val, i.map.map(|m| m.val));
+            if !self.active_includes.insert(key) {
+                self.diagnostics.push(Diagnostic::new(
+                    self.map,
+                    Severity::Warning,
+                    literal_display!("Ignoring recursive include"),
+                    span,
+                ));
+                continue;
+            }
+            let res = self.cache.get(
+                self.diagnostics,
+                self.map,
+                self.loader,
+                iter.interner(),
+                self.meaning_cache,
+                ty,
+                i.file.val,
+                i.map.map(|m| m.val),
+                span,
+            );
+            match res {
+                Ok(mut item) => {
+                    self.process_includes(iter.interner(), &mut item.val);
+                    resolved.push(ResolvedInclude {
+                        mm: i.merge_mode,
+                        item,
+                    });
+                }
+                Err(e) => {
+                    self.diagnostics
+                        .push(e.into_diagnostic(self.map, Severity::Warning));
+                }
+            }
+            self.active_includes.remove(&key);
+        }
+    }
+}
