@@ -22,9 +22,11 @@ use {
 const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
 const WRITE_FAILED: bool = true;
+const SHOW_ALL_DIAGNOSTICS: bool = false;
 
 fn main() {
-    let path = Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/testcases"));
+    std::env::set_current_dir(env!("CARGO_MANIFEST_DIR")).unwrap();
+    let path = Path::new("./testcases");
     let mut cases = vec![];
     for f in std::fs::read_dir(path).unwrap() {
         let f = f.unwrap();
@@ -52,7 +54,7 @@ fn main() {
     results.sort_unstable_by(|l, r| l.case.cmp(&r.case));
     let mut any_failed = false;
     for result in results {
-        if result.result.is_ok() && result.diagnostics.is_empty() {
+        if result.result.is_ok() && (!SHOW_ALL_DIAGNOSTICS || result.diagnostics.is_empty()) {
             continue;
         }
         let case: &Path = result.case.file_name().unwrap().as_ref();

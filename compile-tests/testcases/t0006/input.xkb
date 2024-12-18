@@ -1,0 +1,9 @@
+xkb_keymap {
+    xkb_keycodes {
+        indicator 1 = "A";
+    };
+    xkb_keycodes {
+        indicator 2 = "B";
+        override indicator 1 = "C";
+    };
+};
