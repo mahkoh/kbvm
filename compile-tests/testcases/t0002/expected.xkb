@@ -16,10 +16,9 @@ xkb_keymap {
     xkb_compat {
         indicator "X" {
             modifiers = Mod1+Mod2;
+            whichModState = Latched+Locked;
             groups = 0x00000006;
             controls = StickyKeys;
-            whichModState = Latched+Locked;
-            whichGroupState = Effective;
         };
         indicator "alpha" {
             groups = 0x00000003;

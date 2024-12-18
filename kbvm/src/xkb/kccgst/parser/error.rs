@@ -211,7 +211,7 @@ pub(crate) enum ActualToken {
     Token(Token),
 }
 
-impl Parser<'_> {
+impl Parser<'_, '_> {
     pub(super) fn expected_but_eof(
         &self,
         span: Span,

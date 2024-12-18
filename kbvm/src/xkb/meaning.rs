@@ -4,7 +4,7 @@ mod generated;
 pub(crate) use generated::Meaning;
 use {
     crate::{
-        index_map::IndexMap,
+        phf_map::PhfMap,
         xkb::{
             interner::{Interned, Interner},
             meaning::generated::LONGEST,

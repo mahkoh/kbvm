@@ -30,6 +30,7 @@ pub enum DiagnosticKind {
     MultipleDefaultItems,
     DuplicateItemName,
     SyntaxError,
+    UnexpectedDeclaration,
     InvalidKeysym,
     InvalidAction,
     RecursiveInclude,

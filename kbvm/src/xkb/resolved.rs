@@ -16,6 +16,7 @@ use {
         },
     },
     hashbrown::HashMap,
+    indexmap::IndexMap,
     linearize::Linearize,
     smallvec::SmallVec,
 };
@@ -97,7 +98,7 @@ pub(crate) struct ResolvedCompat {
     pub(crate) interps: HashMap<(Option<Keysym>, Option<Filter>), InterpWithKey>,
     pub(crate) interps_sorted: Vec<InterpWithKey>,
     pub(crate) indicator_map_default: IndicatorMap,
-    pub(crate) indicator_maps: HashMap<Interned, IndicatorMapWithKey>,
+    pub(crate) indicator_maps: IndexMap<Interned, IndicatorMapWithKey>,
     pub(crate) action_defaults: ActionDefaults,
 }
 

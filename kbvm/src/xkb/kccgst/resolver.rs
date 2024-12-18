@@ -1103,15 +1103,14 @@ impl CompatResolver<'_, '_, '_> {
         let mm = mm.unwrap_or(MergeMode::Override);
         let entry = self.data.indicator_maps.entry(name.val);
         if mm == MergeMode::Replace {
-            entry.insert(IndicatorMapWithKey {
+            entry.insert_entry(IndicatorMapWithKey {
                 name,
                 indicator_map,
             });
             return;
         }
         let augment = mm == MergeMode::Augment;
-        if let Entry::Occupied(e) = entry {
-            eprintln!("handle_indicator_map {augment}");
+        if let indexmap::map::Entry::Occupied(e) = entry {
             let old = e.into_mut();
             macro_rules! opt {
                 ($($field:ident)|*) => {
@@ -1134,7 +1133,7 @@ impl CompatResolver<'_, '_, '_> {
             opt!(whichgroupstate | groups);
             opt!(controls);
         } else {
-            entry.insert(IndicatorMapWithKey {
+            entry.insert_entry(IndicatorMapWithKey {
                 name,
                 indicator_map,
             });

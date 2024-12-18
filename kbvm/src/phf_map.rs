@@ -3,7 +3,7 @@ use {
     std::{marker::PhantomData, ops::Index},
 };
 
-pub(crate) struct IndexMap<K, V>
+pub(crate) struct PhfMap<K, V>
 where
     K: ?Sized,
     V: 'static,
@@ -14,7 +14,7 @@ where
     pub(crate) _phantom: PhantomData<fn(&K) -> V>,
 }
 
-impl<K, V> Index<&'_ K> for IndexMap<K, V>
+impl<K, V> Index<&'_ K> for PhfMap<K, V>
 where
     K: ?Sized + PhfHash,
     V: 'static,

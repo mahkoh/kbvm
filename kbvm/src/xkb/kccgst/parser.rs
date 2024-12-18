@@ -7,6 +7,8 @@ use {
         state_machine::Keycode,
         xkb::{
             code_loader::CodeType,
+            code_map::CodeMap,
+            diagnostic::DiagnosticSink,
             interner::{Interned, Interner},
             kccgst::{
                 ast::{
@@ -41,7 +43,13 @@ use {
     Punctuation::{Cbrace, Obrace, Obracket},
 };
 
-struct Parser<'a> {
+struct Diag<'a, 'b> {
+    map: &'a mut CodeMap,
+    diagnostics: &'a mut DiagnosticSink<'b>,
+}
+
+struct Parser<'a, 'b> {
+    diag: Option<Diag<'a, 'b>>,
     tokens: &'a [Spanned<Token>],
     interner: &'a Interner,
     meaning_cache: &'a mut MeaningCache,
@@ -90,6 +98,7 @@ pub(crate) fn snoop_ty_and_name(
     meaning_cache: &mut MeaningCache,
 ) -> Result<(Option<Span>, Spanned<CodeType>, Option<Spanned<Interned>>), Spanned<ParserError>> {
     let mut parser = Parser {
+        diag: None,
         tokens,
         interner,
         meaning_cache,
@@ -130,12 +139,15 @@ pub(crate) fn snoop_ty_and_name(
 }
 
 pub(crate) fn parse_item(
+    map: &mut CodeMap,
+    diagnostics: &mut DiagnosticSink,
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
     tokens: &[Spanned<Token>],
     diagnostic_delta: u64,
 ) -> Result<Spanned<Item>, Spanned<ParserError>> {
     Parser {
+        diag: Some(Diag { map, diagnostics }),
         tokens,
         interner,
         meaning_cache,
@@ -145,7 +157,7 @@ pub(crate) fn parse_item(
     .parse_item()
 }
 
-impl<'a> Parser<'a> {
+impl Parser<'_, '_> {
     fn next(
         &mut self,
         expected: &'static [Expected],
@@ -1024,8 +1036,31 @@ impl<'a> Parser<'a> {
             if self.peek(expected)?.val == Token::Punctuation(terminator) {
                 break;
             }
-            res.push(f(self)?);
-            // println!("{:?}", res.last());
+            let saved_pos = self.pos;
+            let err = match f(self) {
+                Err(e) => e,
+                Ok(l) => {
+                    res.push(l);
+                    continue;
+                }
+            };
+            let Some(diag) = &mut self.diag else {
+                return Err(err);
+            };
+            self.pos = saved_pos;
+            let mut depth = 0usize;
+            while self.pos < self.tokens.len() {
+                let token = self.tokens[self.pos].val;
+                self.pos += 1;
+                match token {
+                    token![;] if depth == 0 => break,
+                    Token::Punctuation(Obrace) => depth += 1,
+                    Token::Punctuation(Cbrace) => depth = depth.saturating_sub(1),
+                    _ => {}
+                }
+            }
+            diag.diagnostics
+                .push(diag.map, err.val.diagnostic_kind(), err);
         }
         let hi = self.consume_token(terminator)?.hi;
         Ok(res.spanned(lo, hi))

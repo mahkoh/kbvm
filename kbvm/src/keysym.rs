@@ -6,12 +6,12 @@ mod tests;
 use {
     crate::{
         from_bytes::FromBytes,
-        index_map::IndexMap,
         keysym::generated::{
             CHAR_TO_BESPOKE_IDX, DATAS, KEYSYM_TO_CHAR, KEYSYM_TO_IDX, KEYSYM_TO_LOWER_KEYSYM,
             KEYSYM_TO_UPPER_KEYSYM, LONGEST_NAME, LOWER_NAME_TO_IDX, NAMES,
         },
         keysyms::{KEY_Delete, KEY_KP_Equal, KEY_KP_Space, KEY_NoSymbol},
+        phf_map::PhfMap,
     },
     arrayvec::ArrayVec,
     generated::NAME_TO_IDX,

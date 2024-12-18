@@ -57,7 +57,14 @@ impl Context {
                 e.span,
             ));
         }
-        let parsed = parse_item(&interner, &mut meaning_cache, &tokens, 0);
+        let parsed = parse_item(
+            &mut map,
+            diagnostics,
+            &interner,
+            &mut meaning_cache,
+            &tokens,
+            0,
+        );
         tokens.clear();
         let mut parsed = match parsed {
             Ok(p) => p,

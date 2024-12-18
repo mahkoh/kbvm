@@ -183,17 +183,19 @@ impl AstCache {
             );
             let delta = new_span.lo - entry.get().span.lo;
             match &entry.get().tokens_or_item {
-                TokensOrItem::Tokens(t) => match parse_item(interner, meaning_cache, &t, delta) {
-                    Ok(item) => {
-                        let ret = item.clone_with_delta(delta);
-                        entry.get_mut().tokens_or_item = TokensOrItem::Item(item);
-                        return Ok(ret);
+                TokensOrItem::Tokens(t) => {
+                    match parse_item(map, diagnostics, interner, meaning_cache, &t, delta) {
+                        Ok(item) => {
+                            let ret = item.clone_with_delta(delta);
+                            entry.get_mut().tokens_or_item = TokensOrItem::Item(item);
+                            return Ok(ret);
+                        }
+                        Err(e) => {
+                            diagnostics.push(map, e.val.diagnostic_kind(), e);
+                            entry.remove();
+                        }
                     }
-                    Err(e) => {
-                        diagnostics.push(map, e.val.diagnostic_kind(), e);
-                        entry.remove();
-                    }
-                },
+                }
                 TokensOrItem::Item(item) => return Ok(item.clone_with_delta(delta)),
             }
         }

@@ -24,7 +24,7 @@ fn generate_map(
     let mut res = String::new();
     writeln!(
         res,
-        "pub(super) static {name}: IndexMap<{key_type}, {value_type}> = IndexMap {{"
+        "pub(super) static {name}: PhfMap<{key_type}, {value_type}> = PhfMap {{"
     )
     .unwrap();
     writeln!(res, "    key: {},", state.key).unwrap();
