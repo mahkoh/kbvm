@@ -21,7 +21,7 @@ use {
 // const SINGLE: Option<&str> = Some("t0004");
 const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
-const WRITE_FAILED: bool = true;
+const WRITE_FAILED: bool = false;
 const SHOW_ALL_DIAGNOSTICS: bool = false;
 
 fn main() {
@@ -30,6 +30,9 @@ fn main() {
     let mut cases = vec![];
     for f in std::fs::read_dir(path).unwrap() {
         let f = f.unwrap();
+        if !f.metadata().unwrap().is_dir() {
+            continue;
+        }
         if let Some(s) = SINGLE {
             if f.file_name() != s {
                 continue;
