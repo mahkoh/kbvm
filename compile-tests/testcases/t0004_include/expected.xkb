@@ -1,11 +1,9 @@
 xkb_keymap {
     xkb_keycodes {
-        minimum = 2;
+        minimum = 8;
         maximum = 255;
 
-        indicator 1 = "DUMMY";
-
-        <y> = 2;
+        virtual indicator 1 = "Caps Lock";
     };
 
     xkb_types {
@@ -13,16 +11,17 @@ xkb_keymap {
     };
 
     xkb_compat {
+        indicator "Caps Lock" {
+            modifiers = Lock;
+            whichModState = Locked;
+            groups = 0xfffffffe;
+        };
+
         interpret VoidSymbol {
             repeat = false;
         };
     };
 
     xkb_symbols {
-        key.repeat = true;
-
-        key <y> {
-            repeat = false
-        };
     };
 };

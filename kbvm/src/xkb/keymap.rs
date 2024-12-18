@@ -270,15 +270,29 @@ impl Keymap {
         let mut indicators = Vec::with_capacity(resolved.compat.indicator_maps.len());
         for i in resolved.compat.indicator_maps.values() {
             let map = &i.indicator_map;
+            let modifier_mask = map.modifiers.despan().unwrap_or_default();
+            let group_mask = map.groups.despan().unwrap_or_default();
+            let mut mod_components = map.whichmodifierstate.despan().unwrap_or_default();
+            if modifier_mask.0 == 0 {
+                mod_components = ModComponentMask::NONE;
+            } else if mod_components == ModComponentMask::NONE {
+                mod_components = ModComponentMask::EFFECTIVE;
+            }
+            let mut group_components = map.whichgroupstate.despan().unwrap_or_default();
+            if group_mask.0 == 0 {
+                group_components = GroupComponentMask::NONE;
+            } else if group_components == GroupComponentMask::NONE {
+                group_components = GroupComponentMask::EFFECTIVE;
+            }
             let i = Indicator {
                 virt: map.virt,
                 index: unwrap_or!(map.idx, continue),
                 name: get_string(i.name.val),
-                modifier_mask: map.modifiers.despan().unwrap_or_default(),
-                group_mask: map.groups.despan().unwrap_or_default(),
+                modifier_mask,
+                group_mask,
                 controls: map.controls.despan().unwrap_or_default(),
-                mod_components: map.whichmodifierstate.despan().unwrap_or_default(),
-                group_components: map.whichgroupstate.despan().unwrap_or_default(),
+                mod_components,
+                group_components,
             };
             indicators.push(i);
         }
@@ -357,12 +371,8 @@ impl Keymap {
         keys.sort_unstable_by(|l, r| l.key_name.cmp(&r.key_name));
         let keys = keys.into_iter().map(|k| (k.key_code, k)).collect();
         let mut keycodes = Vec::with_capacity(resolved.keycodes.name_to_key.len());
-        let mut min_keycode = u32::MAX;
-        let mut max_keycode = 0;
-        if resolved.keycodes.name_to_key.is_empty() {
-            min_keycode = 8;
-            max_keycode = 255;
-        }
+        let mut min_keycode = 8;
+        let mut max_keycode = 255;
         for key in resolved.keycodes.name_to_key.values() {
             if !used_key_names.contains(&key.name.val) {
                 continue;

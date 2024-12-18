@@ -6,6 +6,7 @@ xkb_keymap {
         indicator 1 = "X";
         indicator 2 = "alpha";
         indicator 3 = "Z";
+        virtual indicator 4 = "beta";
     };
 
     xkb_types {

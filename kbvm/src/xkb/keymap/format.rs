@@ -233,25 +233,25 @@ impl Format for CompatIndicator<'_> {
                 f.write_nesting()?;
                 write!(f.f, "modifiers = {};", modifier_mask(i.modifier_mask))?;
                 f.write_newline()?;
+                if i.mod_components != ModComponentMask::EFFECTIVE {
+                    f.write_nesting()?;
+                    write!(f.f, "whichModState = {};", i.mod_components)?;
+                    f.write_newline()?;
+                }
             }
             if i.group_mask.0 != 0 {
                 f.write_nesting()?;
                 write!(f.f, "groups = 0x{:08x};", i.group_mask.0)?;
                 f.write_newline()?;
+                if i.group_components != GroupComponentMask::EFFECTIVE {
+                    f.write_nesting()?;
+                    write!(f.f, "whichGroupState = {};", i.group_components)?;
+                    f.write_newline()?;
+                }
             }
             if i.controls != ControlMask::NONE {
                 f.write_nesting()?;
                 write!(f.f, "controls = {};", i.controls)?;
-                f.write_newline()?;
-            }
-            if i.mod_components != ModComponentMask::NONE {
-                f.write_nesting()?;
-                write!(f.f, "whichModState = {};", i.mod_components)?;
-                f.write_newline()?;
-            }
-            if i.group_components != GroupComponentMask::NONE {
-                f.write_nesting()?;
-                write!(f.f, "whichGroupState = {};", i.group_components)?;
                 f.write_newline()?;
             }
             Ok(())

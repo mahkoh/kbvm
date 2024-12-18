@@ -18,11 +18,20 @@ use {
     thiserror::Error,
 };
 
+const SINGLE: Option<&str> = Some("t0004_include");
+const WRITE_MISSING: bool = true;
+const WRITE_FAILED: bool = true;
+
 fn main() {
     let path = Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/testcases"));
     let mut cases = vec![];
     for f in std::fs::read_dir(path).unwrap() {
         let f = f.unwrap();
+        if let Some(s) = SINGLE {
+            if f.file_name() != s {
+                continue;
+            }
+        }
         cases.push(f.path());
     }
     let results = Arc::new(Results {
@@ -110,9 +119,6 @@ enum ResultError {
     #[error("could not write round-trip file")]
     WriteRoundTripFailed(#[source] io::Error),
 }
-
-const WRITE_MISSING: bool = true;
-const WRITE_FAILED: bool = true;
 
 fn test_thread(results: Arc<Results>) {
     let digits = (results.cases.len() as f64).log10().ceil() as usize;

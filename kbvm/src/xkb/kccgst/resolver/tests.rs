@@ -6,20 +6,14 @@ use {
         diagnostic::{DiagnosticKind, DiagnosticSink},
         interner::Interner,
         kccgst::{
-            ast_cache::AstCache,
-            embedder::embed,
-            formatter::{Format, Formatter},
-            includer::resolve_includes,
-            lexer::Lexer,
-            parser::parse_item,
-            resolver::resolve,
+            ast_cache::AstCache, embedder::embed, includer::resolve_includes, lexer::Lexer,
+            parser::parse_item, resolver::resolve,
         },
         keymap::Keymap,
         meaning::MeaningCache,
         string_cooker::StringCooker,
     },
-    bstr::ByteSlice,
-    std::{io::stdout, path::Path, sync::Arc},
+    std::{path::Path, sync::Arc},
 };
 
 #[test]

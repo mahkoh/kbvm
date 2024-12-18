@@ -225,8 +225,8 @@ fn fix_resolved_compat(
         if let Some(i) = compat.indicator_maps.get_mut(&indicator.name.val) {
             i.indicator_map.idx = Some(indicator.idx.val);
             i.indicator_map.virt = indicator.virt.is_some();
-            used_indicators[indicator.idx.val.to_offset()] = true;
         }
+        used_indicators[indicator.idx.val.to_offset()] = true;
     }
     compat.indicator_maps.retain(|_, indicator| {
         if indicator.indicator_map.idx.is_some() {
@@ -247,6 +247,7 @@ fn fix_resolved_compat(
                 return false;
             }
         };
+        indicator.indicator_map.virt = true;
         indicator.indicator_map.idx = IndicatorIdx::new(idx as u32 + 1);
         true
     });
@@ -1110,23 +1111,27 @@ impl CompatResolver<'_, '_, '_> {
         }
         let augment = mm == MergeMode::Augment;
         if let Entry::Occupied(e) = entry {
+            eprintln!("handle_indicator_map {augment}");
             let old = e.into_mut();
             macro_rules! opt {
-                ($field:ident) => {
-                    if let Some(x) = indicator_map.$field {
-                        if augment && old.indicator_map.$field.is_some() {
-                            self.r.diag(
-                                DiagnosticKind::IgnoredIndicatorField,
-                                literal_display!("ignoring redefinition").spanned2(x.span),
-                            );
-                        } else {
-                            old.indicator_map.$field = Some(x);
+                ($($field:ident)|*) => {
+                    let have_any = $(old.indicator_map.$field.is_some())||*;
+                    $(
+                        if let Some(x) = indicator_map.$field {
+                            if augment && have_any {
+                                self.r.diag(
+                                    DiagnosticKind::IgnoredIndicatorField,
+                                    literal_display!("ignoring redefinition").spanned2(x.span),
+                                );
+                            } else {
+                                old.indicator_map.$field = Some(x);
+                            }
                         }
-                    }
+                    )*
                 };
             }
-            opt!(whichmodifierstate);
-            opt!(whichgroupstate);
+            opt!(whichmodifierstate | modifiers);
+            opt!(whichgroupstate | groups);
             opt!(controls);
         } else {
             entry.insert(IndicatorMapWithKey {
