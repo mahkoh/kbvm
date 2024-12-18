@@ -1,0 +1,11 @@
+[package]
+name = "compile-tests"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+kbvm = { path = "../kbvm" }
+parking_lot = "0.12.3"
+thiserror = "2.0.8"
+error_reporter = "1.0.0"
+isnt = "0.1.0"

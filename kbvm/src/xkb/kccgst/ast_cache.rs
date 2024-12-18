@@ -6,24 +6,24 @@ use {
         code::Code,
         code_loader::{CodeLoader, CodeType},
         code_map::CodeMap,
-        diagnostic::{Diagnostic, Severity},
+        diagnostic::{DiagnosticKind, DiagnosticSink},
         interner::{Interned, Interner},
         kccgst::{
             ast::Item,
             ast_cache::error::{not_found, AstCacheError},
             lexer::Lexer,
-            meaning::MeaningCache,
             parser::{parse_item, snoop_ty_and_name},
             token::Token,
         },
-        span::{Span, Spanned},
+        meaning::MeaningCache,
+        span::{Span, SpanExt, Spanned},
     },
     hashbrown::{hash_map::Entry, HashMap},
     std::{collections::VecDeque, path::PathBuf, sync::Arc},
 };
 
 #[derive(Default)]
-pub struct AstCache {
+pub(crate) struct AstCache {
     files: HashMap<FileKey, Value>,
 }
 
@@ -55,9 +55,9 @@ struct Value {
 }
 
 impl AstCache {
-    pub fn get(
+    pub(crate) fn get(
         &mut self,
-        diagnostics: &mut Vec<Diagnostic>,
+        diagnostics: &mut DiagnosticSink,
         map: &mut CodeMap,
         loader: &mut CodeLoader,
         interner: &mut Interner,
@@ -79,12 +79,11 @@ impl AstCache {
                             Some(Lexer::new(Some(&path), &code, span.lo))
                         }
                         Err(e) => {
-                            diagnostics.push(Diagnostic::new(
+                            diagnostics.push(
                                 map,
-                                Severity::Warning,
-                                e,
-                                include_span,
-                            ));
+                                DiagnosticKind::FileReadFailed,
+                                e.spanned2(include_span),
+                            );
                             None
                         }
                     })
@@ -116,12 +115,8 @@ impl AstCache {
                             continue;
                         }
                         Err(e) => {
-                            diagnostics.push(Diagnostic::new(
-                                map,
-                                Severity::Warning,
-                                e.val,
-                                e.span,
-                            ));
+                            value.lexers.pop_front();
+                            diagnostics.push(map, e.val.diagnostic_kind(), e);
                             continue;
                         }
                         Ok(_) => {}
@@ -130,18 +125,17 @@ impl AstCache {
                         match snoop_ty_and_name(&tokens, interner, meaning_cache) {
                             Ok(res) => res,
                             Err(e) => {
-                                diagnostics.push(e.into_diagnostic(map, Severity::Warning));
+                                diagnostics.push(map, e.val.diagnostic_kind(), e);
                                 continue;
                             }
                         };
                     let name_ns = name.map(|n| n.val);
                     if ty.val != key.ty {
-                        diagnostics.push(Diagnostic::new(
+                        diagnostics.push(
                             map,
-                            Severity::Warning,
-                            literal_display!("Unexpected item type"),
-                            ty.span,
-                        ));
+                            DiagnosticKind::UnexpectedConfigItemType,
+                            literal_display!("Unexpected item type").spanned2(ty.span),
+                        );
                         continue;
                     }
                     if let Some(default) = default {
@@ -151,12 +145,12 @@ impl AstCache {
                                 file_map = name_ns;
                             }
                         } else {
-                            diagnostics.push(Diagnostic::new(
+                            diagnostics.push(
                                 map,
-                                Severity::Warning,
-                                literal_display!("File contains multiple default items"),
-                                default,
-                            ));
+                                DiagnosticKind::MultipleDefaultItems,
+                                literal_display!("File contains multiple default items")
+                                    .spanned2(default),
+                            );
                         }
                     }
                     let seen_map = SeenMap {
@@ -167,12 +161,12 @@ impl AstCache {
                     };
                     let map = match value.maps.entry(name_ns) {
                         Entry::Occupied(_) => {
-                            diagnostics.push(Diagnostic::new(
+                            diagnostics.push(
                                 map,
-                                Severity::Warning,
-                                literal_display!("Duplicate item name in file"),
-                                name.map(|n| n.span).or(default).unwrap_or(ty.span),
-                            ));
+                                DiagnosticKind::DuplicateItemName,
+                                literal_display!("Duplicate item name in file")
+                                    .spanned2(name.map(|n| n.span).or(default).unwrap_or(ty.span)),
+                            );
                             continue;
                         }
                         Entry::Vacant(v) => v.insert_entry(seen_map),
@@ -196,7 +190,7 @@ impl AstCache {
                         return Ok(ret);
                     }
                     Err(e) => {
-                        diagnostics.push(e.into_diagnostic(map, Severity::Warning));
+                        diagnostics.push(map, e.val.diagnostic_kind(), e);
                         entry.remove();
                     }
                 },

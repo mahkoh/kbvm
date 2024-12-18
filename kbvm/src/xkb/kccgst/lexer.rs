@@ -7,6 +7,7 @@ use {
         xkb::{
             code::Code,
             code_slice::CodeSlice,
+            diagnostic::DiagnosticKind,
             interner::Interner,
             kccgst::token::{
                 Punctuation,
@@ -20,7 +21,7 @@ use {
 };
 
 #[derive(Debug)]
-pub struct Lexer {
+pub(crate) struct Lexer {
     path: Option<Arc<PathBuf>>,
     code: Code,
     span_lo: u64,
@@ -35,7 +36,7 @@ struct ItemLexer<'a> {
 }
 
 #[derive(Debug, Error, Eq, PartialEq)]
-pub enum LexerError {
+pub(crate) enum LexerError {
     #[error("Unterminated key name")]
     UnterminatedKeyName,
     #[error("Unterminated String")]
@@ -44,12 +45,18 @@ pub enum LexerError {
     InvalidFloatLiteral(#[source] ParseFloatError),
     #[error("Invalid integer literal")]
     InvalidIntegerLiteral,
-    #[error("Unexpected by {0:?}")]
+    #[error("Unexpected byte {:?}", *.0 as char)]
     UnexpectedByte(u8),
 }
 
+impl LexerError {
+    pub(crate) fn diagnostic_kind(&self) -> DiagnosticKind {
+        DiagnosticKind::SyntaxError
+    }
+}
+
 impl Lexer {
-    pub fn new(path: Option<&Arc<PathBuf>>, code: &Code, span_lo: u64) -> Self {
+    pub(crate) fn new(path: Option<&Arc<PathBuf>>, code: &Code, span_lo: u64) -> Self {
         Self {
             path: path.cloned(),
             code: code.clone(),
@@ -58,7 +65,7 @@ impl Lexer {
         }
     }
 
-    pub fn lex_item(
+    pub(crate) fn lex_item(
         &mut self,
         interner: &mut Interner,
         output: &mut Vec<Spanned<Token>>,
@@ -74,15 +81,15 @@ impl Lexer {
         Ok(())
     }
 
-    pub fn path(&self) -> Option<&Arc<PathBuf>> {
+    pub(crate) fn path(&self) -> Option<&Arc<PathBuf>> {
         self.path.as_ref()
     }
 
-    pub fn code(&self) -> &Code {
+    pub(crate) fn code(&self) -> &Code {
         &self.code
     }
 
-    pub fn span(&self) -> Span {
+    pub(crate) fn span(&self) -> Span {
         Span {
             lo: self.span_lo,
             hi: self.span_lo + self.code.len() as u64,

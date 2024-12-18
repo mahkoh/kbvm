@@ -93,7 +93,7 @@ impl StateEventHandler for LogHandler<'_> {
     fn mods_pressed_inc(&mut self, mods: ModifierMask) {
         let mut changed = false;
         for idx in mods {
-            let count = &mut self.state.mods_pressed_count[idx.0 as usize & NUM_MODS_MASK];
+            let count = &mut self.state.mods_pressed_count[idx.raw() as usize & NUM_MODS_MASK];
             if *count == 0 {
                 *count = 1;
                 changed = true;
@@ -113,7 +113,7 @@ impl StateEventHandler for LogHandler<'_> {
     fn mods_pressed_dec(&mut self, mods: ModifierMask) {
         let mut changed = ModifierMask(0);
         for idx in mods {
-            let count = &mut self.state.mods_pressed_count[idx.0 as usize & NUM_MODS_MASK];
+            let count = &mut self.state.mods_pressed_count[idx.raw() as usize & NUM_MODS_MASK];
             if *count == 1 {
                 *count = 0;
                 changed |= idx.to_mask();

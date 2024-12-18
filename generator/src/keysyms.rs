@@ -64,14 +64,14 @@ struct KeysymInfo {
     upper: Option<u32>,
     names: Vec<KeysymName>,
     definitive_idx: u16,
-    name_start: usize,
-    name_len: usize,
 }
 
 #[derive(Debug)]
 struct KeysymName {
     name: Cow<'static, str>,
     idx: u16,
+    name_start: usize,
+    name_len: usize,
     alias_for: Option<&'static str>,
     deprecated: bool,
     #[expect(dead_code)]
@@ -126,8 +126,6 @@ fn handle_header(output: &mut IndexMap<u32, KeysymInfo>) {
             upper: None,
             names: vec![],
             definitive_idx: 0,
-            name_start: 0,
-            name_len: 0,
         });
         infos.names.push(KeysymName {
             name: name.into(),
@@ -135,6 +133,8 @@ fn handle_header(output: &mut IndexMap<u32, KeysymInfo>) {
             alias_for: alias,
             deprecated,
             deprecation_reason: reason,
+            name_start: 0,
+            name_len: 0,
         });
         // if let Some(suffix) = name.strip_prefix("XF86") {
         //     infos.names.push(KeysymName {
@@ -494,10 +494,11 @@ fn generate_names(output: &mut IndexMap<u32, KeysymInfo>) -> String {
     res.push_str("pub(super) static NAMES: &str = \"");
     let offset = res.len();
     for v in output.values_mut() {
-        let name = v.definitive_name.unwrap();
-        v.name_start = res.len() - offset;
-        v.name_len = name.len();
-        res.push_str(name);
+        for name in &mut v.names {
+            name.name_start = res.len() - offset;
+            name.name_len = name.name.len();
+            res.push_str(&name.name);
+        }
     }
     res.push_str("\";\n");
     res
@@ -524,8 +525,8 @@ fn generate_datas(output: &IndexMap<u32, KeysymInfo>) -> String {
             "        keysym_or_definitive_idx: 0x{keysym_or_definitive_idx:08x},"
         )
         .unwrap();
-        writeln!(res, "        name_start: {},", v.name_start).unwrap();
-        writeln!(res, "        name_len: {},", v.name_len).unwrap();
+        writeln!(res, "        name_start: {},", name.name_start).unwrap();
+        writeln!(res, "        name_len: {},", name.name_len).unwrap();
         res.push_str("        flags: 0");
         if v.lower.is_some() {
             res.push_str(" | IS_UPPER");

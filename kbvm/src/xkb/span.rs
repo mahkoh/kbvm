@@ -1,11 +1,8 @@
 use {
-    crate::xkb::{
-        code_map::CodeMap,
-        diagnostic::{Diagnostic, Severity},
-    },
     kbvm_proc::CloneWithDelta,
     std::{
-        fmt::{Debug, Display, Formatter},
+        fmt::{Debug, Formatter},
+        hash::{Hash, Hasher},
         ops::Add,
     },
 };
@@ -48,6 +45,15 @@ where
     }
 }
 
+impl<T> Hash for Spanned<T>
+where
+    T: Hash,
+{
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.val.hash(state)
+    }
+}
+
 impl<T: Debug> Debug for Spanned<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?} @ ", self.span)?;
@@ -56,14 +62,21 @@ impl<T: Debug> Debug for Spanned<T> {
 }
 
 impl<T> Spanned<T> {
-    pub fn map<U>(self, f: impl FnOnce(T) -> U) -> Spanned<U> {
+    pub(crate) fn map<U>(self, f: impl FnOnce(T) -> U) -> Spanned<U> {
         Spanned {
             span: self.span,
             val: f(self.val),
         }
     }
 
-    pub fn as_ref(&self) -> Spanned<&T> {
+    pub(crate) fn _as_ref(&self) -> Spanned<&T> {
+        Spanned {
+            span: self.span,
+            val: &self.val,
+        }
+    }
+
+    pub(crate) fn as_ref(&self) -> Spanned<&T> {
         Spanned {
             span: self.span,
             val: &self.val,
@@ -86,24 +99,39 @@ impl<T> SpanExt for T {
     }
 }
 
-pub(crate) trait SpanMap<T>: Sized {
-    type Output<U>;
-    fn span_map<U>(self, f: impl FnOnce(T) -> U) -> Self::Output<U>;
+pub(crate) trait SpanResult1<T, E>: Sized {
+    fn span_map<U>(self, f: impl FnOnce(T) -> U) -> Result<Spanned<U>, E>;
 }
 
-impl<T, E> SpanMap<T> for Result<Spanned<T>, E> {
-    type Output<U> = Result<Spanned<U>, E>;
-
-    fn span_map<U>(self, f: impl FnOnce(T) -> U) -> Self::Output<U> {
+impl<T, E> SpanResult1<T, E> for Result<Spanned<T>, E> {
+    fn span_map<U>(self, f: impl FnOnce(T) -> U) -> Result<Spanned<U>, E> {
         self.map(|s| s.map(f))
     }
 }
 
-impl<E> Spanned<E>
-where
-    E: Display + Send + Sync + 'static,
-{
-    pub fn into_diagnostic(self, map: &mut CodeMap, severity: Severity) -> Diagnostic {
-        Diagnostic::new(map, severity, self.val, self.span)
+pub(crate) trait SpanResult2<T, E>: Sized {
+    fn span_either(self, span: Span) -> Result<Spanned<T>, Spanned<E>>;
+}
+
+impl<T, E> SpanResult2<T, E> for Result<T, E> {
+    fn span_either(self, span: Span) -> Result<Spanned<T>, Spanned<E>> {
+        match self {
+            Ok(e) => Ok(e.spanned2(span)),
+            Err(e) => Err(e.spanned2(span)),
+        }
+    }
+}
+
+pub(crate) trait Despan {
+    type Output;
+
+    fn despan(self) -> Self::Output;
+}
+
+impl<T> Despan for Option<Spanned<T>> {
+    type Output = Option<T>;
+
+    fn despan(self) -> Self::Output {
+        self.map(|v| v.val)
     }
 }

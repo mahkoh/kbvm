@@ -19,12 +19,13 @@ struct CodeRange {
     include_span: Option<Span>,
 }
 
-pub struct CodeInfo<'a> {
-    pub code: &'a Code,
-    pub span: Span,
-    pub file: Option<&'a Arc<PathBuf>>,
-    pub lines: &'a [u64],
-    pub include_span: Option<Span>,
+pub(crate) struct CodeInfo<'a> {
+    pub(crate) code: &'a Code,
+    pub(crate) span: Span,
+    pub(crate) file: Option<&'a Arc<PathBuf>>,
+    pub(crate) lines: &'a [u64],
+    pub(crate) lines_offset: u64,
+    pub(crate) include_span: Option<Span>,
 }
 
 impl CodeRange {
@@ -49,7 +50,7 @@ impl CodeRange {
 }
 
 impl CodeMap {
-    pub fn add(
+    pub(crate) fn add(
         &mut self,
         file: Option<&Arc<PathBuf>>,
         include_span: Option<Span>,
@@ -68,7 +69,7 @@ impl CodeMap {
             .canonical_idx
             .try_insert(code.as_ptr(), self.ranges.len())
             .err()
-            .map(|e| e.value);
+            .map(|e| *e.entry.get());
         self.ranges.push(CodeRange {
             span,
             code: code.clone(),
@@ -80,20 +81,23 @@ impl CodeMap {
         span
     }
 
-    pub fn get(&mut self, span: Span) -> CodeInfo<'_> {
+    pub(crate) fn get(&mut self, span: Span) -> CodeInfo<'_> {
         let range = self.ranges.binary_search_by_key(&span.lo, |r| r.span.hi);
         let idx = range.unwrap_or_else(|i| i);
         let (lo, hi) = self.ranges.split_at_mut(idx);
         let range = &mut hi[0];
-        let lines = match range.canonical_idx {
+        let (lines, lines_offset) = match range.canonical_idx {
             Some(idx) => {
-                let range = &mut lo[idx];
-                range.create_lines();
-                range.lines.as_ref().unwrap()
+                let crange = &mut lo[idx];
+                crange.create_lines();
+                (
+                    crange.lines.as_ref().unwrap(),
+                    range.span.lo - crange.span.lo,
+                )
             }
             _ => {
                 range.create_lines();
-                range.lines.as_ref().unwrap()
+                (range.lines.as_ref().unwrap(), 0)
             }
         };
         CodeInfo {
@@ -101,6 +105,7 @@ impl CodeMap {
             span: range.span,
             file: range.file.as_ref(),
             lines,
+            lines_offset,
             include_span: range.include_span,
         }
     }

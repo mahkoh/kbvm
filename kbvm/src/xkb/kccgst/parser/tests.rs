@@ -2,15 +2,15 @@ use {
     crate::xkb::{
         code::Code,
         code_map::CodeMap,
-        diagnostic::Severity,
+        diagnostic::DiagnosticSink,
         interner::Interner,
         kccgst::{
             formatter::{Format, Formatter},
             lexer::{Lexer, LexerError},
-            meaning::MeaningCache,
             parser::{snoop_ty_and_name, Parser},
             token::Token,
         },
+        meaning::MeaningCache,
         span::Spanned,
     },
     bstr::ByteSlice,
@@ -63,6 +63,8 @@ fn round_trip() {
                 let input = std::fs::read(path.as_path()).unwrap();
                 let code = Code::new(&Arc::new(input));
                 let mut map = CodeMap::default();
+                let mut diag = vec![];
+                let mut diagnostics = DiagnosticSink::new(&mut diag);
                 let tokens = match l(&mut map, &mut interner, &code) {
                     Ok(t) => t,
                     Err(e) => panic!("{}: {:?}", path.display(), e),
@@ -84,9 +86,19 @@ fn round_trip() {
                         pos: 0,
                         diagnostic_delta: 0,
                     }
-                    .parse_item()
-                    .unwrap();
+                    .parse_item();
+                    let item = match item {
+                        Ok(i) => i,
+                        Err(e) => {
+                            diagnostics.push(&mut map, e.val.diagnostic_kind(), e);
+                            for d in diag {
+                                eprintln!("{}", d.with_code());
+                            }
+                            panic!();
+                        }
+                    };
                     let s = Arc::new(s(&interner, &item.val));
+                    // println!("{}", s.as_bstr());
                     let code = Code::new(&s);
                     let t2 = match l(&mut map, &mut interner, &code) {
                         Ok(t) => t,
@@ -112,7 +124,7 @@ fn check_error() {
     "#;
     let code = Code::new(&Arc::new(input.as_bytes().to_vec()));
     let tokens = l(&mut map, &mut interner, &code).unwrap();
-    let err = Parser {
+    let _err = Parser {
         tokens: &tokens[0],
         interner: &interner,
         meaning_cache: &mut meaning_cache,
@@ -121,6 +133,6 @@ fn check_error() {
     }
     .parse_item()
     .unwrap_err();
-    let err = err.into_diagnostic(&mut map, Severity::Error);
-    panic!("{}", err.with_code());
+    // let err = err.into_diagnostic(&mut map, Severity::Error);
+    // panic!("{}", err.with_code());
 }

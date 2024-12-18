@@ -10,33 +10,31 @@ use {
             interner::{Interned, Interner},
             kccgst::{
                 ast::{
-                    ArrayElement, ArrayInit, Call, CallArg, Compatmap, CompatmapDecl, CompositeMap,
-                    ConfigItem, ConfigItemType, Coord, CoordAssignment, Decl, Decls,
-                    DirectOrIncluded, DoodadDecl, DoodadType, Expr, ExprAssignment, Flag,
-                    FlagWrapper, Flags, Geometry, GeometryDecl, GroupCompatDecl, Include,
+                    Call, CallArg, Compatmap, CompatmapDecl, CompositeMap, ConfigItem,
+                    ConfigItemType, Coord, CoordAssignment, Decl, Decls, DirectOrIncluded,
+                    DoodadDecl, DoodadType, Expr, ExprAssignment, Flag, FlagWrapper, Flags,
+                    Geometry, GeometryDecl, GroupCompatDecl, Include, IndicatorNameDecl,
                     InterpretDecl, InterpretMatch, Item, ItemType, Key, KeyAliasDecl, KeyExprs,
                     KeyNameDecl, KeySymbolsDecl, KeyTypeDecl, KeycodeDecl, Keycodes, Keys,
-                    LedMapDecl, LedNameDecl, MergeMode, ModMapDecl, NamedParam, NestedConfigItem,
-                    Outline, OverlayDecl, OverlayItem, Path, PathComponent, PathIndex, RowBody,
-                    RowBodyItem, SectionDecl, SectionItem, ShapeDecl, ShapeDeclType, Symbols,
-                    SymbolsArrayAssign, SymbolsDecl, SymbolsExprAssign, SymbolsIdent,
-                    SymbolsVarDecl, Types, TypesDecl, VModDecl, VModDef, VarAssign, VarDecl,
-                    VarDeclIdent,
+                    LedMapDecl, MergeMode, ModMapDecl, NamedParam, NestedConfigItem, Outline,
+                    OverlayDecl, OverlayItem, Path, PathComponent, PathIndex, RowBody, RowBodyItem,
+                    SectionDecl, SectionItem, ShapeDecl, ShapeDeclType, Symbols, SymbolsDecl,
+                    Types, TypesDecl, VModDecl, VModDef, Var, VarDecl, VarOrExpr,
                 },
-                meaning::{Meaning, MeaningCache},
                 parser::error::{
                     CompatmapDeclExpectation, Expected, GeometryDeclExpectation,
                     KeycodeDeclExpectation, ParseDeclExpectation, ParserError,
-                    SymbolsDeclExpectation, TypesDeclExpectation, ARRAY_ELEMENT_EXPECTED,
-                    CONFIG_ITEM_EXPECTED, EXPR_TOKENS, FLAGS_EXPECTED, KEY_EXPECTED,
-                    OUTLINE_TOKENS, SECTION_ITEM_EXPECTED, SYMBOLS_VAR_DECL_EXPECTED,
+                    SymbolsDeclExpectation, TypesDeclExpectation, CONFIG_ITEM_EXPECTED,
+                    EXPR_TOKENS, FLAGS_EXPECTED, KEY_EXPECTED, OUTLINE_TOKENS,
+                    SECTION_ITEM_EXPECTED,
                 },
                 token::{
                     Punctuation::{self, Cbracket, Cparen, Oparen},
                     Token,
                 },
             },
-            span::{Span, SpanExt, SpanMap, Spanned},
+            meaning::{Meaning, MeaningCache},
+            span::{Span, SpanExt, SpanResult1, Spanned},
         },
     },
     std::fmt::Debug,
@@ -63,7 +61,7 @@ enum DeclCandidate {
     Keys,
     KeyType,
     LedMap,
-    LedName(bool),
+    IndicatorName(Option<Span>),
     ModMap,
     Overlay,
     Row,
@@ -86,7 +84,7 @@ macro_rules! parse_inline_list {
     };
 }
 
-pub fn snoop_ty_and_name(
+pub(crate) fn snoop_ty_and_name(
     tokens: &[Spanned<Token>],
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
@@ -131,7 +129,7 @@ pub fn snoop_ty_and_name(
     Ok((default, ty.spanned2(i.span), name))
 }
 
-pub fn parse_item(
+pub(crate) fn parse_item(
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
     tokens: &[Spanned<Token>],
@@ -320,9 +318,9 @@ impl<'a> Parser<'a> {
                 DeclCandidate::Var(t) => slf
                     .parse_var_decl(Some(t.spanned2(span)))
                     .span_map(KeycodeDecl::Var),
-                DeclCandidate::LedName(virt) => slf
-                    .parse_led_name_decl(virt, span.lo)
-                    .span_map(KeycodeDecl::LedName),
+                DeclCandidate::IndicatorName(virt) => slf
+                    .parse_indicator_name_decl(virt, span.lo)
+                    .span_map(KeycodeDecl::IndicatorName),
                 _ => Err(slf.unexpected_decl_candidate(expected, candidate, span)),
             },
         )
@@ -364,7 +362,7 @@ impl<'a> Parser<'a> {
                     .span_map(CompatmapDecl::GroupCompat),
                 DeclCandidate::LedMap => slf
                     .parse_led_map_decl(span.lo)
-                    .span_map(CompatmapDecl::LedMap),
+                    .span_map(CompatmapDecl::IndicatorMap),
                 DeclCandidate::Var(t) => slf
                     .parse_var_decl(Some(t.spanned2(span)))
                     .span_map(CompatmapDecl::Var),
@@ -614,104 +612,13 @@ impl<'a> Parser<'a> {
     ) -> Result<Spanned<KeySymbolsDecl>, Spanned<ParserError>> {
         let key = self.parse_keyname()?;
         let obrace = self.consume_token(Obrace)?;
-        let vars = parse_inline_list!(self, obrace.lo, Cbrace, SYMBOLS_VAR_DECL_EXPECTED, |slf| {
-            slf.parse_symbols_var_decl()
-        })?;
+        let vars = self.parse_var_decl_or_expr_list(obrace.lo)?;
         let hi = self.consume_token(punctuation![;])?.hi;
         let decl = KeySymbolsDecl {
             key,
             vars: vars.val,
         };
         Ok(decl.spanned(lo, hi))
-    }
-
-    fn parse_symbols_var_decl(&mut self) -> Result<Spanned<SymbolsVarDecl>, Spanned<ParserError>> {
-        let t = self.peek(SYMBOLS_VAR_DECL_EXPECTED)?;
-        match t.val {
-            Token::Punctuation(Obracket) => self.parse_array_init().span_map(SymbolsVarDecl::Array),
-            token![!] => {
-                let lo = self.next(SYMBOLS_VAR_DECL_EXPECTED)?.span.lo;
-                let ident = self.parse_ident()?;
-                Ok(SymbolsVarDecl::Ident(SymbolsIdent { not: true, ident })
-                    .spanned(lo, ident.span.hi))
-            }
-            Token::Ident(_) => {
-                let path = self.parse_path(None)?;
-                if let Some(next) = self.try_peek() {
-                    if next.val == token![=] {
-                        self.pos += 1;
-                        const EXPECTED: &[Expected] = &[
-                            Expected::Punctuation(Obracket),
-                            Expected::Nested(EXPR_TOKENS),
-                        ];
-                        return match self.peek(EXPECTED)?.val {
-                            Token::Punctuation(Obracket) => {
-                                let array = self.parse_array_init()?;
-                                let lo = path.span.lo;
-                                let hi = array.span.hi;
-                                let decl = SymbolsVarDecl::ArrayAssign(SymbolsArrayAssign {
-                                    lhs: path,
-                                    array,
-                                });
-                                Ok(decl.spanned(lo, hi))
-                            }
-                            _ => {
-                                let expr = self.parse_expr(EXPECTED)?;
-                                let lo = path.span.lo;
-                                let hi = expr.span.hi;
-                                let decl = SymbolsVarDecl::ExprAssign(SymbolsExprAssign {
-                                    lhs: path,
-                                    expr,
-                                });
-                                Ok(decl.spanned(lo, hi))
-                            }
-                        };
-                    }
-                }
-                let components = &path.val.components;
-                let mut bad_token = components[0].index.as_ref().map(|i| i.obracket);
-                if bad_token.is_none() {
-                    bad_token = components.get(1).map(|c| c.ident.map(Token::Ident));
-                }
-                if let Some(bt) = bad_token {
-                    const EXPECTED: &[Expected] = &[
-                        Expected::Punctuation(punctuation![=]),
-                        Expected::Punctuation(punctuation![,]),
-                        Expected::Punctuation(Cbrace),
-                    ];
-                    return Err(self.unexpected_token(EXPECTED, bt));
-                }
-                Ok(SymbolsVarDecl::Ident(SymbolsIdent {
-                    not: false,
-                    ident: components[0].ident,
-                })
-                .spanned2(path.span))
-            }
-            _ => Err(self.unexpected_token(SYMBOLS_VAR_DECL_EXPECTED, t)),
-        }
-    }
-
-    fn parse_array_init(&mut self) -> Result<Spanned<ArrayInit>, Spanned<ParserError>> {
-        let obracket = self.consume_token(Obracket)?;
-        let elements =
-            parse_inline_list!(self, obracket.lo, Cbracket, ARRAY_ELEMENT_EXPECTED, |slf| {
-                slf.parse_array_element()
-            })?;
-        Ok(ArrayInit {
-            elements: elements.val,
-        }
-        .spanned2(elements.span))
-    }
-
-    fn parse_array_element(&mut self) -> Result<Spanned<ArrayElement>, Spanned<ParserError>> {
-        if self.peek(ARRAY_ELEMENT_EXPECTED)?.val == Token::Punctuation(Obrace) {
-            let obrace = self.consume_token(Obrace)?;
-            self.parse_expr_list(obrace.lo)
-                .span_map(ArrayElement::Braced)
-        } else {
-            self.parse_expr(ARRAY_ELEMENT_EXPECTED)
-                .span_map(ArrayElement::Expr)
-        }
     }
 
     fn parse_mod_map_decl(&mut self, lo: u64) -> Result<Spanned<ModMapDecl>, Spanned<ParserError>> {
@@ -732,6 +639,44 @@ impl<'a> Parser<'a> {
     ) -> Result<Spanned<Vec<Spanned<Expr>>>, Spanned<ParserError>> {
         parse_inline_list!(self, lo, Cbrace, EXPR_TOKENS, |slf| slf
             .parse_expr(EXPR_TOKENS))
+    }
+
+    fn parse_var_decl_or_expr_list(
+        &mut self,
+        lo: u64,
+    ) -> Result<Spanned<Vec<Spanned<VarOrExpr>>>, Spanned<ParserError>> {
+        parse_inline_list!(self, lo, Cbrace, EXPR_TOKENS, |slf| slf
+            .parse_var_decl_or_expr())
+    }
+
+    fn parse_var_decl_or_expr(&mut self) -> Result<Spanned<VarOrExpr>, Spanned<ParserError>> {
+        'var_decl: {
+            let mut pos = self.pos;
+            if let Some(mut t) = self.tokens.get(pos) {
+                if t.val == punctuation![!] {
+                    pos += 1;
+                    t = match self.tokens.get(pos) {
+                        Some(t) => t,
+                        _ => break 'var_decl,
+                    };
+                }
+                if let Token::Ident(_) = t.val {
+                    if let Some(t) = self.tokens.get(pos + 1) {
+                        if matches!(
+                            t.val,
+                            token![.]
+                                | token![=]
+                                | token![,]
+                                | Token::Punctuation(Cbrace)
+                                | Token::Punctuation(Obracket)
+                        ) {
+                            return self.parse_var(None).span_map(VarOrExpr::Var);
+                        }
+                    }
+                }
+            }
+        }
+        self.parse_expr(EXPR_TOKENS).span_map(VarOrExpr::Expr)
     }
 
     fn parse_group_compat_decl(
@@ -767,12 +712,12 @@ impl<'a> Parser<'a> {
         Ok(decl.spanned(lo, hi))
     }
 
-    fn parse_led_name_decl(
+    fn parse_indicator_name_decl(
         &mut self,
-        virt: bool,
+        virt: Option<Span>,
         lo: u64,
-    ) -> Result<Spanned<LedNameDecl>, Spanned<ParserError>> {
-        if virt {
+    ) -> Result<Spanned<IndicatorNameDecl>, Spanned<ParserError>> {
+        if virt.is_some() {
             let indicator = self.parse_ident()?;
             if self
                 .meaning_cache
@@ -789,7 +734,7 @@ impl<'a> Parser<'a> {
         self.consume_token(punctuation![=])?;
         let val = self.parse_expr(EXPR_TOKENS)?;
         let hi = self.consume_token(punctuation![;])?.hi;
-        let decl = LedNameDecl {
+        let decl = IndicatorNameDecl {
             virt,
             idx_name,
             idx,
@@ -943,7 +888,7 @@ impl<'a> Parser<'a> {
     fn parse_keys(&mut self, lo: u64) -> Result<Spanned<Keys>, Spanned<ParserError>> {
         let obrace = self.consume_token(Obrace)?;
         let keys =
-            parse_inline_list!(self, obrace.lo, Cbrace, KEY_EXPECTED, |slf| slf.parse_key(),)?;
+            parse_inline_list!(self, obrace.lo, Cbrace, KEY_EXPECTED, |slf| slf.parse_key())?;
         let hi = self.consume_token(punctuation![;])?.hi;
         let k = Keys { keys: keys.val };
         Ok(k.spanned(lo, hi))
@@ -954,7 +899,7 @@ impl<'a> Parser<'a> {
         let res = match t.val {
             Token::KeyName(i) => Key::Name(i).spanned2(t.span),
             Token::Punctuation(Obrace) => {
-                let expr = self.parse_expr_list(t.span.lo)?;
+                let expr = self.parse_var_decl_or_expr_list(t.span.lo)?;
                 Key::Exprs(KeyExprs { exprs: expr.val }).spanned(t.span.lo, expr.span.hi)
             }
             _ => return Err(self.unexpected_token(KEY_EXPECTED, t)),
@@ -1021,9 +966,9 @@ impl<'a> Parser<'a> {
                                 return DeclCandidate::LedMap;
                             }
                         }
-                        DeclCandidate::LedName(false)
+                        DeclCandidate::IndicatorName(None)
                     }
-                    Meaning::Virtual => DeclCandidate::LedName(true),
+                    Meaning::Virtual => DeclCandidate::IndicatorName(Some(t.span)),
                     Meaning::Shape => DeclCandidate::Shape,
                     Meaning::Section => DeclCandidate::Section,
                     Meaning::Text | Meaning::Outline | Meaning::Solid | Meaning::Logo => {
@@ -1156,18 +1101,22 @@ impl<'a> Parser<'a> {
         Ok(ty.spanned(lo, defs.span.hi))
     }
 
-    fn parse_var_decl(
+    fn parse_var(
         &mut self,
         first: Option<Spanned<Token>>,
-    ) -> Result<Spanned<VarDecl>, Spanned<ParserError>> {
+    ) -> Result<Spanned<Var>, Spanned<ParserError>> {
         let t = match first {
             Some(first) => first,
             _ => self.next(&[Expected::AnyIdent, Expected::Punctuation(punctuation![!])])?,
         };
         if t.val == token![!] {
-            let ident = self.parse_ident()?;
-            let hi = self.consume_token(punctuation![;])?.hi;
-            let ty = VarDecl::Ident(VarDeclIdent { not: true, ident });
+            let path = self.parse_path(None)?;
+            let hi = path.span.hi;
+            let ty = Var {
+                not: Some(t.span),
+                path,
+                expr: None,
+            };
             return Ok(ty.spanned(t.span.lo, hi));
         }
         let Token::Ident(i) = t.val else {
@@ -1175,22 +1124,32 @@ impl<'a> Parser<'a> {
                 &[Expected::Punctuation(punctuation![!]), Expected::AnyIdent];
             return Err(self.unexpected_token(EXPECTED, t));
         };
-        let maybe_semicolon =
-            self.peek(&[Expected::AnyIdent, Expected::Punctuation(punctuation![;])])?;
-        if maybe_semicolon.val == token![;] {
-            self.pos += 1;
-            let ty = VarDecl::Ident(VarDeclIdent {
-                not: false,
-                ident: i.spanned2(t.span),
-            });
-            return Ok(ty.spanned(t.span.lo, maybe_semicolon.span.hi));
-        }
         let path = self.parse_path(Some(i.spanned2(t.span)))?;
-        self.consume_token(punctuation![=])?;
-        let expr = self.parse_expr(EXPR_TOKENS)?;
-        let hi = self.consume_token(punctuation![;])?.hi;
-        let ty = VarDecl::VarAssign(VarAssign { path, expr });
+        let mut expr = None;
+        let mut hi = path.span.hi;
+        if let Some(n) = self.try_peek() {
+            if n.val == punctuation![=] {
+                self.pos += 1;
+                let e = self.parse_expr(EXPR_TOKENS)?;
+                hi = e.span.hi;
+                expr = Some(e);
+            }
+        }
+        let ty = Var {
+            not: None,
+            path,
+            expr,
+        };
         Ok(ty.spanned(t.span.lo, hi))
+    }
+
+    fn parse_var_decl(
+        &mut self,
+        first: Option<Spanned<Token>>,
+    ) -> Result<Spanned<VarDecl>, Spanned<ParserError>> {
+        let mut res = self.parse_var(first)?;
+        res.span.hi = self.consume_token(punctuation![;])?.hi;
+        Ok(res.map(|var| VarDecl { var }))
     }
 
     fn parse_keyname_decl(
@@ -1294,8 +1253,6 @@ impl<'a> Parser<'a> {
 
     fn parse_call_args(&mut self) -> Result<Spanned<Vec<Spanned<CallArg>>>, Spanned<ParserError>> {
         let lo = self.consume_token(Oparen)?.lo;
-        const EXPECTED: &[Expected] =
-            &[Expected::Punctuation(Cparen), Expected::Nested(EXPR_TOKENS)];
         parse_inline_list!(self, lo, Cparen, EXPR_TOKENS, |slf| {
             if let Some(t) = slf.try_peek() {
                 if let Token::Ident(_) = t.val {
@@ -1428,6 +1385,18 @@ impl<'a> Parser<'a> {
                 let expr = self.parse_expr(EXPR_TOKENS)?;
                 let hi = self.consume_token(Cparen)?.hi;
                 Ok(Expr::Parenthesized(Box::new(expr)).spanned(t.span.lo, hi))
+            }
+            Token::Punctuation(Obracket) => {
+                parse_inline_list!(self, t.span.lo, Cbracket, EXPR_TOKENS, |slf| {
+                    slf.parse_expr(EXPR_TOKENS)
+                })
+                .span_map(Expr::BracketList)
+            }
+            Token::Punctuation(Obrace) => {
+                parse_inline_list!(self, t.span.lo, Cbrace, EXPR_TOKENS, |slf| {
+                    slf.parse_expr(EXPR_TOKENS)
+                })
+                .span_map(Expr::BraceList)
             }
             token![+] => {
                 un_expr!(UnPlus)

@@ -2,7 +2,6 @@ use {
     crate::xkb::{
         code::Code,
         code_map::CodeMap,
-        diagnostic::Severity,
         include::{error::ParseIncludeError, parse_include, IncludeIter},
         interner::{Interned, Interner},
         span::SpanExt,
@@ -39,7 +38,7 @@ fn test() {
     assert_eq!(i.file.val, abcd);
     assert_eq!(i.map.unwrap().val, ef);
     assert_eq!(i.group.unwrap().group_name.val, tt);
-    assert_eq!(i.group.unwrap().group, 22);
+    assert_eq!(i.group.unwrap().group.raw(), 22);
 
     let i = iter.next().unwrap().unwrap();
     assert_eq!(i.file.val, xx);
@@ -71,7 +70,10 @@ fn invalid_group() {
     let mut iter = iter(&mut map, &mut interner, "abc:9999999999999999999999");
     let e = iter.next().unwrap().unwrap_err();
     let ParseIncludeError::InvalidGroupIndex(idx) = e.val else {
-        panic!("{:?}", e.into_diagnostic(&mut map, Severity::Error));
+        panic!(
+            // "{:?}",
+            // e.into_diagnostic(&mut map, DiagnosticKind::InvalidGroupIndex)
+        );
     };
     assert_eq!(idx.as_bytes(), b"9999999999999999999999");
 }

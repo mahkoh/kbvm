@@ -1,16 +1,12 @@
 use crate::xkb::{
-    kccgst::{
-        ast::{
-            CompatmapDecl, Component, ConfigItemType, Decl, Decls, DirectOrIncluded, GeometryDecl,
-            Included, Item, ItemType, KeycodeDecl, ResolvedInclude, SymbolsDecl, TypesDecl,
-        },
-        vmodmap::Vmodmap,
-        MergeMode,
+    kccgst::ast::{
+        CompatmapDecl, Component, ConfigItemType, Decl, Decls, DirectOrIncluded, GeometryDecl,
+        Included, Item, ItemType, KeycodeDecl, ResolvedInclude, SymbolsDecl, TypesDecl,
     },
     span::Spanned,
 };
 
-pub fn embed(item: &mut Item) {
+pub(crate) fn embed(item: &mut Item) {
     match &mut item.ty {
         ItemType::Composite(e) => {
             for item in &mut e.config_items {
@@ -52,7 +48,6 @@ macro_rules! s {
                                 let mut components = vec!();
                                 embed_config_item_type2(&mut components, resolved);
                                 *decl = DirectOrIncluded::Included(Included {
-                                    vmods: Vmodmap::default(),
                                     components,
                                 });
                             }
@@ -79,20 +74,6 @@ s! {
     GeometryDecl, Geometry;
 }
 
-fn merge_merge_mode(
-    l: Option<Spanned<MergeMode>>,
-    r: Option<Spanned<MergeMode>>,
-) -> Option<Spanned<MergeMode>> {
-    match (l, r) {
-        (None, _) => r,
-        (_, None) => l,
-        (Some(l), Some(r)) => match r.val {
-            MergeMode::Replace => Some(r),
-            _ => Some(l),
-        },
-    }
-}
-
 fn embed_config_item_type2<T: Embeddable>(dst: &mut Vec<Component<T>>, src: Vec<ResolvedInclude>) {
     for el in src {
         let mut decls = match el.item.val.ty {
@@ -105,6 +86,7 @@ fn embed_config_item_type2<T: Embeddable>(dst: &mut Vec<Component<T>>, src: Vec<
         dst.push(Component {
             mm: el.mm,
             decls: Decls { decls },
+            group: el.group,
         });
     }
 }

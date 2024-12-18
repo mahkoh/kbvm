@@ -1,20 +1,26 @@
 use {
     crate::xkb::{
         code::Code,
+        code_map::CodeMap,
+        diagnostic::{Diagnostic, DiagnosticKind, DiagnosticSink},
         interner::Interner,
-        string_cooker::{StringCooker, StringCookerDiagnostic, StringCookerError},
+        span::SpanExt,
+        string_cooker::StringCooker,
     },
     bstr::ByteSlice,
     std::sync::Arc,
 };
 
-fn cook_(s: &str) -> (String, Vec<StringCookerDiagnostic>) {
+fn cook_(s: &str) -> (String, Vec<Diagnostic>) {
     let mut interner = Interner::default();
+    let mut map = CodeMap::default();
     let code = Code::new(&Arc::new(s.as_bytes().to_vec()));
+    let span = map.add(None, None, &code);
     let interned = interner.intern(&code.to_slice());
     let mut diagnostics = vec![];
+    let mut sink = DiagnosticSink::new(&mut diagnostics);
     let mut cooker = StringCooker::default();
-    let res = cooker.cook(&mut diagnostics, &mut interner, interned);
+    let res = cooker.cook(&mut map, &mut sink, &mut interner, interned.spanned2(span));
     let res = interner.get(res).to_str().unwrap().to_owned();
     (res, diagnostics)
 }
@@ -40,21 +46,11 @@ fn success() {
 fn warning() {
     let (c, d) = cook_(r#"\n\777\n"#);
     assert_eq!(c, "\n\n");
-    assert_eq!(
-        d,
-        [StringCookerDiagnostic {
-            range: 3..6,
-            error: StringCookerError::OctalOverflow,
-        },]
-    );
+    assert_eq!(d.len(), 1);
+    assert_eq!(d[0].kind(), DiagnosticKind::OctalOverflow);
 
     let (c, d) = cook_(r#"\n\q\n"#);
     assert_eq!(c, "\n\n");
-    assert_eq!(
-        d,
-        [StringCookerDiagnostic {
-            range: 3..4,
-            error: StringCookerError::UnknownSequence(b'q'),
-        },]
-    );
+    assert_eq!(d.len(), 1);
+    assert_eq!(d[0].kind(), DiagnosticKind::UnknownEscapeSequence);
 }

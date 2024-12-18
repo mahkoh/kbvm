@@ -2,27 +2,26 @@ use {
     crate::xkb::{
         interner::{Interned, Interner},
         kccgst::ast::{
-            ArrayElement, ArrayInit, Call, CallArg, Compatmap, CompatmapDecl, Component,
-            CompositeMap, ConfigItem, ConfigItemType, Coord, Decl, Decls, DirectOrIncluded,
-            DoodadDecl, DoodadType, Expr, Flags, Geometry, GeometryDecl, GroupCompatDecl, Include,
-            Included, InterpretDecl, InterpretMatch, Item, ItemType, Key, KeyAliasDecl, KeyExprs,
+            Call, CallArg, Compatmap, CompatmapDecl, Component, CompositeMap, ConfigItem,
+            ConfigItemType, Coord, Decl, Decls, DirectOrIncluded, DoodadDecl, DoodadType, Expr,
+            Flags, Geometry, GeometryDecl, GroupCompatDecl, Include, Included, IndicatorNameDecl,
+            InterpretDecl, InterpretMatch, Item, ItemType, Key, KeyAliasDecl, KeyExprs,
             KeyNameDecl, KeySymbolsDecl, KeyTypeDecl, KeycodeDecl, Keycodes, Keys, LedMapDecl,
-            LedNameDecl, MergeMode, ModMapDecl, NamedParam, NestedConfigItem, Outline, OverlayDecl,
-            Path, RowBody, RowBodyItem, SectionDecl, SectionItem, ShapeDecl, ShapeDeclType,
-            Symbols, SymbolsArrayAssign, SymbolsDecl, SymbolsExprAssign, SymbolsIdent,
-            SymbolsVarDecl, Types, TypesDecl, VModDecl, VModDef, VarAssign, VarDecl, VarDeclIdent,
+            MergeMode, ModMapDecl, NamedParam, NestedConfigItem, Outline, OverlayDecl, Path,
+            RowBody, RowBodyItem, SectionDecl, SectionItem, ShapeDecl, ShapeDeclType, Symbols,
+            SymbolsDecl, Types, TypesDecl, VModDecl, VModDef, Var, VarDecl, VarOrExpr,
         },
     },
     std::io::{self, Write},
 };
 
-pub struct Formatter<'a, W> {
+pub(crate) struct Formatter<'a, W> {
     interner: &'a Interner,
     nesting: usize,
     out: W,
 }
 
-pub trait Format {
+pub(crate) trait Format {
     fn format<W>(&self, f: &mut Formatter<'_, W>) -> io::Result<()>
     where
         W: Write;
@@ -32,7 +31,7 @@ impl<'a, W> Formatter<'a, W>
 where
     W: Write,
 {
-    pub fn new(interner: &'a Interner, out: W) -> Self {
+    pub(crate) fn new(interner: &'a Interner, out: W) -> Self {
         Self {
             interner,
             nesting: 0,
@@ -215,7 +214,7 @@ impl Format for KeycodeDecl {
             KeycodeDecl::KeyName(e) => e.format(f),
             KeycodeDecl::KeyAlias(e) => e.format(f),
             KeycodeDecl::Var(e) => e.format(f),
-            KeycodeDecl::LedName(e) => e.format(f),
+            KeycodeDecl::IndicatorName(e) => e.format(f),
         }
     }
 }
@@ -273,7 +272,7 @@ impl Format for CompatmapDecl {
             CompatmapDecl::Include(e) => e.format(f),
             CompatmapDecl::Interpret(e) => e.format(f),
             CompatmapDecl::GroupCompat(e) => e.format(f),
-            CompatmapDecl::LedMap(e) => e.format(f),
+            CompatmapDecl::IndicatorMap(e) => e.format(f),
             CompatmapDecl::Var(e) => e.format(f),
             CompatmapDecl::VMod(e) => e.format(f),
         }
@@ -519,85 +518,15 @@ impl Format for KeySymbolsDecl {
     }
 }
 
-impl Format for SymbolsVarDecl {
+impl Format for VarOrExpr {
     fn format<W>(&self, f: &mut Formatter<'_, W>) -> io::Result<()>
     where
         W: Write,
     {
         match self {
-            SymbolsVarDecl::ExprAssign(e) => e.format(f),
-            SymbolsVarDecl::ArrayAssign(e) => e.format(f),
-            SymbolsVarDecl::Ident(e) => e.format(f),
-            SymbolsVarDecl::Array(e) => e.format(f),
+            VarOrExpr::Var(e) => e.format(f),
+            VarOrExpr::Expr(e) => e.format(f),
         }
-    }
-}
-
-impl Format for SymbolsIdent {
-    fn format<W>(&self, f: &mut Formatter<'_, W>) -> io::Result<()>
-    where
-        W: Write,
-    {
-        if self.not {
-            f.write_all("!")?;
-        }
-        f.write_interned(self.ident.val)?;
-        Ok(())
-    }
-}
-
-impl Format for SymbolsExprAssign {
-    fn format<W>(&self, f: &mut Formatter<'_, W>) -> io::Result<()>
-    where
-        W: Write,
-    {
-        self.lhs.val.format(f)?;
-        f.write_all(" = ")?;
-        self.expr.val.format(f)?;
-        Ok(())
-    }
-}
-
-impl Format for SymbolsArrayAssign {
-    fn format<W>(&self, f: &mut Formatter<'_, W>) -> io::Result<()>
-    where
-        W: Write,
-    {
-        self.lhs.val.format(f)?;
-        f.write_all(" = ")?;
-        self.array.val.format(f)?;
-        Ok(())
-    }
-}
-
-impl Format for ArrayInit {
-    fn format<W>(&self, f: &mut Formatter<'_, W>) -> io::Result<()>
-    where
-        W: Write,
-    {
-        f.write_all("[")?;
-        f.write_inline_list(&self.elements, |f, e| e.val.format(f))?;
-        f.write_all(" ]")?;
-        Ok(())
-    }
-}
-
-impl Format for ArrayElement {
-    fn format<W>(&self, f: &mut Formatter<'_, W>) -> io::Result<()>
-    where
-        W: Write,
-    {
-        match self {
-            ArrayElement::Braced(e) => {
-                f.write_all("{")?;
-                f.write_inline_list(e, |f, e| e.val.format(f))?;
-                f.write_all(" }")?;
-            }
-            ArrayElement::Expr(e) => {
-                e.format(f)?;
-            }
-        }
-        Ok(())
     }
 }
 
@@ -629,12 +558,12 @@ impl Format for GroupCompatDecl {
     }
 }
 
-impl Format for LedNameDecl {
+impl Format for IndicatorNameDecl {
     fn format<W>(&self, f: &mut Formatter<'_, W>) -> io::Result<()>
     where
         W: Write,
     {
-        if self.virt {
+        if self.virt.is_some() {
             f.write_all("virtual ")?;
         }
         f.write_all("indicator ")?;
@@ -783,36 +712,25 @@ impl Format for VarDecl {
     where
         W: Write,
     {
-        match self {
-            VarDecl::VarAssign(a) => a.format(f),
-            VarDecl::Ident(i) => i.format(f),
-        }
-    }
-}
-
-impl Format for VarAssign {
-    fn format<W>(&self, f: &mut Formatter<'_, W>) -> io::Result<()>
-    where
-        W: Write,
-    {
-        self.path.val.format(f)?;
-        f.write_all(" = ")?;
-        self.expr.val.format(f)?;
+        self.var.format(f)?;
         f.write_all(";")?;
         Ok(())
     }
 }
 
-impl Format for VarDeclIdent {
+impl Format for Var {
     fn format<W>(&self, f: &mut Formatter<'_, W>) -> io::Result<()>
     where
         W: Write,
     {
-        if self.not {
+        if self.not.is_some() {
             f.write_all("!")?;
         }
-        f.write_interned(self.ident.val)?;
-        f.write_all(";")?;
+        self.path.val.format(f)?;
+        if let Some(e) = &self.expr {
+            f.write_all(" = ")?;
+            e.val.format(f)?;
+        }
         Ok(())
     }
 }
@@ -1090,6 +1008,16 @@ impl Format for Expr {
                 l.val.format(f)?;
                 f.write_all(" - ")?;
                 r.val.format(f)?;
+            }
+            Expr::BracketList(e) => {
+                f.write_all("[")?;
+                f.write_inline_list(e, |f, e| e.val.format(f))?;
+                f.write_all(" ]")?;
+            }
+            Expr::BraceList(e) => {
+                f.write_all("{")?;
+                f.write_inline_list(e, |f, e| e.val.format(f))?;
+                f.write_all(" }")?;
             }
         }
         Ok(())

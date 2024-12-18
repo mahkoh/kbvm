@@ -1,6 +1,7 @@
 use {
     crate::xkb::{
         code_slice::CodeSlice,
+        diagnostic::DiagnosticKind,
         interner::{Interned, Interner},
         span::{Span, SpanExt, Spanned},
     },
@@ -17,6 +18,12 @@ pub(crate) enum AstCacheError {
         file: CodeSlice<'static>,
         map: Option<CodeSlice<'static>>,
     },
+}
+
+impl AstCacheError {
+    pub(crate) fn diagnostic_kind(&self) -> DiagnosticKind {
+        DiagnosticKind::FileNotFound
+    }
 }
 
 fn show_map(f: &mut Formatter<'_>, map: &Option<CodeSlice<'_>>) -> fmt::Result {

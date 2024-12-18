@@ -11,7 +11,7 @@ use {
             CHAR_TO_BESPOKE_IDX, DATAS, KEYSYM_TO_CHAR, KEYSYM_TO_IDX, KEYSYM_TO_LOWER_KEYSYM,
             KEYSYM_TO_UPPER_KEYSYM, LONGEST_NAME, LOWER_NAME_TO_IDX, NAMES,
         },
-        keysyms::{KEY_Delete, KEY_NoSymbol},
+        keysyms::{KEY_Delete, KEY_KP_Equal, KEY_KP_Space, KEY_NoSymbol},
     },
     arrayvec::ArrayVec,
     generated::NAME_TO_IDX,
@@ -23,7 +23,7 @@ use {
     thiserror::Error,
 };
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Default)]
 pub struct Keysym(pub u32);
 
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -315,6 +315,10 @@ impl Keysym {
                 Some(d) => d.flags & IS_UPPER != 0,
             }
         }
+    }
+
+    pub fn is_keypad(self) -> bool {
+        self >= KEY_KP_Space && self <= KEY_KP_Equal
     }
 }
 

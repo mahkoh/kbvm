@@ -1,0 +1,25 @@
+xkb_keymap {
+    xkb_keycodes {
+        indicator 1 = "X";
+        indicator 2 = "Y";
+        include "a.xkb"
+        override "b.xkb"
+    };
+    xkb_compat {
+        indicator "X" {
+            modifiers = Mod1+Mod2;
+            groups = Group2+Group3;
+            whichGroupState = Effective;
+        };
+        indicator "X" {
+            controls = StickyKeys;
+            whichModState = Locked+Latched;
+        };
+        indicator "alpha" {
+            modifiers = Mod1;
+        };
+        replace indicator "alpha" {
+            groups = 3;
+        };
+    };
+};

@@ -15,7 +15,7 @@ use {
     thiserror::Error,
 };
 
-pub struct CodeLoader {
+pub(crate) struct CodeLoader {
     include_paths: Vec<Arc<PathBuf>>,
     cache: HashMap<Key, Vec<Option<(Arc<PathBuf>, Code)>>>,
     full_path: PathBuf,
@@ -28,7 +28,7 @@ struct Key {
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
-pub enum CodeType {
+pub(crate) enum CodeType {
     Keycodes,
     Types,
     Compat,
@@ -40,14 +40,14 @@ pub enum CodeType {
 
 #[derive(Debug, Error)]
 #[error("could not read file {path}")]
-pub struct CodeLoaderError {
+pub(crate) struct CodeLoaderError {
     path: String,
     #[source]
     err: io::Error,
 }
 
 impl CodeLoader {
-    pub fn new(include_paths: &[Arc<PathBuf>]) -> Self {
+    pub(crate) fn new(include_paths: &[Arc<PathBuf>]) -> Self {
         Self {
             include_paths: include_paths.to_vec(),
             cache: Default::default(),
@@ -55,7 +55,12 @@ impl CodeLoader {
         }
     }
 
-    pub fn load(&mut self, interner: &Interner, ty: CodeType, path: Interned) -> CodeIter<'_> {
+    pub(crate) fn load(
+        &mut self,
+        interner: &Interner,
+        ty: CodeType,
+        path: Interned,
+    ) -> CodeIter<'_> {
         let key = Key { ty, path };
         let entry = self.cache.entry(key).or_default();
         CodeIter {
@@ -69,7 +74,7 @@ impl CodeLoader {
     }
 }
 
-pub struct CodeIter<'a> {
+pub(crate) struct CodeIter<'a> {
     pos: Range<usize>,
     partial_path: CodeSlice<'static>,
     paths: &'a [Arc<PathBuf>],

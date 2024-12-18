@@ -16,7 +16,7 @@ enum OwnedOrBorrowed<'a> {
 }
 
 #[derive(Clone)]
-pub struct CodeSlice<'a> {
+pub(crate) struct CodeSlice<'a> {
     code: OwnedOrBorrowed<'a>,
     range: Range<usize>,
 }
@@ -32,7 +32,7 @@ impl OwnedOrBorrowed<'_> {
 }
 
 impl<'a> CodeSlice<'a> {
-    pub fn new_ref(code: &'a Code, range: Range<usize>) -> Self {
+    pub(crate) fn new_ref(code: &'a Code, range: Range<usize>) -> Self {
         #[cfg(debug_assertions)]
         let _ = code[range.clone()];
         Self {
@@ -41,7 +41,7 @@ impl<'a> CodeSlice<'a> {
         }
     }
 
-    pub fn new_owned(code: &Code, range: Range<usize>) -> Self {
+    pub(crate) fn new_owned(code: &Code, range: Range<usize>) -> Self {
         CodeSlice::new_ref(code, range).to_owned()
     }
 
@@ -52,22 +52,22 @@ impl<'a> CodeSlice<'a> {
         }
     }
 
-    pub fn as_bytes(&self) -> &[u8] {
+    pub(crate) fn as_bytes(&self) -> &[u8] {
         &self.code()[self.range.clone()]
     }
 
-    pub fn to_owned(&self) -> CodeSlice<'static> {
+    pub(crate) fn to_owned(&self) -> CodeSlice<'static> {
         CodeSlice {
             code: self.code.to_owned(),
             range: self.range.clone(),
         }
     }
 
-    pub fn borrow(&self) -> CodeSlice<'_> {
-        CodeSlice::new_ref(self.code(), self.range.clone())
-    }
+    // pub(crate) fn borrow(&self) -> CodeSlice<'_> {
+    //     CodeSlice::new_ref(self.code(), self.range.clone())
+    // }
 
-    pub fn slice(&self, range: Range<usize>) -> CodeSlice<'_> {
+    pub(crate) fn slice(&self, range: Range<usize>) -> CodeSlice<'_> {
         CodeSlice::new_ref(
             self.code(),
             Range {

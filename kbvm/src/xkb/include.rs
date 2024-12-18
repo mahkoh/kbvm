@@ -7,6 +7,7 @@ use {
         from_bytes::FromBytes,
         xkb::{
             code_slice::CodeSlice,
+            group::GroupIdx,
             include::error::{
                 invalid_format, invalid_group, missing_merge_mode, ParseIncludeError,
             },
@@ -15,22 +16,23 @@ use {
             span::{Span, SpanExt, Spanned},
         },
     },
+    kbvm_proc::CloneWithDelta,
     regex::bytes::Regex,
     std::sync::LazyLock,
 };
 
 #[derive(Debug)]
 pub(crate) struct Include {
-    pub merge_mode: Option<Spanned<MergeMode>>,
-    pub file: Spanned<Interned>,
-    pub map: Option<Spanned<Interned>>,
-    pub group: Option<IncludeGroup>,
+    pub(crate) merge_mode: Option<Spanned<MergeMode>>,
+    pub(crate) file: Spanned<Interned>,
+    pub(crate) map: Option<Spanned<Interned>>,
+    pub(crate) group: Option<IncludeGroup>,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, CloneWithDelta)]
 pub(crate) struct IncludeGroup {
-    pub group_name: Spanned<Interned>,
-    pub group: u32,
+    pub(crate) group_name: Spanned<Interned>,
+    pub(crate) group: GroupIdx,
 }
 
 pub(crate) struct IncludeIter<'a> {
@@ -71,7 +73,7 @@ static COMP_REGEX: LazyLock<Regex> = LazyLock::new(|| {
 });
 
 impl IncludeIter<'_> {
-    pub fn interner(&mut self) -> &mut Interner {
+    pub(crate) fn interner(&mut self) -> &mut Interner {
         self.interner
     }
 }
@@ -142,12 +144,15 @@ impl<'a> Iterator for IncludeIter<'a> {
             };
             let slice = self.s.slice(pos + g.range().start..pos + g.range().end);
             let group_name = self.interner.intern(&slice).spanned2(span);
-            let Some(gstring) = u32::from_bytes_dec(g.as_bytes()) else {
+            let Some(group_idx) = u32::from_bytes_dec(g.as_bytes()) else {
+                return Some(Err(invalid_group(&slice, span)));
+            };
+            let Some(group_idx) = GroupIdx::new(group_idx) else {
                 return Some(Err(invalid_group(&slice, span)));
             };
             group = Some(IncludeGroup {
                 group_name,
-                group: gstring,
+                group: group_idx,
             });
         };
         self.first = false;

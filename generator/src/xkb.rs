@@ -11,31 +11,43 @@ struct Meaning {
 
 pub fn main() {
     let output = generate_output();
-    std::fs::write("kbvm/src/xkb/kccgst/meaning/generated.rs", output).unwrap();
+    std::fs::write("kbvm/src/xkb/meaning/generated.rs", output).unwrap();
 }
 
-const STRINGS: [&str; 180] = [
+const STRINGS: [&str; 209] = [
     "accel",
     "accelerate",
+    "AccessXFeedback",
+    "AccessXKeys",
+    "AccessXTimeout",
     "action",
     "ActionMessage",
     "actions",
     "affect",
     "alias",
     "all",
+    "AllOf",
     "allowexplicit",
     "allownone",
     "alphanumeric_keys",
     "alternate",
     "alternate_group",
     "any",
+    "anylevel",
+    "AnyOf",
+    "AnyOfOrNone",
+    "AudibleBell",
     "augment",
+    "AutoRepeat",
+    "base",
     "both",
+    "BounceKeys",
     "button",
     "clampgroups",
     "clearLocks",
     "clearmodifiers",
     "clearmods",
+    "compat",
     "Control",
     "controls",
     "count",
@@ -56,6 +68,8 @@ const STRINGS: [&str; 180] = [
     "dfltbtn",
     "driveskbd",
     "driveskeyboard",
+    "effective",
+    "Exactly",
     "false",
     "function_keys",
     "generateKeyEvent",
@@ -67,6 +81,7 @@ const STRINGS: [&str; 180] = [
     "groupsredirect",
     "groupswrap",
     "hidden",
+    "IgnoreGroupLock",
     "include",
     "increment",
     "index",
@@ -80,18 +95,23 @@ const STRINGS: [&str; 180] = [
     "keycode",
     "keypad_keys",
     "keys",
+    "latched",
     "LatchGroup",
     "LatchMods",
     "latchToLock",
     "leddriveskbd",
     "leddriveskeyboard",
+    "level1",
     "level_name",
+    "levelname",
+    "levelone",
     "Lock",
     "LockControls",
     "LockDevBtn",
     "LockDevButton",
     "LockDeviceBtn",
     "LockDeviceButton",
+    "locked",
     "LockGroup",
     "locking",
     "LockMods",
@@ -105,6 +125,7 @@ const STRINGS: [&str; 180] = [
     "maximum",
     "Message",
     "MessageAction",
+    "minimum",
     "Mod1",
     "Mod2",
     "Mod3",
@@ -117,6 +138,8 @@ const STRINGS: [&str; 180] = [
     "modmap",
     "modmapmods",
     "mods",
+    "MouseKeys",
+    "MouseKeysAccel",
     "MovePointer",
     "MovePtr",
     "name",
@@ -124,11 +147,14 @@ const STRINGS: [&str; 180] = [
     "no",
     "NoAction",
     "none",
+    "NoneOf",
     "nosymbol",
     "off",
     "on",
     "outline",
     "overlay",
+    "Overlay1",
+    "Overlay2",
     "override",
     "partial",
     "permanentradiogroup",
@@ -142,6 +168,7 @@ const STRINGS: [&str; 180] = [
     "RedirectKey",
     "repeat",
     "repeating",
+    "RepeatKeys",
     "repeats",
     "replace",
     "report",
@@ -157,7 +184,9 @@ const STRINGS: [&str; 180] = [
     "SetPtrDflt",
     "shape",
     "Shift",
+    "SlowKeys",
     "solid",
+    "StickyKeys",
     "SwitchScreen",
     "symbols",
     "Terminate",
@@ -209,7 +238,7 @@ fn generate_output() -> String {
     let longest = generate_longest(&meanings);
     let enum_ = generate_enum(&meanings);
     let lower_map = generate_lowercase_to_meaning(&meanings);
-    let orig_map = generate_string_to_meaning(&meanings);
+    // let orig_map = generate_string_to_meaning(&meanings);
     let mut res = String::new();
     res.push_str("use super::*;\n");
     res.push_str("\n");
@@ -218,8 +247,8 @@ fn generate_output() -> String {
     res.push_str(&enum_);
     res.push_str("\n");
     res.push_str(&lower_map);
-    res.push_str("\n");
-    res.push_str(&orig_map);
+    // res.push_str("\n");
+    // res.push_str(&orig_map);
     res
 }
 
@@ -235,14 +264,14 @@ impl Debug for EnumDebug<'_> {
     }
 }
 
-fn generate_string_to_meaning(meanings: &[Meaning]) -> String {
-    let keys: Vec<_> = meanings
-        .iter()
-        .map(|meaning| meaning.orig.as_bytes())
-        .collect();
-    let mut values: Vec<_> = meanings.iter().map(EnumDebug).collect();
-    generate_map("STRING_TO_MEANING", "[u8]", "Meaning", &keys, &mut values)
-}
+// fn generate_string_to_meaning(meanings: &[Meaning]) -> String {
+//     let keys: Vec<_> = meanings
+//         .iter()
+//         .map(|meaning| meaning.orig.as_bytes())
+//         .collect();
+//     let mut values: Vec<_> = meanings.iter().map(EnumDebug).collect();
+//     generate_map("STRING_TO_MEANING", "[u8]", "Meaning", &keys, &mut values)
+// }
 
 fn generate_lowercase_to_meaning(meanings: &[Meaning]) -> String {
     let keys: Vec<_> = meanings
@@ -287,7 +316,7 @@ fn generate_enum(meanings: &[Meaning]) -> String {
     res.push_str("}\n");
     res.push_str("\n");
     res.push_str("impl Meaning {\n");
-    res.push_str("    pub fn name(self) -> &'static str {\n");
+    res.push_str("    pub(crate) fn name(self) -> &'static str {\n");
     res.push_str("        match self {\n");
     res.push_str("            Self::__Unknown => \"__Unknown\",\n");
     for meaning in meanings {

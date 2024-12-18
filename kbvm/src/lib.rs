@@ -8,4 +8,4 @@ pub mod modifier;
 mod phf;
 pub mod routine;
 pub mod state_machine;
-mod xkb;
+pub mod xkb;

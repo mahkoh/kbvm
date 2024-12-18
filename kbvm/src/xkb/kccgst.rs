@@ -1,13 +1,13 @@
-pub use ast::MergeMode;
+pub(crate) use ast::MergeMode;
 
-mod action;
 mod ast;
-mod ast_cache;
+pub(crate) mod ast_cache;
+pub(crate) mod embedder;
 mod expr;
+#[cfg(test)]
 mod formatter;
-mod lexer;
-mod meaning;
-mod parser;
-mod resolver;
+pub(crate) mod includer;
+pub(crate) mod lexer;
+pub(crate) mod parser;
+pub(crate) mod resolver;
 mod token;
-mod vmodmap;

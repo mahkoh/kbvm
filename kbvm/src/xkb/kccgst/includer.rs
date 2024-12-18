@@ -2,7 +2,7 @@ use {
     crate::xkb::{
         code_loader::{CodeLoader, CodeType},
         code_map::CodeMap,
-        diagnostic::{Diagnostic, Severity},
+        diagnostic::{DiagnosticKind, DiagnosticSink},
         include::parse_include,
         interner::{Interned, Interner},
         kccgst::{
@@ -12,14 +12,15 @@ use {
                 SymbolsDecl, Types, TypesDecl,
             },
             ast_cache::AstCache,
-            meaning::MeaningCache,
         },
+        meaning::MeaningCache,
+        span::SpanExt,
     },
     hashbrown::HashSet,
 };
 
-pub fn resolve_includes(
-    diagnostics: &mut Vec<Diagnostic>,
+pub(crate) fn resolve_includes(
+    diagnostics: &mut DiagnosticSink<'_>,
     map: &mut CodeMap,
     cache: &mut AstCache,
     loader: &mut CodeLoader,
@@ -38,8 +39,8 @@ pub fn resolve_includes(
     includer.process_includes(interner, item);
 }
 
-struct Includer<'a> {
-    diagnostics: &'a mut Vec<Diagnostic>,
+struct Includer<'a, 'b> {
+    diagnostics: &'a mut DiagnosticSink<'b>,
     map: &'a mut CodeMap,
     cache: &'a mut AstCache,
     loader: &'a mut CodeLoader,
@@ -59,7 +60,7 @@ macro_rules! process_ct {
     };
 }
 
-impl Includer<'_> {
+impl Includer<'_, '_> {
     fn process_includes(&mut self, interner: &mut Interner, item: &mut Item) {
         match &mut item.ty {
             ItemType::Composite(c) => {
@@ -94,8 +95,7 @@ impl Includer<'_> {
             let i = match i {
                 Ok(i) => i,
                 Err(e) => {
-                    self.diagnostics
-                        .push(e.into_diagnostic(self.map, Severity::Warning));
+                    self.diagnostics.push(self.map, e.val.diagnostic_kind(), e);
                     continue;
                 }
             };
@@ -105,12 +105,11 @@ impl Includer<'_> {
             }
             let key = (ty, i.file.val, i.map.map(|m| m.val));
             if !self.active_includes.insert(key) {
-                self.diagnostics.push(Diagnostic::new(
+                self.diagnostics.push(
                     self.map,
-                    Severity::Warning,
-                    literal_display!("Ignoring recursive include"),
-                    span,
-                ));
+                    DiagnosticKind::RecursiveInclude,
+                    literal_display!("Ignoring recursive include").spanned2(span),
+                );
                 continue;
             }
             let res = self.cache.get(
@@ -129,12 +128,12 @@ impl Includer<'_> {
                     self.process_includes(iter.interner(), &mut item.val);
                     resolved.push(ResolvedInclude {
                         mm: i.merge_mode,
+                        group: i.group,
                         item,
                     });
                 }
                 Err(e) => {
-                    self.diagnostics
-                        .push(e.into_diagnostic(self.map, Severity::Warning));
+                    self.diagnostics.push(self.map, e.val.diagnostic_kind(), e);
                 }
             }
             self.active_includes.remove(&key);

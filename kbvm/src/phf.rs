@@ -1,19 +1,19 @@
 use core::num::Wrapping;
 
 #[non_exhaustive]
-pub struct Hashes {
-    pub g: u32,
-    pub f1: u32,
-    pub f2: u32,
+pub(crate) struct Hashes {
+    pub(crate) g: u32,
+    pub(crate) f1: u32,
+    pub(crate) f2: u32,
 }
 
 #[inline]
-pub fn displace(f1: u32, f2: u32, d1: u32, d2: u32) -> u32 {
+pub(crate) fn displace(f1: u32, f2: u32, d1: u32, d2: u32) -> u32 {
     (Wrapping(d2) + Wrapping(f1) * Wrapping(d1) + Wrapping(f2)).0
 }
 
 #[inline]
-pub fn hash<T>(x: &T, key: u64) -> Hashes
+pub(crate) fn hash<T>(x: &T, key: u64) -> Hashes
 where
     T: ?Sized + PhfHash,
 {
@@ -27,12 +27,12 @@ where
 
 #[inline]
 #[allow(dead_code)]
-pub fn get_unwrapped_index(hashes: &Hashes, disps: &[(u32, u32)]) -> usize {
+pub(crate) fn get_unwrapped_index(hashes: &Hashes, disps: &[(u32, u32)]) -> usize {
     let (d1, d2) = disps[(hashes.g % (disps.len() as u32)) as usize];
     displace(hashes.f1, hashes.f2, d1, d2) as usize
 }
 
-pub trait PhfHash {
+pub(crate) trait PhfHash {
     fn phf_hash(&self, key: u64) -> (u32, u64);
 }
 

@@ -6,13 +6,13 @@ use {
 };
 
 #[derive(Default)]
-pub struct Interner {
+pub(crate) struct Interner {
     id_to_string: Vec<CodeSlice<'static>>,
     string_to_id: HashMap<CodeSlice<'static>, Interned>,
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, CloneWithDelta)]
-pub struct Interned(usize);
+pub(crate) struct Interned(usize);
 
 impl Debug for Interned {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -31,7 +31,7 @@ impl Debug for Interner {
 }
 
 impl Interner {
-    pub fn intern<'a>(&mut self, code: &CodeSlice<'a>) -> Interned {
+    pub(crate) fn intern<'a>(&mut self, code: &CodeSlice<'a>) -> Interned {
         #[derive(Hash)]
         struct Ref<'a, 'b>(&'a CodeSlice<'b>);
         impl Equivalent<CodeSlice<'static>> for Ref<'_, '_> {
@@ -56,11 +56,11 @@ impl Interner {
         }
     }
 
-    pub fn get(&self, id: Interned) -> &CodeSlice<'static> {
+    pub(crate) fn get(&self, id: Interned) -> &CodeSlice<'static> {
         &self.id_to_string[id.0]
     }
 
-    pub fn get_existing(&self, name: &[u8]) -> Option<Interned> {
+    pub(crate) fn get_existing(&self, name: &[u8]) -> Option<Interned> {
         self.string_to_id.get(name).copied()
     }
 }

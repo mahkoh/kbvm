@@ -4,27 +4,24 @@ mod tests;
 use {
     crate::xkb::{
         code::Code,
+        code_map::CodeMap,
         code_slice::CodeSlice,
+        diagnostic::{DiagnosticKind, DiagnosticSink},
         interner::{Interned, Interner},
+        span::{Span, SpanExt, Spanned},
     },
     hashbrown::{hash_map::Entry, HashMap},
-    std::{ops::Range, sync::Arc},
+    std::sync::Arc,
     thiserror::Error,
 };
 
 #[derive(Default)]
-pub struct StringCooker {
+pub(crate) struct StringCooker {
     cache: HashMap<Interned, Interned>,
 }
 
-#[derive(Eq, PartialEq, Debug)]
-pub struct StringCookerDiagnostic {
-    range: Range<usize>,
-    error: StringCookerError,
-}
-
 #[derive(Debug, Error, Eq, PartialEq)]
-pub enum StringCookerError {
+pub(crate) enum StringCookerError {
     #[error("The octal literal overflows u8")]
     OctalOverflow,
     #[error("Unknown escape sequence {:?}", *.0 as char)]
@@ -32,20 +29,23 @@ pub enum StringCookerError {
 }
 
 impl StringCooker {
-    pub fn cook(
+    pub(crate) fn cook(
         &mut self,
-        diagnostics: &mut Vec<StringCookerDiagnostic>,
+        map: &mut CodeMap,
+        diagnostics: &mut DiagnosticSink,
         interner: &mut Interner,
-        interned: Interned,
+        interned: Spanned<Interned>,
     ) -> Interned {
-        let entry = match self.cache.entry(interned) {
+        let string = interned.val;
+        let entry = match self.cache.entry(string) {
             Entry::Occupied(e) => return *e.into_mut(),
             Entry::Vacant(e) => e,
         };
-        let uncooked = interner.get(interned);
+        let uncooked = interner.get(string);
         if !uncooked.contains(&b'\\') {
-            return *entry.insert(interned);
+            return *entry.insert(string);
         }
+        let lo = interned.span.lo + 1;
         let mut res = Vec::with_capacity(uncooked.len());
         let mut i = 0;
         while i < uncooked.len() {
@@ -87,19 +87,29 @@ impl StringCooker {
                     }
                     let _ = next!() && next!();
                     if c > 0xff {
-                        diagnostics.push(StringCookerDiagnostic {
-                            range: start..i,
-                            error: StringCookerError::OctalOverflow,
-                        });
+                        let span = Span {
+                            lo: lo + start as u64,
+                            hi: lo + i as u64,
+                        };
+                        diagnostics.push(
+                            map,
+                            DiagnosticKind::OctalOverflow,
+                            StringCookerError::OctalOverflow.spanned2(span),
+                        );
                         continue;
                     }
                     c as u8
                 }
                 _ => {
-                    diagnostics.push(StringCookerDiagnostic {
-                        range: i - 1..i,
-                        error: StringCookerError::UnknownSequence(b),
-                    });
+                    let span = Span {
+                        lo: lo + i as u64 - 1,
+                        hi: lo + i as u64,
+                    };
+                    diagnostics.push(
+                        map,
+                        DiagnosticKind::UnknownEscapeSequence,
+                        StringCookerError::UnknownSequence(b).spanned2(span),
+                    );
                     continue;
                 }
             };

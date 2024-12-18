@@ -1,21 +1,23 @@
 use {
     crate::xkb::{
         code_slice::CodeSlice,
+        diagnostic::DiagnosticKind,
         interner::Interned,
         kccgst::{
-            meaning::Meaning,
             parser::{DeclCandidate, Parser},
             token::{
                 Punctuation::{self, Cbrace, Obrace, Obracket},
                 Token,
             },
         },
+        meaning::Meaning,
         span::{Span, SpanExt, Spanned},
     },
     bstr::ByteSlice,
     debug_fn::debug_fn,
     std::fmt::{self, Formatter},
     thiserror::Error,
+    Punctuation::Oparen,
 };
 
 #[derive(Debug, Clone, Error)]
@@ -44,6 +46,12 @@ pub(crate) enum ParserError {
     InvalidU32(InvalidU32),
 }
 
+impl ParserError {
+    pub(crate) fn diagnostic_kind(&self) -> DiagnosticKind {
+        DiagnosticKind::SyntaxError
+    }
+}
+
 fn write_decl_candidate(f: &mut Formatter<'_>, actual: DeclCandidate) -> fmt::Result {
     let name = match actual {
         DeclCandidate::None => "an unrecognized statement",
@@ -56,7 +64,7 @@ fn write_decl_candidate(f: &mut Formatter<'_>, actual: DeclCandidate) -> fmt::Re
         DeclCandidate::Keys => "a keys declaration",
         DeclCandidate::KeyType => "a key type declaration",
         DeclCandidate::LedMap => "an indicator mapping",
-        DeclCandidate::LedName(_) => "an indicator declaration",
+        DeclCandidate::IndicatorName(_) => "an indicator declaration",
         DeclCandidate::ModMap => "a mod-map declaration",
         DeclCandidate::Overlay => "an overlay declaration",
         DeclCandidate::Row => "a row declaration",
@@ -149,7 +157,7 @@ fn punctuation_string(p: Punctuation) -> &'static str {
         Punctuation::Equals => "=",
         Obracket => "[",
         Punctuation::Cbracket => "]",
-        Punctuation::Oparen => "(",
+        Oparen => "(",
         Punctuation::Cparen => ")",
         Punctuation::Dot => ".",
         Punctuation::Comma => ",",
@@ -198,7 +206,7 @@ pub(crate) enum Expected {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum ActualToken {
+pub(crate) enum ActualToken {
     Ident(CodeSlice<'static>),
     Token(Token),
 }
@@ -248,11 +256,13 @@ pub(super) const EXPR_TOKENS: &[Expected] = &[
     Expected::KeyName,
     Expected::Integer,
     Expected::Float,
-    Expected::Punctuation(Punctuation::Oparen),
-    Expected::Punctuation(Punctuation::Plus),
-    Expected::Punctuation(Punctuation::Minus),
-    Expected::Punctuation(Punctuation::Exclam),
-    Expected::Punctuation(Punctuation::Invert),
+    Expected::Punctuation(punctuation![+]),
+    Expected::Punctuation(punctuation![-]),
+    Expected::Punctuation(punctuation![!]),
+    Expected::Punctuation(punctuation![~]),
+    Expected::Punctuation(Oparen),
+    Expected::Punctuation(Obracket),
+    Expected::Punctuation(Obrace),
 ];
 
 pub(super) const OUTLINE_TOKENS: &[Expected] = &[Expected::Punctuation(Obrace), Expected::VarDecl];
@@ -376,15 +386,6 @@ pub(super) const SECTION_ITEM_EXPECTED: &[Expected] = &[
     Expected::Nested(DOODAD_EXPECTED),
     Expected::VarDecl,
 ];
-
-pub(super) const SYMBOLS_VAR_DECL_EXPECTED: &[Expected] = &[
-    Expected::Punctuation(Obracket),
-    Expected::Punctuation(punctuation![!]),
-    Expected::VarDecl,
-];
-
-pub(super) const ARRAY_ELEMENT_EXPECTED: &[Expected] =
-    &[Expected::Punctuation(Obrace), Expected::Nested(EXPR_TOKENS)];
 
 pub(super) const KEY_EXPECTED: &[Expected] = &[Expected::KeyName, Expected::Punctuation(Obrace)];
 

@@ -1,6 +1,7 @@
 use {
     crate::xkb::{
         code_slice::CodeSlice,
+        diagnostic::DiagnosticKind,
         span::{Span, SpanExt, Spanned},
     },
     bstr::ByteSlice,
@@ -15,6 +16,12 @@ pub(crate) enum ParseIncludeError {
     MissingMergeMode,
     #[error("invalid group index `{}`", .0.as_bytes().as_bstr())]
     InvalidGroupIndex(CodeSlice<'static>),
+}
+
+impl ParseIncludeError {
+    pub(crate) fn diagnostic_kind(&self) -> DiagnosticKind {
+        DiagnosticKind::SyntaxError
+    }
 }
 
 pub(super) fn invalid_format(span: Span) -> Spanned<ParseIncludeError> {

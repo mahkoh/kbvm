@@ -2,9 +2,10 @@ use {
     crate::{
         state_machine::Keycode,
         xkb::{
+            include::IncludeGroup,
             interner::Interned,
-            kccgst::{token::Token, vmodmap::Vmodmap},
-            span::Spanned,
+            kccgst::token::Token,
+            span::{Span, Spanned},
         },
     },
     kbvm_proc::CloneWithDelta,
@@ -12,24 +13,24 @@ use {
 };
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Item {
-    pub flags: Flags,
-    pub ty: ItemType,
+pub(crate) struct Item {
+    pub(crate) flags: Flags,
+    pub(crate) ty: ItemType,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct FlagWrapper {
-    pub name: Spanned<Interned>,
-    pub flag: Flag,
+pub(crate) struct FlagWrapper {
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) flag: Flag,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Flags {
-    pub flags: Vec<FlagWrapper>,
+pub(crate) struct Flags {
+    pub(crate) flags: Vec<FlagWrapper>,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, CloneWithDelta)]
-pub enum Flag {
+pub(crate) enum Flag {
     Partial,
     Default,
     Hidden,
@@ -41,32 +42,32 @@ pub enum Flag {
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum ItemType {
+pub(crate) enum ItemType {
     Composite(CompositeMap),
     Config(ConfigItemType),
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct CompositeMap {
-    pub ty: Spanned<Interned>,
-    pub name: Option<Spanned<Interned>>,
-    pub config_items: Vec<Spanned<NestedConfigItem>>,
+pub(crate) struct CompositeMap {
+    pub(crate) ty: Spanned<Interned>,
+    pub(crate) name: Option<Spanned<Interned>>,
+    pub(crate) config_items: Vec<Spanned<NestedConfigItem>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct NestedConfigItem {
-    pub flags: Flags,
-    pub item: ConfigItem,
+pub(crate) struct NestedConfigItem {
+    pub(crate) flags: Flags,
+    pub(crate) item: ConfigItem,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct ConfigItem {
-    pub ty: Spanned<Interned>,
-    pub specific: ConfigItemType,
+pub(crate) struct ConfigItem {
+    pub(crate) ty: Spanned<Interned>,
+    pub(crate) specific: ConfigItemType,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum ConfigItemType {
+pub(crate) enum ConfigItemType {
     Keycodes(Keycodes),
     Types(Types),
     Compatmap(Compatmap),
@@ -75,57 +76,57 @@ pub enum ConfigItemType {
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Keycodes {
-    pub name: Option<Spanned<Interned>>,
-    pub decls: Decls<KeycodeDecl>,
+pub(crate) struct Keycodes {
+    pub(crate) name: Option<Spanned<Interned>>,
+    pub(crate) decls: Decls<KeycodeDecl>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Decls<T> {
-    pub decls: Vec<Spanned<Decl<T>>>,
+pub(crate) struct Decls<T> {
+    pub(crate) decls: Vec<Spanned<Decl<T>>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Decl<T> {
-    pub merge_mode: Option<Spanned<MergeMode>>,
-    pub ty: DirectOrIncluded<T>,
+pub(crate) struct Decl<T> {
+    pub(crate) merge_mode: Option<Spanned<MergeMode>>,
+    pub(crate) ty: DirectOrIncluded<T>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum DirectOrIncluded<T> {
+pub(crate) enum DirectOrIncluded<T> {
     Direct(T),
     Included(Included<T>),
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Included<T> {
-    pub vmods: Vmodmap,
-    pub components: Vec<Component<T>>,
+pub(crate) struct Included<T> {
+    pub(crate) components: Vec<Component<T>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Component<T> {
-    pub mm: Option<Spanned<MergeMode>>,
-    pub decls: Decls<T>,
+pub(crate) struct Component<T> {
+    pub(crate) mm: Option<Spanned<MergeMode>>,
+    pub(crate) decls: Decls<T>,
+    pub(crate) group: Option<IncludeGroup>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum KeycodeDecl {
+pub(crate) enum KeycodeDecl {
     Include(Include),
     KeyName(KeyNameDecl),
     KeyAlias(KeyAliasDecl),
     Var(VarDecl),
-    LedName(LedNameDecl),
+    IndicatorName(IndicatorNameDecl),
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Types {
-    pub name: Option<Spanned<Interned>>,
-    pub decls: Decls<TypesDecl>,
+pub(crate) struct Types {
+    pub(crate) name: Option<Spanned<Interned>>,
+    pub(crate) decls: Decls<TypesDecl>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum TypesDecl {
+pub(crate) enum TypesDecl {
     Include(Include),
     KeyType(KeyTypeDecl),
     Var(VarDecl),
@@ -133,29 +134,29 @@ pub enum TypesDecl {
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Compatmap {
-    pub name: Option<Spanned<Interned>>,
-    pub decls: Decls<CompatmapDecl>,
+pub(crate) struct Compatmap {
+    pub(crate) name: Option<Spanned<Interned>>,
+    pub(crate) decls: Decls<CompatmapDecl>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum CompatmapDecl {
+pub(crate) enum CompatmapDecl {
     Include(Include),
     Interpret(InterpretDecl),
     GroupCompat(GroupCompatDecl),
-    LedMap(LedMapDecl),
+    IndicatorMap(LedMapDecl),
     Var(VarDecl),
     VMod(VModDecl),
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Symbols {
-    pub name: Option<Spanned<Interned>>,
-    pub decls: Decls<SymbolsDecl>,
+pub(crate) struct Symbols {
+    pub(crate) name: Option<Spanned<Interned>>,
+    pub(crate) decls: Decls<SymbolsDecl>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum SymbolsDecl {
+pub(crate) enum SymbolsDecl {
     Include(Include),
     Symbols(KeySymbolsDecl),
     Var(VarDecl),
@@ -164,13 +165,13 @@ pub enum SymbolsDecl {
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Geometry {
-    pub name: Option<Spanned<Interned>>,
-    pub decls: Decls<GeometryDecl>,
+pub(crate) struct Geometry {
+    pub(crate) name: Option<Spanned<Interned>>,
+    pub(crate) decls: Decls<GeometryDecl>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum GeometryDecl {
+pub(crate) enum GeometryDecl {
     Include(Include),
     KeyAlias(KeyAliasDecl),
     Var(VarDecl),
@@ -181,169 +182,132 @@ pub enum GeometryDecl {
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum VarDecl {
-    VarAssign(VarAssign),
-    Ident(VarDeclIdent),
+pub(crate) struct VarDecl {
+    pub(crate) var: Var,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct VarAssign {
-    pub path: Spanned<Path>,
-    pub expr: Spanned<Expr>,
+pub(crate) struct Var {
+    pub(crate) not: Option<Span>,
+    pub(crate) path: Spanned<Path>,
+    pub(crate) expr: Option<Spanned<Expr>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct VarDeclIdent {
-    pub not: bool,
-    pub ident: Spanned<Interned>,
+pub(crate) struct InterpretDecl {
+    pub(crate) match_: Spanned<InterpretMatch>,
+    pub(crate) vars: Vec<Spanned<VarDecl>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct InterpretDecl {
-    pub match_: Spanned<InterpretMatch>,
-    pub vars: Vec<Spanned<VarDecl>>,
+pub(crate) struct InterpretMatch {
+    pub(crate) sym: Spanned<Interned>,
+    pub(crate) filter: Option<Spanned<Expr>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct InterpretMatch {
-    pub sym: Spanned<Interned>,
-    pub filter: Option<Spanned<Expr>>,
+pub(crate) struct KeyNameDecl {
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) code_str: Spanned<Interned>,
+    pub(crate) code: Keycode,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct KeyNameDecl {
-    pub name: Spanned<Interned>,
-    pub code_str: Spanned<Interned>,
-    pub code: Keycode,
+pub(crate) struct KeyAliasDecl {
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) alias_for: Spanned<Interned>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct KeyAliasDecl {
-    pub name: Spanned<Interned>,
-    pub alias_for: Spanned<Interned>,
+pub(crate) struct KeyTypeDecl {
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) decls: Vec<Spanned<VarDecl>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct KeyTypeDecl {
-    pub name: Spanned<Interned>,
-    pub decls: Vec<Spanned<VarDecl>>,
+pub(crate) struct KeySymbolsDecl {
+    pub(crate) key: Spanned<Interned>,
+    pub(crate) vars: Vec<Spanned<VarOrExpr>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct KeySymbolsDecl {
-    pub key: Spanned<Interned>,
-    pub vars: Vec<Spanned<SymbolsVarDecl>>,
-}
-
-#[derive(Debug, CloneWithDelta)]
-pub enum SymbolsVarDecl {
-    ExprAssign(SymbolsExprAssign),
-    ArrayAssign(SymbolsArrayAssign),
-    Ident(SymbolsIdent),
-    Array(ArrayInit),
-}
-
-#[derive(Debug, CloneWithDelta)]
-pub struct SymbolsIdent {
-    pub not: bool,
-    pub ident: Spanned<Interned>,
-}
-
-#[derive(Debug, CloneWithDelta)]
-pub struct SymbolsExprAssign {
-    pub lhs: Spanned<Path>,
-    pub expr: Spanned<Expr>,
-}
-
-#[derive(Debug, CloneWithDelta)]
-pub struct SymbolsArrayAssign {
-    pub lhs: Spanned<Path>,
-    pub array: Spanned<ArrayInit>,
-}
-
-#[derive(Debug, CloneWithDelta)]
-pub struct ArrayInit {
-    pub elements: Vec<Spanned<ArrayElement>>,
-}
-
-#[derive(Debug, CloneWithDelta)]
-pub enum ArrayElement {
-    Braced(Vec<Spanned<Expr>>),
+pub(crate) enum VarOrExpr {
+    Var(Var),
     Expr(Expr),
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct ModMapDecl {
-    pub modifier: Spanned<Interned>,
-    pub keys: Vec<Spanned<Expr>>,
+pub(crate) struct ModMapDecl {
+    pub(crate) modifier: Spanned<Interned>,
+    pub(crate) keys: Vec<Spanned<Expr>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct GroupCompatDecl {
-    pub group_name: Spanned<Interned>,
-    pub group: u32,
-    pub val: Spanned<Expr>,
+pub(crate) struct GroupCompatDecl {
+    pub(crate) group_name: Spanned<Interned>,
+    pub(crate) group: u32,
+    pub(crate) val: Spanned<Expr>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct LedMapDecl {
-    pub name: Spanned<Interned>,
-    pub decls: Vec<Spanned<VarDecl>>,
+pub(crate) struct LedMapDecl {
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) decls: Vec<Spanned<VarDecl>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct LedNameDecl {
-    pub virt: bool,
-    pub idx_name: Spanned<Interned>,
-    pub idx: u32,
-    pub val: Spanned<Expr>,
+pub(crate) struct IndicatorNameDecl {
+    pub(crate) virt: Option<Span>,
+    pub(crate) idx_name: Spanned<Interned>,
+    pub(crate) idx: u32,
+    pub(crate) val: Spanned<Expr>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct ShapeDecl {
-    pub name: Spanned<Interned>,
-    pub ty: Spanned<ShapeDeclType>,
+pub(crate) struct ShapeDecl {
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) ty: Spanned<ShapeDeclType>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum ShapeDeclType {
+pub(crate) enum ShapeDeclType {
     OutlineList(Vec<Spanned<Outline>>),
     CoordList(Vec<Spanned<Coord>>),
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum Outline {
+pub(crate) enum Outline {
     CoordList(Vec<Spanned<Coord>>),
     ExprAssignment(ExprAssignment),
     CoordAssignment(CoordAssignment),
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct ExprAssignment {
-    pub name: Spanned<Interned>,
-    pub expr: Spanned<Expr>,
+pub(crate) struct ExprAssignment {
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) expr: Spanned<Expr>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct CoordAssignment {
-    pub name: Spanned<Interned>,
-    pub coords: Spanned<Vec<Spanned<Coord>>>,
+pub(crate) struct CoordAssignment {
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) coords: Spanned<Vec<Spanned<Coord>>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Coord {
-    pub x: Spanned<Expr>,
-    pub y: Spanned<Expr>,
+pub(crate) struct Coord {
+    pub(crate) x: Spanned<Expr>,
+    pub(crate) y: Spanned<Expr>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct SectionDecl {
-    pub name: Spanned<Interned>,
-    pub items: Vec<Spanned<SectionItem>>,
+pub(crate) struct SectionDecl {
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) items: Vec<Spanned<SectionItem>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum SectionItem {
+pub(crate) enum SectionItem {
     Row(RowBody),
     Var(VarDecl),
     Doodad(DoodadDecl),
@@ -352,77 +316,78 @@ pub enum SectionItem {
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct RowBody {
-    pub items: Vec<Spanned<RowBodyItem>>,
+pub(crate) struct RowBody {
+    pub(crate) items: Vec<Spanned<RowBodyItem>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum RowBodyItem {
+pub(crate) enum RowBodyItem {
     Keys(Keys),
     Var(VarDecl),
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Keys {
-    pub keys: Vec<Spanned<Key>>,
+pub(crate) struct Keys {
+    pub(crate) keys: Vec<Spanned<Key>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum Key {
+pub(crate) enum Key {
     Name(Interned),
     Exprs(KeyExprs),
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct KeyExprs {
-    pub exprs: Vec<Spanned<Expr>>,
+pub(crate) struct KeyExprs {
+    pub(crate) exprs: Vec<Spanned<VarOrExpr>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct OverlayDecl {
-    pub name: Spanned<Interned>,
-    pub items: Vec<Spanned<OverlayItem>>,
+pub(crate) struct OverlayDecl {
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) items: Vec<Spanned<OverlayItem>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct OverlayItem {
-    pub name: Spanned<Interned>,
-    pub alias: Spanned<Interned>,
+pub(crate) struct OverlayItem {
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) alias: Spanned<Interned>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct DoodadDecl {
-    pub ty: Spanned<DoodadType>,
-    pub name: Spanned<Interned>,
-    pub decls: Vec<Spanned<VarDecl>>,
+pub(crate) struct DoodadDecl {
+    pub(crate) ty: Spanned<DoodadType>,
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) decls: Vec<Spanned<VarDecl>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct VModDecl {
-    pub defs: Vec<Spanned<VModDef>>,
+pub(crate) struct VModDecl {
+    pub(crate) defs: Vec<Spanned<VModDef>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct VModDef {
-    pub name: Spanned<Interned>,
-    pub val: Option<Spanned<Expr>>,
+pub(crate) struct VModDef {
+    pub(crate) name: Spanned<Interned>,
+    pub(crate) val: Option<Spanned<Expr>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Include {
-    pub mm: Spanned<MergeMode>,
-    pub path: Spanned<Interned>,
-    pub resolved: Option<Vec<ResolvedInclude>>,
+pub(crate) struct Include {
+    pub(crate) mm: Spanned<MergeMode>,
+    pub(crate) path: Spanned<Interned>,
+    pub(crate) resolved: Option<Vec<ResolvedInclude>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct ResolvedInclude {
-    pub mm: Option<Spanned<MergeMode>>,
-    pub item: Spanned<Item>,
+pub(crate) struct ResolvedInclude {
+    pub(crate) mm: Option<Spanned<MergeMode>>,
+    pub(crate) item: Spanned<Item>,
+    pub(crate) group: Option<IncludeGroup>,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, CloneWithDelta)]
-pub enum MergeMode {
+pub(crate) enum MergeMode {
     Include,
     Augment,
     Override,
@@ -430,18 +395,8 @@ pub enum MergeMode {
     Alternate,
 }
 
-impl MergeMode {
-    pub fn merge(self, inner: Self) -> Self {
-        if inner == MergeMode::Replace {
-            inner
-        } else {
-            self
-        }
-    }
-}
-
 #[derive(Copy, Clone, Debug, Eq, PartialEq, CloneWithDelta)]
-pub enum DoodadType {
+pub(crate) enum DoodadType {
     Text,
     Outline,
     Solid,
@@ -449,19 +404,19 @@ pub enum DoodadType {
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum CallArg {
+pub(crate) enum CallArg {
     Expr(Expr),
     NamedParam(NamedParam),
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct NamedParam {
-    pub name: Spanned<Path>,
-    pub expr: Spanned<Expr>,
+pub(crate) struct NamedParam {
+    pub(crate) name: Spanned<Path>,
+    pub(crate) expr: Spanned<Expr>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub enum Expr {
+pub(crate) enum Expr {
     UnMinus(Box<Spanned<Expr>>),
     UnPlus(Box<Spanned<Expr>>),
     UnNot(Box<Spanned<Expr>>),
@@ -477,21 +432,23 @@ pub enum Expr {
     Div(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
     Add(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
     Sub(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+    BracketList(Vec<Spanned<Expr>>),
+    BraceList(Vec<Spanned<Expr>>),
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Call {
-    pub path: Spanned<Path>,
-    pub args: Vec<Spanned<CallArg>>,
+pub(crate) struct Call {
+    pub(crate) path: Spanned<Path>,
+    pub(crate) args: Vec<Spanned<CallArg>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct Path {
-    pub components: Vec<PathComponent>,
+pub(crate) struct Path {
+    pub(crate) components: Vec<PathComponent>,
 }
 
 impl Path {
-    pub fn unique_ident(&self) -> Option<Interned> {
+    pub(crate) fn unique_ident(&self) -> Option<Interned> {
         if self.components.len() == 1 && self.components[0].index.is_none() {
             return Some(self.components[0].ident.val);
         }
@@ -500,13 +457,13 @@ impl Path {
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct PathComponent {
-    pub ident: Spanned<Interned>,
-    pub index: Option<PathIndex>,
+pub(crate) struct PathComponent {
+    pub(crate) ident: Spanned<Interned>,
+    pub(crate) index: Option<PathIndex>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub struct PathIndex {
-    pub obracket: Spanned<Token>,
-    pub index: Spanned<Expr>,
+pub(crate) struct PathIndex {
+    pub(crate) obracket: Spanned<Token>,
+    pub(crate) index: Spanned<Expr>,
 }

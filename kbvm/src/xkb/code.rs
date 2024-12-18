@@ -9,20 +9,20 @@ use {
 };
 
 #[derive(Clone, Eq, PartialEq)]
-pub struct Code {
+pub(crate) struct Code {
     code: Arc<Vec<u8>>,
 }
 
 impl Code {
-    pub fn new(code: &Arc<Vec<u8>>) -> Self {
+    pub(crate) fn new(code: &Arc<Vec<u8>>) -> Self {
         Self { code: code.clone() }
     }
 
-    pub fn as_bytes(&self) -> &[u8] {
+    pub(crate) fn as_bytes(&self) -> &[u8] {
         self.code.as_slice()
     }
 
-    pub fn to_slice(&self) -> CodeSlice<'_> {
+    pub(crate) fn to_slice(&self) -> CodeSlice<'_> {
         CodeSlice::new_ref(self, 0..self.len())
     }
 }

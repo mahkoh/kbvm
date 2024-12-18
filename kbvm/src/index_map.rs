@@ -3,15 +3,15 @@ use {
     std::{marker::PhantomData, ops::Index},
 };
 
-pub struct IndexMap<K, V>
+pub(crate) struct IndexMap<K, V>
 where
     K: ?Sized,
     V: 'static,
 {
-    pub key: u64,
-    pub disps: &'static [(u32, u32)],
-    pub map: &'static [V],
-    pub _phantom: PhantomData<fn(&K) -> V>,
+    pub(crate) key: u64,
+    pub(crate) disps: &'static [(u32, u32)],
+    pub(crate) map: &'static [V],
+    pub(crate) _phantom: PhantomData<fn(&K) -> V>,
 }
 
 impl<K, V> Index<&'_ K> for IndexMap<K, V>

@@ -13,10 +13,10 @@ const KEY_A: Keycode = Keycode(0x10);
 const KEY_SHIFT: Keycode = Keycode(0x11);
 const KEY_LOCK: Keycode = Keycode(0x12);
 
-const SHIFT: ModifierIndex = ModifierIndex(0x0);
+const SHIFT: ModifierIndex = ModifierIndex::new(0x0).unwrap();
 const SHIFT_MASK: ModifierMask = SHIFT.to_mask();
 
-const LOCK: ModifierIndex = ModifierIndex(0x1);
+const LOCK: ModifierIndex = ModifierIndex::new(0x1).unwrap();
 const LOCK_MASK: ModifierMask = LOCK.to_mask();
 
 #[test]

@@ -9,11 +9,45 @@ use {
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Default, CloneWithDelta)]
 pub struct ModifierMask(pub u32);
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, CloneWithDelta)]
-pub struct ModifierIndex(pub u32);
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, CloneWithDelta, Ord, PartialOrd)]
+pub struct ModifierIndex(u32);
 
 #[derive(Clone)]
 pub struct ModifierMaskIter(u32);
+
+impl ModifierIndex {
+    pub const fn new(index: u32) -> Option<Self> {
+        if index >= u32::BITS {
+            None
+        } else {
+            Some(Self(index))
+        }
+    }
+
+    pub const fn raw(self) -> u32 {
+        self.0
+    }
+
+    pub const fn to_mask(self) -> ModifierMask {
+        ModifierMask(1 << self.0)
+    }
+}
+
+impl ModifierMask {
+    pub(crate) const NONE: Self = Self(0);
+    pub(crate) const SHIFT: Self = Self(1 << 0);
+    pub(crate) const LOCK: Self = Self(1 << 1);
+    // pub(crate) const CONTROL: Self = Self(1 << 2);
+    // pub(crate) const MOD1: Self = Self(1 << 3);
+    // pub(crate) const MOD2: Self = Self(1 << 4);
+    // pub(crate) const MOD3: Self = Self(1 << 5);
+    // pub(crate) const MOD4: Self = Self(1 << 6);
+    // pub(crate) const MOD5: Self = Self(1 << 7);
+
+    pub const fn contains(self, other: ModifierMask) -> bool {
+        self.0 & other.0 == other.0
+    }
+}
 
 impl BitOr for ModifierMask {
     type Output = Self;
@@ -91,12 +125,6 @@ impl Iterator for ModifierMaskIter {
 impl Debug for ModifierMask {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "0x{:08x}", self.0)
-    }
-}
-
-impl ModifierIndex {
-    pub const fn to_mask(self) -> ModifierMask {
-        ModifierMask(1 << self.0)
     }
 }
 
