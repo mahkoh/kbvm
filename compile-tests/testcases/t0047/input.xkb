@@ -1,0 +1,45 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+        <c> = 3;
+        <d> = 4;
+    };
+    xkb_compat {
+        interpret A + NoneOf(Mod1+Mod2) {
+            action = SetMods(mods = Mod1);
+        };
+        interpret B + AnyOfOrNone(Mod1+Mod2) {
+            action = SetMods(mods = Mod1);
+        };
+        interpret C + AnyOf(Mod1+Mod2) {
+            action = SetMods(mods = Mod1);
+        };
+        interpret D + AllOf(Mod1+Mod2) {
+            action = SetMods(mods = Mod1);
+        };
+        interpret E + Exactly(Mod1+Mod2) {
+            action = SetMods(mods = Mod1);
+        };
+    };
+    xkb_symbols {
+        key <a> {
+            [ A, B, C, D, E ],
+        };
+        key <b> {
+            [ A, B, C, D, E ],
+        };
+        key <c> {
+            [ A, B, C, D, E, F ],
+        };
+        key <d> {
+            [ A, B, C, D, E, F, G, H ],
+        };
+        modmap Mod1 { <a> };
+        modmap Mod1 { <c> };
+        modmap Mod1 { <d> };
+        modmap Mod2 { F };
+        modmap Mod2 { G };
+        modmap Mod3 { H };
+    };
+};

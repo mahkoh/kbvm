@@ -1,0 +1,61 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 1;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 1;
+        <b> = 2;
+        <c> = 3;
+        <d> = 4;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+
+        type "ONE_LEVEL" {
+            level_name[Level1] = "Any";
+            map[None] = Level1;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        modmap Mod1 { <a> };
+        modmap Mod1 { <c> };
+        modmap Mod1 { <d> };
+        modmap Mod2 { <c> };
+        modmap Mod2 { <d> };
+        modmap Mod3 { <d> };
+
+        key.repeat = true;
+
+        key <a> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ A, B, C, D, E ],
+            actions[Group1] = [ NoAction(), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), NoAction(), NoAction() ]
+        };
+        key <b> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ A, B, C, D, E ],
+            actions[Group1] = [ SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), NoAction(), NoAction(), NoAction() ]
+        };
+        key <c> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ A, B, C, D, E, F ],
+            actions[Group1] = [ NoAction(), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), NoAction() ]
+        };
+        key <d> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ A, B, C, D, E, F, G, H ],
+            actions[Group1] = [ NoAction(), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), NoAction(), NoAction(), NoAction(), NoAction() ]
+        };
+    };
+};
