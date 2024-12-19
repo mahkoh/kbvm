@@ -174,7 +174,9 @@ fn fix_resolved_keycodes(r: &mut Resolver<'_, '_>, keycodes: &mut ResolvedKeycod
         }
         for (name, mut key) in cache.drain(..) {
             if let ResolvedKeyKind::Alias(a, _, _) = key.kind {
-                let real = res.name_to_key.get(&a.val).unwrap();
+                let Some(real) = res.name_to_key.get(&a.val) else {
+                    continue;
+                };
                 let (real_name, kc) = match real.kind {
                     ResolvedKeyKind::Real(kc) => (None, kc.val),
                     ResolvedKeyKind::Alias(t, kc, r) => (Some(r.unwrap_or(t)), kc),
@@ -186,7 +188,7 @@ fn fix_resolved_keycodes(r: &mut Resolver<'_, '_>, keycodes: &mut ResolvedKeycod
     }
     for key in keycodes.name_to_key.values() {
         let span = match &key.kind {
-            ResolvedKeyKind::Real(_) => unreachable!(),
+            ResolvedKeyKind::Real(_) => continue,
             ResolvedKeyKind::Alias(a, _, _) => a.span,
         };
         r.diag(

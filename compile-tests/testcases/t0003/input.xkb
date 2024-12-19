@@ -4,8 +4,9 @@ xkb_keymap {
         <y> = 2;
         alias <z> = <y>;
         alias <a> = <z>;
+        alias <b> = <a>;
     };
     xkb_symbols {
-        key <a> { };
+        key <b> { };
     };
 };
