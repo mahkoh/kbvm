@@ -1078,7 +1078,7 @@ pub(crate) fn eval_interp_field(
             };
             InterpField::VirtualModifier(vmod.idx)
         }
-        Meaning::Usemodmapmods | Meaning::Modmapmods => {
+        Meaning::Usemodmapmods | Meaning::Usemodmap => {
             let e = match &var.expr {
                 None => return Err(MissingUseModMapModValue.spanned2(span)),
                 Some(e) => e,
