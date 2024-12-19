@@ -474,9 +474,7 @@ fn fix_combined_properties(
                 let mut new = HashMap::new();
                 for (mask, val) in &ty.$field {
                     let effective = mods.get_effective(*mask);
-                    if effective.0 != 0 {
-                        new.insert(effective, *val);
-                    }
+                    let _ = new.try_insert(effective, *val);
                 }
                 ty.$field = new;
             }};
@@ -895,7 +893,7 @@ impl TypesResolver<'_, '_, '_> {
         }
     }
 
-    fn handle_key(&mut self, mm: Option<MergeMode>, name: Spanned<Interned>, ty: ResolvedKeyType) {
+    fn handle_type(&mut self, mm: Option<MergeMode>, name: Spanned<Interned>, ty: ResolvedKeyType) {
         let entry = self.data.key_types.entry(name.val);
         if mm.is_augment() && matches!(entry, Entry::Occupied(_)) {
             self.r.diag(
@@ -926,7 +924,7 @@ impl ConfigWalker for TypesResolver<'_, '_, '_> {
 
     fn merge_child(&mut self, mm: Option<MergeMode>, _group: Option<GroupIdx>, data: Self::Data) {
         for key in data.key_types.into_values() {
-            self.handle_key(mm, key.name, key.ty);
+            self.handle_type(mm, key.name, key.ty);
         }
     }
 
@@ -940,7 +938,7 @@ impl ConfigWalker for TypesResolver<'_, '_, '_> {
                         key.apply_field(field);
                     }
                 }
-                self.handle_key(mm, name, key);
+                self.handle_type(mm, name, key);
             }
             TypesDecl::Var(e) => {
                 let c = &e.var.path.val.components[0];
