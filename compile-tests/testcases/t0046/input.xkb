@@ -16,13 +16,16 @@ xkb_keymap {
         interpret D + AllOf(Mod1) {
             action = SetMods(mods = Mod1);
         };
+        interpret E + Exactly(Mod1) {
+            action = SetMods(mods = Mod1);
+        };
     };
     xkb_symbols {
         key <a> {
-            [ A, B, C, D ],
+            [ A, B, C, D, E ],
         };
         key <b> {
-            [ A, B, C, D ],
+            [ A, B, C, D, E ],
         };
         modmap Mod1 { <a> };
         modmap Mod2 { <b> };

@@ -12,14 +12,9 @@ xkb_keymap {
     xkb_types {
         virtual_modifiers Dummy;
 
-        type "FOUR_LEVEL" {
-            modifiers = Shift;
-            level_name[Level1] = "Base";
-            level_name[Level2] = "Shift";
-            level_name[Level3] = "AltGr";
-            level_name[Level4] = "Shift AltGr";
+        type "ONE_LEVEL" {
+            level_name[Level1] = "Any";
             map[None] = Level1;
-            map[Shift] = Level2;
         };
     };
 
@@ -36,15 +31,15 @@ xkb_keymap {
         key.repeat = true;
 
         key <a> {
-            type[Group1] = "FOUR_LEVEL",
-            symbols[Group1] = [ A, B, C, D ],
-            actions[Group1] = [ NoAction(), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1) ]
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ A, B, C, D, E ],
+            actions[Group1] = [ NoAction(), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1) ]
         };
         key <b> {
             repeat = false,
-            type[Group1] = "FOUR_LEVEL",
-            symbols[Group1] = [ A, B, C, D ],
-            actions[Group1] = [ SetMods(modifiers = Mod1), NoAction(), NoAction(), NoAction() ]
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ A, B, C, D, E ],
+            actions[Group1] = [ SetMods(modifiers = Mod1), NoAction(), NoAction(), NoAction(), NoAction() ]
         };
     };
 };
