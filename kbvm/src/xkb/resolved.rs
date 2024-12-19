@@ -95,7 +95,7 @@ pub(crate) struct ResolvedKeyType {
 #[derive(Default, Debug)]
 pub(crate) struct ResolvedCompat {
     pub(crate) interp_default: Interp,
-    pub(crate) interps: HashMap<(Option<Keysym>, Option<Filter>), InterpWithKey>,
+    pub(crate) interps: IndexMap<(Option<Keysym>, Option<Filter>), InterpWithKey>,
     pub(crate) interps_sorted: Vec<InterpWithKey>,
     pub(crate) indicator_map_default: IndicatorMap,
     pub(crate) indicator_maps: IndexMap<Interned, IndicatorMapWithKey>,
@@ -115,7 +115,6 @@ pub(crate) struct ActionDefaults {
 
 #[derive(Debug)]
 pub(crate) struct InterpWithKey {
-    pub(crate) idx: usize,
     pub(crate) keysym: Option<Spanned<Keysym>>,
     pub(crate) filter: Option<Spanned<Filter>>,
     pub(crate) interp: Interp,

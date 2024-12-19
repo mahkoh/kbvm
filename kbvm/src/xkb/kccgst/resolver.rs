@@ -206,8 +206,9 @@ fn fix_resolved_compat(
 ) {
     compat
         .interps_sorted
-        .extend(compat.interps.drain().map(|(_, v)| v));
-    compat.interps_sorted.sort_unstable_by_key(|i| {
+        .extend(compat.interps.drain(..).map(|(_, v)| v));
+    // NOTE: this sort is stable, so we keep the source-code order for equal elements
+    compat.interps_sorted.sort_by_key(|i| {
         let k1 = match i.keysym {
             Some(_) => 0,
             None => 1,
@@ -222,7 +223,7 @@ fn fix_resolved_compat(
                 Predicate::AnyOfOrNone => 4,
             },
         };
-        (k1, k2, i.idx)
+        (k1, k2)
     });
     let mut used_indicators = [false; u32::BITS as usize];
     for indicator in &keycodes.indicators {
@@ -1043,17 +1044,11 @@ impl CompatResolver<'_, '_, '_> {
         filter: Option<Spanned<Filter>>,
         interp: Interp,
     ) {
-        let len = self.data.interps.len();
         let mm = mm.unwrap_or(MergeMode::Override);
         let key = (keysym.map(|k| k.val), filter.map(|f| f.val));
         let entry = self.data.interps.entry(key);
         if mm == MergeMode::Replace {
-            let idx = match &entry {
-                Entry::Occupied(o) => o.get().idx,
-                Entry::Vacant(_) => len,
-            };
-            entry.insert(InterpWithKey {
-                idx,
+            entry.insert_entry(InterpWithKey {
                 keysym,
                 filter,
                 interp,
@@ -1062,7 +1057,7 @@ impl CompatResolver<'_, '_, '_> {
             return;
         }
         let augment = mm == MergeMode::Augment;
-        if let Entry::Occupied(e) = entry {
+        if let indexmap::map::Entry::Occupied(e) = entry {
             let old = e.into_mut();
             macro_rules! opt {
                 ($field:ident) => {
@@ -1089,8 +1084,7 @@ impl CompatResolver<'_, '_, '_> {
             opt!(locking);
             opt!(level_one_only);
         } else {
-            entry.insert(InterpWithKey {
-                idx: len,
+            entry.insert_entry(InterpWithKey {
                 keysym,
                 filter,
                 interp,
