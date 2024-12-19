@@ -442,11 +442,6 @@ fn fix_combined_properties(
                     if let Some(repeat) = interp.interp.repeat {
                         handle_repeat(repeat);
                     }
-                    // if sym.val == KEY_ISO_Level3_Shift {
-                    //     println!("key = {:?}", r.interner.get(key_with_key.name.val));
-                    //     println!("interp = {:#?}", interp);
-                    //     println!("interps = {:#?}", compat.interps_sorted);
-                    // }
                 }
                 while matches!(level.actions.last(), Some(None)) {
                     level.actions.pop();
@@ -457,10 +452,8 @@ fn fix_combined_properties(
             key.virtualmodifiers = virtual_modifiers.map(|m| m.spanned2(key_with_key.name.span));
         }
         if let Some(mm) = key.virtualmodifiers {
-            // eprintln!("> {:?}", mm.val);
             for m in &mut *mods {
                 if mm.val.contains(m.idx.to_mask()) {
-                    // eprintln!(">> {:?} {:?} ({:?}) (|= {:?})", m.idx.to_mask(), m.name.val, m.def, key.modmap);
                     m.def.get_or_insert(key.modmap.spanned2(m.name.span)).val |= key.modmap;
                 }
             }
