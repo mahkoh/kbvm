@@ -282,7 +282,7 @@ fn fix_resolved_symbols(symbols: &mut ResolvedSymbols) {
                         break;
                     }
                     for (level_idx, level) in group.levels.iter().enumerate() {
-                        if level_idx > max_level {
+                        if (group_idx, level_idx) > (max_group, max_level) {
                             break;
                         }
                         for s in &level.symbols {
@@ -1292,6 +1292,7 @@ impl SymbolsKeyLevel {
 
 impl SymbolsKeyGroup {
     fn set_symbols(&mut self, symbols: GroupList<Keysym>) {
+        self.has_explicit_symbols = true;
         self.set_field(symbols, |l| &mut l.symbols);
     }
 
@@ -1352,16 +1353,10 @@ impl SymbolsKey {
             }
             SymbolsField::DefaultKeyType(e) => self.default_key_type = Some(e.spanned2(f.span)),
             SymbolsField::Symbols((group, e)) => {
-                get_group(&mut self.groups, group, |g| {
-                    g.levels.iter().all(|l| l.symbols.is_empty())
-                })
-                .set_symbols(e);
+                get_group(&mut self.groups, group, |g| !g.has_explicit_symbols).set_symbols(e);
             }
             SymbolsField::Actions((group, e)) => {
-                get_group(&mut self.groups, group, |g| {
-                    g.levels.iter().all(|l| l.actions.is_empty())
-                })
-                .set_actions(e);
+                get_group(&mut self.groups, group, |g| !g.has_explicit_actions).set_actions(e);
             }
             SymbolsField::Virtualmodifiers(e) => self.virtualmodifiers = Some(e.spanned2(f.span)),
             SymbolsField::Repeating(e) => self.repeating = Some(e.spanned2(f.span)),

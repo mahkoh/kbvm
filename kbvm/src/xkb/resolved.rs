@@ -174,6 +174,7 @@ pub(crate) enum GroupsRedirect {
 pub(crate) struct SymbolsKeyGroup {
     pub(crate) levels: Vec<SymbolsKeyLevel>,
     pub(crate) key_type: Option<KeyTypeRef>,
+    pub(crate) has_explicit_symbols: bool,
     pub(crate) has_explicit_actions: bool,
 }
 
