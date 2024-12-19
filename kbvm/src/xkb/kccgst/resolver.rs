@@ -459,22 +459,20 @@ fn fix_combined_properties(
         if let Some(mask) = &mut ty.modifiers {
             mask.val = mods.get_effective(mask.val);
         }
-        {
-            let mut new_map = IndexMap::new();
-            let mut new_preserved = IndexMap::new();
-            for (mask, val) in &ty.map {
-                let effective = mods.get_effective(*mask);
-                if let indexmap::map::Entry::Vacant(v) = new_map.entry(effective) {
-                    v.insert(*val);
-                    if let Some(p) = ty.preserved.get(mask) {
-                        let val = mods.get_effective(p.val);
-                        new_preserved.insert(effective, val.spanned2(p.span));
-                    }
+        let mut new_map = IndexMap::new();
+        let mut new_preserved = IndexMap::new();
+        for (mask, val) in &ty.map {
+            let effective = mods.get_effective(*mask);
+            if let indexmap::map::Entry::Vacant(v) = new_map.entry(effective) {
+                v.insert(*val);
+                if let Some(p) = ty.preserved.get(mask) {
+                    let val = mods.get_effective(p.val);
+                    new_preserved.insert(effective, val.spanned2(p.span));
                 }
             }
-            ty.map = new_map;
-            ty.preserved = new_preserved;
         }
+        ty.map = new_map;
+        ty.preserved = new_preserved;
     }
 
     for key in symbols.keys.values_mut() {
