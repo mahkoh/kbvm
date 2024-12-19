@@ -21,6 +21,7 @@ xkb_keymap {
         };
 
         type "ONE_LEVEL" {
+            modifiers = None;
             level_name[Level1] = "Any";
             map[None] = Level1;
         };

@@ -12,6 +12,7 @@ xkb_keymap {
         virtual_modifiers Dummy;
 
         type "X" {
+            modifiers = None;
         };
     };
 

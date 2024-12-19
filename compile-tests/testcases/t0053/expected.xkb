@@ -25,15 +25,14 @@ xkb_keymap {
     };
 
     xkb_symbols {
-        modmap Mod1 { <a> };
-
         key.repeat = true;
 
         key <a> {
-            repeat = false,
             type[Group1] = "ONE_LEVEL",
-            symbols[Group1] = [ A ],
-            actions[Group1] = [ SetMods(modifiers = Mod1) ]
+            type[Group2] = "ONE_LEVEL",
+            symbols[Group1] = [ B ],
+            symbols[Group2] = [ A ],
+            actions[Group2] = [ SetMods(modifiers = Mod1) ]
         };
     };
 };

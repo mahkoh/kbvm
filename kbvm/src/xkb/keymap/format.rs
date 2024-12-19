@@ -163,9 +163,7 @@ impl Format for Compat<'_> {
             for i in &m.indicators {
                 let write = i.modifier_mask.0 != 0
                     || i.group_mask.0 != 0
-                    || i.controls != ControlMask::NONE
-                    || i.mod_components != ModComponentMask::NONE
-                    || i.group_components != GroupComponentMask::NONE;
+                    || i.controls != ControlMask::NONE;
                 if write {
                     wrote_any_indicators = true;
                     CompatIndicator(i).format(f)?;
@@ -300,11 +298,9 @@ impl Format for TypesKeyType<'_> {
         f.write_string(&m.name)?;
         f.write(" {")?;
         f.write_nested(|f| {
-            if m.modifiers.0 != 0 {
-                f.write_nesting()?;
-                write!(f.f, "modifiers = {};", modifier_mask(m.modifiers))?;
-                f.write_newline()?;
-            }
+            f.write_nesting()?;
+            write!(f.f, "modifiers = {};", modifier_mask(m.modifiers))?;
+            f.write_newline()?;
             for (l, n) in &m.level_names {
                 f.write_nesting()?;
                 write!(f.f, "level_name[Level{}] = ", l.raw())?;
