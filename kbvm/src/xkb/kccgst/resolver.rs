@@ -321,9 +321,6 @@ fn fix_resolved_symbols(symbols: &mut ResolvedSymbols) {
 }
 
 fn infer_key_type(group: &SymbolsKeyGroup) -> BuiltInKeytype {
-    if group.levels.len() <= 1 {
-        return BuiltInKeytype::OneLevel;
-    }
     let get_symbol_of_level = |level: usize| {
         if let Some(l) = group.levels.get(level) {
             for sym in &l.symbols {
