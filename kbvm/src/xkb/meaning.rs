@@ -39,7 +39,7 @@ impl MeaningCache {
     }
 
     pub(crate) fn get_case_insensitive(&mut self, interner: &Interner, name: Interned) -> Meaning {
-        match self.sensitive.entry(name) {
+        match self.insensitive.entry(name) {
             Entry::Occupied(e) => *e.get(),
             Entry::Vacant(e) => {
                 let val = interner.get(name);

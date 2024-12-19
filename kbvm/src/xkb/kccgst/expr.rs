@@ -17,7 +17,7 @@ use {
             mod_component::ModComponentMask,
             modmap::Vmodmap,
             resolved::{
-                ActionDefaults, BuiltInKeytype, Filter, ModMapField, Predicate, ResolvedAction,
+                ActionDefaults, Filter, ModMapField, Predicate, ResolvedAction,
                 ResolvedActionAffect, ResolvedActionMods, ResolvedGroupLatch, ResolvedGroupLock,
                 ResolvedGroupSet, ResolvedKeyKind, ResolvedKeycodes, ResolvedModsLatch,
                 ResolvedModsLock, ResolvedModsSet, ResolvedNoAction, ResolvedTypes,

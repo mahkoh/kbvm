@@ -3,6 +3,7 @@ use super::*;
 pub(super) const LONGEST: usize = 25;
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
+#[allow(non_camel_case_types)]
 pub(crate) enum Meaning {
     __Unknown,
     Accel,

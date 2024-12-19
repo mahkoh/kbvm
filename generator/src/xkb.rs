@@ -321,6 +321,7 @@ fn generate_enum(meanings: &[Meaning]) -> String {
     use std::fmt::Write;
     let mut res = String::new();
     res.push_str("#[derive(Copy, Clone, Eq, PartialEq, Debug)]\n");
+    res.push_str("#[allow(non_camel_case_types)]\n");
     res.push_str("pub(crate) enum Meaning {\n");
     res.push_str("    __Unknown,\n");
     for meaning in meanings {
