@@ -1,0 +1,22 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        virtual_modifiers NumLock = Mod2;
+        virtual_modifiers LevelThree = Mod3;
+
+        key <a> {
+            [ ], [ SetMods(mods = Mod1) ],
+            [ a ],
+            [ a, b, c, d, e ],
+            [ a, b ],
+            [ a, A ],
+            [ a, KP_0 ],
+            [ a, A, b ],
+            [ a, A, b, B ],
+            [ a, KP_0, b ],
+            [ a, a, b ],
+        };
+    };
+};
