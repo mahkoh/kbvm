@@ -1541,8 +1541,7 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
             if let Some(group) = group {
                 if data.group_names.len() > 1 {
                     let span = data.group_names.last().unwrap().unwrap().1.span;
-                    self.r.diagnostics.push(
-                        self.r.map,
+                    self.r.diag(
                         DiagnosticKind::DiscardingGroup,
                         ad_hoc_display!("discarding groups other than 1 due to explicit group specifier in include").spanned2(span),
                     );
