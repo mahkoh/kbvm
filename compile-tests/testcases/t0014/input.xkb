@@ -1,0 +1,3 @@
+xkb_symbols {
+    include "x.xkb|y.xkb"
+};
