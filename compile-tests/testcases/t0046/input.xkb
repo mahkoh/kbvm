@@ -10,13 +10,16 @@ xkb_keymap {
         interpret B + AnyOfOrNone(Mod1) {
             action = SetMods(mods = Mod1);
         };
+        interpret C + AnyOf(Mod1) {
+            action = SetMods(mods = Mod1);
+        };
     };
     xkb_symbols {
         key <a> {
-            [ A, B ],
+            [ A, B, C ],
         };
         key <b> {
-            [ A, B ],
+            [ A, B, C ],
         };
         modmap Mod1 { <a> };
         modmap Mod2 { <b> };
