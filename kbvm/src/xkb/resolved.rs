@@ -232,7 +232,7 @@ pub(crate) struct ModMapEntryWithKey {
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub(crate) enum ModMapField {
-    Keysym(Keysym),
+    Keysym(Keysym, Option<Keycode>),
     Keycode(Keycode),
 }
 

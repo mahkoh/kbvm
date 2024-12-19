@@ -1269,7 +1269,8 @@ pub(crate) fn eval_mod_map_field(
         }
         return Err(UnknownKeycode.spanned2(span));
     }
-    eval_keysym(interner, meaning_cache, expr.spanned2(span)).span_map(ModMapField::Keysym)
+    eval_keysym(interner, meaning_cache, expr.spanned2(span))
+        .span_map(|s| ModMapField::Keysym(s, None))
 }
 
 pub(crate) enum SymbolsField {

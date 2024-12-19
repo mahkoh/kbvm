@@ -25,7 +25,7 @@ xkb_keymap {
     };
 
     xkb_symbols {
-        modmap Mod1 { <a> };
+        modmap Mod1 { a }; // <a>
 
         key.repeat = true;
 

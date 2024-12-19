@@ -627,12 +627,16 @@ impl Format for ModMaps<'_> {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
         for (idx, kc) in &self.0.mod_maps {
             f.write_nesting()?;
-            write!(
-                f.f,
-                "modmap {} {{ <{}> }};",
-                modifier_mask(idx.to_mask()),
-                kc
-            )?;
+            write!(f.f, "modmap {} {{ ", modifier_mask(idx.to_mask()))?;
+            if let Some(s) = kc.key_sym {
+                s.format(f)?;
+            } else {
+                write!(f.f, "<{}>", kc.key_name)?;
+            }
+            f.write(" };")?;
+            if kc.key_sym.is_some() && f.alternate {
+                write!(f.f, " // <{}>", kc.key_name)?;
+            }
             f.write_newline()?;
         }
         Ok(())

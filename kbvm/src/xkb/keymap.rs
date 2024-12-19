@@ -38,9 +38,15 @@ pub struct Keymap {
     pub(crate) keycodes: Vec<Keycode>,
     pub(crate) types: Vec<Arc<KeyType>>,
     pub(crate) virtual_modifiers: Vec<VirtualModifier>,
-    pub(crate) mod_maps: Vec<(ModifierIndex, Arc<String>)>,
+    pub(crate) mod_maps: Vec<(ModifierIndex, ModMapValue)>,
     pub(crate) group_names: Vec<(GroupIdx, Arc<String>)>,
     pub(crate) keys: IndexMap<state_machine::Keycode, Symbol>,
+}
+
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(crate) struct ModMapValue {
+    pub(crate) key_name: Arc<String>,
+    pub(crate) key_sym: Option<Keysym>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -336,10 +342,19 @@ impl Keymap {
         let mut mod_maps = HashSet::with_capacity(resolved.symbols.mod_map_entries.len());
         for m in resolved.symbols.mod_map_entries.values() {
             if let Some(idx) = m.modifier {
-                if let ModMapField::Keycode(k) = m.key.val {
-                    if let Some(name) = resolved.keycodes.keycode_to_name.get(&k) {
-                        mod_maps.insert((idx.val, get_string(*name)));
-                    }
+                let (kc, ks) = match m.key.val {
+                    ModMapField::Keysym(s, Some(k)) => (k, Some(s)),
+                    ModMapField::Keycode(k) => (k, None),
+                    _ => continue,
+                };
+                if let Some(name) = resolved.keycodes.keycode_to_name.get(&kc) {
+                    mod_maps.insert((
+                        idx.val,
+                        ModMapValue {
+                            key_name: get_string(*name),
+                            key_sym: ks,
+                        },
+                    ));
                 }
             }
         }

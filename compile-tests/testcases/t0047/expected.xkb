@@ -30,9 +30,9 @@ xkb_keymap {
         modmap Mod1 { <a> };
         modmap Mod1 { <c> };
         modmap Mod1 { <d> };
-        modmap Mod2 { <c> };
-        modmap Mod2 { <d> };
-        modmap Mod3 { <d> };
+        modmap Mod2 { F }; // <c>
+        modmap Mod2 { G }; // <d>
+        modmap Mod3 { H }; // <d>
 
         key.repeat = true;
 

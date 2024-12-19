@@ -272,45 +272,48 @@ fn fix_resolved_symbols(symbols: &mut ResolvedSymbols) {
         }
     }
     for entry in symbols.mod_map_entries.values_mut() {
-        if let ModMapField::Keysym(ks) = entry.key.val {
-            let mut max_group = usize::MAX;
-            let mut max_level = usize::MAX;
-            let mut keycode = None;
-            for key in symbols.keys.values() {
-                for (group_idx, group) in key.key.groups.iter().enumerate() {
-                    if group_idx > max_group {
-                        break;
-                    }
-                    for (level_idx, level) in group.levels.iter().enumerate() {
-                        if (group_idx, level_idx) > (max_group, max_level) {
+        let Some(modifier) = entry.modifier else {
+            continue;
+        };
+        let keycode = match entry.key.val {
+            ModMapField::Keysym(ks, _) => {
+                let mut max_group = usize::MAX;
+                let mut max_level = usize::MAX;
+                let mut keycode = None;
+                for key in symbols.keys.values() {
+                    for (group_idx, group) in key.key.groups.iter().enumerate() {
+                        if group_idx > max_group {
                             break;
                         }
-                        for s in &level.symbols {
-                            if s.val == ks {
-                                if group_idx < max_group
-                                    || level_idx < max_level
-                                    || keycode == None
-                                    || matches!(keycode, Some(k) if k > key.code)
-                                {
-                                    max_group = group_idx;
-                                    max_level = level_idx;
-                                    keycode = Some(key.code);
-                                }
+                        for (level_idx, level) in group.levels.iter().enumerate() {
+                            if (group_idx, level_idx) > (max_group, max_level) {
                                 break;
+                            }
+                            for s in &level.symbols {
+                                if s.val == ks {
+                                    if group_idx < max_group
+                                        || level_idx < max_level
+                                        || keycode == None
+                                        || matches!(keycode, Some(k) if k > key.code)
+                                    {
+                                        max_group = group_idx;
+                                        max_level = level_idx;
+                                        keycode = Some(key.code);
+                                    }
+                                    break;
+                                }
                             }
                         }
                     }
                 }
+                entry.key.val = ModMapField::Keysym(ks, keycode);
+                keycode
             }
-            if let Some(kc) = keycode {
-                entry.key.val = ModMapField::Keycode(kc);
-            }
-        }
-        if let ModMapField::Keycode(kc) = entry.key.val {
-            if let Some(modifier) = entry.modifier {
-                if let Some(key) = symbols.keys.get_mut(&kc) {
-                    key.key.modmap |= modifier.val.to_mask();
-                }
+            ModMapField::Keycode(kc) => Some(kc),
+        };
+        if let Some(kc) = keycode {
+            if let Some(key) = symbols.keys.get_mut(&kc) {
+                key.key.modmap |= modifier.val.to_mask();
             }
         }
     }
