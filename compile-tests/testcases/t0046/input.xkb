@@ -7,14 +7,18 @@ xkb_keymap {
         interpret A + NoneOf(Mod1) {
             action = SetMods(mods = Mod1);
         };
+        interpret B + AnyOfOrNone(Mod1) {
+            action = SetMods(mods = Mod1);
+        };
     };
     xkb_symbols {
         key <a> {
-            [ A ],
+            [ A, B ],
         };
         key <b> {
-            [ A ],
+            [ A, B ],
         };
         modmap Mod1 { <a> };
+        modmap Mod2 { <b> };
     };
 };

@@ -12,9 +12,11 @@ xkb_keymap {
     xkb_types {
         virtual_modifiers Dummy;
 
-        type "ONE_LEVEL" {
-            level_name[Level1] = "Any";
-            map[None] = Level1;
+        type "TWO_LEVEL" {
+            modifiers = Shift;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            map[Shift] = Level2;
         };
     };
 
@@ -26,18 +28,20 @@ xkb_keymap {
 
     xkb_symbols {
         modmap Mod1 { <a> };
+        modmap Mod2 { <b> };
 
         key.repeat = true;
 
         key <a> {
-            type[Group1] = "ONE_LEVEL",
-            symbols[Group1] = [ A ]
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ A, B ],
+            actions[Group1] = [ NoAction(), SetMods(modifiers = Mod1) ]
         };
         key <b> {
             repeat = false,
-            type[Group1] = "ONE_LEVEL",
-            symbols[Group1] = [ A ],
-            actions[Group1] = [ SetMods(modifiers = Mod1) ]
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ A, B ],
+            actions[Group1] = [ SetMods(modifiers = Mod1), NoAction() ]
         };
     };
 };
