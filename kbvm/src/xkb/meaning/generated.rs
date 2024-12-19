@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) const LONGEST: usize = 23;
+pub(super) const LONGEST: usize = 25;
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub(crate) enum Meaning {
@@ -19,6 +19,7 @@ pub(crate) enum Meaning {
     AllOf,
     Allowexplicit,
     Allownone,
+    ALPHABETIC,
     AlphanumericKeys,
     Alternate,
     AlternateGroup,
@@ -61,6 +62,10 @@ pub(crate) enum Meaning {
     Effective,
     Exactly,
     False,
+    FOUR_LEVEL,
+    FOUR_LEVEL_ALPHABETIC,
+    FOUR_LEVEL_KEYPAD,
+    FOUR_LEVEL_SEMIALPHABETIC,
     FunctionKeys,
     GenerateKeyEvent,
     GenKeyEvent,
@@ -83,6 +88,7 @@ pub(crate) enum Meaning {
     Kc,
     Key,
     Keycode,
+    KEYPAD,
     KeypadKeys,
     Keys,
     Latched,
@@ -141,6 +147,7 @@ pub(crate) enum Meaning {
     Nosymbol,
     Off,
     On,
+    ONE_LEVEL,
     Outline,
     Overlay,
     Overlay1,
@@ -183,6 +190,7 @@ pub(crate) enum Meaning {
     TerminateServer,
     Text,
     True,
+    TWO_LEVEL,
     Type,
     Unlock,
     Usemodmap,
@@ -234,6 +242,7 @@ impl Meaning {
             Self::AllOf => "AllOf",
             Self::Allowexplicit => "allowexplicit",
             Self::Allownone => "allownone",
+            Self::ALPHABETIC => "ALPHABETIC",
             Self::AlphanumericKeys => "alphanumeric_keys",
             Self::Alternate => "alternate",
             Self::AlternateGroup => "alternate_group",
@@ -276,6 +285,10 @@ impl Meaning {
             Self::Effective => "effective",
             Self::Exactly => "Exactly",
             Self::False => "false",
+            Self::FOUR_LEVEL => "FOUR_LEVEL",
+            Self::FOUR_LEVEL_ALPHABETIC => "FOUR_LEVEL_ALPHABETIC",
+            Self::FOUR_LEVEL_KEYPAD => "FOUR_LEVEL_KEYPAD",
+            Self::FOUR_LEVEL_SEMIALPHABETIC => "FOUR_LEVEL_SEMIALPHABETIC",
             Self::FunctionKeys => "function_keys",
             Self::GenerateKeyEvent => "generateKeyEvent",
             Self::GenKeyEvent => "genKeyEvent",
@@ -298,6 +311,7 @@ impl Meaning {
             Self::Kc => "kc",
             Self::Key => "key",
             Self::Keycode => "keycode",
+            Self::KEYPAD => "KEYPAD",
             Self::KeypadKeys => "keypad_keys",
             Self::Keys => "keys",
             Self::Latched => "latched",
@@ -356,6 +370,7 @@ impl Meaning {
             Self::Nosymbol => "nosymbol",
             Self::Off => "off",
             Self::On => "on",
+            Self::ONE_LEVEL => "ONE_LEVEL",
             Self::Outline => "outline",
             Self::Overlay => "overlay",
             Self::Overlay1 => "Overlay1",
@@ -398,6 +413,7 @@ impl Meaning {
             Self::TerminateServer => "TerminateServer",
             Self::Text => "text",
             Self::True => "true",
+            Self::TWO_LEVEL => "TWO_LEVEL",
             Self::Type => "type",
             Self::Unlock => "unlock",
             Self::Usemodmap => "usemodmap",
@@ -449,6 +465,7 @@ impl Meaning {
             Self::AllOf => "allof",
             Self::Allowexplicit => "allowexplicit",
             Self::Allownone => "allownone",
+            Self::ALPHABETIC => "alphabetic",
             Self::AlphanumericKeys => "alphanumeric_keys",
             Self::Alternate => "alternate",
             Self::AlternateGroup => "alternate_group",
@@ -491,6 +508,10 @@ impl Meaning {
             Self::Effective => "effective",
             Self::Exactly => "exactly",
             Self::False => "false",
+            Self::FOUR_LEVEL => "four_level",
+            Self::FOUR_LEVEL_ALPHABETIC => "four_level_alphabetic",
+            Self::FOUR_LEVEL_KEYPAD => "four_level_keypad",
+            Self::FOUR_LEVEL_SEMIALPHABETIC => "four_level_semialphabetic",
             Self::FunctionKeys => "function_keys",
             Self::GenerateKeyEvent => "generatekeyevent",
             Self::GenKeyEvent => "genkeyevent",
@@ -513,6 +534,7 @@ impl Meaning {
             Self::Kc => "kc",
             Self::Key => "key",
             Self::Keycode => "keycode",
+            Self::KEYPAD => "keypad",
             Self::KeypadKeys => "keypad_keys",
             Self::Keys => "keys",
             Self::Latched => "latched",
@@ -571,6 +593,7 @@ impl Meaning {
             Self::Nosymbol => "nosymbol",
             Self::Off => "off",
             Self::On => "on",
+            Self::ONE_LEVEL => "one_level",
             Self::Outline => "outline",
             Self::Overlay => "overlay",
             Self::Overlay1 => "overlay1",
@@ -613,6 +636,7 @@ impl Meaning {
             Self::TerminateServer => "terminateserver",
             Self::Text => "text",
             Self::True => "true",
+            Self::TWO_LEVEL => "two_level",
             Self::Type => "type",
             Self::Unlock => "unlock",
             Self::Usemodmap => "usemodmap",
@@ -650,7 +674,14 @@ impl Meaning {
 
 pub(super) static LOWERCASE_TO_MEANING: PhfMap<[u8], Meaning> = PhfMap {
     key: 12913932095322966823,
-    disps: &[(0, 0), (0, 36), (0, 8), (0, 10), (0, 61), (1, 21), (0, 6), (0, 2), (0, 5), (0, 107), (0, 51), (0, 62), (0, 36), (0, 0), (0, 3), (0, 0), (0, 1), (0, 2), (0, 56), (0, 15), (0, 0), (0, 1), (0, 0), (0, 1), (0, 0), (0, 42), (0, 1), (0, 5), (0, 8), (0, 2), (0, 4), (0, 6), (0, 31), (0, 8), (0, 31), (2, 199), (0, 20), (0, 74), (0, 3), (0, 14), (0, 92), (0, 109), (0, 76), (0, 12), (0, 6), (0, 89), (0, 13), (0, 11), (0, 64), (0, 33), (1, 3), (0, 41), (0, 3), (0, 31), (0, 48), (0, 1), (0, 5), (0, 14), (2, 116), (0, 24), (0, 76), (0, 149), (0, 15), (14, 116)],
-    map: &[Meaning::Type, Meaning::Modifiers, Meaning::MessageAction, Meaning::Locked, Meaning::Locks, Meaning::False, Meaning::Same, Meaning::LatchToLock, Meaning::XkbSemantics, Meaning::Allownone, Meaning::Partial, Meaning::Count, Meaning::Groupswrap, Meaning::Clampgroups, Meaning::Both, Meaning::NoAction, Meaning::Keys, Meaning::Driveskeyboard, Meaning::Unlock, Meaning::Mod4, Meaning::Whichgroupstate, Meaning::SwitchScreen, Meaning::Repeat, Meaning::LockPointerButton, Meaning::Shape, Meaning::Yes, Meaning::Y, Meaning::Map, Meaning::RepeatKeys, Meaning::LockPtrBtn, Meaning::Effective, Meaning::Mod5, Meaning::FunctionKeys, Meaning::Dev, Meaning::Private, Meaning::Row, Meaning::KeypadKeys, Meaning::Virtualmodifier, Meaning::LockDeviceBtn, Meaning::LockGroup, Meaning::Interpret, Meaning::Repeating, Meaning::All, Meaning::Virtualmod, Meaning::Redirect, Meaning::ClearLocks, Meaning::Accelerate, Meaning::LockDevButton, Meaning::BounceKeys, Meaning::Driveskbd, Meaning::Action, Meaning::RedirectKey, Meaning::Clearmodifiers, Meaning::Exactly, Meaning::Key, Meaning::Symbols, Meaning::Screen, Meaning::Leddriveskeyboard, Meaning::Defaultbutton, Meaning::ISOLock, Meaning::XkbKeymap, Meaning::Virtualmods, Meaning::On, Meaning::MovePointer, Meaning::Whichmodstate, Meaning::SetControls, Meaning::LevelName, Meaning::Voidsymbol, Meaning::DevButton, Meaning::AlternateGroup, Meaning::PointerButton, Meaning::Include, Meaning::Mod2, Meaning::Alternate, Meaning::Modmap, Meaning::Any, Meaning::Nosymbol, Meaning::XkbCompatMap, Meaning::SetPointerDefault, Meaning::Control, Meaning::SetMods, Meaning::Level1, Meaning::True, Meaning::ModMap, Meaning::Augment, Meaning::Mod3, Meaning::Allowexplicit, Meaning::Data, Meaning::XkbTypes, Meaning::Neither, Meaning::GenerateKeyEvent, Meaning::XkbSymbols, Meaning::ModifierMap, Meaning::Locking, Meaning::Logo, Meaning::Overlay1, Meaning::Button, Meaning::AudibleBell, Meaning::SetGroup, Meaning::AccessXKeys, Meaning::MovePtr, Meaning::StickyKeys, Meaning::Default, Meaning::Groupsclamp, Meaning::DeviceButton, Meaning::Vmods, Meaning::Compat, Meaning::Off, Meaning::XkbGeometry, Meaning::XkbCompatibilityMap, Meaning::Dfltbtn, Meaning::Usemodmapmods, Meaning::Clearmods, Meaning::Affect, Meaning::Override, Meaning::Virtualmodifiers, Meaning::LatchMods, Meaning::IgnoreGroupLock, Meaning::Usemodmap, Meaning::Text, Meaning::Value, Meaning::SlowKeys, Meaning::Name, Meaning::No, Meaning::Section, Meaning::Mod1, Meaning::Latched, Meaning::DeviceVal, Meaning::AlphanumericKeys, Meaning::Preserve, Meaning::LatchGroup, Meaning::XkbCompatibility, Meaning::Repeats, Meaning::Actions, Meaning::VirtualModifiers, Meaning::Outline, Meaning::Alias, Meaning::Overlay2, Meaning::Hidden, Meaning::Replace, Meaning::Overlay, Meaning::Virtual, Meaning::Permanentradiogroup, Meaning::MouseKeysAccel, Meaning::Radiogroup, Meaning::Maximum, Meaning::Device, Meaning::X, Meaning::XkbCompat, Meaning::Wrapgroups, Meaning::Index, Meaning::Base, Meaning::AnyOfOrNone, Meaning::Redirectgroups, Meaning::Mods, Meaning::Levelone, Meaning::PtrBtn, Meaning::LockPtrButton, Meaning::TerminateServer, Meaning::NoneOf, Meaning::AnyOf, Meaning::AccessXFeedback, Meaning::Minimum, Meaning::Controls, Meaning::Whichmodifierstate, Meaning::SameServer, Meaning::DeviceValuator, Meaning::Indicatordriveskbd, Meaning::Group, Meaning::Accel, Meaning::Ctrls, Meaning::AutoRepeat, Meaning::LockControls, Meaning::DevVal, Meaning::Shift, Meaning::DeviceBtn, Meaning::MouseKeys, Meaning::XkbKeycodes, Meaning::Report, Meaning::AllOf, Meaning::ModifierKeys, Meaning::Modmapmods, Meaning::Groupname, Meaning::LockDeviceButton, Meaning::Anylevel, Meaning::None, Meaning::GenKeyEvent, Meaning::Groupsredirect, Meaning::ActionMessage, Meaning::Lock, Meaning::Increment, Meaning::Solid, Meaning::Levelname, Meaning::Message, Meaning::Leddriveskbd, Meaning::LockMods, Meaning::LockPointerBtn, Meaning::Kc, Meaning::Indicatordriveskeyboard, Meaning::SetPtrDflt, Meaning::LockDevBtn, Meaning::Keycode, Meaning::Indicator, Meaning::Groups, Meaning::AccessXTimeout, Meaning::DevBtn, Meaning::DevValuator, Meaning::Terminate, Meaning::XkbLayout],
+    disps: &[(0, 1), (0, 53), (0, 12), (0, 4), (0, 62), (0, 60), (0, 0), (0, 0), (0, 2), (0, 206), (0, 43), (0, 6), (0, 159), (0, 0), (0, 19), (0, 0), (0, 7), (0, 3), (0, 49), (0, 10), (0, 0), (0, 1), (0, 0), (0, 14), (0, 194), (0, 1), (0, 1), (0, 10), (0, 39), (0, 145), (0, 12), (0, 15), (1, 16), (0, 0), (0, 129), (1, 142), (0, 35), (2, 174), (0, 149), (0, 24), (0, 1), (0, 48), (1, 10), (0, 4), (0, 13), (0, 42), (0, 15), (0, 27), (0, 141), (0, 53), (0, 3), (0, 34), (0, 8), (0, 202), (0, 167), (0, 0), (0, 33), (1, 130), (0, 63), (0, 165), (0, 22), (0, 153), (0, 40), (0, 165)],
+    map: &[Meaning::Mod3, Meaning::Overlay, Meaning::Maximum, Meaning::RedirectKey, Meaning::Solid, Meaning::DevVal, Meaning::Lock, Meaning::BounceKeys, Meaning::XkbSemantics, Meaning::Shift, Meaning::Locks, Meaning::Y, Meaning::Index, Meaning::Mod1, Meaning::SetControls, Meaning::Repeats, Meaning::Groupswrap, Meaning::Usemodmapmods, Meaning::Driveskbd, Meaning::Overlay2, Meaning::Virtualmodifiers, Meaning::Both, Meaning::LatchMods, Meaning::PointerButton, Meaning::Allowexplicit, Meaning::Screen, Meaning::DevButton, Meaning::Groupname, Meaning::Dev, Meaning::Mod4, Meaning::LockDevButton, Meaning::Usemodmap, Meaning::AudibleBell, Meaning::SetMods, Meaning::Leddriveskbd, Meaning::Action, Meaning::MovePointer, Meaning::Dfltbtn, Meaning::Message, Meaning::Affect, Meaning::Partial, Meaning::Defaultbutton, Meaning::DeviceVal, Meaning::DeviceBtn, Meaning::Shape, Meaning::AccessXFeedback, Meaning::Replace, Meaning::XkbCompat, Meaning::Private, Meaning::Indicator, Meaning::DeviceValuator, Meaning::Repeating, Meaning::FunctionKeys, Meaning::DevValuator, Meaning::AlphanumericKeys, Meaning::Preserve, Meaning::Keycode, Meaning::False, Meaning::Virtualmod, Meaning::Same, Meaning::ONE_LEVEL, Meaning::Indicatordriveskbd, Meaning::Symbols, Meaning::Data, Meaning::XkbCompatibilityMap, Meaning::Device, Meaning::Level1, Meaning::Mod2, Meaning::Exactly, Meaning::FOUR_LEVEL, Meaning::Levelone, Meaning::VirtualModifiers, Meaning::ModMap, Meaning::GenKeyEvent, Meaning::XkbKeymap, Meaning::Vmods, Meaning::Nosymbol, Meaning::Yes, Meaning::Alias, Meaning::FOUR_LEVEL_KEYPAD, Meaning::AutoRepeat, Meaning::Value, Meaning::Outline, Meaning::Name, Meaning::Indicatordriveskeyboard, Meaning::StickyKeys, Meaning::ModifierKeys, Meaning::Anylevel, Meaning::Whichgroupstate, Meaning::True, Meaning::Radiogroup, Meaning::XkbLayout, Meaning::Unlock, Meaning::AnyOf, Meaning::MouseKeysAccel, Meaning::X, Meaning::Redirectgroups, Meaning::KEYPAD, Meaning::ALPHABETIC, Meaning::LockPointerButton, Meaning::Modmapmods, Meaning::LevelName, Meaning::No, Meaning::LatchGroup, Meaning::FOUR_LEVEL_SEMIALPHABETIC, Meaning::Hidden, Meaning::Override, Meaning::MovePtr, Meaning::LockPtrButton, Meaning::AlternateGroup, Meaning::LockDeviceBtn, Meaning::SwitchScreen, Meaning::Key, Meaning::Minimum, Meaning::ModifierMap, Meaning::Virtualmods, Meaning::AccessXTimeout, Meaning::Wrapgroups, Meaning::Virtual, Meaning::Allownone, Meaning::Modmap, Meaning::Report, Meaning::AllOf, Meaning::MouseKeys, Meaning::Type, Meaning::XkbTypes, Meaning::Augment, Meaning::NoAction, Meaning::MessageAction, Meaning::XkbCompatMap, Meaning::IgnoreGroupLock, Meaning::XkbKeycodes, Meaning::Modifiers, Meaning::LockDeviceButton, Meaning::SetPtrDflt, Meaning::LockDevBtn, Meaning::Terminate, Meaning::Off, Meaning::Interpret, Meaning::Redirect, Meaning::Clampgroups, Meaning::Kc, Meaning::Button, Meaning::XkbSymbols, Meaning::Base, Meaning::Actions, Meaning::Accel, Meaning::Alternate, Meaning::SlowKeys, Meaning::Locked, Meaning::All, Meaning::Clearmods, Meaning::Default, Meaning::Count, Meaning::Include, Meaning::Mod5, Meaning::Control, Meaning::Driveskeyboard, Meaning::Groups, Meaning::NoneOf, Meaning::Virtualmodifier, Meaning::ClearLocks, Meaning::Effective, Meaning::Levelname, Meaning::Locking, Meaning::TerminateServer, Meaning::Whichmodifierstate, Meaning::RepeatKeys, Meaning::Compat, Meaning::LockGroup, Meaning::Group, Meaning::Map, Meaning::LockMods, Meaning::Groupsclamp, Meaning::ISOLock, Meaning::Mods, Meaning::Repeat, Meaning::Controls, Meaning::Text, Meaning::AccessXKeys, Meaning::On, Meaning::Whichmodstate, Meaning::LockPointerBtn, Meaning::TWO_LEVEL, Meaning::AnyOfOrNone, Meaning::LockPtrBtn, Meaning::KeypadKeys, Meaning::Row, Meaning::LatchToLock, Meaning::None, Meaning::SetGroup, Meaning::ActionMessage, Meaning::Groupsredirect, Meaning::Clearmodifiers, Meaning::Leddriveskeyboard, Meaning::Neither, Meaning::Keys, Meaning::Voidsymbol, Meaning::DevBtn, Meaning::Latched, Meaning::DeviceButton, Meaning::PtrBtn, Meaning::FOUR_LEVEL_ALPHABETIC, Meaning::XkbCompatibility, Meaning::SetPointerDefault, Meaning::Any, Meaning::Ctrls, Meaning::XkbGeometry, Meaning::Overlay1, Meaning::Increment, Meaning::Logo, Meaning::Accelerate, Meaning::Section, Meaning::SameServer, Meaning::Permanentradiogroup, Meaning::LockControls, Meaning::GenerateKeyEvent],
+    _phantom: core::marker::PhantomData,
+};
+
+pub(super) static STRING_TO_MEANING: PhfMap<[u8], Meaning> = PhfMap {
+    key: 12913932095322966823,
+    disps: &[(0, 1), (0, 15), (0, 0), (0, 137), (0, 51), (0, 117), (0, 15), (0, 6), (0, 67), (0, 27), (0, 1), (0, 0), (0, 53), (0, 1), (0, 137), (0, 23), (0, 3), (0, 4), (0, 2), (0, 0), (0, 109), (0, 0), (0, 5), (0, 5), (0, 6), (0, 70), (0, 0), (0, 5), (0, 215), (0, 6), (0, 7), (0, 36), (0, 22), (0, 1), (0, 0), (0, 170), (0, 0), (0, 172), (1, 2), (1, 147), (0, 26), (1, 4), (0, 9), (0, 156), (0, 1), (0, 11), (0, 168), (0, 64), (0, 27), (0, 48), (0, 4), (0, 124), (1, 138), (0, 30), (0, 82), (0, 38), (6, 67), (0, 89), (1, 195), (0, 165), (0, 213), (0, 206), (0, 0), (18, 69)],
+    map: &[Meaning::LatchGroup, Meaning::SwitchScreen, Meaning::Keys, Meaning::Lock, Meaning::DeviceValuator, Meaning::SetPointerDefault, Meaning::DevBtn, Meaning::LockDeviceBtn, Meaning::XkbSemantics, Meaning::DevButton, Meaning::AccessXKeys, Meaning::Report, Meaning::FOUR_LEVEL_KEYPAD, Meaning::AnyOfOrNone, Meaning::Text, Meaning::Groupswrap, Meaning::ActionMessage, Meaning::Y, Meaning::Dev, Meaning::SameServer, Meaning::Row, Meaning::Usemodmap, Meaning::Both, Meaning::FOUR_LEVEL, Meaning::PtrBtn, Meaning::Terminate, Meaning::Overlay, Meaning::ISOLock, Meaning::SetPtrDflt, Meaning::LockPtrBtn, Meaning::Voidsymbol, Meaning::SetControls, Meaning::Driveskeyboard, Meaning::Same, Meaning::SetGroup, Meaning::XkbSymbols, Meaning::MovePointer, Meaning::AutoRepeat, Meaning::Affect, Meaning::Accelerate, Meaning::Indicator, Meaning::DevVal, Meaning::FunctionKeys, Meaning::Mods, Meaning::Mod5, Meaning::Shape, Meaning::Preserve, Meaning::XkbKeycodes, Meaning::XkbCompat, Meaning::Accel, Meaning::None, Meaning::AllOf, Meaning::NoneOf, Meaning::Any, Meaning::AccessXTimeout, Meaning::Allownone, Meaning::LockGroup, Meaning::False, Meaning::Virtualmodifiers, Meaning::Overlay1, Meaning::AlphanumericKeys, Meaning::Solid, Meaning::Data, Meaning::XkbCompatibilityMap, Meaning::XkbCompatMap, Meaning::Level1, Meaning::VirtualModifiers, Meaning::ModMap, Meaning::Virtualmods, Meaning::True, Meaning::XkbKeymap, Meaning::IgnoreGroupLock, Meaning::Key, Meaning::ALPHABETIC, Meaning::ONE_LEVEL, Meaning::Vmods, Meaning::Levelone, Meaning::Nosymbol, Meaning::Yes, Meaning::RedirectKey, Meaning::Unlock, Meaning::Outline, Meaning::Value, Meaning::StickyKeys, Meaning::Leddriveskbd, Meaning::Indicatordriveskeyboard, Meaning::XkbLayout, Meaning::ModifierKeys, Meaning::Control, Meaning::LevelName, Meaning::Locks, Meaning::MovePtr, Meaning::Modifiers, Meaning::Alias, Meaning::On, Meaning::Increment, Meaning::X, Meaning::AlternateGroup, Meaning::MouseKeysAccel, Meaning::Symbols, Meaning::Overlay2, Meaning::DevValuator, Meaning::AccessXFeedback, Meaning::No, Meaning::Name, Meaning::Actions, Meaning::Hidden, Meaning::Groupsredirect, Meaning::Wrapgroups, Meaning::ModifierMap, Meaning::FOUR_LEVEL_SEMIALPHABETIC, Meaning::Button, Meaning::Allowexplicit, Meaning::Virtualmodifier, Meaning::BounceKeys, Meaning::XkbTypes, Meaning::Levelname, Meaning::Virtual, Meaning::Group, Meaning::GenerateKeyEvent, Meaning::LockDevButton, Meaning::Keycode, Meaning::Locking, Meaning::Index, Meaning::Anylevel, Meaning::Action, Meaning::Off, Meaning::Augment, Meaning::MessageAction, Meaning::Mod4, Meaning::Partial, Meaning::Clearmodifiers, Meaning::Base, Meaning::LockPointerButton, Meaning::Device, Meaning::Modmap, Meaning::Virtualmod, Meaning::DeviceButton, Meaning::NoAction, Meaning::Clampgroups, Meaning::Default, Meaning::Redirectgroups, Meaning::Minimum, Meaning::LockMods, Meaning::Override, Meaning::Groupname, Meaning::GenKeyEvent, Meaning::Clearmods, Meaning::Interpret, Meaning::Locked, Meaning::Defaultbutton, Meaning::Mod1, Meaning::Shift, Meaning::Whichgroupstate, Meaning::Logo, Meaning::Include, Meaning::KEYPAD, Meaning::Screen, Meaning::Mod3, Meaning::Radiogroup, Meaning::Repeating, Meaning::Map, Meaning::Effective, Meaning::XkbCompatibility, Meaning::LatchMods, Meaning::Whichmodifierstate, Meaning::Leddriveskeyboard, Meaning::LatchToLock, Meaning::Groupsclamp, Meaning::Type, Meaning::Dfltbtn, Meaning::Private, Meaning::Indicatordriveskbd, Meaning::Groups, Meaning::Compat, Meaning::Mod2, Meaning::Repeat, Meaning::Maximum, Meaning::Controls, Meaning::TWO_LEVEL, Meaning::DeviceVal, Meaning::Section, Meaning::Whichmodstate, Meaning::SlowKeys, Meaning::DeviceBtn, Meaning::Alternate, Meaning::AudibleBell, Meaning::SetMods, Meaning::All, Meaning::Redirect, Meaning::Neither, Meaning::Kc, Meaning::MouseKeys, Meaning::Exactly, Meaning::Latched, Meaning::Modmapmods, Meaning::Replace, Meaning::LockPointerBtn, Meaning::RepeatKeys, Meaning::Usemodmapmods, Meaning::Driveskbd, Meaning::Ctrls, Meaning::LockControls, Meaning::LockDeviceButton, Meaning::ClearLocks, Meaning::PointerButton, Meaning::Count, Meaning::KeypadKeys, Meaning::XkbGeometry, Meaning::LockPtrButton, Meaning::Repeats, Meaning::Message, Meaning::LockDevBtn, Meaning::TerminateServer, Meaning::FOUR_LEVEL_ALPHABETIC, Meaning::Permanentradiogroup, Meaning::AnyOf],
     _phantom: core::marker::PhantomData,
 };

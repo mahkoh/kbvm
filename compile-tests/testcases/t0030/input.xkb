@@ -1,0 +1,16 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+    };
+    xkb_symbols {
+        key <a> {
+            type = "ONE_LEVEL",
+            [ a ]
+        };
+        key <b> {
+            type = "one_level",
+            [ a, A ]
+        };
+    };
+};

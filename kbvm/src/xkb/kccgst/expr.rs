@@ -17,7 +17,7 @@ use {
             mod_component::ModComponentMask,
             modmap::Vmodmap,
             resolved::{
-                ActionDefaults, Filter, ModMapField, Predicate, ResolvedAction,
+                ActionDefaults, BuiltInKeytype, Filter, ModMapField, Predicate, ResolvedAction,
                 ResolvedActionAffect, ResolvedActionMods, ResolvedGroupLatch, ResolvedGroupLock,
                 ResolvedGroupSet, ResolvedKeyKind, ResolvedKeycodes, ResolvedModsLatch,
                 ResolvedModsLock, ResolvedModsSet, ResolvedNoAction, ResolvedTypes,
@@ -1416,7 +1416,17 @@ pub(crate) fn eval_symbols_field(
                 get_expr!(MissingSymbolsTypeValue),
             )?;
             if !key_types.key_types.contains_key(&name.val) {
-                return Err(UnknownKeyType.spanned2(name.span));
+                match meaning_cache.get_case_sensitive(interner, name.val) {
+                    Meaning::ONE_LEVEL
+                    | Meaning::ALPHABETIC
+                    | Meaning::KEYPAD
+                    | Meaning::TWO_LEVEL
+                    | Meaning::FOUR_LEVEL_ALPHABETIC
+                    | Meaning::FOUR_LEVEL_SEMIALPHABETIC
+                    | Meaning::FOUR_LEVEL_KEYPAD
+                    | Meaning::FOUR_LEVEL => {}
+                    _ => return Err(UnknownKeyType.spanned2(name.span)),
+                }
             }
             match try_get_idx!() {
                 None => SymbolsField::DefaultKeyType(name.val),

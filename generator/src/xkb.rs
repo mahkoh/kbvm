@@ -14,7 +14,7 @@ pub fn main() {
     std::fs::write("kbvm/src/xkb/meaning/generated.rs", output).unwrap();
 }
 
-const STRINGS: [&str; 209] = [
+const STRINGS: [&str; 217] = [
     "accel",
     "accelerate",
     "AccessXFeedback",
@@ -29,6 +29,7 @@ const STRINGS: [&str; 209] = [
     "AllOf",
     "allowexplicit",
     "allownone",
+    "ALPHABETIC",
     "alphanumeric_keys",
     "alternate",
     "alternate_group",
@@ -71,6 +72,10 @@ const STRINGS: [&str; 209] = [
     "effective",
     "Exactly",
     "false",
+    "FOUR_LEVEL",
+    "FOUR_LEVEL_ALPHABETIC",
+    "FOUR_LEVEL_KEYPAD",
+    "FOUR_LEVEL_SEMIALPHABETIC",
     "function_keys",
     "generateKeyEvent",
     "genKeyEvent",
@@ -93,6 +98,7 @@ const STRINGS: [&str; 209] = [
     "kc",
     "key",
     "keycode",
+    "KEYPAD",
     "keypad_keys",
     "keys",
     "latched",
@@ -151,6 +157,7 @@ const STRINGS: [&str; 209] = [
     "nosymbol",
     "off",
     "on",
+    "ONE_LEVEL",
     "outline",
     "overlay",
     "Overlay1",
@@ -193,6 +200,7 @@ const STRINGS: [&str; 209] = [
     "TerminateServer",
     "text",
     "true",
+    "TWO_LEVEL",
     "type",
     "unlock",
     "usemodmap",
@@ -238,7 +246,7 @@ fn generate_output() -> String {
     let longest = generate_longest(&meanings);
     let enum_ = generate_enum(&meanings);
     let lower_map = generate_lowercase_to_meaning(&meanings);
-    // let orig_map = generate_string_to_meaning(&meanings);
+    let orig_map = generate_string_to_meaning(&meanings);
     let mut res = String::new();
     res.push_str("use super::*;\n");
     res.push_str("\n");
@@ -247,8 +255,8 @@ fn generate_output() -> String {
     res.push_str(&enum_);
     res.push_str("\n");
     res.push_str(&lower_map);
-    // res.push_str("\n");
-    // res.push_str(&orig_map);
+    res.push_str("\n");
+    res.push_str(&orig_map);
     res
 }
 
@@ -264,14 +272,14 @@ impl Debug for EnumDebug<'_> {
     }
 }
 
-// fn generate_string_to_meaning(meanings: &[Meaning]) -> String {
-//     let keys: Vec<_> = meanings
-//         .iter()
-//         .map(|meaning| meaning.orig.as_bytes())
-//         .collect();
-//     let mut values: Vec<_> = meanings.iter().map(EnumDebug).collect();
-//     generate_map("STRING_TO_MEANING", "[u8]", "Meaning", &keys, &mut values)
-// }
+fn generate_string_to_meaning(meanings: &[Meaning]) -> String {
+    let keys: Vec<_> = meanings
+        .iter()
+        .map(|meaning| meaning.orig.as_bytes())
+        .collect();
+    let mut values: Vec<_> = meanings.iter().map(EnumDebug).collect();
+    generate_map("STRING_TO_MEANING", "[u8]", "Meaning", &keys, &mut values)
+}
 
 fn generate_lowercase_to_meaning(meanings: &[Meaning]) -> String {
     let keys: Vec<_> = meanings
@@ -295,7 +303,12 @@ fn to_camel(s: &str) -> String {
         if c == '_' {
             is_first = true;
         } else if is_first {
-            res.push(c.to_ascii_uppercase());
+            if c.is_ascii_uppercase() && !res.is_empty() {
+                res.push('_');
+                res.push(c);
+            } else {
+                res.push(c.to_ascii_uppercase());
+            }
             is_first = false;
         } else {
             res.push(c);
