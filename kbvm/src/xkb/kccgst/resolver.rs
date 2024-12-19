@@ -286,19 +286,17 @@ fn fix_resolved_symbols(symbols: &mut ResolvedSymbols) {
                             break;
                         }
                         for s in &level.symbols {
-                            if let Some(s) = s {
-                                if s.val == ks {
-                                    if group_idx < max_group
-                                        || level_idx < max_level
-                                        || keycode == None
-                                        || matches!(keycode, Some(k) if k > key.code)
-                                    {
-                                        max_group = group_idx;
-                                        max_level = level_idx;
-                                        keycode = Some(key.code);
-                                    }
-                                    break;
+                            if s.val == ks {
+                                if group_idx < max_group
+                                    || level_idx < max_level
+                                    || keycode == None
+                                    || matches!(keycode, Some(k) if k > key.code)
+                                {
+                                    max_group = group_idx;
+                                    max_level = level_idx;
+                                    keycode = Some(key.code);
                                 }
+                                break;
                             }
                         }
                     }
@@ -325,9 +323,7 @@ fn infer_key_type(group: &SymbolsKeyGroup) -> BuiltInKeytype {
     let get_symbol_of_level = |level: usize| {
         if let Some(l) = group.levels.get(level) {
             for sym in &l.symbols {
-                if let Some(s) = sym {
-                    return Some(s.val);
-                }
+                return Some(sym.val);
             }
             return Some(KEY_NoSymbol);
         }
@@ -389,10 +385,6 @@ fn fix_combined_properties(
                 let max_version = version;
                 version += 1;
                 for sym in &level.symbols {
-                    let Some(sym) = sym else {
-                        level.actions.push(None);
-                        continue;
-                    };
                     let interp = compat.interps_sorted.iter_mut().find(|interp| {
                         if interp.version > max_version {
                             return false;
@@ -429,11 +421,12 @@ fn fix_combined_properties(
                     };
                     let Some(interp) = interp else {
                         handle_repeat(true.spanned2(key_with_key.name.span));
-                        level.actions.push(None);
                         continue;
                     };
                     interp.version = version;
-                    level.actions.push(interp.interp.action.clone());
+                    if let Some(a) = interp.interp.action.clone() {
+                        level.actions.push(a);
+                    }
                     if (group_idx, level_idx) == (0, 0) || !interp.interp.level_one_only() {
                         if let Some(fm) = interp.interp.virtual_modifier {
                             *virtual_modifiers.get_or_insert_default() |= fm.val.to_mask();
@@ -442,9 +435,6 @@ fn fix_combined_properties(
                     if let Some(repeat) = interp.interp.repeat {
                         handle_repeat(repeat);
                     }
-                }
-                while matches!(level.actions.last(), Some(None)) {
-                    level.actions.pop();
                 }
             }
         }
@@ -483,17 +473,15 @@ fn fix_combined_properties(
         for group in &mut key.key.groups {
             for level in &mut group.levels {
                 for action in &mut level.actions {
-                    if let Some(action) = action {
-                        let action_mods = match &mut action.val {
-                            ResolvedAction::ResolvedModsSet(e) => &mut e.modifiers,
-                            ResolvedAction::ResolvedModsLatch(e) => &mut e.modifiers,
-                            ResolvedAction::ResolvedModsLock(e) => &mut e.modifiers,
-                            _ => continue,
-                        };
-                        if let Some(action_mods) = action_mods {
-                            if let ResolvedActionMods::Explicit(e) = &mut action_mods.val {
-                                *e = mods.get_effective(*e);
-                            }
+                    let action_mods = match &mut action.val {
+                        ResolvedAction::ResolvedModsSet(e) => &mut e.modifiers,
+                        ResolvedAction::ResolvedModsLatch(e) => &mut e.modifiers,
+                        ResolvedAction::ResolvedModsLock(e) => &mut e.modifiers,
+                        _ => continue,
+                    };
+                    if let Some(action_mods) = action_mods {
+                        if let ResolvedActionMods::Explicit(e) = &mut action_mods.val {
+                            *e = mods.get_effective(*e);
                         }
                     }
                 }
@@ -1276,9 +1264,8 @@ impl SymbolsKeyLevel {
     fn span(&self) -> Option<Span> {
         self.symbols
             .iter()
-            .flat_map(|s| s.as_ref())
             .map(|s| s.span)
-            .chain(self.actions.iter().flat_map(|s| s.as_ref()).map(|s| s.span))
+            .chain(self.actions.iter().map(|s| s.span))
             .next()
     }
 }
@@ -1297,7 +1284,7 @@ impl SymbolsKeyGroup {
     fn set_field<T>(
         &mut self,
         t: GroupList<T>,
-        mut f: impl FnMut(&mut SymbolsKeyLevel) -> &mut SmallVec<[Option<Spanned<T>>; 1]>,
+        mut f: impl FnMut(&mut SymbolsKeyLevel) -> &mut SmallVec<[Spanned<T>; 1]>,
     ) {
         for l in &mut self.levels {
             f(l).clear();

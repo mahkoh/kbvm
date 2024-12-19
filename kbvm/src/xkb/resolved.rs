@@ -213,8 +213,8 @@ pub(crate) enum KeyTypeRef {
 
 #[derive(Default, Clone, Debug)]
 pub(crate) struct SymbolsKeyLevel {
-    pub(crate) symbols: SmallVec<[Option<Spanned<Keysym>>; 1]>,
-    pub(crate) actions: SmallVec<[Option<Spanned<ResolvedAction>>; 1]>,
+    pub(crate) symbols: SmallVec<[Spanned<Keysym>; 1]>,
+    pub(crate) actions: SmallVec<[Spanned<ResolvedAction>; 1]>,
 }
 
 #[derive(Debug)]

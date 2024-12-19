@@ -446,15 +446,11 @@ fn map_symbol_groups(
         .levels
         .iter()
         .map(|m| {
-            let symbols = m.symbols.iter().flat_map(|s| s.despan()).collect();
+            let symbols = m.symbols.iter().map(|s| s.val).collect();
             let actions = m
                 .actions
                 .iter()
-                .flat_map(|a| {
-                    a.as_ref()
-                        .map(|a| &a.val)
-                        .and_then(|a| map_action(modmap, a))
-                })
+                .flat_map(|a| map_action(modmap, &a.val))
                 .collect();
             SymbolLevel { symbols, actions }
         })

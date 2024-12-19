@@ -1284,7 +1284,7 @@ pub(crate) enum SymbolsField {
     Groupsredirect(GroupIdx),
 }
 
-pub(crate) type GroupList<T> = Vec<SmallVec<[Option<Spanned<T>>; 1]>>;
+pub(crate) type GroupList<T> = Vec<SmallVec<[Spanned<T>; 1]>>;
 
 fn eval_symbols_list<T>(
     group_expr: Option<Spanned<&Expr>>,
@@ -1315,13 +1315,14 @@ fn eval_symbols_list<T>(
         if let Expr::BraceList(b) = &e.val {
             elements.reserve_exact(b.len());
             for e in b {
-                elements.push(handle(e.as_ref()));
+                if let Some(e) = handle(e.as_ref()) {
+                    elements.push(e);
+                }
             }
         } else {
-            elements.push(handle(e.as_ref()));
-        }
-        while matches!(elements.last(), Some(None)) {
-            elements.pop();
+            if let Some(e) = handle(e.as_ref()) {
+                elements.push(e);
+            }
         }
         levels.push(elements);
     }
