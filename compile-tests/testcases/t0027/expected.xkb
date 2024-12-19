@@ -1,0 +1,38 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 1;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 1;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+
+        type "ONE_LEVEL" {
+            level_name[Level1] = "Any";
+            map[None] = Level1;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        modmap Mod1 { <a> };
+
+        key.repeat = true;
+
+        key <a> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ A ],
+            actions[Group1] = [ SetMods(modifiers = Mod2) ]
+        };
+    };
+};
