@@ -470,6 +470,9 @@ fn fix_combined_properties(
         }
         update!(map);
         update!(preserved);
+        for mask in ty.preserved.values_mut() {
+            mask.val = mods.get_effective(mask.val);
+        }
     }
 
     for key in symbols.keys.values_mut() {
