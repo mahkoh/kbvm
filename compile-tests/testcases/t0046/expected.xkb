@@ -37,14 +37,14 @@ xkb_keymap {
 
         key <a> {
             type[Group1] = "FOUR_LEVEL",
-            symbols[Group1] = [ A, B, C ],
-            actions[Group1] = [ NoAction(), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1) ]
+            symbols[Group1] = [ A, B, C, D ],
+            actions[Group1] = [ NoAction(), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1) ]
         };
         key <b> {
             repeat = false,
             type[Group1] = "FOUR_LEVEL",
-            symbols[Group1] = [ A, B, C ],
-            actions[Group1] = [ SetMods(modifiers = Mod1), NoAction(), NoAction() ]
+            symbols[Group1] = [ A, B, C, D ],
+            actions[Group1] = [ SetMods(modifiers = Mod1), NoAction(), NoAction(), NoAction() ]
         };
     };
 };
