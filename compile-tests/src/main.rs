@@ -3,7 +3,7 @@ use {
     isnt::std_1::vec::IsntVecExt,
     kbvm::xkb::{
         diagnostic::{Diagnostic, DiagnosticSink},
-        Context,
+        Context, Keymap,
     },
     parking_lot::Mutex,
     std::{
@@ -18,7 +18,7 @@ use {
     thiserror::Error,
 };
 
-// const SINGLE: Option<&str> = Some("t0029");
+// const SINGLE: Option<&str> = Some("t0001");
 const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
 const WRITE_FAILED: bool = false;
@@ -83,6 +83,10 @@ fn main() {
                 ResultError::ParsingFailed(e) | ResultError::ParsingExpectedFailed(e) => {
                     write_diagnostic(e);
                 }
+                ResultError::MemoryComparisonFailed { expected, actual } => {
+                    eprintln!("       expected {:?}", expected);
+                    eprintln!("       actual {:?}", actual);
+                }
                 _ => {}
             }
         }
@@ -116,8 +120,10 @@ enum ResultError {
     WriteExpectedFailed(#[source] io::Error),
     #[error("could not read expected file")]
     ReadExpected(#[source] io::Error),
-    #[error("comparison failed")]
-    ComparisonFailed,
+    #[error("text comparison failed")]
+    TextComparisonFailed,
+    #[error("memory comparison failed")]
+    MemoryComparisonFailed { expected: Keymap, actual: Keymap },
     #[error("round trip failed")]
     RoundTripFailed,
     #[error("could not write actual file")]
@@ -161,10 +167,10 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let mut diagnostics = DiagnosticSink::new(diagnostics);
     let mut context = Context::default();
     context.add_include_path(case);
-    let map = context
+    let map_actual = context
         .parse_keymap(&mut diagnostics, Some(&input_path), &input)
         .map_err(ResultError::ParsingFailed)?;
-    let map = format!("{:#}\n", map);
+    let map = format!("{:#}\n", map_actual);
 
     let expected_path = case.join("expected.xkb");
     let expected = match std::fs::read(&expected_path) {
@@ -185,14 +191,22 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
         };
         let actual = case.join(actual);
         std::fs::write(&actual, &map).map_err(ResultError::WriteActualFailed)?;
-        return Err(ResultError::ComparisonFailed);
+        return Err(ResultError::TextComparisonFailed);
     }
 
     let expected = expected.map_err(ResultError::ReadExpected)?;
-    let map = context
+    let map_expected = context
         .parse_keymap(&mut diagnostics, Some(&expected_path), &expected)
         .map_err(ResultError::ParsingExpectedFailed)?;
-    let round_trip = format!("{:#}\n", map);
+
+    if map_expected != map_actual {
+        return Err(ResultError::MemoryComparisonFailed {
+            expected: map_expected,
+            actual: map_actual,
+        });
+    }
+
+    let round_trip = format!("{:#}\n", map_expected);
     if round_trip.as_bytes() != expected {
         let rt = case.join("round_trip.xkb");
         std::fs::write(&rt, &round_trip).map_err(ResultError::WriteRoundTripFailed)?;

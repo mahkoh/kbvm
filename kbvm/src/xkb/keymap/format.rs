@@ -135,16 +135,9 @@ impl Format for Keycodes<'_> {
             write!(f.f, "maximum = {};", m.max_keycode)?;
             f.write_newline()?;
             f.write_newline()?;
-            if m.indicators.is_empty() {
-                // https://gitlab.freedesktop.org/xorg/xserver/-/issues/1775
-                f.write_nesting()?;
-                f.write(r#"indicator 1 = "DUMMY";"#)?;
+            for i in &m.indicators {
+                KeycodeIndicator(i).format(f)?;
                 f.write_newline()?;
-            } else {
-                for i in &m.indicators {
-                    KeycodeIndicator(i).format(f)?;
-                    f.write_newline()?;
-                }
             }
             if m.keycodes.is_not_empty() {
                 f.write_newline()?;
@@ -283,14 +276,7 @@ impl Format for Types<'_> {
         f.write_nesting()?;
         f.write("xkb_types {")?;
         f.write_nested(|f| {
-            if m.virtual_modifiers.is_empty() {
-                // https://gitlab.freedesktop.org/xorg/xserver/-/issues/1774
-                f.write_nesting()?;
-                f.write("virtual_modifiers Dummy;")?;
-                f.write_newline()?;
-            } else {
-                VirtualModifiers(m).format(f)?;
-            }
+            VirtualModifiers(m).format(f)?;
             for i in &m.types {
                 f.write_newline()?;
                 TypesKeyType(i).format(f)?;

@@ -29,7 +29,7 @@ use {
     std::{fmt::Write, sync::Arc},
 };
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Keymap {
     pub(crate) name: Option<Arc<String>>,
     pub(crate) min_keycode: u32,
@@ -43,7 +43,7 @@ pub struct Keymap {
     pub(crate) keys: IndexMap<state_machine::Keycode, Symbol>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub(crate) struct Indicator {
     pub(crate) virt: bool,
     pub(crate) index: IndicatorIdx,
@@ -55,19 +55,19 @@ pub(crate) struct Indicator {
     pub(crate) group_components: GroupComponentMask,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub(crate) struct Keycode {
     pub(crate) name: Arc<String>,
     pub(crate) keycode: state_machine::Keycode,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub(crate) struct VirtualModifier {
     pub(crate) name: Arc<String>,
     pub(crate) values: ModifierMask,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub(crate) struct KeyType {
     pub(crate) name: Arc<String>,
     pub(crate) modifiers: ModifierMask,
@@ -75,14 +75,14 @@ pub(crate) struct KeyType {
     pub(crate) level_names: Vec<(Level, Arc<String>)>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub(crate) struct KeyTypeMapping {
     pub(crate) modifiers: ModifierMask,
     pub(crate) preserved: ModifierMask,
     pub(crate) level: Level,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) enum Action {
     ModsSet(ModsSet),
     ModsLatch(ModsLatch),
@@ -92,45 +92,45 @@ pub(crate) enum Action {
     GroupLock(GroupLock),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) struct ModsSet {
     pub(crate) clear_locks: bool,
     pub(crate) modifiers: ModifierMask,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) struct ModsLatch {
     pub(crate) clear_locks: bool,
     pub(crate) latch_to_lock: bool,
     pub(crate) modifiers: ModifierMask,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) struct ModsLock {
     pub(crate) modifiers: ModifierMask,
     pub(crate) lock: bool,
     pub(crate) unlock: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) struct GroupSet {
     pub(crate) group: GroupChange,
     pub(crate) clear_locks: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) struct GroupLatch {
     pub(crate) group: GroupChange,
     pub(crate) clear_locks: bool,
     pub(crate) latch_to_lock: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) struct GroupLock {
     pub(crate) group: GroupChange,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) struct Symbol {
     pub(crate) key_name: Arc<String>,
     pub(crate) key_code: state_machine::Keycode,
@@ -139,13 +139,13 @@ pub(crate) struct Symbol {
     pub(crate) redirect: GroupsRedirect,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) struct SymbolGroup {
     pub(crate) key_type: Arc<KeyType>,
     pub(crate) levels: Vec<SymbolLevel>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub(crate) struct SymbolLevel {
     pub(crate) symbols: SmallVec<[Keysym; 1]>,
     pub(crate) actions: SmallVec<[Action; 1]>,
@@ -222,6 +222,13 @@ impl Keymap {
             });
         }
         virtual_modifiers.sort_unstable_by(|l, r| l.name.cmp(&r.name));
+        if virtual_modifiers.is_empty() {
+            // https://gitlab.freedesktop.org/xorg/xserver/-/issues/1774
+            virtual_modifiers.push(VirtualModifier {
+                name: Arc::new("Dummy".to_string()),
+                values: Default::default(),
+            });
+        }
         let mut types_by_ident = HashMap::new();
         let mut types = Vec::with_capacity(resolved.types.key_types.len() + 8);
         let mut used_types = HashSet::new();
@@ -313,6 +320,19 @@ impl Keymap {
             indicators.push(i);
         }
         indicators.sort_unstable_by_key(|i| i.index.raw());
+        if indicators.is_empty() {
+            // https://gitlab.freedesktop.org/xorg/xserver/-/issues/1775
+            indicators.push(Indicator {
+                virt: false,
+                index: IndicatorIdx::ONE,
+                name: Arc::new("DUMMY".to_string()),
+                modifier_mask: Default::default(),
+                group_mask: Default::default(),
+                controls: Default::default(),
+                mod_components: Default::default(),
+                group_components: Default::default(),
+            });
+        }
         let mut mod_maps = HashSet::with_capacity(resolved.symbols.mod_map_entries.len());
         for m in resolved.symbols.mod_map_entries.values() {
             if let Some(idx) = m.modifier {
