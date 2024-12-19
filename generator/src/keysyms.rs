@@ -20,6 +20,7 @@ fn generate_output() -> String {
     handle_header(&mut keysyms);
     handle_yaml(&mut keysyms);
     validate(&keysyms);
+    keysyms.sort_unstable_by(|l, _, r, _| l.cmp(&r));
     assign_indices(&mut keysyms);
     let longest_keysym_name = get_longest_keysym_name(&keysyms);
     let lowercase = create_lowercase_mapping(&keysyms);
@@ -62,6 +63,8 @@ struct KeysymInfo {
     code_point: Option<u32>,
     lower: Option<u32>,
     upper: Option<u32>,
+    is_lower: bool,
+    is_upper: bool,
     names: Vec<KeysymName>,
     definitive_idx: u16,
 }
@@ -124,6 +127,8 @@ fn handle_header(output: &mut IndexMap<u32, KeysymInfo>) {
             code_point: None,
             lower: None,
             upper: None,
+            is_lower: false,
+            is_upper: false,
             names: vec![],
             definitive_idx: 0,
         });
@@ -226,6 +231,12 @@ fn handle_yaml(output: &mut IndexMap<u32, KeysymInfo>) {
         info.code_point = code_point;
         info.lower = lower;
         info.upper = upper;
+        if let Some(cp) = code_point {
+            if let Some(c) = char::from_u32(cp) {
+                info.is_lower = c.is_lowercase();
+                info.is_upper = c.is_uppercase();
+            }
+        }
     }
 }
 
@@ -528,10 +539,10 @@ fn generate_datas(output: &IndexMap<u32, KeysymInfo>) -> String {
         writeln!(res, "        name_start: {},", name.name_start).unwrap();
         writeln!(res, "        name_len: {},", name.name_len).unwrap();
         res.push_str("        flags: 0");
-        if v.lower.is_some() {
+        if v.lower.is_some() || v.is_upper {
             res.push_str(" | IS_UPPER");
         }
-        if v.upper.is_some() {
+        if v.upper.is_some() || v.is_lower {
             res.push_str(" | IS_LOWER");
         }
         if let Some(cp) = v.code_point {

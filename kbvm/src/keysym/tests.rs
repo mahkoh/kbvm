@@ -1,7 +1,10 @@
 use {
-    crate::keysym::{
-        generated::{LEN, LONGEST_NAME},
-        keysyms, Keysym,
+    crate::{
+        keysym::{
+            generated::{LEN, LONGEST_NAME},
+            keysyms, Keysym,
+        },
+        keysyms::KEY_ssharp,
     },
     bstr::ByteSlice,
     libxkbcommon_test_linker::{
@@ -168,4 +171,9 @@ fn to_lower() {
             sym.0,
         );
     }
+}
+
+#[test]
+fn ssharp_is_lower() {
+    assert!(KEY_ssharp.is_lowercase());
 }

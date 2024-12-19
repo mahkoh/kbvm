@@ -10,7 +10,10 @@ use {
             CHAR_TO_BESPOKE_IDX, DATAS, KEYSYM_TO_CHAR, KEYSYM_TO_IDX, KEYSYM_TO_LOWER_KEYSYM,
             KEYSYM_TO_UPPER_KEYSYM, LONGEST_NAME, LOWER_NAME_TO_IDX, NAMES,
         },
-        keysyms::{KEY_Delete, KEY_KP_Equal, KEY_KP_Space, KEY_NoSymbol},
+        keysyms::{
+            KEY_Delete, KEY_Hyper_R, KEY_ISO_Level5_Lock, KEY_ISO_Lock, KEY_KP_Equal, KEY_KP_Space,
+            KEY_Mode_switch, KEY_NoSymbol, KEY_Num_Lock, KEY_Shift_L,
+        },
         phf_map::PhfMap,
     },
     arrayvec::ArrayVec,
@@ -24,6 +27,7 @@ use {
 };
 
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Default)]
+#[repr(transparent)]
 pub struct Keysym(pub u32);
 
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -79,9 +83,7 @@ impl KeysymData {
 }
 
 pub fn keysyms() -> Keysyms {
-    Keysyms {
-        idx: 0..DATAS.len() as u16,
-    }
+    Keysym::all()
 }
 
 impl Iterator for Keysyms {
@@ -153,6 +155,12 @@ macro_rules! case_change {
 }
 
 impl Keysym {
+    pub fn all() -> Keysyms {
+        Keysyms {
+            idx: 0..DATAS.len() as u16,
+        }
+    }
+
     pub fn from_char(char: char) -> Self {
         let c = char as u32;
         if matches!(c, 0x20..=0x7e | 0xa0..=0xff) {
@@ -319,6 +327,13 @@ impl Keysym {
 
     pub fn is_keypad(self) -> bool {
         self >= KEY_KP_Space && self <= KEY_KP_Equal
+    }
+
+    pub fn is_modifier(self) -> bool {
+        (self >= KEY_Shift_L && self <= KEY_Hyper_R)
+            || (self >= KEY_ISO_Lock && self <= KEY_ISO_Level5_Lock)
+            || self == KEY_Mode_switch
+            || self == KEY_Num_Lock
     }
 }
 

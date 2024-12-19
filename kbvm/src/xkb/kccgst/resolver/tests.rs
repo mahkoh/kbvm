@@ -107,7 +107,14 @@ fn test() {
         if tokens.is_empty() {
             break;
         }
-        let parsed = parse_item(&interner, &mut meaning_cache, &tokens, 0);
+        let parsed = parse_item(
+            &mut map,
+            &mut diagnostics,
+            &interner,
+            &mut meaning_cache,
+            &tokens,
+            0,
+        );
         tokens.clear();
         let mut parsed = match parsed {
             Ok(p) => p,

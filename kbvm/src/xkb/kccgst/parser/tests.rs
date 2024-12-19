@@ -7,7 +7,7 @@ use {
         kccgst::{
             formatter::{Format, Formatter},
             lexer::{Lexer, LexerError},
-            parser::{snoop_ty_and_name, Parser},
+            parser::{parse_item, snoop_ty_and_name},
             token::Token,
         },
         meaning::MeaningCache,
@@ -79,14 +79,14 @@ fn round_trip() {
                         ty,
                         name.map(|n| interner.get(n.val).as_bstr())
                     );
-                    let item = Parser {
-                        tokens: &tokens,
-                        interner: &interner,
-                        meaning_cache: &mut meaning_cache,
-                        pos: 0,
-                        diagnostic_delta: 0,
-                    }
-                    .parse_item();
+                    let item = parse_item(
+                        &mut map,
+                        &mut diagnostics,
+                        &interner,
+                        &mut meaning_cache,
+                        tokens,
+                        0,
+                    );
                     let item = match item {
                         Ok(i) => i,
                         Err(e) => {
@@ -124,15 +124,16 @@ fn check_error() {
     "#;
     let code = Code::new(&Arc::new(input.as_bytes().to_vec()));
     let tokens = l(&mut map, &mut interner, &code).unwrap();
-    let _err = Parser {
-        tokens: &tokens[0],
-        interner: &interner,
-        meaning_cache: &mut meaning_cache,
-        pos: 0,
-        diagnostic_delta: 0,
-    }
-    .parse_item()
-    .unwrap_err();
+    // let _err = parse_item(&mut map, &mut )
+    // let _err = Parser {
+    //     tokens: &tokens[0],
+    //     interner: &interner,
+    //     meaning_cache: &mut meaning_cache,
+    //     pos: 0,
+    //     diagnostic_delta: 0,
+    // }
+    // .parse_item()
+    // .unwrap_err();
     // let err = err.into_diagnostic(&mut map, Severity::Error);
     // panic!("{}", err.with_code());
 }
