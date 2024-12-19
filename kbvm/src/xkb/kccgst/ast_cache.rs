@@ -19,6 +19,7 @@ use {
         span::{Span, SpanExt, Spanned},
     },
     hashbrown::{hash_map::Entry, HashMap},
+    kbvm_proc::ad_hoc_display,
     std::{collections::VecDeque, path::PathBuf, sync::Arc},
 };
 
@@ -134,7 +135,7 @@ impl AstCache {
                         diagnostics.push(
                             map,
                             DiagnosticKind::UnexpectedConfigItemType,
-                            literal_display!("Unexpected item type").spanned2(ty.span),
+                            ad_hoc_display!("Unexpected item type").spanned2(ty.span),
                         );
                         continue;
                     }
@@ -148,7 +149,7 @@ impl AstCache {
                             diagnostics.push(
                                 map,
                                 DiagnosticKind::MultipleDefaultItems,
-                                literal_display!("File contains multiple default items")
+                                ad_hoc_display!("File contains multiple default items")
                                     .spanned2(default),
                             );
                         }
@@ -164,7 +165,7 @@ impl AstCache {
                             diagnostics.push(
                                 map,
                                 DiagnosticKind::DuplicateItemName,
-                                literal_display!("Duplicate item name in file")
+                                ad_hoc_display!("Duplicate item name in file")
                                     .spanned2(name.map(|n| n.span).or(default).unwrap_or(ty.span)),
                             );
                             continue;

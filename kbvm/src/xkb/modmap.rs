@@ -22,9 +22,9 @@ pub(crate) struct Vmod {
 }
 
 impl Vmodmap {
-    pub(crate) fn insert(&mut self, name: Spanned<Interned>) -> Option<(&mut Vmod, bool)> {
+    pub(crate) fn insert(&mut self, name: Spanned<Interned>) -> Option<&mut Vmod> {
         let slf = match self.get_mut_(name.val) {
-            Ok(vmod) => return Some((vmod, false)),
+            Ok(vmod) => return Some(vmod),
             Err(slf) => slf,
         };
         if slf.mods.len() >= MAX_VMODS {
@@ -36,7 +36,7 @@ impl Vmodmap {
             idx: ModifierIndex::new(idx)?,
             def: None,
         });
-        Some((slf.mods.last_mut().unwrap(), true))
+        Some(slf.mods.last_mut().unwrap())
     }
 
     pub(crate) fn get(&self, name: Interned) -> Option<&Vmod> {

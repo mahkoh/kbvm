@@ -17,6 +17,7 @@ use {
         span::SpanExt,
     },
     hashbrown::HashSet,
+    kbvm_proc::ad_hoc_display,
 };
 
 pub(crate) fn resolve_includes(
@@ -108,7 +109,7 @@ impl Includer<'_, '_> {
                 self.diagnostics.push(
                     self.map,
                     DiagnosticKind::RecursiveInclude,
-                    literal_display!("Ignoring recursive include").spanned2(span),
+                    ad_hoc_display!("Ignoring recursive include").spanned2(span),
                 );
                 continue;
             }

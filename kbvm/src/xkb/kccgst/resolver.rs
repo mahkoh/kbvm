@@ -16,7 +16,8 @@ use {
             kccgst::{
                 ast::{
                     CompatmapDecl, ConfigItemType, Decls, DirectOrIncluded, Expr, Item, ItemType,
-                    KeycodeDecl, Path, SymbolsDecl, TypesDecl, VModDecl, VarDecl, VarOrExpr,
+                    KeycodeDecl, MergeModeExt, Path, SymbolsDecl, TypesDecl, VModDecl, VarDecl,
+                    VarOrExpr,
                 },
                 expr::{
                     eval_action_default, eval_filter, eval_group, eval_indicator_map_field,
@@ -43,6 +44,7 @@ use {
     },
     hashbrown::{hash_map::Entry, HashMap},
     isnt::std_1::primitive::IsntSliceExt,
+    kbvm_proc::ad_hoc_display,
     smallvec::SmallVec,
     std::{fmt::Display, mem},
 };
@@ -189,7 +191,7 @@ fn fix_resolved_keycodes(r: &mut Resolver<'_, '_>, keycodes: &mut ResolvedKeycod
         };
         r.diag(
             DiagnosticKind::UnknownKeyAlias,
-            literal_display!("ignoring unknown key alias").spanned2(span),
+            ad_hoc_display!("ignoring unknown key alias").spanned2(span),
         );
     }
     *keycodes = res;
@@ -241,7 +243,7 @@ fn fix_resolved_compat(
             _ => {
                 resolver.diag(
                     DiagnosticKind::TooManyIndicators,
-                    literal_display!("ignoring more than 32 indicators")
+                    ad_hoc_display!("ignoring more than 32 indicators")
                         .spanned2(indicator.name.span),
                 );
                 return false;
@@ -627,19 +629,20 @@ impl VmodResolver<'_, '_, '_> {
         name: Spanned<Interned>,
         value: Option<Spanned<ModifierMask>>,
     ) {
-        let Some((vmod, new)) = self.data.insert(name) else {
+        let Some(vmod) = self.data.insert(name) else {
             self.r.diag(
                 DiagnosticKind::TooManyVirtualModifiers,
-                literal_display!("too many virtual modifiers").spanned2(name.span),
+                ad_hoc_display!("too many virtual modifiers").spanned2(name.span),
             );
             return;
         };
-        if new || vmod.def.is_none() || vmod.def == value {
+        if vmod.def.is_none() || vmod.def == value || mm.is_not_augment() {
             vmod.def = value;
-            return;
-        }
-        if mm.unwrap_or(MergeMode::Override) != MergeMode::Augment {
-            vmod.def = value;
+        } else {
+            self.r.diag(
+                DiagnosticKind::IgnoringVmodRedefinition,
+                ad_hoc_display!("ignoring redefinition").spanned2(name.span),
+            );
         }
     }
 }
@@ -709,7 +712,6 @@ trait ConfigWalker: Sized {
 
 impl KeycodesResolver<'_, '_, '_> {
     fn handle_key(&mut self, mm: Option<MergeMode>, name: Spanned<Interned>, ty: ResolvedKeyKind) {
-        let augment = mm.unwrap_or(MergeMode::Override) == MergeMode::Augment;
         let key = ResolvedKey { name, kind: ty };
         let e1 = match ty {
             ResolvedKeyKind::Real(r) => Some(self.data.keycode_to_name.entry(r.val)),
@@ -717,7 +719,7 @@ impl KeycodesResolver<'_, '_, '_> {
         };
         let e2 = self.data.name_to_key.entry(name.val);
         if matches!(e1, Some(Entry::Occupied(_))) || matches!(e2, Entry::Occupied(_)) {
-            if augment {
+            if mm.is_augment() {
                 return;
             }
             let mut code_to_remove = None;
@@ -750,7 +752,7 @@ impl KeycodesResolver<'_, '_, '_> {
         idx: Spanned<IndicatorIdx>,
         virt: Option<Span>,
     ) {
-        let augment = mm.unwrap_or(MergeMode::Override) == MergeMode::Augment;
+        let augment = mm.is_augment();
         let i = Indicator { idx, name, virt };
         for indicator in &mut self.data.indicators {
             if indicator.idx == idx || indicator.name == name {
@@ -819,7 +821,7 @@ impl ConfigWalker for KeycodesResolver<'_, '_, '_> {
                 }
                 self.r.diag(
                     DiagnosticKind::UnknownVariable,
-                    literal_display!("unknown variable").spanned2(span),
+                    ad_hoc_display!("unknown variable").spanned2(span),
                 );
             }
             KeycodeDecl::IndicatorName(e) => {
@@ -828,7 +830,7 @@ impl ConfigWalker for KeycodesResolver<'_, '_, '_> {
                     _ => {
                         self.r.diag(
                             DiagnosticKind::InvalidIndicatorIndex,
-                            literal_display!("invalid indicator index").spanned2(e.idx_name.span),
+                            ad_hoc_display!("invalid indicator index").spanned2(e.idx_name.span),
                         );
                         return;
                     }
@@ -895,12 +897,10 @@ impl TypesResolver<'_, '_, '_> {
 
     fn handle_key(&mut self, mm: Option<MergeMode>, name: Spanned<Interned>, ty: ResolvedKeyType) {
         let entry = self.data.key_types.entry(name.val);
-        if mm.unwrap_or(MergeMode::Override) == MergeMode::Augment
-            && matches!(entry, Entry::Occupied(_))
-        {
+        if mm.is_augment() && matches!(entry, Entry::Occupied(_)) {
             self.r.diag(
                 DiagnosticKind::DuplicateKeyTypeDefinition,
-                literal_display!("ignoring duplicate key type name").spanned2(name.span),
+                ad_hoc_display!("ignoring duplicate key type name").spanned2(name.span),
             );
             return;
         }
@@ -951,7 +951,7 @@ impl ConfigWalker for TypesResolver<'_, '_, '_> {
                 if c.index.is_some() || meaning != Meaning::Type {
                     self.r.diag(
                         DiagnosticKind::UnknownVariable,
-                        literal_display!("unknown variable").spanned2(span),
+                        ad_hoc_display!("unknown variable").spanned2(span),
                     );
                     return;
                 }
@@ -1070,7 +1070,12 @@ impl CompatResolver<'_, '_, '_> {
                         if augment && old.interp.$field.is_some() {
                             self.r.diag(
                                 DiagnosticKind::IgnoredInterpField,
-                                literal_display!("ignoring redefinition").spanned2(x.span),
+                                ad_hoc_display!(concat!(
+                                    "ignoring redefinition of interp field `",
+                                    stringify!($field),
+                                    "`",
+                                ))
+                                .spanned2(x.span),
                             );
                         } else {
                             old.interp.$field = Some(x);
@@ -1120,7 +1125,7 @@ impl CompatResolver<'_, '_, '_> {
                             if augment && have_any {
                                 self.r.diag(
                                     DiagnosticKind::IgnoredIndicatorField,
-                                    literal_display!("ignoring redefinition").spanned2(x.span),
+                                    ad_hoc_display!("ignoring redefinition").spanned2(x.span),
                                 );
                             } else {
                                 old.indicator_map.$field = Some(x);
@@ -1219,7 +1224,7 @@ impl ConfigWalker for CompatResolver<'_, '_, '_> {
                 if c.index.is_some() {
                     self.r.diag(
                         DiagnosticKind::UnknownVariable,
-                        literal_display!("unknown variable").spanned2(span),
+                        ad_hoc_display!("unknown variable").spanned2(span),
                     );
                 }
                 if meaning == Meaning::Interpret {
@@ -1260,7 +1265,7 @@ impl SymbolsKey {
                     diagnostics.push(
                         map,
                         DiagnosticKind::DiscardingGroup,
-                        literal_display!("discarding groups other than 1 due to explicit group specifier in inclued").spanned2(span),
+                        ad_hoc_display!("discarding groups other than 1 due to explicit group specifier in inclued").spanned2(span),
                     );
                     break 'outer;
                 }
@@ -1424,7 +1429,7 @@ impl SymbolsResolver<'_, '_, '_> {
         if augment && matches!(entry, Entry::Occupied(_)) {
             self.r.diag(
                 DiagnosticKind::IgnoredModMapEntry,
-                literal_display!("ignoring duplicate mod map entry").spanned2(key.span),
+                ad_hoc_display!("ignoring duplicate mod map entry").spanned2(key.span),
             );
             return;
         }
@@ -1435,7 +1440,7 @@ impl SymbolsResolver<'_, '_, '_> {
         let Some(kd) = self.keycodes.name_to_key.get(&name.val) else {
             self.r.diag(
                 DiagnosticKind::UnknownKey,
-                literal_display!("unknown key").spanned2(name.span),
+                ad_hoc_display!("unknown key").spanned2(name.span),
             );
             return;
         };
@@ -1454,7 +1459,7 @@ impl SymbolsResolver<'_, '_, '_> {
             return;
         }
         let augment = mm == MergeMode::Augment;
-        let ignoring_redefinition = literal_display!("ignoring redefinition");
+        let ignoring_redefinition = ad_hoc_display!("ignoring redefinition");
         if let Entry::Occupied(e) = entry {
             let old = e.into_mut();
             for (idx, group) in key.groups.into_iter().enumerate() {
@@ -1523,10 +1528,10 @@ impl SymbolsResolver<'_, '_, '_> {
             self.data.group_names.resize(offset + 1, None);
         }
         let target = &mut self.data.group_names[offset];
-        if target.is_some() && mm.unwrap_or(MergeMode::Override) == MergeMode::Augment {
+        if target.is_some() && mm.is_augment() {
             self.r.diag(
                 DiagnosticKind::IgnoredSymbolsField,
-                literal_display!("ignoring group name").spanned2(name.span),
+                ad_hoc_display!("ignoring group name").spanned2(name.span),
             );
         } else {
             *target = Some((idx, name));
@@ -1567,7 +1572,7 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
                     self.r.diagnostics.push(
                         self.r.map,
                         DiagnosticKind::DiscardingGroup,
-                        literal_display!("discarding groups other than 1 due to explicit group specifier in include").spanned2(span),
+                        ad_hoc_display!("discarding groups other than 1 due to explicit group specifier in include").spanned2(span),
                     );
                 }
                 if let Some((_, name)) = data.group_names[0] {
@@ -1628,7 +1633,7 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
                         None => {
                             self.r.diag(
                                 DiagnosticKind::UnknownModifier,
-                                literal_display!("unknown modifier").spanned2(m.modifier.span),
+                                ad_hoc_display!("unknown modifier").spanned2(m.modifier.span),
                             );
                             return;
                         }
@@ -1655,7 +1660,7 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
             }
             SymbolsDecl::Var(v) => {
                 let cs = &v.var.path.val.components;
-                let unknown_field = literal_display!("unknown field").spanned2(v.var.path.span);
+                let unknown_field = ad_hoc_display!("unknown field").spanned2(v.var.path.span);
                 let meaning = self
                     .r
                     .meaning_cache
@@ -1689,7 +1694,7 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
                             _ => {
                                 self.r.diag(
                                     DiagnosticKind::MissingGroupName,
-                                    literal_display!("missing group name").spanned2(span),
+                                    ad_hoc_display!("missing group name").spanned2(span),
                                 );
                                 return;
                             }

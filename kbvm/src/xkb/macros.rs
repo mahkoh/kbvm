@@ -37,19 +37,6 @@ macro_rules! punctuation {
     };
 }
 
-macro_rules! literal_display {
-    ($msg:expr) => {{
-        #[derive(Copy, Clone)]
-        struct Tmp;
-        impl std::fmt::Display for Tmp {
-            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                f.write_str($msg)
-            }
-        }
-        Tmp
-    }};
-}
-
 macro_rules! keyed_bitfield {
     (
         $name:ident:
