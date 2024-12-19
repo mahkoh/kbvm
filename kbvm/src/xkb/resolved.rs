@@ -87,8 +87,8 @@ pub(crate) struct ResolvedKeyTypeWithName {
 #[derive(Clone, Default, Debug)]
 pub(crate) struct ResolvedKeyType {
     pub(crate) modifiers: Option<Spanned<ModifierMask>>,
-    pub(crate) map: HashMap<ModifierMask, Spanned<Level>>,
-    pub(crate) preserved: HashMap<ModifierMask, Spanned<ModifierMask>>,
+    pub(crate) map: IndexMap<ModifierMask, Spanned<Level>>,
+    pub(crate) preserved: IndexMap<ModifierMask, Spanned<ModifierMask>>,
     pub(crate) names: HashMap<Level, Spanned<Interned>>,
 }
 

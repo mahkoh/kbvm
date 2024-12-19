@@ -42,7 +42,8 @@ use {
             string_cooker::StringCooker,
         },
     },
-    hashbrown::{hash_map::Entry, HashMap},
+    hashbrown::hash_map::Entry,
+    indexmap::IndexMap,
     isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::ad_hoc_display,
     smallvec::SmallVec,
@@ -458,20 +459,21 @@ fn fix_combined_properties(
         if let Some(mask) = &mut ty.modifiers {
             mask.val = mods.get_effective(mask.val);
         }
-        macro_rules! update {
-            ($field:ident) => {{
-                let mut new = HashMap::new();
-                for (mask, val) in &ty.$field {
-                    let effective = mods.get_effective(*mask);
-                    let _ = new.try_insert(effective, *val);
+        {
+            let mut new_map = IndexMap::new();
+            let mut new_preserved = IndexMap::new();
+            for (mask, val) in &ty.map {
+                let effective = mods.get_effective(*mask);
+                if let indexmap::map::Entry::Vacant(v) = new_map.entry(effective) {
+                    v.insert(*val);
+                    if let Some(p) = ty.preserved.get(mask) {
+                        let val = mods.get_effective(p.val);
+                        new_preserved.insert(effective, val.spanned2(p.span));
+                    }
                 }
-                ty.$field = new;
-            }};
-        }
-        update!(map);
-        update!(preserved);
-        for mask in ty.preserved.values_mut() {
-            mask.val = mods.get_effective(mask.val);
+            }
+            ty.map = new_map;
+            ty.preserved = new_preserved;
         }
     }
 

@@ -595,9 +595,11 @@ impl Format for Keys<'_> {
                         )?;
                     }
                 }
-                if needs_newline {
-                    f.write_newline()?;
+                if !needs_newline {
+                    f.write_nesting()?;
+                    f.write("repeat = true")?;
                 }
+                f.write_newline()?;
                 Ok(())
             })?;
             f.write_nesting()?;

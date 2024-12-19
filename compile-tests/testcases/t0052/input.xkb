@@ -1,0 +1,22 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_types {
+        virtual_modifiers X = Mod1;
+
+        type "A" {
+            modifiers = Mod1+X;
+            map[X] = Level1;
+            preserve[Mod1] = Mod2;
+            map[Mod1] = Level2;
+            preserve[X] = Mod3;
+        };
+    };
+    xkb_symbols {
+        key <a> {
+            type = "A",
+            [ A ]
+        };
+    };
+};
