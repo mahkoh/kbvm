@@ -1,0 +1,25 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        virtual indicator 1 = "X";
+    };
+
+    xkb_types {
+        virtual_modifiers A = Mod1;
+    };
+
+    xkb_compat {
+        indicator "X" {
+            modifiers = Mod1;
+        };
+
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+    };
+};

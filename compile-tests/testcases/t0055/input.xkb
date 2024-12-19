@@ -1,0 +1,9 @@
+xkb_keymap {
+    xkb_compat {
+        virtual_modifiers A = Mod1;
+
+        indicator "X" {
+            modifiers = A;
+        };
+    };
+};
