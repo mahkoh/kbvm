@@ -641,7 +641,7 @@ impl VmodResolver<'_, '_, '_> {
         } else {
             self.r.diag(
                 DiagnosticKind::IgnoringVmodRedefinition,
-                ad_hoc_display!("ignoring redefinition").spanned2(name.span),
+                ad_hoc_display!("ignoring redefinition of virtual modifier").spanned2(name.span),
             );
         }
     }

@@ -2,7 +2,7 @@ use {
     quote::quote,
     syn::{
         parse::{Parse, ParseStream},
-        Expr, Index, LitStr, Token, Type,
+        Expr, Index, Token, Type,
     },
 };
 
