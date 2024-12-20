@@ -285,13 +285,13 @@ impl Keymap {
             let map = &i.indicator_map;
             let modifier_mask = map.modifiers.despan().unwrap_or_default();
             let group_mask = map.groups.despan().unwrap_or_default();
-            let mut mod_components = map.whichmodifierstate.despan().unwrap_or_default();
+            let mut mod_components = map.which_modifier_state.despan().unwrap_or_default();
             if modifier_mask.0 == 0 {
                 mod_components = ModComponentMask::NONE;
             } else if mod_components == ModComponentMask::NONE {
                 mod_components = ModComponentMask::EFFECTIVE;
             }
-            let mut group_components = map.whichgroupstate.despan().unwrap_or_default();
+            let mut group_components = map.which_group_state.despan().unwrap_or_default();
             if group_mask.0 == 0 {
                 group_components = GroupComponentMask::NONE;
             } else if group_components == GroupComponentMask::NONE {

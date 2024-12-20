@@ -984,11 +984,11 @@ impl IndicatorMap {
             IndicatorMapField::Controls(e) => {
                 self.controls = Some(e);
             },
-            IndicatorMapField::Whichmodifierstate(e) => {
-                self.whichmodifierstate = Some(e);
+            IndicatorMapField::WhichModifierState(e) => {
+                self.which_modifier_state = Some(e);
             },
-            IndicatorMapField::Whichgroupstate(e) => {
-                self.whichgroupstate = Some(e);
+            IndicatorMapField::WhichGroupState(e) => {
+                self.which_group_state = Some(e);
             },
         }
     }
@@ -1133,8 +1133,8 @@ impl CompatResolver<'_, '_, '_> {
                     )*
                 };
             }
-            opt!(whichmodifierstate | modifiers);
-            opt!(whichgroupstate | groups);
+            opt!(which_modifier_state | modifiers);
+            opt!(which_group_state | groups);
             opt!(controls);
         } else {
             entry.insert_entry(IndicatorMapWithKey {

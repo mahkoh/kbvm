@@ -149,8 +149,8 @@ pub(crate) struct IndicatorMap {
     pub(crate) modifiers: Option<Spanned<ModifierMask>>,
     pub(crate) groups: Option<Spanned<GroupMask>>,
     pub(crate) controls: Option<Spanned<ControlMask>>,
-    pub(crate) whichmodifierstate: Option<Spanned<ModComponentMask>>,
-    pub(crate) whichgroupstate: Option<Spanned<GroupComponentMask>>,
+    pub(crate) which_modifier_state: Option<Spanned<ModComponentMask>>,
+    pub(crate) which_group_state: Option<Spanned<GroupComponentMask>>,
 }
 
 #[derive(Default, Clone, Debug)]

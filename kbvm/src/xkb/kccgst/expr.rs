@@ -1193,8 +1193,8 @@ pub(crate) enum IndicatorMapField {
     Modifiers(Spanned<ModifierMask>),
     Groups(Spanned<GroupMask>),
     Controls(Spanned<ControlMask>),
-    Whichmodifierstate(Spanned<ModComponentMask>),
-    Whichgroupstate(Spanned<GroupComponentMask>),
+    WhichModifierState(Spanned<ModComponentMask>),
+    WhichGroupState(Spanned<GroupComponentMask>),
 }
 
 pub(crate) fn eval_indicator_map_field(
@@ -1241,12 +1241,12 @@ pub(crate) fn eval_indicator_map_field(
         Meaning::Whichmodifierstate | Meaning::Whichmodstate => {
             let value = get_expr!(MissingIndicatorMapWhichmodifierValue);
             let components = eval_mod_component_mask(interner, meaning_cache, value)?;
-            IndicatorMapField::Whichmodifierstate(components)
+            IndicatorMapField::WhichModifierState(components)
         }
         Meaning::Whichgroupstate => {
             let value = get_expr!(MissingIndicatorMapWhichgroupstateValue);
             let components = eval_group_component_mask(interner, meaning_cache, value)?;
-            IndicatorMapField::Whichgroupstate(components)
+            IndicatorMapField::WhichGroupState(components)
         }
         _ => return Err(UnknownIndicatorMapField.spanned2(var.path.span)),
     };
