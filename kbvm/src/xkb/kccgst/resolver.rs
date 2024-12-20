@@ -1524,7 +1524,7 @@ impl SymbolsResolver<'_, '_, '_> {
 
     fn handle_group_name(&mut self, mm: Option<MergeMode>, idx: GroupIdx, name: Spanned<Interned>) {
         let offset = idx.to_offset();
-        if self.data.group_names.len() <= offset {
+        if offset >= self.data.group_names.len() {
             self.data.group_names.resize(offset + 1, None);
         }
         let target = &mut self.data.group_names[offset];
