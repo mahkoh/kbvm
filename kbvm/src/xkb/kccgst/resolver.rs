@@ -965,9 +965,6 @@ impl Interp {
             InterpField::Repeat(r) => {
                 self.repeat = Some(r.spanned2(field.span));
             }
-            InterpField::Locking(l) => {
-                self.locking = Some(l.spanned2(field.span));
-            }
             InterpField::LevelOneOnly(u) => {
                 self.level_one_only = Some(u.spanned2(field.span));
             }

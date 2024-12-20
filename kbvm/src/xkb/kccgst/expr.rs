@@ -69,6 +69,8 @@ pub(crate) enum EvalError {
     UnknownPredicate,
     #[error("UnknownInterpField")]
     UnknownInterpField,
+    #[error("UnimplementedInterpField")]
+    UnimplementedInterpField,
     #[error("MissingActionValue")]
     MissingActionValue,
     #[error("MissingVirtualmodValue")]
@@ -1022,7 +1024,6 @@ pub(crate) enum InterpField {
     Action(ResolvedAction),
     VirtualModifier(ModifierIndex),
     Repeat(bool),
-    Locking(bool),
     LevelOneOnly(bool),
 }
 
@@ -1099,7 +1100,7 @@ pub(crate) fn eval_interp_field(
             InterpField::LevelOneOnly(val)
         }
         Meaning::Repeat => InterpField::Repeat(boolean()?),
-        Meaning::Locking => InterpField::Locking(boolean()?),
+        Meaning::Locking => return Err(UnimplementedInterpField.spanned2(var.path.span)),
         _ => return Err(UnknownInterpField.spanned2(var.path.span)),
     };
     Ok(res.spanned2(span))
