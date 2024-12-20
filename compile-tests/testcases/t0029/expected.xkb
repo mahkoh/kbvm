@@ -1,7 +1,7 @@
 xkb_keymap {
     xkb_keycodes {
         minimum = 8;
-        maximum = 255;
+        maximum = 8;
 
         virtual indicator 1 = "1";
         virtual indicator 2 = "2";

@@ -408,7 +408,7 @@ impl Keymap {
         keys.sort_unstable_by(|l, r| l.key_name.cmp(&r.key_name));
         let keys = keys.into_iter().map(|k| (k.key_code, k)).collect();
         let mut keycodes = Vec::with_capacity(resolved.keycodes.name_to_key.len());
-        let mut max_keycode = 255;
+        let mut max_keycode = 8;
         for key in resolved.keycodes.name_to_key.values() {
             if !used_key_names.contains(&key.name.val) {
                 continue;
