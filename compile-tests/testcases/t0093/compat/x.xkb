@@ -1,0 +1,6 @@
+xkb_compat {
+    indicator "B" {
+    };
+    indicator "A" {
+    };
+};
