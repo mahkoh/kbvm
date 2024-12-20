@@ -653,7 +653,7 @@ trait ConfigWalker: Sized {
                 }
             }
             ItemType::Config(c) => {
-                self.resolve_config_item(c)
+                self.resolve_config_item(c);
             },
         }
         mem::take(self.data())
@@ -846,7 +846,9 @@ impl ConfigWalker for KeycodesResolver<'_, '_, '_> {
 impl ResolvedKeyType {
     fn apply_field(&mut self, field: TypeField) {
         match field {
-            TypeField::Modifiers(m) => self.modifiers = Some(m),
+            TypeField::Modifiers(m) => {
+                self.modifiers = Some(m);
+            }
             TypeField::Map(k, v) => {
                 self.map.insert(k.val, v);
             }
