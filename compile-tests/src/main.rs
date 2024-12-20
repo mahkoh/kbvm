@@ -133,7 +133,7 @@ enum ResultError {
 }
 
 fn test_thread(results: Arc<Results>) {
-    let digits = (results.cases.len() as f64).log10().ceil() as usize;
+    let digits = (results.cases.len() as f64).log10().ceil() as usize + 1;
     loop {
         let idx = results.idx.fetch_add(1, Relaxed);
         if idx >= results.cases.len() {
@@ -141,7 +141,7 @@ fn test_thread(results: Arc<Results>) {
         }
         let path = &results.cases[idx];
         eprintln!(
-            "testing {:0digits$}/{:0digits$}: {}",
+            "testing {:0digits$}/{}: {}",
             idx + 1,
             results.cases.len(),
             Path::new(path.file_name().unwrap()).display(),
