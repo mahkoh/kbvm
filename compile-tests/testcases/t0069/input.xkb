@@ -1,0 +1,19 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_types {
+        type "X" {
+            modifiers = Mod1;
+        };
+        augment type "Y" {
+            modifiers = Mod2;
+        };
+    };
+    xkb_symbols {
+        key <a> {
+            type = "Y",
+            [ A ],
+        };
+    };
+};
