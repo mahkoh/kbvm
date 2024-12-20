@@ -710,12 +710,12 @@ impl KeycodesResolver<'_, '_, '_> {
                 return;
             }
             let mut code_to_remove = None;
-            let mut name_to_remove = None;
             if let Entry::Occupied(e2) = e2 {
                 if let ResolvedKeyKind::Real(n) = e2.remove().kind {
                     code_to_remove = Some(n.val);
                 }
             }
+            let mut name_to_remove = None;
             if let Some(Entry::Occupied(e1)) = e1 {
                 name_to_remove = Some(e1.remove());
             }
