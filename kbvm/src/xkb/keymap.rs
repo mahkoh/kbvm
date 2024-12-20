@@ -156,50 +156,6 @@ pub(crate) struct SymbolLevel {
     pub(crate) actions: SmallVec<[Action; 1]>,
 }
 
-/*
-#[derive(Default, Clone, Debug)]
-pub(crate) struct SymbolsKey {
-    pub(crate) groups: Vec<SymbolsKeyGroup>,
-    pub(crate) default_key_type: Option<Spanned<Interned>>,
-    pub(crate) virtualmodifiers: Option<Spanned<ModifierMask>>,
-    pub(crate) repeating: Option<Spanned<Option<bool>>>,
-    pub(crate) groups_redirect: Option<Spanned<GroupsRedirect>>,
-}
-
-#[derive(Copy, Clone, Debug)]
-pub(crate) enum GroupsRedirect {
-    Wrap(bool),
-    Clamp(bool),
-    Redirect(GroupIdx),
-}
-
-#[derive(Default, Clone, Debug)]
-pub(crate) struct SymbolsKeyGroup {
-    pub(crate) levels: Vec<SymbolsKeyLevel>,
-    pub(crate) key_type: Option<KeyTypeRef>,
-    pub(crate) has_explicit_actions: bool,
-}
-
-#[derive(Default, Clone, Debug)]
-pub(crate) struct SymbolsKeyLevel {
-    pub(crate) symbols: SmallVec<[Option<Spanned<Keysym>>; 1]>,
-    pub(crate) actions: SmallVec<[Option<Spanned<ResolvedAction>>; 1]>,
-}
-
-#[derive(Debug)]
-pub(crate) struct SymbolsKeyWithKey {
-    pub(crate) name: Spanned<Interned>,
-    pub(crate) code: Keycode,
-    pub(crate) key: SymbolsKey,
-}
-
-#[derive(Debug)]
-pub(crate) struct ModMapEntryWithKey {
-    pub(crate) key: Spanned<ModMapField>,
-    pub(crate) modifier: Option<Spanned<ModifierIndex>>,
-}
- */
-
 impl Keymap {
     pub(crate) fn from_resolved(interner: &Interner, resolved: &Resolved) -> Self {
         let mut string_cache = HashMap::<_, Arc<String>>::new();
@@ -211,14 +167,6 @@ impl Keymap {
                 s
             }
         };
-        macro_rules! unwrap_or {
-            ($val:expr, $($or:tt)*) => {
-                match $val {
-                    Some(v) => v,
-                    _ => $($or)*,
-                }
-            };
-        }
         let mut virtual_modifiers = Vec::with_capacity(resolved.mods.len());
         for m in &resolved.mods {
             virtual_modifiers.push(VirtualModifier {
@@ -298,7 +246,10 @@ impl Keymap {
             }
             let i = Indicator {
                 virt: map.virt,
-                index: unwrap_or!(map.idx, continue),
+                index: match map.idx {
+                    Some(i) => i,
+                    None => continue,
+                },
                 name: get_string(i.name.val),
                 modifier_mask,
                 group_mask,
