@@ -24,7 +24,6 @@ use {
     bstr::ByteSlice,
     hashbrown::{hash_map::Entry, HashMap, HashSet},
     indexmap::IndexMap,
-    isnt::std_1::primitive::IsntSliceExt,
     linearize::{static_map, Linearize, StaticMap},
     smallvec::SmallVec,
     std::{fmt::Write, sync::Arc},
