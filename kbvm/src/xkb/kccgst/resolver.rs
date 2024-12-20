@@ -977,19 +977,19 @@ impl IndicatorMap {
         match field.val {
             IndicatorMapField::Modifiers(e) => {
                 self.modifiers = Some(e);
-            },
+            }
             IndicatorMapField::Groups(e) => {
                 self.groups = Some(e);
-            },
+            }
             IndicatorMapField::Controls(e) => {
                 self.controls = Some(e);
-            },
+            }
             IndicatorMapField::WhichModifierState(e) => {
                 self.which_modifier_state = Some(e);
-            },
+            }
             IndicatorMapField::WhichGroupState(e) => {
                 self.which_group_state = Some(e);
-            },
+            }
         }
     }
 }
@@ -1358,7 +1358,7 @@ impl SymbolsKey {
             }
             SymbolsField::DefaultKeyType(e) => {
                 self.default_key_type = Some(e.spanned2(f.span));
-            },
+            }
             SymbolsField::Symbols((group, e)) => {
                 get_group(&mut self.groups, group, |g| !g.has_explicit_symbols).set_symbols(e);
             }
@@ -1367,10 +1367,10 @@ impl SymbolsKey {
             }
             SymbolsField::Virtualmodifiers(e) => {
                 self.virtualmodifiers = Some(e.spanned2(f.span));
-            },
+            }
             SymbolsField::Repeating(e) => {
                 self.repeating = Some(e.spanned2(f.span));
-            },
+            }
             SymbolsField::Groupswrap => {
                 self.groups_redirect = Some(GroupsRedirect::Wrap.spanned2(f.span))
             }
