@@ -46,12 +46,13 @@ impl<'a, 'b> Writer<'a, 'b> {
     fn write_string(&mut self, s: &str) -> fmt::Result {
         self.write("\"")?;
         for c in s.chars() {
-            if c == '\\' {
-                self.write(r"\\")?;
-            } else if (c as u32) < 0x20 || c == '\x7f' {
-                write!(self.f, r"\{:03o}", c as u32)?;
-            } else {
-                self.f.write_char(c)?;
+            match c {
+                '\\' => self.write(r"\\")?,
+                '\n' => self.write(r"\n")?,
+                '\r' => self.write(r"\r")?,
+                '\t' => self.write(r"\t")?,
+                _ if (c as u32) < 0x20 || c == '\x7f' => write!(self.f, r"\{:03o}", c as u32)?,
+                _ => self.f.write_char(c)?,
             }
         }
         self.write("\"")?;
