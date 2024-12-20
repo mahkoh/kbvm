@@ -1,0 +1,11 @@
+xkb_keymap {
+    xkb_compat {
+        indicator "A" {
+            modifiers = Mod1;
+        };
+        augment indicator "A" {
+            groups = Group1;
+            whichgroupstate = Locked;
+        };
+    };
+};
