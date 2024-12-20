@@ -652,7 +652,9 @@ trait ConfigWalker: Sized {
                     self.resolve_config_item(&item.val.item.specific);
                 }
             }
-            ItemType::Config(c) => self.resolve_config_item(c),
+            ItemType::Config(c) => {
+                self.resolve_config_item(c)
+            },
         }
         mem::take(self.data())
     }
