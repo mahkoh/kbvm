@@ -1,0 +1,10 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 99;
+    };
+    xkb_symbols {
+        key <a> {
+            [ SetGroup(group = +1) ],
+        };
+    };
+};
