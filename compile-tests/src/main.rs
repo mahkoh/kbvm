@@ -85,7 +85,7 @@ fn main() {
                 }
                 ResultError::MemoryComparisonFailed { expected, actual } => {
                     eprintln!("       expected {:?}", expected);
-                    eprintln!("       actual {:?}", actual);
+                    eprintln!("         actual {:?}", actual);
                 }
                 _ => {}
             }
