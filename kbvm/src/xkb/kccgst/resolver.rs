@@ -654,7 +654,7 @@ trait ConfigWalker: Sized {
             }
             ItemType::Config(c) => {
                 self.resolve_config_item(c);
-            },
+            }
         }
         mem::take(self.data())
     }
@@ -956,11 +956,21 @@ impl ConfigWalker for TypesResolver<'_, '_, '_> {
 impl Interp {
     fn apply_field(&mut self, field: Spanned<InterpField>) {
         match field.val {
-            InterpField::Action(a) => self.action = Some(a.spanned2(field.span)),
-            InterpField::VirtualModifier(m) => self.virtual_modifier = Some(m.spanned2(field.span)),
-            InterpField::Repeat(r) => self.repeat = Some(r.spanned2(field.span)),
-            InterpField::Locking(l) => self.locking = Some(l.spanned2(field.span)),
-            InterpField::LevelOneOnly(u) => self.level_one_only = Some(u.spanned2(field.span)),
+            InterpField::Action(a) => {
+                self.action = Some(a.spanned2(field.span));
+            }
+            InterpField::VirtualModifier(m) => {
+                self.virtual_modifier = Some(m.spanned2(field.span));
+            }
+            InterpField::Repeat(r) => {
+                self.repeat = Some(r.spanned2(field.span));
+            }
+            InterpField::Locking(l) => {
+                self.locking = Some(l.spanned2(field.span));
+            }
+            InterpField::LevelOneOnly(u) => {
+                self.level_one_only = Some(u.spanned2(field.span));
+            }
         }
     }
 }
