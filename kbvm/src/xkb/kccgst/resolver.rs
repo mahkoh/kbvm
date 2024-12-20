@@ -1345,7 +1345,7 @@ impl SymbolsKey {
                 Some(idx) => idx.to_offset(),
                 _ => groups.iter().position(place_here).unwrap_or(groups.len()),
             };
-            if groups.len() < idx + 1 {
+            if idx >= groups.len() {
                 groups.resize(idx + 1, SymbolsKeyGroup::default());
             }
             &mut groups[idx]
@@ -1356,15 +1356,21 @@ impl SymbolsKey {
                 get_group(&mut self.groups, Some(g), |_| false).key_type =
                     Some(KeyTypeRef::Named(e.spanned2(f.span)));
             }
-            SymbolsField::DefaultKeyType(e) => self.default_key_type = Some(e.spanned2(f.span)),
+            SymbolsField::DefaultKeyType(e) => {
+                self.default_key_type = Some(e.spanned2(f.span));
+            },
             SymbolsField::Symbols((group, e)) => {
                 get_group(&mut self.groups, group, |g| !g.has_explicit_symbols).set_symbols(e);
             }
             SymbolsField::Actions((group, e)) => {
                 get_group(&mut self.groups, group, |g| !g.has_explicit_actions).set_actions(e);
             }
-            SymbolsField::Virtualmodifiers(e) => self.virtualmodifiers = Some(e.spanned2(f.span)),
-            SymbolsField::Repeating(e) => self.repeating = Some(e.spanned2(f.span)),
+            SymbolsField::Virtualmodifiers(e) => {
+                self.virtualmodifiers = Some(e.spanned2(f.span));
+            },
+            SymbolsField::Repeating(e) => {
+                self.repeating = Some(e.spanned2(f.span));
+            },
             SymbolsField::Groupswrap => {
                 self.groups_redirect = Some(GroupsRedirect::Wrap.spanned2(f.span))
             }
