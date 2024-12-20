@@ -1,0 +1,6 @@
+xkb_keymap {
+    xkb_compat {
+        indicator "\101" {
+        };
+    };
+};

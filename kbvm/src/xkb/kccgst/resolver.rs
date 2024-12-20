@@ -1205,13 +1205,14 @@ impl ConfigWalker for CompatResolver<'_, '_, '_> {
                 self.handle_interp(mm, keysym, filter, interp);
             }
             CompatmapDecl::IndicatorMap(l) => {
+                let name = self.r.cook(l.name);
                 let mut indicator_map = self.data.indicator_map_default.clone();
                 for decl in &l.decls {
                     if let Some(f) = self.parse_indicator_field(&decl.val, decl.span, false) {
                         indicator_map.apply_field(f);
                     }
                 }
-                self.handle_indicator_map(mm, l.name, indicator_map);
+                self.handle_indicator_map(mm, name, indicator_map);
             }
             CompatmapDecl::Var(e) => {
                 let c = &e.var.path.val.components[0];
