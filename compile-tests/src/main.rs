@@ -1,3 +1,4 @@
+use std::fs::read_dir;
 use {
     error_reporter::Report,
     isnt::std_1::vec::IsntVecExt,
@@ -28,17 +29,20 @@ fn main() {
     std::env::set_current_dir(env!("CARGO_MANIFEST_DIR")).unwrap();
     let path = Path::new("./testcases");
     let mut cases = vec![];
-    for f in std::fs::read_dir(path).unwrap() {
+    for f in read_dir(path).unwrap() {
         let f = f.unwrap();
         if !f.metadata().unwrap().is_dir() {
             continue;
         }
-        if let Some(s) = SINGLE {
-            if f.file_name() != s {
-                continue;
+        for f in read_dir(f.path()).unwrap() {
+            let f = f.unwrap();
+            if let Some(s) = SINGLE {
+                if f.file_name() != s {
+                    continue;
+                }
             }
+            cases.push(f.path());
         }
-        cases.push(f.path());
     }
     let results = Arc::new(Results {
         idx: Default::default(),
