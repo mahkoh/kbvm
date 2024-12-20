@@ -1,0 +1,16 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_types {
+        type "A" {
+            level_name[Level1] = "\101";
+        };
+    };
+    xkb_symbols {
+        key <a> {
+            type = "A",
+            [ A ],
+        };
+    };
+};
