@@ -347,6 +347,9 @@ impl Keymap {
                     ModMapField::Keycode(k) => (k, None),
                     _ => continue,
                 };
+                if !resolved.symbols.keys.contains_key(&kc) {
+                    continue;
+                }
                 if let Some(name) = resolved.keycodes.keycode_to_name.get(&kc) {
                     mod_maps.insert((
                         idx.val,
