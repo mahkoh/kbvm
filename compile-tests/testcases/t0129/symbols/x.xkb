@@ -1,0 +1,3 @@
+xkb_symbols {
+    modmap Mod1 { <a>, <b> };
+};
