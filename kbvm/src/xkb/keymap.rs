@@ -194,15 +194,6 @@ impl Keymap {
                     level: v.val,
                 });
             }
-            for (n, v) in &ty.ty.preserved {
-                if !ty.ty.map.contains_key(n) {
-                    mappings.push(KeyTypeMapping {
-                        modifiers: *n,
-                        preserved: v.val,
-                        level: Level::ONE,
-                    });
-                }
-            }
             mappings.sort_unstable_by_key(|k| (k.level, k.modifiers.0));
             let mut level_names = Vec::with_capacity(ty.ty.names.len());
             for (level, name) in &ty.ty.names {
