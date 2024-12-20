@@ -1225,6 +1225,7 @@ impl ConfigWalker for CompatResolver<'_, '_, '_> {
                         DiagnosticKind::UnknownVariable,
                         ad_hoc_display!("unknown variable").spanned2(span),
                     );
+                    return;
                 }
                 if meaning == Meaning::Interpret {
                     if let Some(f) = self.parse_interp_field(e, span, true) {
