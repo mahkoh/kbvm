@@ -24,6 +24,7 @@ use {
     bstr::ByteSlice,
     hashbrown::{hash_map::Entry, HashMap, HashSet},
     indexmap::IndexMap,
+    isnt::std_1::primitive::IsntSliceExt,
     linearize::{static_map, Linearize, StaticMap},
     smallvec::SmallVec,
     std::{fmt::Write, sync::Arc},
@@ -313,7 +314,7 @@ impl Keymap {
         let mut used_key_names = HashSet::new();
         let mut keys = Vec::with_capacity(resolved.symbols.keys.len());
         for key in resolved.symbols.keys.values() {
-            let groups: Vec<_> = key
+            let mut groups: Vec<_> = key
                 .key
                 .groups
                 .iter()
@@ -327,6 +328,9 @@ impl Keymap {
                     )
                 })
                 .collect();
+            while let Some(None) = groups.last() {
+                groups.pop();
+            }
             used_key_names.insert(key.name.val);
             let mut redirect = key
                 .key
@@ -397,8 +401,7 @@ fn map_symbol_groups(
     let Some(kt) = kt else {
         return None;
     };
-    used_types.insert(&**kt);
-    let levels = m
+    let mut levels: Vec<_> = m
         .levels
         .iter()
         .map(|m| {
@@ -411,6 +414,17 @@ fn map_symbol_groups(
             SymbolLevel { symbols, actions }
         })
         .collect();
+    while let Some(last) = levels.last() {
+        if last.symbols.is_empty() && last.actions.is_empty() {
+            levels.pop();
+        } else {
+            break;
+        }
+    }
+    if levels.is_empty() {
+        return None;
+    }
+    used_types.insert(&**kt);
     Some(SymbolGroup {
         key_type: kt.clone(),
         levels,

@@ -11,12 +11,6 @@ xkb_keymap {
     xkb_types {
         virtual_modifiers Dummy;
 
-        type "ONE_LEVEL" {
-            modifiers = None;
-            level_name[Level1] = "Any";
-            map[None] = Level1;
-        };
-
         type "TWO_LEVEL" {
             modifiers = Shift;
             level_name[Level1] = "Base";

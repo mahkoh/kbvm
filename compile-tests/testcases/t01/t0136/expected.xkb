@@ -10,14 +10,6 @@ xkb_keymap {
 
     xkb_types {
         virtual_modifiers Dummy;
-
-        type "ALPHABETIC" {
-            modifiers = Shift+Lock;
-            level_name[Level1] = "Base";
-            level_name[Level2] = "Caps";
-            map[Shift] = Level2;
-            map[Lock] = Level2;
-        };
     };
 
     xkb_compat {
@@ -30,9 +22,7 @@ xkb_keymap {
         key.repeat = true;
 
         key <a> {
-            repeat = false,
-            type[Group2] = "ALPHABETIC",
-            symbols[Group2] = [ A, B ]
+            repeat = false
         };
     };
 };
