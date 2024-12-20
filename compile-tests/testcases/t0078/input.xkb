@@ -1,0 +1,8 @@
+xkb_keymap {
+    xkb_compat {
+        indicator "A" {
+            groups = Group1;
+            whichgroupstate = Locked;
+        };
+    };
+};

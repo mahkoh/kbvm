@@ -975,11 +975,21 @@ impl Interp {
 impl IndicatorMap {
     fn apply_field(&mut self, field: Spanned<IndicatorMapField>) {
         match field.val {
-            IndicatorMapField::Modifiers(e) => self.modifiers = Some(e),
-            IndicatorMapField::Groups(e) => self.groups = Some(e),
-            IndicatorMapField::Controls(e) => self.controls = Some(e),
-            IndicatorMapField::Whichmodifierstate(e) => self.whichmodifierstate = Some(e),
-            IndicatorMapField::Whichgroupstate(e) => self.whichgroupstate = Some(e),
+            IndicatorMapField::Modifiers(e) => {
+                self.modifiers = Some(e);
+            },
+            IndicatorMapField::Groups(e) => {
+                self.groups = Some(e);
+            },
+            IndicatorMapField::Controls(e) => {
+                self.controls = Some(e);
+            },
+            IndicatorMapField::Whichmodifierstate(e) => {
+                self.whichmodifierstate = Some(e);
+            },
+            IndicatorMapField::Whichgroupstate(e) => {
+                self.whichgroupstate = Some(e);
+            },
         }
     }
 }
