@@ -1,0 +1,13 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <a> = 2;
+        augment <b> = 1;
+    };
+    xkb_symbols {
+        key <a> {
+        };
+        key <b> {
+        };
+    };
+};
