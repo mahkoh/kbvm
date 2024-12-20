@@ -130,7 +130,7 @@ impl Format for Keycodes<'_> {
         f.write("xkb_keycodes {")?;
         f.write_nested(|f| {
             f.write_nesting()?;
-            write!(f.f, "minimum = {};", m.min_keycode)?;
+            f.write("minimum = 8;")?;
             f.write_newline()?;
             f.write_nesting()?;
             write!(f.f, "maximum = {};", m.max_keycode)?;

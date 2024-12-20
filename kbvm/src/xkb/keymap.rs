@@ -32,7 +32,6 @@ use {
 #[derive(Debug, PartialEq)]
 pub struct Keymap {
     pub(crate) name: Option<Arc<String>>,
-    pub(crate) min_keycode: u32,
     pub(crate) max_keycode: u32,
     pub(crate) indicators: Vec<Indicator>,
     pub(crate) keycodes: Vec<Keycode>,
@@ -409,7 +408,6 @@ impl Keymap {
         keys.sort_unstable_by(|l, r| l.key_name.cmp(&r.key_name));
         let keys = keys.into_iter().map(|k| (k.key_code, k)).collect();
         let mut keycodes = Vec::with_capacity(resolved.keycodes.name_to_key.len());
-        let mut min_keycode = 8;
         let mut max_keycode = 255;
         for key in resolved.keycodes.name_to_key.values() {
             if !used_key_names.contains(&key.name.val) {
@@ -420,7 +418,6 @@ impl Keymap {
                     name: get_string(key.name.val),
                     keycode: r.val,
                 };
-                min_keycode = min_keycode.min(r.val.0);
                 max_keycode = max_keycode.max(r.val.0);
                 keycodes.push(k);
             }
@@ -429,7 +426,6 @@ impl Keymap {
         types.retain(|kt| used_types.contains(&(&**kt as *const KeyType)));
         Self {
             name: resolved.name.despan().map(get_string),
-            min_keycode,
             max_keycode,
             indicators,
             keycodes,

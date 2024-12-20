@@ -1,6 +1,6 @@
 xkb_keymap {
     xkb_keycodes {
-        minimum = 1;
+        minimum = 8;
         maximum = 255;
 
         indicator 1 = "DUMMY";
