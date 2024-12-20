@@ -1,0 +1,36 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 99;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 99;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+
+        type "ONE_LEVEL" {
+            modifiers = None;
+            level_name[Level1] = "Any";
+            map[None] = Level1;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        key.repeat = true;
+
+        key <a> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ SetGroup(group = +1, clearLocks) ]
+        };
+    };
+};
