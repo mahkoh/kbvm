@@ -126,7 +126,6 @@ pub(crate) struct Interp {
     pub(crate) action: Option<Spanned<ResolvedAction>>,
     pub(crate) virtual_modifier: Option<Spanned<ModifierIndex>>,
     pub(crate) repeat: Option<Spanned<bool>>,
-    pub(crate) locking: Option<Spanned<bool>>,
     pub(crate) level_one_only: Option<Spanned<bool>>,
 }
 

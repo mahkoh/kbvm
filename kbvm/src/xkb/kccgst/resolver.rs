@@ -1086,7 +1086,6 @@ impl CompatResolver<'_, '_, '_> {
             opt!(action);
             opt!(virtual_modifier);
             opt!(repeat);
-            opt!(locking);
             opt!(level_one_only);
         } else {
             entry.insert_entry(InterpWithKey {
