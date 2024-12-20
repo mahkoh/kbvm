@@ -383,10 +383,10 @@ impl Format for ModsLatch {
         f.write("LatchMods(")?;
         write!(f.f, "modifiers = {}", modifier_mask(self.modifiers))?;
         if self.clear_locks {
-            f.write_string(", clearLocks")?;
+            f.write(", clearLocks")?;
         }
         if self.latch_to_lock {
-            f.write_string(", latchToLock")?;
+            f.write(", latchToLock")?;
         }
         f.write(")")?;
         Ok(())
@@ -416,7 +416,7 @@ impl Format for GroupSet {
         f.write("SetGroup(")?;
         write!(f.f, "group = {}", group_change(self.group))?;
         if self.clear_locks {
-            f.write_string(", clearLocks")?;
+            f.write(", clearLocks")?;
         }
         f.write(")")?;
         Ok(())
@@ -428,10 +428,10 @@ impl Format for GroupLatch {
         f.write("LatchGroup(")?;
         write!(f.f, "group = {}", group_change(self.group))?;
         if self.clear_locks {
-            f.write_string(", clearLocks")?;
+            f.write(", clearLocks")?;
         }
         if self.latch_to_lock {
-            f.write_string(", latchToLock")?;
+            f.write(", latchToLock")?;
         }
         f.write(")")?;
         Ok(())

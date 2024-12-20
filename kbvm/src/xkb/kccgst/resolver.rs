@@ -108,7 +108,7 @@ pub(crate) fn resolve(
 
     let mut name = None;
     if let ItemType::Composite(c) = &item.ty {
-        name = c.name;
+        name = c.name.map(|n| resolver.cook(n));
     }
 
     Resolved {
