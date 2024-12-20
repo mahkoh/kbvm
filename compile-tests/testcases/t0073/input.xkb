@@ -1,0 +1,15 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_types {
+        type "\101" {
+        };
+    };
+    xkb_symbols {
+        key <a> {
+            type = "A",
+            [ A ],
+        };
+    };
+};
