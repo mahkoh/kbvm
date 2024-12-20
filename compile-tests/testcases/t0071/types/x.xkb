@@ -1,0 +1,4 @@
+xkb_types {
+    type "X" {
+    };
+};

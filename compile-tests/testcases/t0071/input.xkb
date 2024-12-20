@@ -1,0 +1,14 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_types {
+        include "x.xkb"
+    };
+    xkb_symbols {
+        key <a> {
+            type = "X",
+            [ A ],
+        };
+    };
+};
