@@ -102,14 +102,14 @@ impl Includer<'_, '_> {
             };
             let mut span = i.file.span;
             if let Some(map) = i.map {
-                span.hi = map.span.hi;
+                span.hi = map.span.hi + 1;
             }
             let key = (ty, i.file.val, i.map.map(|m| m.val));
             if !self.active_includes.insert(key) {
                 self.diagnostics.push(
                     self.map,
                     DiagnosticKind::RecursiveInclude,
-                    ad_hoc_display!("Ignoring recursive include").spanned2(span),
+                    ad_hoc_display!("ignoring recursive include").spanned2(span),
                 );
                 continue;
             }

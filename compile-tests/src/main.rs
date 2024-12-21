@@ -19,11 +19,11 @@ use {
     thiserror::Error,
 };
 
-// const SINGLE: Option<&str> = Some("t0136");
-const SINGLE: Option<&str> = None;
+const SINGLE: Option<&str> = Some("t0152");
+// const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
 const WRITE_FAILED: bool = false;
-const SHOW_ALL_DIAGNOSTICS: bool = false;
+const SHOW_ALL_DIAGNOSTICS: bool = true;
 
 fn main() {
     std::env::set_current_dir(env!("CARGO_MANIFEST_DIR")).unwrap();

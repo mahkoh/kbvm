@@ -22,5 +22,6 @@ mod meaning;
 mod mod_component;
 mod modmap;
 mod resolved;
+mod rmlvo;
 mod span;
 mod string_cooker;

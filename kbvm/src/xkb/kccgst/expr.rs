@@ -35,58 +35,58 @@ use {
 
 #[derive(Copy, Clone, Debug, Error)]
 pub(crate) enum EvalError {
-    #[error("Overflow")]
+    #[error("calculation overflowed")]
     Overflow,
-    #[error("UnknownPath")]
-    UnknownPath,
-    #[error("UnknownGroup")]
+    #[error("identifier does not refer to a known value")]
+    UnknownValue,
+    #[error("unknown group")]
     UnknownGroup,
-    #[error("UnknownLevel")]
+    #[error("unknown level")]
     UnknownLevel,
-    #[error("UnsupportedExpressionType")]
+    #[error("expression type is not permitted in this position")]
     UnsupportedExpressionType,
-    #[error("UnknownBooleanValue")]
+    #[error("unknown boolean value")]
     UnknownBooleanValue,
-    #[error("UnknownKeysym")]
+    #[error("unknown keysym")]
     UnknownKeysym,
-    #[error("n")]
+    #[error("unknown action")]
     UnknownAction,
-    #[error("UnimplementedAction")]
+    #[error("unimplemented action")]
     UnimplementedAction,
-    #[error("UnsupportedParameter")]
+    #[error("unsupported parameter")]
     UnsupportedParameter,
-    #[error("MissingArgument")]
+    #[error("missing argument")]
     MissingArgument,
-    #[error("UnknownModifier")]
+    #[error("unknown modifier")]
     UnknownModifier,
-    #[error("UnknownAffect")]
+    #[error("unknown affect value")]
     UnknownAffect,
-    #[error("NotOneFilterArgument")]
+    #[error("filter must have exactly one argument")]
     NotOneFilterArgument,
-    #[error("NamedFilterArgParam")]
+    #[error("filter parameter must not have a name")]
     NamedFilterArgParam,
-    #[error("UnknownPredicate")]
+    #[error("unknown filter predicate")]
     UnknownPredicate,
-    #[error("UnknownInterpField")]
+    #[error("unknown `interpret` field")]
     UnknownInterpField,
-    #[error("UnimplementedInterpField")]
+    #[error("unimplemented `interpret` field")]
     UnimplementedInterpField,
-    #[error("MissingActionValue")]
+    #[error("`action` parameter must have a value")]
     MissingActionValue,
-    #[error("MissingVirtualmodValue")]
+    #[error("`virtualmodifier` parameter must have a value")]
     MissingVirtualmodValue,
-    #[error("UnknownVirtualModifier")]
+    #[error("unknown virtual modifier")]
     UnknownVirtualModifier,
-    #[error("UnknownTypeField")]
+    #[error("unknown `type` field")]
     UnknownTypeField,
-    #[error("MissingTypeModifiersValue")]
+    #[error("`modifiers` parameter must have a value")]
     MissingTypeModifiersValue,
-    #[error("MissingTypeMapValue")]
+    #[error("`map` parameter must have a value")]
     MissingTypeMapValue,
-    #[error("MissingTypePreserveValue")]
+    #[error("`preserve` parameter must have a value")]
     MissingTypePreserveValue,
-    #[error("MissingTypeLevelValue")]
-    MissingTypeLevelValue,
+    #[error("`level_name` parameter must have a value")]
+    MissingTypeLevelNameValue,
     #[error("MissingUseModMapModValue")]
     MissingUseModMapModValue,
     #[error("InvalidUseModMapModValue")]
@@ -296,7 +296,7 @@ fn eval_i64(
         Expr::UnPlus(v) => Ok(fwd!(v)),
         Expr::UnNot(v) => Ok((fwd!(v) == 0) as i64),
         Expr::UnInverse(v) => Ok(!fwd!(v)),
-        Expr::Path(p) => p.unique_ident().ok_or(UnknownPath).and_then(f),
+        Expr::Path(p) => p.unique_ident().ok_or(UnknownValue).and_then(f),
         Expr::Integer(_, i) if allow_literal => Ok(*i),
         Expr::Parenthesized(p) => Ok(fwd!(p)),
         Expr::Mul(l, r) => bi!(checked_mul, l, r),
@@ -324,7 +324,7 @@ where
     }
     let res = match expr.val {
         Expr::UnNot(v) | Expr::UnInverse(v) => Ok(!fwd!(v)),
-        Expr::Path(p) => p.unique_ident().ok_or(UnknownPath).and_then(|i| {
+        Expr::Path(p) => p.unique_ident().ok_or(UnknownValue).and_then(|i| {
             let meaning = meaning_cache.get_case_insensitive(interner, i);
             f(meaning)
         }),
@@ -822,7 +822,7 @@ impl ActionParameters for ResolvedGroupLock {
                 self.group = Some(eval_group_change(interner, value!(value))?);
             }
             _ => {
-                return Err(EvalError::UnsupportedParameter.spanned2(meaning.span));
+                return Err(UnsupportedParameter.spanned2(meaning.span));
             }
         }
         Ok(())
@@ -861,7 +861,7 @@ fn create_action<T: ActionParameters>(
         let ident = path
             .val
             .unique_ident()
-            .ok_or(EvalError::UnsupportedParameter.spanned2(path.span))?;
+            .ok_or(UnsupportedParameter.spanned2(path.span))?;
         let meaning = meaning_cache.get_case_insensitive(interner, ident);
         t.handle_field(
             interner,
@@ -884,7 +884,7 @@ fn handle_action_global<T: ActionParameters>(
 ) -> Result<(), Spanned<EvalError>> {
     let cs = &var.path.val.components;
     if cs.len() != 2 || cs[1].index.is_some() {
-        return Err(EvalError::UnsupportedParameter.spanned2(span));
+        return Err(UnsupportedParameter.spanned2(span));
     }
     let c = &cs[1];
     let value = if let Some(e) = &var.expr {
@@ -910,7 +910,7 @@ macro_rules! generate_action_name_meta {
             ($macro_:ident, $meaning_inner:expr, $span:expr) => {
                 match $meaning_inner {
                     $(Meaning::$meaning => $macro_!($big, $little),)*
-                    $(Meaning::$unimplemented)|* => return Err(EvalError::UnimplementedAction.spanned2($span)),
+                    $(Meaning::$unimplemented)|* => return Err(UnimplementedAction.spanned2($span)),
                     _ => return Err(UnknownAction.spanned2($span)),
                 }
             };
@@ -1179,7 +1179,7 @@ pub(crate) fn eval_type_field(
             let level = eval_level(interner, idx)?;
             let expr = match &var.expr {
                 Some(e) => e.as_ref(),
-                _ => return Err(MissingTypeLevelValue.spanned2(var.path.span)),
+                _ => return Err(MissingTypeLevelNameValue.spanned2(var.path.span)),
             };
             let name = eval_string(map, diagnostics, interner, cooker, expr)?;
             TypeField::LevelName(level, name)

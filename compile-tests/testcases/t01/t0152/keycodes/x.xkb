@@ -1,0 +1,7 @@
+xkb_keycodes "a" {
+    include "x.xkb(b)"
+};
+
+xkb_keycodes "b" {
+    include "x.xkb(a)"
+};

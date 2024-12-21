@@ -135,7 +135,7 @@ impl AstCache {
                         diagnostics.push(
                             map,
                             DiagnosticKind::UnexpectedConfigItemType,
-                            ad_hoc_display!("Unexpected item type").spanned2(ty.span),
+                            ad_hoc_display!("unexpected item type").spanned2(ty.span),
                         );
                         continue;
                     }
@@ -149,7 +149,7 @@ impl AstCache {
                             diagnostics.push(
                                 map,
                                 DiagnosticKind::MultipleDefaultItems,
-                                ad_hoc_display!("File contains multiple default items")
+                                ad_hoc_display!("file contains multiple default items")
                                     .spanned2(default),
                             );
                         }
@@ -165,7 +165,7 @@ impl AstCache {
                             diagnostics.push(
                                 map,
                                 DiagnosticKind::DuplicateItemName,
-                                ad_hoc_display!("Duplicate item name in file")
+                                ad_hoc_display!("duplicate item name in file")
                                     .spanned2(name.map(|n| n.span).or(default).unwrap_or(ty.span)),
                             );
                             continue;
