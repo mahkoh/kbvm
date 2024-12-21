@@ -55,6 +55,7 @@ struct Parser<'a, 'b> {
     meaning_cache: &'a mut MeaningCache,
     pos: usize,
     diagnostic_delta: u64,
+    expr_depth: usize,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -104,6 +105,7 @@ pub(crate) fn snoop_ty_and_name(
         meaning_cache,
         pos: 0,
         diagnostic_delta: 0,
+        expr_depth: 0,
     };
     let flags = parser.parse_flags();
     let default = flags
@@ -153,6 +155,7 @@ pub(crate) fn parse_item(
         meaning_cache,
         pos: 0,
         diagnostic_delta,
+        expr_depth: 0,
     }
     .parse_item()
 }
@@ -1323,7 +1326,22 @@ impl Parser<'_, '_> {
         &mut self,
         expected: &'static [Expected],
     ) -> Result<Spanned<Expr>, Spanned<ParserError>> {
-        self.parse_add_sub_expr(expected)
+        self.push_expr_depth(expected, |slf| slf.parse_add_sub_expr(expected))
+    }
+
+    fn push_expr_depth<T>(
+        &mut self,
+        expected: &'static [Expected],
+        f: impl FnOnce(&mut Self) -> Result<T, Spanned<ParserError>>,
+    ) -> Result<T, Spanned<ParserError>> {
+        if self.expr_depth >= 16 {
+            let span = self.peek(expected)?.span;
+            return Err(self.too_deeply_nested(span));
+        }
+        self.expr_depth += 1;
+        let res = f(self);
+        self.expr_depth -= 1;
+        res
     }
 
     fn parse_add_sub_expr(
@@ -1385,7 +1403,8 @@ impl Parser<'_, '_> {
         let t = self.next(expected)?;
         macro_rules! un_expr {
             ($ident:ident) => {{
-                let arg = self.parse_term_expr(EXPR_TOKENS)?;
+                let arg =
+                    self.push_expr_depth(EXPR_TOKENS, |slf| slf.parse_term_expr(EXPR_TOKENS))?;
                 let span = Span {
                     lo: t.span.lo,
                     hi: arg.span.hi,

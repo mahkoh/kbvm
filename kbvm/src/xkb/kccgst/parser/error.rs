@@ -22,6 +22,8 @@ use {
 
 #[derive(Debug, Clone, Error)]
 pub(crate) enum ParserError {
+    #[error("expression is too deeply nested")]
+    TooDeeplyNested,
     #[error(
         "expected {}, but encountered EOF",
         debug_fn(|f| write_expected(f, .0.expected)),
@@ -212,6 +214,10 @@ pub(crate) enum ActualToken {
 }
 
 impl Parser<'_, '_> {
+    pub(super) fn too_deeply_nested(&self, span: Span) -> Spanned<ParserError> {
+        ParserError::TooDeeplyNested.spanned2(span + self.diagnostic_delta)
+    }
+
     pub(super) fn expected_but_eof(
         &self,
         span: Span,
