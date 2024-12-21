@@ -17,8 +17,6 @@ use {
         },
     },
     kbvm_proc::CloneWithDelta,
-    regex::bytes::Regex,
-    std::sync::LazyLock,
 };
 
 #[derive(Debug)]
@@ -53,25 +51,6 @@ pub(crate) fn parse_include(interner: &mut Interner, include: Spanned<Interned>)
     }
 }
 
-static COMP_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(
-        r#"(?x-u)
-            (?<mm>[|+])?
-            (?<file>[^(|+:]+)
-            (
-                \(
-                    (?<map>[^)]+)
-                \)
-            )?
-            (
-                :
-                (?<group>[0-9]+)
-            )?
-        "#,
-    )
-    .unwrap()
-});
-
 impl IncludeIter<'_> {
     pub(crate) fn interner(&mut self) -> &mut Interner {
         self.interner
@@ -85,70 +64,36 @@ impl<'a> Iterator for IncludeIter<'a> {
         if self.pos < self.s.len() && self.s[self.pos].is_ascii_whitespace() {
             self.pos += 1;
         }
+        assert!(self.pos <= self.s.len());
         if self.pos == self.s.len() {
             return None;
         }
-        let pos = self.pos;
-        let lo = self.span_lo + pos as u64 + 1;
-        let Some(captures) = COMP_REGEX.captures(&self.s[pos..]) else {
-            return Some(Err(invalid_format(Span {
-                lo,
-                hi: self.span_lo + self.s.len() as u64 + 1,
-            })));
+        let captures = match capture(&self.s, self.span_lo, self.pos) {
+            Ok(c) => c,
+            Err(e) => return Some(Err(e)),
         };
-        self.pos += captures.get(0).unwrap().len();
-        let file = captures.name("file").unwrap();
-        let file_span = Span {
-            lo: lo + file.range().start as u64,
-            hi: lo + file.range().end as u64,
-        };
-        let mm = match captures.name("mm") {
-            Some(mm) => {
-                let span = Span {
-                    lo: lo + mm.range().start as u64,
-                    hi: lo + mm.range().end as u64,
-                };
-                let mm = match mm.as_bytes() {
-                    b"+" => MergeMode::Override,
-                    b"|" => MergeMode::Augment,
-                    _ => unreachable!(),
-                };
-                Some(mm.spanned2(span))
-            }
-            _ if self.first => None,
-            _ => {
-                let span = Span {
-                    lo: file_span.lo,
-                    hi: file_span.lo + 1,
-                };
-                return Some(Err(missing_merge_mode(span)));
-            }
-        };
-        let file = self
-            .s
-            .slice(pos + file.range().start..pos + file.range().end);
-        let file = self.interner.intern(&file).spanned2(file_span);
-        let map = captures.name("map").map(|g| {
+        self.pos = captures.pos;
+        let file = captures.file;
+        let mm = captures.mm;
+        if mm.is_none() && !self.first {
             let span = Span {
-                lo: lo + g.range().start as u64,
-                hi: lo + g.range().end as u64,
+                lo: file.span.lo,
+                hi: file.span.lo + 1,
             };
-            let slice = self.s.slice(pos + g.range().start..pos + g.range().end);
-            self.interner.intern(&slice).spanned2(span)
-        });
+            return Some(Err(missing_merge_mode(span)));
+        }
+        let file = self.interner.intern(&file.val).spanned2(file.span);
+        let map = captures
+            .map
+            .map(|g| self.interner.intern(&g.val).spanned2(g.span));
         let mut group = None;
-        if let Some(g) = captures.name("group") {
-            let span = Span {
-                lo: lo + g.range().start as u64,
-                hi: lo + g.range().end as u64,
-            };
-            let slice = self.s.slice(pos + g.range().start..pos + g.range().end);
-            let group_name = self.interner.intern(&slice).spanned2(span);
-            let Some(group_idx) = u32::from_bytes_dec(g.as_bytes()) else {
-                return Some(Err(invalid_group(&slice, span)));
+        if let Some(g) = captures.group {
+            let group_name = self.interner.intern(&g.val).spanned2(g.span);
+            let Some(group_idx) = u32::from_bytes_dec(g.val.as_bytes()) else {
+                return Some(Err(invalid_group(&g.val, g.span)));
             };
             let Some(group_idx) = GroupIdx::new(group_idx) else {
-                return Some(Err(invalid_group(&slice, span)));
+                return Some(Err(invalid_group(&g.val, g.span)));
             };
             group = Some(IncludeGroup {
                 group_name,
@@ -163,4 +108,104 @@ impl<'a> Iterator for IncludeIter<'a> {
             group,
         }))
     }
+}
+
+struct Capture<'a> {
+    mm: Option<Spanned<MergeMode>>,
+    file: Spanned<CodeSlice<'a>>,
+    map: Option<Spanned<CodeSlice<'a>>>,
+    group: Option<Spanned<CodeSlice<'a>>>,
+    pos: usize,
+}
+
+fn capture<'a>(
+    slice: &'a CodeSlice<'static>,
+    lo: u64,
+    mut pos: usize,
+) -> Result<Capture<'a>, Spanned<ParseIncludeError>> {
+    let mut mm = None;
+    let mm_lo = lo + pos as u64;
+    match slice[pos] {
+        b'|' => {
+            mm = Some(MergeMode::Augment.spanned(mm_lo, mm_lo + 1));
+            pos += 1;
+        }
+        b'+' => {
+            mm = Some(MergeMode::Override.spanned(mm_lo, mm_lo + 1));
+            pos += 1;
+        }
+        _ => {}
+    };
+    if matches!(slice.get(pos), None | Some(b'(' | b'|' | b'+' | b':')) {
+        return Err(invalid_format(Span {
+            lo: lo + pos as u64,
+            hi: lo + pos as u64 + 1,
+        }));
+    }
+    let file_start = pos;
+    pos += 1;
+    while pos < slice.len() && !matches!(slice[pos], b'(' | b'|' | b'+' | b':') {
+        pos += 1;
+    }
+    let file_end = pos;
+    let mut map = None;
+    if pos < slice.len() && slice[pos] == b'(' {
+        pos += 1;
+        let map_start = pos;
+        if matches!(slice.get(pos), None | Some(b')')) {
+            return Err(invalid_format(Span {
+                lo: lo + pos as u64,
+                hi: lo + pos as u64 + 1,
+            }));
+        }
+        pos += 1;
+        let map_end = loop {
+            match slice.get(pos) {
+                None => {
+                    return Err(invalid_format(Span {
+                        lo: lo + pos as u64,
+                        hi: lo + pos as u64 + 1,
+                    }));
+                }
+                Some(b')') => break pos,
+                _ => pos += 1,
+            }
+        };
+        pos += 1;
+        map = Some(
+            slice
+                .slice(map_start..map_end)
+                .spanned(lo + map_start as u64, lo + map_end as u64),
+        );
+    }
+    let mut group = None;
+    if pos < slice.len() && slice[pos] == b':' {
+        pos += 1;
+        let group_start = pos;
+        if !matches!(slice.get(pos), Some(b'0'..=b'9')) {
+            return Err(invalid_format(Span {
+                lo: lo + pos as u64,
+                hi: lo + pos as u64 + 1,
+            }));
+        }
+        pos += 1;
+        while matches!(slice.get(pos), Some(b'0'..=b'9')) {
+            pos += 1;
+        }
+        let group_end = pos;
+        group = Some(
+            slice
+                .slice(group_start..group_end)
+                .spanned(lo + group_start as u64, lo + group_end as u64),
+        );
+    }
+    Ok(Capture {
+        mm,
+        file: slice
+            .slice(file_start..file_end)
+            .spanned(lo + file_start as u64, lo + file_end as u64),
+        map,
+        group,
+        pos,
+    })
 }

@@ -45,6 +45,15 @@ where
     }
 }
 
+impl<T> PartialEq<T> for Spanned<T>
+where
+    T: PartialEq,
+{
+    fn eq(&self, other: &T) -> bool {
+        &self.val == other
+    }
+}
+
 impl<T> Hash for Spanned<T>
 where
     T: Hash,

@@ -65,6 +65,7 @@ pub enum DiagnosticKind {
     InvalidGroupIndex,
     TooManyVirtualModifiers,
     IgnoringVmodRedefinition,
+    UnknownRulesEscapeSequence,
 }
 
 pub struct Diagnostic {

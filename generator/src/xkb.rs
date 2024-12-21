@@ -14,7 +14,7 @@ pub fn main() {
     std::fs::write("kbvm/src/xkb/meaning/generated.rs", output).unwrap();
 }
 
-const STRINGS: [&str; 217] = [
+const STRINGS: [&str; 220] = [
     "accel",
     "accelerate",
     "AccessXFeedback",
@@ -79,6 +79,7 @@ const STRINGS: [&str; 217] = [
     "function_keys",
     "generateKeyEvent",
     "genKeyEvent",
+    "geometry",
     "group",
     "groupname",
     "groups",
@@ -98,6 +99,7 @@ const STRINGS: [&str; 217] = [
     "kc",
     "key",
     "keycode",
+    "keycodes",
     "KEYPAD",
     "keypad_keys",
     "keys",
@@ -202,6 +204,7 @@ const STRINGS: [&str; 217] = [
     "true",
     "TWO_LEVEL",
     "type",
+    "types",
     "unlock",
     "usemodmap",
     "usemodmapmods",

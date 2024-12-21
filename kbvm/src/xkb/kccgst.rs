@@ -1,5 +1,7 @@
 pub(crate) use ast::MergeMode;
 
+#[macro_use]
+mod macros;
 mod ast;
 pub(crate) mod ast_cache;
 pub(crate) mod embedder;

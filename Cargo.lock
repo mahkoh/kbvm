@@ -357,7 +357,6 @@ dependencies = [
  "libxkbcommon-test-linker",
  "linearize",
  "parking_lot",
- "regex",
  "smallvec",
  "thiserror",
  "walkdir",
