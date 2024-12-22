@@ -24,7 +24,7 @@ fn test_round_trip(interner: &mut Interner, meaning_cache: &mut MeaningCache, pa
     let span = map.add(Some(&path), None, &code);
     let mut diag = vec![];
     let mut diagnostics = DiagnosticSink::new(&mut diag);
-    let mut lexer = Lexer::new(Some(&path), &code, span.lo);
+    let mut lexer = Lexer::new(&path, &code, span.lo);
     let mut tokens = vec![];
     let mut cache = ParserCache::default();
     println!("{}:", path.display());

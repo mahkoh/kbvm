@@ -536,7 +536,7 @@ impl VmodResolver<'_, '_, '_> {
                     _ => None,
                 });
             }
-            ConfigItemType::Compatmap(t) => {
+            ConfigItemType::Compat(t) => {
                 self.resolve_decls(&t.decls, &|d| match d {
                     CompatmapDecl::VMod(v) => Some(v),
                     _ => None,
@@ -1150,7 +1150,7 @@ impl ConfigWalker for CompatResolver<'_, '_, '_> {
 
     fn accept<'a>(&mut self, ct: &'a ConfigItemType) -> Option<&'a Decls<Self::Decl>> {
         match ct {
-            ConfigItemType::Compatmap(c) => Some(&c.decls),
+            ConfigItemType::Compat(c) => Some(&c.decls),
             _ => None,
         }
     }

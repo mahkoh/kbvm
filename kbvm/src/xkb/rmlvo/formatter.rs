@@ -42,7 +42,7 @@ impl Format for Line<'_> {
         W: Write,
     {
         match self {
-            Line::GroupAssignment(k, v) => {
+            Line::Macro(k, v) => {
                 f.write_all("! $")?;
                 f.write_interned(*k)?;
                 f.write_all(" = ")?;
@@ -106,7 +106,7 @@ impl Format for Line<'_> {
                     f.write_all(" ")?;
                     match k {
                         RuleKey::Star => f.write_all("*")?,
-                        RuleKey::Group(l) => {
+                        RuleKey::Macro(l) => {
                             f.write_all("$")?;
                             f.write_interned(*l)?;
                         }
@@ -116,7 +116,7 @@ impl Format for Line<'_> {
                 f.write_all(" =")?;
                 for v in *v {
                     f.write_all(" ")?;
-                    f.write_interned(v.ident)?;
+                    f.write_interned(v.ident.val)?;
                 }
             }
         }

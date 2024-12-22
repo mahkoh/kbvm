@@ -2,6 +2,7 @@
 mod macros;
 #[cfg(test)]
 mod formatter;
-mod lexer;
-mod parser;
+pub mod lexer;
+pub mod parser;
+pub mod resolver;
 mod token;

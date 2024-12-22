@@ -7,7 +7,7 @@ use {
         interner::{Interned, Interner},
         kccgst::{
             ast::{
-                Compatmap, CompatmapDecl, ConfigItemType, DirectOrIncluded, Geometry, GeometryDecl,
+                Compat, CompatmapDecl, ConfigItemType, DirectOrIncluded, Geometry, GeometryDecl,
                 Include, Item, ItemType, KeycodeDecl, Keycodes, ResolvedInclude, Symbols,
                 SymbolsDecl, Types, TypesDecl,
             },
@@ -77,7 +77,7 @@ impl Includer<'_, '_> {
         match ty {
             ConfigItemType::Keycodes(e) => self.process_keycodes_includes(interner, e),
             ConfigItemType::Types(e) => self.process_types_includes(interner, e),
-            ConfigItemType::Compatmap(e) => self.process_compat_includes(interner, e),
+            ConfigItemType::Compat(e) => self.process_compat_includes(interner, e),
             ConfigItemType::Symbols(e) => self.process_symbols_includes(interner, e),
             ConfigItemType::Geometry(e) => self.process_geometry_includes(interner, e),
         }
@@ -85,7 +85,7 @@ impl Includer<'_, '_> {
 
     process_ct!(process_keycodes_includes, Keycodes, KeycodeDecl, Keycodes);
     process_ct!(process_types_includes, Types, TypesDecl, Types);
-    process_ct!(process_compat_includes, Compatmap, CompatmapDecl, Compat);
+    process_ct!(process_compat_includes, Compat, CompatmapDecl, Compat);
     process_ct!(process_symbols_includes, Symbols, SymbolsDecl, Symbols);
     process_ct!(process_geometry_includes, Geometry, GeometryDecl, Geometry);
 

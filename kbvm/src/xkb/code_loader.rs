@@ -9,7 +9,7 @@ use {
         ffi::OsStr,
         io::{self},
         ops::Range,
-        path::PathBuf,
+        path::{Path, PathBuf},
         sync::Arc,
     },
     thiserror::Error,
@@ -118,6 +118,10 @@ impl Iterator for CodeIter<'_> {
                     }));
                 }
             };
+            let partial_path = Path::new(partial_path);
+            if partial_path.is_absolute() && pos > 0 {
+                return None;
+            }
             self.full_path.push(partial_path);
             let code = match std::fs::read(&self.full_path) {
                 Ok(b) => Arc::new(b),

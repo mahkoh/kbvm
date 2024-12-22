@@ -1,17 +1,24 @@
-use crate::xkb::{
-    code::Code,
-    interner::{Interned, Interner},
-    rmlvo::{
-        lexer::{Lexer, LexerError},
-        token::Token,
+use {
+    crate::xkb::{
+        code::Code,
+        interner::{Interned, Interner},
+        rmlvo::{
+            lexer::{Lexer, LexerError},
+            token::Token,
+        },
+        span::{SpanExt, Spanned},
     },
-    span::{SpanExt, Spanned},
+    std::{path::PathBuf, sync::Arc},
 };
+
+fn empty_path() -> Arc<PathBuf> {
+    Arc::new(PathBuf::from(""))
+}
 
 fn l_(interner: &mut Interner, input: &str) -> Result<Vec<Spanned<Token>>, Spanned<LexerError>> {
     let mut output = vec![];
     let code = Code::new(&input.as_bytes().to_vec().into());
-    Lexer::new(None, &code, 0).lex_line(interner, &mut output)?;
+    Lexer::new(&empty_path(), &code, 0).lex_line(interner, &mut output)?;
     Ok(output)
 }
 
@@ -98,7 +105,7 @@ fn multiple_lines() {
     "#;
     let mut interner = Interner::default();
     let code = Code::new(&input.as_bytes().to_vec().into());
-    let mut lexer = Lexer::new(None, &code, 0);
+    let mut lexer = Lexer::new(&empty_path(), &code, 0);
     let mut output = vec![];
     lexer.lex_line(&mut interner, &mut output).unwrap();
     assert_eq!(output, [token![=], token![=], token![=]]);
@@ -126,7 +133,7 @@ fn identifier() {
     let xxx = i(&mut interner, "xxx");
     let defg = i(&mut interner, "defg!{[}+");
     let code = Code::new(&input.as_bytes().to_vec().into());
-    let mut lexer = Lexer::new(None, &code, 0);
+    let mut lexer = Lexer::new(&empty_path(), &code, 0);
     let mut output = vec![];
     lexer.lex_line(&mut interner, &mut output).unwrap();
     assert_eq!(output, [Token::Ident(abcd), Token::Ident(xxx)]);

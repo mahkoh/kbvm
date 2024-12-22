@@ -2,7 +2,7 @@ use {
     crate::xkb::{
         interner::{Interned, Interner},
         kccgst::ast::{
-            Call, CallArg, Compatmap, CompatmapDecl, Component, CompositeMap, ConfigItem,
+            Call, CallArg, Compat, CompatmapDecl, Component, CompositeMap, ConfigItem,
             ConfigItemType, Coord, Decl, Decls, DirectOrIncluded, DoodadDecl, DoodadType, Expr,
             Flags, Geometry, GeometryDecl, GroupCompatDecl, Include, Included, IndicatorNameDecl,
             InterpretDecl, InterpretMatch, Item, ItemType, Key, KeyAliasDecl, KeyExprs,
@@ -182,7 +182,7 @@ impl Format for ConfigItemType {
         match self {
             ConfigItemType::Keycodes(e) => e.format(f),
             ConfigItemType::Types(e) => e.format(f),
-            ConfigItemType::Compatmap(e) => e.format(f),
+            ConfigItemType::Compat(e) => e.format(f),
             ConfigItemType::Symbols(e) => e.format(f),
             ConfigItemType::Geometry(e) => e.format(f),
         }
@@ -248,7 +248,7 @@ impl Format for TypesDecl {
     }
 }
 
-impl Format for Compatmap {
+impl Format for Compat {
     fn format<W>(&self, f: &mut Formatter<'_, W>) -> io::Result<()>
     where
         W: Write,

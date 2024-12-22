@@ -24,7 +24,7 @@ pub(crate) struct FlagWrapper {
     pub(crate) flag: Flag,
 }
 
-#[derive(Debug, CloneWithDelta)]
+#[derive(Default, Debug, CloneWithDelta)]
 pub(crate) struct Flags {
     pub(crate) flags: Vec<FlagWrapper>,
 }
@@ -49,7 +49,6 @@ pub(crate) enum ItemType {
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct CompositeMap {
-    pub(crate) ty: Spanned<Interned>,
     pub(crate) name: Option<Spanned<Interned>>,
     pub(crate) config_items: Vec<Spanned<NestedConfigItem>>,
 }
@@ -62,7 +61,6 @@ pub(crate) struct NestedConfigItem {
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct ConfigItem {
-    pub(crate) ty: Spanned<Interned>,
     pub(crate) specific: ConfigItemType,
 }
 
@@ -70,7 +68,7 @@ pub(crate) struct ConfigItem {
 pub(crate) enum ConfigItemType {
     Keycodes(Keycodes),
     Types(Types),
-    Compatmap(Compatmap),
+    Compat(Compat),
     Symbols(Symbols),
     Geometry(Geometry),
 }
@@ -134,7 +132,7 @@ pub(crate) enum TypesDecl {
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub(crate) struct Compatmap {
+pub(crate) struct Compat {
     pub(crate) name: Option<Spanned<Interned>>,
     pub(crate) decls: Decls<CompatmapDecl>,
 }

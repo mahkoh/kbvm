@@ -23,6 +23,7 @@ use {
         },
     },
     kbvm_proc::ad_hoc_display,
+    linearize::Linearize,
     std::sync::{Arc, LazyLock},
 };
 
@@ -46,13 +47,13 @@ struct Parser<'a, 'b> {
 
 #[derive(Debug)]
 pub(crate) enum Line<'a> {
-    GroupAssignment(Interned, &'a [Interned]),
+    Macro(Interned, &'a [Interned]),
     Include(Interned),
     Mapping(&'a [MappingKey], &'a [MappingValue]),
     Rule(&'a [RuleKey], &'a [RuleValue]),
 }
 
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub(crate) enum MappingKey {
     Model,
     Option,
@@ -60,16 +61,16 @@ pub(crate) enum MappingKey {
     Variant(Option<MappingKeyIndex>),
 }
 
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug, Linearize)]
 pub(crate) enum MappingValue {
     Keycodes,
-    Symbols,
     Types,
     Compat,
+    Symbols,
     Geometry,
 }
 
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub(crate) enum MappingKeyIndex {
     Single,
     First,
@@ -81,13 +82,13 @@ pub(crate) enum MappingKeyIndex {
 #[derive(Debug)]
 pub(crate) enum RuleKey {
     Star,
-    Group(Interned),
+    Macro(Interned),
     Ident(Interned),
 }
 
 #[derive(Debug)]
 pub(crate) struct RuleValue {
-    pub(crate) ident: Interned,
+    pub(crate) ident: Spanned<Interned>,
 }
 
 pub(crate) fn parse_line<'a>(
@@ -124,10 +125,6 @@ impl Parser<'_, '_> {
 
     fn try_peek(&mut self) -> Option<Spanned<Token>> {
         self.tokens.get(self.pos).copied()
-    }
-
-    fn try_peek2(&mut self) -> Option<Spanned<Token>> {
-        self.tokens.get(self.pos + 1).copied()
     }
 
     fn peek(
@@ -208,7 +205,7 @@ impl Parser<'_, '_> {
             hi = ident.span.hi;
             cache.group_assignments.push(ident.val);
         }
-        let line: Line<'a> = Line::GroupAssignment(g.val, &cache.group_assignments);
+        let line: Line<'a> = Line::Macro(g.val, &cache.group_assignments);
         Ok(line.spanned(lo, hi))
     }
 
@@ -284,7 +281,7 @@ impl Parser<'_, '_> {
         cache: &'a mut ParserCache,
     ) -> Result<Spanned<Line<'a>>, Spanned<ParserError>> {
         let lo = self.peek(RULE_KEY)?.span.lo;
-        let mut hi = lo;
+        let mut hi;
         cache.mapping_keys.clear();
         cache.mapping_values.clear();
         loop {
@@ -376,7 +373,7 @@ impl Parser<'_, '_> {
         cache.rule_keys.clear();
         cache.rule_values.clear();
         let lo = self.peek(RULE_KEY)?.span.lo;
-        let mut hi = lo;
+        let mut hi;
         loop {
             let key = self.next(RULE_KEY)?;
             hi = key.span.hi;
@@ -384,7 +381,7 @@ impl Parser<'_, '_> {
                 token![=] => break,
                 token![*] => RuleKey::Star,
                 Token::Ident(i) => RuleKey::Ident(i),
-                Token::GroupName(i) => RuleKey::Group(i),
+                Token::GroupName(i) => RuleKey::Macro(i),
                 _ => return Err(self.unexpected_token(RULE_KEY, key)),
             };
             cache.rule_keys.push(key);
@@ -392,7 +389,7 @@ impl Parser<'_, '_> {
         while self.pos < self.tokens.len() {
             let ident = self.parse_any_ident()?;
             hi = ident.span.hi;
-            cache.rule_values.push(RuleValue { ident: ident.val });
+            cache.rule_values.push(RuleValue { ident });
         }
         Ok(Line::Rule(&cache.rule_keys, &cache.rule_values).spanned(lo, hi))
     }

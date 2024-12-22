@@ -7,7 +7,7 @@ use {
         code_slice::CodeSlice,
         interner::Interner,
         rmlvo::token::Token,
-        span::{Span, SpanExt, Spanned},
+        span::{SpanExt, Spanned},
     },
     std::{path::PathBuf, sync::Arc},
     thiserror::Error,
@@ -15,7 +15,7 @@ use {
 
 #[derive(Debug)]
 pub(crate) struct Lexer {
-    path: Option<Arc<PathBuf>>,
+    path: Arc<PathBuf>,
     code: Code,
     span_lo: u64,
     pos: usize,
@@ -43,9 +43,9 @@ enum One {
 }
 
 impl Lexer {
-    pub(crate) fn new(path: Option<&Arc<PathBuf>>, code: &Code, span_lo: u64) -> Self {
+    pub(crate) fn new(path: &Arc<PathBuf>, code: &Code, span_lo: u64) -> Self {
         Self {
-            path: path.cloned(),
+            path: path.clone(),
             code: code.clone(),
             span_lo,
             pos: 0,
@@ -68,19 +68,8 @@ impl Lexer {
         Ok(())
     }
 
-    pub(crate) fn path(&self) -> Option<&Arc<PathBuf>> {
-        self.path.as_ref()
-    }
-
-    pub(crate) fn code(&self) -> &Code {
-        &self.code
-    }
-
-    pub(crate) fn span(&self) -> Span {
-        Span {
-            lo: self.span_lo,
-            hi: self.span_lo + self.code.len() as u64,
-        }
+    pub(crate) fn path(&self) -> &Arc<PathBuf> {
+        &self.path
     }
 }
 

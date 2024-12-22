@@ -69,7 +69,7 @@ macro_rules! s {
 s! {
     KeycodeDecl, Keycodes;
     TypesDecl, Types;
-    CompatmapDecl, Compatmap;
+    CompatmapDecl, Compat;
     SymbolsDecl, Symbols;
     GeometryDecl, Geometry;
 }

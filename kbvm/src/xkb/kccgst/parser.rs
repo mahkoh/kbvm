@@ -12,16 +12,16 @@ use {
             interner::{Interned, Interner},
             kccgst::{
                 ast::{
-                    Call, CallArg, Compatmap, CompatmapDecl, CompositeMap, ConfigItem,
-                    ConfigItemType, Coord, CoordAssignment, Decl, Decls, DirectOrIncluded,
-                    DoodadDecl, DoodadType, Expr, ExprAssignment, Flag, FlagWrapper, Flags,
-                    Geometry, GeometryDecl, GroupCompatDecl, Include, IndicatorNameDecl,
-                    InterpretDecl, InterpretMatch, Item, ItemType, Key, KeyAliasDecl, KeyExprs,
-                    KeyNameDecl, KeySymbolsDecl, KeyTypeDecl, KeycodeDecl, Keycodes, Keys,
-                    LedMapDecl, MergeMode, ModMapDecl, NamedParam, NestedConfigItem, Outline,
-                    OverlayDecl, OverlayItem, Path, PathComponent, PathIndex, RowBody, RowBodyItem,
-                    SectionDecl, SectionItem, ShapeDecl, ShapeDeclType, Symbols, SymbolsDecl,
-                    Types, TypesDecl, VModDecl, VModDef, Var, VarDecl, VarOrExpr,
+                    Call, CallArg, Compat, CompatmapDecl, CompositeMap, ConfigItem, ConfigItemType,
+                    Coord, CoordAssignment, Decl, Decls, DirectOrIncluded, DoodadDecl, DoodadType,
+                    Expr, ExprAssignment, Flag, FlagWrapper, Flags, Geometry, GeometryDecl,
+                    GroupCompatDecl, Include, IndicatorNameDecl, InterpretDecl, InterpretMatch,
+                    Item, ItemType, Key, KeyAliasDecl, KeyExprs, KeyNameDecl, KeySymbolsDecl,
+                    KeyTypeDecl, KeycodeDecl, Keycodes, Keys, LedMapDecl, MergeMode, ModMapDecl,
+                    NamedParam, NestedConfigItem, Outline, OverlayDecl, OverlayItem, Path,
+                    PathComponent, PathIndex, RowBody, RowBodyItem, SectionDecl, SectionItem,
+                    ShapeDecl, ShapeDeclType, Symbols, SymbolsDecl, Types, TypesDecl, VModDecl,
+                    VModDef, Var, VarDecl, VarOrExpr,
                 },
                 parser::error::{
                     CompatmapDeclExpectation, Expected, GeometryDeclExpectation,
@@ -255,7 +255,7 @@ impl Parser<'_, '_> {
                 &CompatmapDeclExpectation,
                 ty.span.lo,
                 |slf| slf.parse_compatmap_decl(),
-                |name, decls| ConfigItemType::Compatmap(Compatmap { name, decls }),
+                |name, decls| ConfigItemType::Compat(Compat { name, decls }),
             ),
             Meaning::XkbSymbols => self.parse_config_item(
                 &SymbolsDeclExpectation,
@@ -289,7 +289,6 @@ impl Parser<'_, '_> {
             self.parse_item_list(obrace.lo, Cbrace, EXPECTED, |slf| slf.parse_map_config())?;
         let hi = self.consume_token(punctuation![;])?.hi;
         let map = CompositeMap {
-            ty,
             name,
             config_items: items.val,
         };
@@ -309,10 +308,7 @@ impl Parser<'_, '_> {
         };
         let item = NestedConfigItem {
             flags,
-            item: ConfigItem {
-                ty,
-                specific: ct.val,
-            },
+            item: ConfigItem { specific: ct.val },
         };
         Ok(item.spanned(lo, ct.span.hi))
     }

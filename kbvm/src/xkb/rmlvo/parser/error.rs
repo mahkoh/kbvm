@@ -17,8 +17,6 @@ use {
 
 #[derive(Debug, Clone, Error)]
 pub(crate) enum ParserError {
-    #[error("expression is too deeply nested")]
-    TooDeeplyNested,
     #[error(
         "expected {}, but encountered EOF",
         debug_fn(|f| write_expected(f, .0.expected)),
@@ -35,11 +33,6 @@ pub(crate) enum ParserError {
         debug_fn(|f| write_actual(f, .0)),
     )]
     ExpectedEol(ActualToken),
-    #[error(
-        "could not parse integer as u32: `{}`",
-        .0.slice.as_bytes().as_bstr(),
-    )]
-    InvalidU32(InvalidU32),
     #[error(
         "expected `[` but found `{}`",
         *.0 as char,
@@ -126,7 +119,6 @@ fn write_single_expected(
         Expected::Punctuation(p) => {
             write!(f, "`{}`", punctuation_string(*p))
         }
-        Expected::GroupIndex => f.write_str("a group index"),
     }
 }
 
@@ -136,11 +128,6 @@ fn punctuation_string(p: Punctuation) -> &'static str {
         Punctuation::Times => "*",
         Punctuation::Exclam => "!",
     }
-}
-
-#[derive(Debug, Clone)]
-pub(crate) struct InvalidU32 {
-    slice: CodeSlice<'static>,
 }
 
 #[derive(Debug, Clone)]
@@ -160,7 +147,6 @@ pub(crate) enum Expected {
     Ident(&'static str),
     AnyIdent,
     AnyGroupName,
-    GroupIndex,
     Punctuation(Punctuation),
 }
 
@@ -202,11 +188,6 @@ impl Parser<'_, '_> {
         ParserError::UnexpectedToken(UnexpectedToken { expected, actual }).spanned2(token.span)
     }
 
-    pub(super) fn invalid_u32(&self, name: Spanned<Interned>) -> Spanned<ParserError> {
-        let slice = self.interner.get(name.val).to_owned();
-        ParserError::InvalidU32(InvalidU32 { slice }).spanned2(name.span)
-    }
-
     pub(super) fn index_start(
         &self,
         ident: Spanned<Interned>,
@@ -244,13 +225,6 @@ pub(super) const AFTER_EXCLAM: &[Expected] = &[
     Expected::Nested(MLVO),
 ];
 
-pub(super) const START_OF_EXCLAM: &[Expected] = &[
-    Expected::Punctuation(punctuation![!]),
-    Expected::Punctuation(punctuation![*]),
-    Expected::Ident("include"),
-    Expected::AnyIdent,
-];
-
 pub(super) const RULE_KEY: &[Expected] = &[
     Expected::Punctuation(punctuation![*]),
     Expected::Punctuation(punctuation![=]),
@@ -276,17 +250,4 @@ pub(super) const MAPPING_VALUE: &[Expected] = &[
     Expected::Ident("types"),
     Expected::Ident("compat"),
     Expected::Ident("geometry"),
-];
-
-pub(super) const RULE_KEY_KEY: &[Expected] = &[
-    Expected::Nested(MLVO),
-    Expected::Punctuation(punctuation![=]),
-];
-
-pub(super) const INDEX: &[Expected] = &[
-    Expected::Ident("single"),
-    Expected::Ident("first"),
-    Expected::Ident("later"),
-    Expected::Ident("any"),
-    Expected::GroupIndex,
 ];
