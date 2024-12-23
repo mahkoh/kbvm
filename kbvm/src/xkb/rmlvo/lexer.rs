@@ -156,6 +156,7 @@ impl LineLexer<'_> {
             self.pos += 1;
             start += 1;
         }
+        self.pos -= 1;
         while b >= b'!' && b <= b'~' && b != b'\\' {
             self.pos += 1;
             b = match self.code.get(self.pos) {
@@ -163,7 +164,7 @@ impl LineLexer<'_> {
                 Some(b) => *b,
             };
         }
-        if start + 1 == self.pos {
+        if start == self.pos {
             let lo = self.span_lo + self.pos as u64;
             return Err(UnexpectedByte(b).spanned(lo, lo + 1));
         }

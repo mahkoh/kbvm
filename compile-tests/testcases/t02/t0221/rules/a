@@ -1,0 +1,10 @@
+! $any = x y z
+
+! model = keycodes
+  $any  = a
+
+! layout = symbols
+  $any   = b
+
+! option = compat
+  $any   = c

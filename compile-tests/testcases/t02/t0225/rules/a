@@ -1,0 +1,5 @@
+!             = symbols
+              = -:%i-
+
+! layout[any] = keycodes
+  *           = -:%i-

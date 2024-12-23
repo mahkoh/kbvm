@@ -1,0 +1,6 @@
+rules = "a"
+model = "x"
+options = ["z"]
+
+[[groups]]
+layout = "y"

@@ -187,8 +187,9 @@ impl Parser<'_, '_> {
                     self.parse_mapping(cache)
                 }
             }
+            Token::Punctuation(punctuation![=]) => self.parse_mapping(cache),
             Token::GroupName(g) => self.parse_group_assignment(cache, g.spanned2(t.span)),
-            Token::Punctuation(_) => Err(self.unexpected_token(AFTER_EXCLAM, t)),
+            _ => Err(self.unexpected_token(AFTER_EXCLAM, t)),
         }
     }
 

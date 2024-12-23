@@ -35,6 +35,7 @@ pub enum DiagnosticKind {
     InvalidAction,
     RecursiveInclude,
     InvalidNumberOfRuleKeys,
+    UnexpectedRule,
     InvalidNumberOfRuleValues,
     InvalidPercentEncoding,
     InvalidIndicatorName,

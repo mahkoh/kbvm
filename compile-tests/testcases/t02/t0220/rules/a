@@ -1,0 +1,5 @@
+! model = symbols
+  x     = y
+
+! model = keycodes
+  x     = y z

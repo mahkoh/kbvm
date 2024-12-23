@@ -132,13 +132,10 @@ pub(crate) fn create_includes(
     options: &[Interned],
     groups: &[Group],
 ) -> StaticMap<MappingValue, Vec<Spanned<Include>>> {
-    if groups.is_empty() {
-        return StaticMap::default();
-    }
-
     let options: HashSet<_> = options.iter().copied().collect();
 
     let mut active_includes = HashSet::new();
+    active_includes.insert(rules.val);
     let mut macros = HashMap::new();
     let mut cache = ParserCache::default();
     let mut tokens = vec![];
@@ -153,13 +150,13 @@ pub(crate) fn create_includes(
         _ => VecDeque::new(),
     };
 
-    let mut lexers: Vec<(Option<Interned>, Lexer)> = vec![];
+    let mut lexers: Vec<(Interned, Lexer)> = vec![];
     if let Some(lexer) = create_lexer(map, interner, loader, diagnostics, rules) {
-        lexers.push((None, lexer));
+        lexers.push((rules.val, lexer));
     }
     macro_rules! pop {
         () => {
-            if let Some((Some(inc), _)) = lexers.pop() {
+            if let Some((inc, _)) = lexers.pop() {
                 active_includes.remove(&inc);
             }
         };
@@ -207,7 +204,7 @@ pub(crate) fn create_includes(
                 let lexer = create_lexer(map, interner, loader, diagnostics, i.spanned2(line.span));
                 if let Some(lexer) = lexer {
                     active.insert();
-                    lexers.push((Some(i), lexer));
+                    lexers.push((i, lexer));
                 }
             }
             Line::Mapping(k, v) => {
@@ -223,7 +220,15 @@ pub(crate) fn create_includes(
                 }
             }
             Line::Rule(k, v) => {
-                if !have_mapping || skip_to_next_mapping {
+                if !have_mapping {
+                    diagnostics.push(
+                        map,
+                        DiagnosticKind::UnexpectedRule,
+                        ad_hoc_display!("rule line without mapping").spanned2(line.span),
+                    );
+                    continue;
+                }
+                if skip_to_next_mapping {
                     continue;
                 }
                 if k.len() != mapping_keys.len() {
@@ -495,20 +500,17 @@ fn expand(
         let encoding_start = offset - 1;
         let mut encoding =
             parse_percent_encoding(bytes, &mut offset, last_was_colon, value.span.lo);
-        if let Some(e) = &encoding {
-            if let Some(Some(idx)) = e.index {
-                if idx.to_offset() >= groups.len() {
-                    encoding = None;
-                }
-            }
-        }
         let mut group = idx.map(|i| &groups[i]);
         let mut component = None;
         if let Some(e) = encoding {
             let is_group_component = matches!(e.component, Component::Layout | Component::Variant);
             if let Some(idx) = e.index {
                 if let Some(idx) = idx {
-                    group = Some(&groups[idx.to_offset()]);
+                    if idx.to_offset() >= groups.len() {
+                        encoding = None;
+                    } else {
+                        group = Some(&groups[idx.to_offset()]);
+                    }
                 }
                 if !is_group_component {
                     encoding = None;
@@ -674,9 +676,6 @@ fn parse_percent_encoding(
     };
     if bytes.is_empty() {
         return Some(pe);
-    }
-    if component == Component::Index {
-        return None;
     }
     if bytes[0] != b'[' || *bytes.last().unwrap() != b']' {
         return None;
