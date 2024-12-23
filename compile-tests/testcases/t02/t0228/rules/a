@@ -1,2 +1,2 @@
 ! layout[any] = keycodes
-  *           = %-m%-l
+  *           = %-m%-l%_l

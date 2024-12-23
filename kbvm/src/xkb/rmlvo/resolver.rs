@@ -595,7 +595,7 @@ fn find_percent_encoding_range(bytes: &[u8], offset: &mut usize) -> Option<()> {
     *offset += 1;
     if b == b'(' {
         while *offset < bytes.len() {
-            let b = bytes[*offset];
+            b = bytes[*offset];
             *offset += 1;
             if b == b')' {
                 return Some(());
