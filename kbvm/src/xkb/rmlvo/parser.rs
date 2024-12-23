@@ -4,6 +4,7 @@ mod tests;
 
 use {
     crate::{
+        config::DEFAULT_INCLUDE_DIR,
         from_bytes::FromBytes,
         xkb::{
             code::Code,
@@ -247,12 +248,13 @@ impl Parser<'_, '_> {
                         }
                     }
                     b'S' => {
-                        res.extend_from_slice(b"/usr/share/X11/xkb/rules");
-                        res.push(c);
+                        if let Some(default_include_dir) = DEFAULT_INCLUDE_DIR {
+                            res.extend_from_slice(default_include_dir.as_bytes());
+                            res.extend_from_slice(b"/rules");
+                        }
                     }
                     b'E' => {
                         res.extend_from_slice(b"/etc/xkb/rules");
-                        res.push(c);
                     }
                     _ => {
                         self.diagnostics.push(

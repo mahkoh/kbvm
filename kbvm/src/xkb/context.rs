@@ -23,7 +23,6 @@ use {
     bstr::ByteSlice,
     isnt::std_1::primitive::IsntStrExt,
     std::{
-        cmp::max,
         path::{Path, PathBuf},
         sync::Arc,
     },
@@ -53,6 +52,11 @@ pub struct Context {
     paths: Vec<Arc<PathBuf>>,
 }
 
+pub struct RmlvoGroup<'a> {
+    pub layout: &'a str,
+    pub variant: &'a str,
+}
+
 impl Context {
     pub fn add_include_path(&mut self, path: &Path) {
         self.paths.push(Arc::new(path.to_path_buf()));
@@ -63,8 +67,7 @@ impl Context {
         diagnostics: &mut DiagnosticSink,
         rules: &str,
         model: &str,
-        layouts: &[&str],
-        variants: &[&str],
+        groups: &[RmlvoGroup<'_>],
         options: &[&str],
     ) -> Keymap {
         let mut map = CodeMap::default();
@@ -81,8 +84,7 @@ impl Context {
             &mut meaning_cache,
             rules,
             model,
-            layouts,
-            variants,
+            groups,
             options,
             rmlvo::resolver::create_item,
         );
@@ -103,8 +105,7 @@ impl Context {
         diagnostics: &mut DiagnosticSink,
         rules: &str,
         model: &str,
-        layouts: &[&str],
-        variants: &[&str],
+        groups: &[RmlvoGroup<'_>],
         options: &[&str],
     ) -> Kccgst {
         let mut map = CodeMap::default();
@@ -119,8 +120,7 @@ impl Context {
             &mut meaning_cache,
             rules,
             model,
-            layouts,
-            variants,
+            groups,
             options,
             rmlvo::resolver::create_includes,
         );
@@ -154,8 +154,7 @@ impl Context {
         meaning_cache: &mut MeaningCache,
         rules: &str,
         model: &str,
-        layouts: &[&str],
-        variants: &[&str],
+        groups: &[RmlvoGroup<'_>],
         options: &[&str],
         f: impl FnOnce(
             &mut CodeMap,
@@ -176,21 +175,19 @@ impl Context {
             interner.intern(&code.to_slice()).spanned2(span)
         };
         let rules = intern(rules);
-        let model = model.trim();
         let model = model.is_not_empty().then(|| intern(model).val);
         let options: Vec<_> = options
             .iter()
             .cloned()
-            .map(|o| o.trim())
             .filter(|o| o.is_not_empty())
             .map(|o| intern(o).val)
             .collect();
-        let groups: Vec<_> = (0..max(layouts.len(), variants.len()))
+        let groups: Vec<_> = groups
             .into_iter()
-            .map(|idx| {
-                let layout = layouts.get(idx).copied().unwrap_or_default();
+            .map(|group| {
+                let layout = group.layout;
                 let layout = layout.is_not_empty().then(|| intern(layout).val);
-                let variant = variants.get(idx).copied().unwrap_or_default();
+                let variant = group.variant;
                 let variant = variant.is_not_empty().then(|| intern(variant).val);
                 Group { layout, variant }
             })

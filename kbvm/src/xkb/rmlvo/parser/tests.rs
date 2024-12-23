@@ -1,14 +1,17 @@
 use {
-    crate::xkb::{
-        code::Code,
-        code_map::CodeMap,
-        diagnostic::{Diagnostic, DiagnosticKind, DiagnosticSink},
-        interner::Interner,
-        meaning::MeaningCache,
-        rmlvo::{
-            formatter::{Format, Formatter},
-            lexer::Lexer,
-            parser::{parse_line, ParserCache},
+    crate::{
+        config::DEFAULT_INCLUDE_DIR,
+        xkb::{
+            code::Code,
+            code_map::CodeMap,
+            diagnostic::{Diagnostic, DiagnosticKind, DiagnosticSink},
+            interner::Interner,
+            meaning::MeaningCache,
+            rmlvo::{
+                formatter::{Format, Formatter},
+                lexer::Lexer,
+                parser::{parse_line, ParserCache},
+            },
         },
     },
     bstr::ByteSlice,
@@ -71,9 +74,11 @@ fn round_trip() {
             test_round_trip(&mut interner, &mut meaning_cache, f.path());
         }
     }
-    test_round_trip(
-        &mut interner,
-        &mut meaning_cache,
-        "/usr/share/X11/xkb/rules/evdev".as_ref(),
-    );
+    if let Some(default_dir) = DEFAULT_INCLUDE_DIR {
+        test_round_trip(
+            &mut interner,
+            &mut meaning_cache,
+            format!("{}/rules/evdev", default_dir).as_ref(),
+        );
+    }
 }

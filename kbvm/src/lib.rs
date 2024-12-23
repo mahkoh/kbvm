@@ -1,4 +1,5 @@
 pub mod builder;
+mod config;
 mod from_bytes;
 pub mod group_type;
 pub mod keysym;

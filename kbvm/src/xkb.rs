@@ -1,4 +1,7 @@
-pub use {context::Context, keymap::Keymap};
+pub use {
+    context::{Context, Element, Kccgst, MergeMode, RmlvoGroup},
+    keymap::Keymap,
+};
 
 #[macro_use]
 mod macros;

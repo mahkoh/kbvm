@@ -9,3 +9,5 @@ parking_lot = "0.12.3"
 thiserror = "2.0.8"
 error_reporter = "1.0.0"
 isnt = "0.1.0"
+serde = { version = "1.0.216", features = ["derive"] }
+toml = "0.8.19"

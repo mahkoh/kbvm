@@ -508,7 +508,7 @@ fn expand(
                 Component::Layout => group.and_then(|g| g.layout),
                 Component::Variant => group.and_then(|g| g.variant),
                 Component::Index => {
-                    write!(stash, ":{}", idx.unwrap() + 1).unwrap();
+                    write!(stash, "{}", idx.unwrap() + 1).unwrap();
                     break 'write_component;
                 }
             };
