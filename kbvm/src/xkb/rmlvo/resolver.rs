@@ -259,7 +259,7 @@ pub(crate) fn create_includes(
                 for (mk, rk) in mapping_keys.iter().zip(k.iter()) {
                     match mk {
                         MappingKey::Model => match rk {
-                            RuleKey::Star => continue,
+                            RuleKey::Star => { },
                             RuleKey::Macro(g) => {
                                 matches = macros
                                     .get(g)
@@ -272,7 +272,7 @@ pub(crate) fn create_includes(
                             }
                         },
                         MappingKey::Option => match rk {
-                            RuleKey::Star => continue,
+                            RuleKey::Star => { },
                             RuleKey::Macro(g) => {
                                 matches = macros
                                     .get(g)
@@ -310,6 +310,9 @@ pub(crate) fn create_includes(
                                 let Some(group) = groups.get(group_offset) else {
                                     break;
                                 };
+                                if !matched_groups[group_offset].matched_rule {
+                                    continue;
+                                }
                                 let key = match mk {
                                     MappingKey::Layout(_) => group.layout,
                                     _ => group.variant,
