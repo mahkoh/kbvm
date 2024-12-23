@@ -1,0 +1,8 @@
+rules = "evdev"
+
+model = "my_model"
+options = ["my_option"]
+
+[[groups]]
+layout = "my_layout"
+variant = "my_variant"

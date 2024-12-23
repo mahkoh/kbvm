@@ -1,0 +1,5 @@
+keycodes = "evdev+aliases(qwerty)"
+types = "complete"
+compat = "complete"
+symbols = "pc+br+inet(evdev)+apl(level3):1+typo(base):1"
+geometry = "pc(pc104)"

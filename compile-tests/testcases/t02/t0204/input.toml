@@ -1,0 +1,11 @@
+rules = "evdev-modern"
+model = "olpc"
+options = []
+
+[[groups]]
+layout = "jp"
+variant = ""
+
+[[groups]]
+layout = "es"
+variant = ""

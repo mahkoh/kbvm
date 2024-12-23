@@ -1,0 +1,7 @@
+rules = "evdev-modern"
+model = "pc104"
+options = ["misc:typo", "misc:apl"]
+
+[[groups]]
+layout = "br"
+variant = ""

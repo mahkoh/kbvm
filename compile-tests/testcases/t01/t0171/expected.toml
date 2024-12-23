@@ -1,0 +1,5 @@
+keycodes = "default_keycodes"
+types = "default_types"
+compat = "default_compat"
+symbols = "a(1)"
+geometry = ""

@@ -1,0 +1,5 @@
+keycodes = "evdev+olpc(olpc)+aliases(qwerty)"
+types = "complete"
+compat = "olpc"
+symbols = "olpc+us(olpc)+inet(evdev)"
+geometry = "pc(pc104)"

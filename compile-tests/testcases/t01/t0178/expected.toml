@@ -1,0 +1,5 @@
+keycodes = "default_keycodes"
+types = "default_types"
+compat = "default_compat"
+symbols = "symbols_a:1+symbols_y:2+layout_c:3+layout_d(extra):4+symbols_z:3+foo:1|bar:1+foo:4|bar:4"
+geometry = ""

@@ -1,0 +1,18 @@
+rules = "special_indexes"
+options = []
+
+[[groups]]
+layout = "layout_a"
+variant = ""
+
+[[groups]]
+layout = "layout_b"
+variant = ""
+
+[[groups]]
+layout = "layout_c"
+variant = ""
+
+[[groups]]
+layout = "layout_d"
+variant = ""

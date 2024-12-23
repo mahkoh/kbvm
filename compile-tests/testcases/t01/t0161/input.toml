@@ -1,0 +1,7 @@
+rules = "evdev"
+model = "my_model"
+options = ["option3", "option1", "colon:opt", "option11"]
+
+[[groups]]
+layout = "my_layout"
+variant = "my_variant"

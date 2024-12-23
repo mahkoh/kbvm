@@ -1,0 +1,13 @@
+rules = "evdev-modern"
+model = "pc104"
+options = []
+
+[[groups]]
+layout = "jp"
+variant = ""
+
+[[groups]]
+layout = "es"
+variant = ""
+
+# ENTRY("pc104", "jp,es", NULL, NULL, "complete", "", 2, false),

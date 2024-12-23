@@ -1,0 +1,6 @@
+rules = "wildcard"
+options = []
+
+[[groups]]
+layout = "a"
+variant = "1"

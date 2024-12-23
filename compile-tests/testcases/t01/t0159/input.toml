@@ -1,0 +1,9 @@
+rules = "evdev"
+options = ["my_option"]
+
+[[groups]]
+layout = "my_layout"
+variant = "my_variant"
+
+[[groups]]
+layout = "second_layout"

@@ -190,6 +190,7 @@ fn test_kccgst(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Res
     let mut diagnostics = DiagnosticSink::new(diagnostics);
     let mut context = Context::default();
     context.add_include_path(case);
+    context.add_include_path("./include".as_ref());
     let map_actual = context
         .parse_keymap(&mut diagnostics, Some(&input_path), &input)
         .map_err(ResultError::ParsingFailed)?;
@@ -316,6 +317,7 @@ fn test_rmlvo(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let mut diagnostics = DiagnosticSink::new(diagnostics);
     let mut context = Context::default();
     context.add_include_path(case);
+    context.add_include_path("./include".as_ref());
     let kccgst = context.rmlvo_to_kccgst(
         &mut diagnostics,
         &input.rules,

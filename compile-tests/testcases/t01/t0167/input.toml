@@ -1,0 +1,11 @@
+rules = "evdev"
+model = ""
+options = [""]
+
+[[groups]]
+layout = "a"
+variant = ""
+
+[[groups]]
+layout = "b"
+variant = "2"

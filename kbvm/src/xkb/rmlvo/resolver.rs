@@ -31,9 +31,10 @@ use {
         },
     },
     hashbrown::{hash_set::Entry, HashMap, HashSet},
+    isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::ad_hoc_display,
     linearize::{static_map, StaticMap},
-    std::{io::Write, path::PathBuf, sync::Arc},
+    std::{collections::VecDeque, io::Write, path::PathBuf, sync::Arc},
 };
 
 pub struct Group {
@@ -113,6 +114,13 @@ pub(crate) fn create_item(
     item
 }
 
+#[derive(Copy, Clone, Default)]
+struct GroupMatch {
+    valid_for_mapping: bool,
+    matched_rule: bool,
+    matched_rule_key: bool,
+}
+
 pub(crate) fn create_includes(
     map: &mut CodeMap,
     interner: &mut Interner,
@@ -124,6 +132,10 @@ pub(crate) fn create_includes(
     options: &[Interned],
     groups: &[Group],
 ) -> StaticMap<MappingValue, Vec<Spanned<Include>>> {
+    if groups.is_empty() {
+        return StaticMap::default();
+    }
+
     let options: HashSet<_> = options.iter().copied().collect();
 
     let mut active_includes = HashSet::new();
@@ -135,14 +147,11 @@ pub(crate) fn create_includes(
     let mut skip_to_next_mapping = false;
     let mut mapping_keys = vec![];
     let mut mapping_values = vec![];
-    let mut matched_groups = vec![(false, false); groups.len()];
+    let mut matched_groups = vec![GroupMatch::default(); groups.len()];
     let mut stash = vec![];
     let mut includes = static_map! {
-        _ => vec!(),
+        _ => VecDeque::new(),
     };
-    if groups.is_empty() {
-        return includes;
-    }
 
     let mut lexers: Vec<(Option<Interned>, Lexer)> = vec![];
     if let Some(lexer) = create_lexer(map, interner, loader, diagnostics, rules) {
@@ -209,6 +218,9 @@ pub(crate) fn create_includes(
                 mapping_keys.extend_from_slice(k);
                 mapping_values.clear();
                 mapping_values.extend_from_slice(v);
+                for gm in &mut matched_groups {
+                    gm.valid_for_mapping = true;
+                }
             }
             Line::Rule(k, v) => {
                 if !have_mapping || skip_to_next_mapping {
@@ -234,10 +246,11 @@ pub(crate) fn create_includes(
                     continue;
                 }
                 let mut matches = true;
-                for (b, _) in &mut matched_groups {
-                    *b = true;
+                for mg in &mut matched_groups {
+                    mg.matched_rule = mg.valid_for_mapping;
                 }
                 let mut matched_any_group = false;
+                let mut has_range_key = false;
                 for (mk, rk) in mapping_keys.iter().zip(k.iter()) {
                     match mk {
                         MappingKey::Model => match rk {
@@ -268,6 +281,8 @@ pub(crate) fn create_includes(
                         },
                         MappingKey::Layout(idx) | MappingKey::Variant(idx) => {
                             let idx = idx.unwrap_or(MappingKeyIndex::Single);
+                            has_range_key |=
+                                matches!(idx, MappingKeyIndex::Later | MappingKeyIndex::Any);
                             let groups_range = match idx {
                                 MappingKeyIndex::Single if groups.len() == 1 => 0..1,
                                 MappingKeyIndex::First => 0..1,
@@ -282,8 +297,8 @@ pub(crate) fn create_includes(
                                     break;
                                 }
                             };
-                            for (_, b) in &mut matched_groups {
-                                *b = false;
+                            for mg in &mut matched_groups {
+                                mg.matched_rule_key = false;
                             }
                             let mut matched_any = false;
                             for group_offset in groups_range {
@@ -305,7 +320,7 @@ pub(crate) fn create_includes(
                                 };
                                 if matches {
                                     matched_any = true;
-                                    matched_groups[group_offset].1 = true;
+                                    matched_groups[group_offset].matched_rule_key = true;
                                 }
                             }
                             if !matched_any {
@@ -314,9 +329,9 @@ pub(crate) fn create_includes(
                             }
                             matched_any_group = true;
                             let mut any_viable = false;
-                            for (g, l) in &mut matched_groups {
-                                *g &= *l;
-                                any_viable |= *g;
+                            for mg in &mut matched_groups {
+                                mg.matched_rule &= mg.matched_rule_key;
+                                any_viable |= mg.matched_rule;
                             }
                             if !any_viable {
                                 matches = false;
@@ -329,7 +344,20 @@ pub(crate) fn create_includes(
                     }
                 }
                 if matches {
-                    skip_to_next_mapping = !mapping_has_options;
+                    if !mapping_has_options {
+                        if !matched_any_group || !has_range_key {
+                            skip_to_next_mapping = true;
+                        } else {
+                            let mut any_groups_remaining = false;
+                            for mg in &mut matched_groups {
+                                mg.valid_for_mapping &= !mg.matched_rule;
+                                any_groups_remaining |= mg.valid_for_mapping;
+                            }
+                            if !any_groups_remaining {
+                                skip_to_next_mapping = true;
+                            }
+                        }
+                    }
                     for (mv, rv) in mapping_values.iter().zip(v.iter()) {
                         let mut expand = |idx: Option<usize>| {
                             expand(
@@ -347,11 +375,10 @@ pub(crate) fn create_includes(
                             );
                         };
                         if matched_any_group {
-                            for (idx, (matched, _)) in matched_groups.iter().copied().enumerate() {
-                                if !matched {
-                                    continue;
+                            for (idx, mg) in matched_groups.iter().copied().enumerate() {
+                                if mg.matched_rule {
+                                    expand(Some(idx))
                                 }
-                                expand(Some(idx))
                             }
                         } else {
                             expand(None)
@@ -362,7 +389,7 @@ pub(crate) fn create_includes(
         }
     }
 
-    includes
+    includes.map_values(|v| v.into())
 }
 
 fn expand(
@@ -376,54 +403,49 @@ fn expand(
     model: Option<Interned>,
     groups: &[Group],
     stash: &mut Vec<u8>,
-    includes: &mut Vec<Spanned<Include>>,
+    includes: &mut VecDeque<Spanned<Include>>,
 ) {
     stash.clear();
     let input = interner.get(value.val).to_owned();
-    let mut flush = |map: &mut CodeMap,
-                     interner: &mut Interner,
-                     mut mm: Option<Spanned<MergeMode>>,
-                     stash: Spanned<&mut Vec<u8>>| {
-        let mut flush_once = |map: &mut CodeMap,
-                              interner: &mut Interner,
-                              mm: Option<Spanned<MergeMode>>,
-                              stash: Spanned<&[u8]>| {
-            if stash.val.is_empty() {
-                return;
-            }
-            let mm = match mm {
-                Some(mm) => mm,
-                _ => {
-                    includes.clear();
-                    MergeMode::Include.spanned2(value.span)
-                }
+    let flush = |map: &mut CodeMap,
+                 includes: &mut VecDeque<Spanned<Include>>,
+                 interner: &mut Interner,
+                 mut mm: Option<Spanned<MergeMode>>,
+                 stash: Spanned<&mut Vec<u8>>| {
+        let mut flush_once = |mm: Option<Spanned<MergeMode>>, stash: Spanned<&[u8]>| {
+            let (prepend, mm) = match mm {
+                Some(mm) => (false, mm),
+                _ => (true, MergeMode::Include.spanned2(value.span)),
             };
             let code = Arc::new(stash.val.to_vec());
             let code = Code::new(&code);
             let code_span = map.add(Some(path), Some(include_span), &code);
             let interned = interner.intern(&code.to_slice());
-            includes.push(
-                Include {
-                    mm,
-                    path: interned.spanned2(code_span),
-                    resolved: None,
-                }
-                .spanned2(stash.span),
-            );
+            let include = Include {
+                mm,
+                path: interned.spanned2(code_span),
+                resolved: None,
+            }
+            .spanned2(stash.span);
+            if prepend {
+                includes.push_front(include);
+            } else {
+                includes.push_back(include);
+            }
         };
         if stash.val.ends_with(b":all") {
             let len = stash.val.len() - 3;
             for idx in 0..groups.len() {
                 stash.val.truncate(len);
                 write!(stash.val, "{}", idx + 1).unwrap();
-                flush_once(map, interner, mm, stash.as_ref().map(|s| &***s));
+                flush_once(mm, stash.as_ref().map(|s| &***s));
                 if mm.is_none() {
                     let lo = stash.span.lo + len as u64;
                     mm = Some(MergeMode::Override.spanned(lo, lo + 3));
                 }
             }
         } else {
-            flush_once(map, interner, mm, stash.as_ref().map(|s| &***s));
+            flush_once(mm, stash.as_ref().map(|s| &***s));
         }
         stash.val.clear();
     };
@@ -433,19 +455,33 @@ fn expand(
     let mut offset = 0;
     let mut last_was_colon;
     let mut last_was_colon_next = false;
+    macro_rules! flush {
+        ($start:expr, $end:expr) => {{
+            if stash.is_not_empty() {
+                if mm.is_none() {
+                    if let Some(first) = includes.front() {
+                        if first.val.mm.val == MergeMode::Include {
+                            return;
+                        }
+                    }
+                }
+                let lo = value.span.lo + $start as u64;
+                let hi = value.span.lo + $end as u64;
+                flush(map, includes, interner, mm, stash.spanned(lo, hi));
+            }
+        }};
+    }
     while offset < bytes.len() {
         let b = bytes[offset];
         last_was_colon = last_was_colon_next;
         last_was_colon_next = b == b':';
         if matches!(b, b'+' | b'|') {
-            let lo = value.span.lo + start as u64;
-            let hi = value.span.lo + offset as u64;
-            flush(map, interner, mm, stash.spanned(lo, hi));
+            flush!(start, offset);
             let mode = match b == b'+' {
                 true => MergeMode::Override,
                 false => MergeMode::Augment,
             };
-            let lo = hi;
+            let lo = value.span.lo + offset as u64;
             mm = Some(mode.spanned(lo, lo + 1));
             offset += 1;
             start = offset;
@@ -466,9 +502,36 @@ fn expand(
                 }
             }
         }
-        if let Some(e) = &encoding {
-            if e.component == Component::Index && idx.is_none() {
-                encoding = None;
+        let mut group = idx.map(|i| &groups[i]);
+        let mut component = None;
+        if let Some(e) = encoding {
+            let is_group_component = matches!(e.component, Component::Layout | Component::Variant);
+            if let Some(idx) = e.index {
+                if let Some(idx) = idx {
+                    group = Some(&groups[idx.to_offset()]);
+                }
+                if !is_group_component {
+                    encoding = None;
+                }
+            } else {
+                if groups.len() > 1 && is_group_component {
+                    encoding = None;
+                }
+            }
+            component = match e.component {
+                Component::Model => model,
+                Component::Layout => group.and_then(|g| g.layout),
+                Component::Variant => group.and_then(|g| g.variant),
+                Component::Index => None,
+            };
+            if e.component == Component::Index {
+                if idx.is_none() {
+                    encoding = None;
+                }
+            } else {
+                if component.is_none() {
+                    encoding = None;
+                }
             }
         }
         let encoding_end = offset;
@@ -486,9 +549,7 @@ fn expand(
             }
         };
         if let Some(new_mm) = encoding.merge_mode {
-            let lo = value.span.lo + start as u64;
-            let hi = value.span.lo + encoding_start as u64;
-            flush(map, interner, mm, stash.spanned(lo, hi));
+            flush!(start, encoding_start);
             mm = Some(new_mm);
             start = encoding_start;
         }
@@ -498,33 +559,19 @@ fn expand(
         if let Some(prefix) = encoding.prefix {
             stash.push(prefix);
         }
-        let mut group = idx.map(|i| &groups[i]);
-        if let Some(Some(idx)) = encoding.index {
-            group = Some(&groups[idx.to_offset()]);
-        }
-        'write_component: {
-            let component = match encoding.component {
-                Component::Model => model,
-                Component::Layout => group.and_then(|g| g.layout),
-                Component::Variant => group.and_then(|g| g.variant),
-                Component::Index => {
-                    write!(stash, "{}", idx.unwrap() + 1).unwrap();
-                    break 'write_component;
-                }
-            };
-            if let Some(c) = component {
-                stash.extend_from_slice(interner.get(c));
-            }
+        if let Some(c) = component {
+            stash.extend_from_slice(interner.get(c));
+        } else {
+            write!(stash, "{}", idx.unwrap() + 1).unwrap();
         }
         if encoding.parenthesize {
             stash.push(b')');
         }
     }
-    let lo = value.span.lo + start as u64;
-    let hi = value.span.lo + offset as u64;
-    flush(map, interner, mm, stash.spanned(lo, hi));
+    flush!(start, offset);
 }
 
+#[derive(Copy, Clone)]
 struct PercentEncoding {
     parenthesize: bool,
     merge_mode: Option<Spanned<MergeMode>>,

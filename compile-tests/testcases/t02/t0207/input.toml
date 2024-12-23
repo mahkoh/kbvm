@@ -1,0 +1,22 @@
+rules = "special_indexes-limit"
+options = []
+
+[[groups]]
+layout = "x1"
+variant = ""
+
+[[groups]]
+layout = "x2"
+variant = ""
+
+[[groups]]
+layout = "x3"
+variant = ""
+
+[[groups]]
+layout = "x4"
+variant = ""
+
+[[groups]]
+layout = "x5"
+variant = ""

@@ -1,0 +1,11 @@
+rules = "evdev-modern"
+model = "ataritt"
+options = []
+
+[[groups]]
+layout = "es"
+variant = ""
+
+[[groups]]
+layout = "jp"
+variant = ""

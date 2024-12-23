@@ -1,0 +1,14 @@
+rules = "evdev"
+options = ["some:opt"]
+
+[[groups]]
+layout = "br"
+
+[[groups]]
+layout = "al"
+
+[[groups]]
+layout = "cn"
+
+[[groups]]
+layout = "az"
