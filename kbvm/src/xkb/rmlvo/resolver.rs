@@ -516,9 +516,6 @@ fn expand(
                         group = Some(&groups[idx.to_offset()]);
                     }
                 }
-                if !is_group_component {
-                    encoding = None;
-                }
             } else {
                 if groups.len() > 1 && is_group_component {
                     encoding = None;
@@ -610,10 +607,10 @@ fn find_percent_encoding_range(bytes: &[u8], offset: &mut usize) -> Option<()> {
         b = *bytes.get(*offset)?;
         *offset += 1;
     }
-    if b == b'i' {
+    if matches!(b, b'i' | b'm') {
         return Some(());
     }
-    if !matches!(b, b'm' | b'l' | b'v') {
+    if !matches!(b, b'l' | b'v') {
         return None;
     }
     if let Some(&b) = bytes.get(*offset) {
@@ -679,6 +676,9 @@ fn parse_percent_encoding(
     };
     if bytes.is_empty() {
         return Some(pe);
+    }
+    if !matches!(b, b'l' | b'v') {
+        return None;
     }
     if bytes[0] != b'[' || *bytes.last().unwrap() != b']' {
         return None;
