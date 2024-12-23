@@ -95,7 +95,7 @@ impl LineLexer<'_> {
         let mut b;
         loop {
             while self.pos < self.code.len() {
-                if matches!(self.code[self.pos], b' ' | b'\t' | b'\r') {
+                if matches!(self.code[self.pos], b' ' | b'\t') {
                     self.pos += 1;
                 } else {
                     break;
