@@ -23,6 +23,7 @@ use {
             span::{Span, SpanExt, Spanned},
         },
     },
+    bstr::ByteVec,
     kbvm_proc::ad_hoc_display,
     linearize::Linearize,
     std::sync::{Arc, LazyLock},
@@ -229,6 +230,7 @@ impl Parser<'_, '_> {
                 let lo = ident.span.lo + offset as u64 - 1;
                 let hi = lo + 2;
                 match c {
+                    b'%' => res.extend_from_slice(b"%"),
                     b'H' => {
                         static HOME: LazyLock<Option<Vec<u8>>> = LazyLock::new(|| {
                             std::env::var_os("HOME").map(|v| v.into_encoded_bytes())
