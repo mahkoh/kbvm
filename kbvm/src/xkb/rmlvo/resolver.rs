@@ -503,6 +503,7 @@ fn expand(
         let encoding_start = offset - 1;
         let mut encoding =
             parse_percent_encoding(bytes, &mut offset, last_was_colon, value.span.lo);
+        let encoding_end = offset;
         let mut group = idx.map(|i| &groups[i]);
         let mut component = None;
         if let Some(e) = encoding {
@@ -539,7 +540,6 @@ fn expand(
                 }
             }
         }
-        let encoding_end = offset;
         let encoding = match encoding {
             Some(e) => e,
             _ => {
