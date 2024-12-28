@@ -946,7 +946,6 @@ impl Parser<'_, '_> {
         mm: Option<Spanned<MergeMode>>,
         t: Spanned<Token>,
     ) -> DeclCandidate {
-        // println!("{:?}", t);
         match t.val {
             Token::KeyName(i) => DeclCandidate::KeyName(i),
             token![!] => DeclCandidate::Var(t.val),
