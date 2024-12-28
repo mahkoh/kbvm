@@ -4,9 +4,9 @@ use {
         kccgst::ast::{
             Call, CallArg, Compat, CompatmapDecl, Component, CompositeMap, ConfigItem,
             ConfigItemType, Coord, Decl, Decls, DirectOrIncluded, DoodadDecl, DoodadType, Expr,
-            Flags, Geometry, GeometryDecl, GroupCompatDecl, Include, Included, IndicatorNameDecl,
-            InterpretDecl, InterpretMatch, Item, ItemType, Key, KeyAliasDecl, KeyExprs,
-            KeyNameDecl, KeySymbolsDecl, KeyTypeDecl, KeycodeDecl, Keycodes, Keys, LedMapDecl,
+            Flags, Geometry, GeometryDecl, GroupCompatDecl, Include, Included, IndicatorMapDecl,
+            IndicatorNameDecl, InterpretDecl, InterpretMatch, Item, ItemType, Key, KeyAliasDecl,
+            KeyExprs, KeyNameDecl, KeySymbolsDecl, KeyTypeDecl, KeycodeDecl, Keycodes, Keys,
             MergeMode, ModMapDecl, NamedParam, NestedConfigItem, Outline, OverlayDecl, Path,
             RowBody, RowBodyItem, SectionDecl, SectionItem, ShapeDecl, ShapeDeclType, Symbols,
             SymbolsDecl, Types, TypesDecl, VModDecl, VModDef, Var, VarDecl, VarOrExpr,
@@ -335,7 +335,7 @@ impl Format for GeometryDecl {
             GeometryDecl::Var(e) => e.format(f),
             GeometryDecl::Shape(e) => e.format(f),
             GeometryDecl::Section(e) => e.format(f),
-            GeometryDecl::LedMap(e) => e.format(f),
+            GeometryDecl::IndicatorMap(e) => e.format(f),
             GeometryDecl::Doodad(e) => e.format(f),
         }
     }
@@ -663,13 +663,13 @@ impl Format for SectionItem {
             SectionItem::Row(e) => e.format(f),
             SectionItem::Var(e) => e.format(f),
             SectionItem::Doodad(e) => e.format(f),
-            SectionItem::LedMap(e) => e.format(f),
+            SectionItem::IndicatorMap(e) => e.format(f),
             SectionItem::Overlay(e) => e.format(f),
         }
     }
 }
 
-impl Format for LedMapDecl {
+impl Format for IndicatorMapDecl {
     fn format<W>(&self, f: &mut Formatter<'_, W>) -> io::Result<()>
     where
         W: Write,

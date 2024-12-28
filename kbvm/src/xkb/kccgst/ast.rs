@@ -142,7 +142,7 @@ pub(crate) enum CompatmapDecl {
     Include(Include),
     Interpret(InterpretDecl),
     GroupCompat(GroupCompatDecl),
-    IndicatorMap(LedMapDecl),
+    IndicatorMap(IndicatorMapDecl),
     Var(VarDecl),
     VMod(VModDecl),
 }
@@ -175,7 +175,7 @@ pub(crate) enum GeometryDecl {
     Var(VarDecl),
     Shape(ShapeDecl),
     Section(SectionDecl),
-    LedMap(LedMapDecl),
+    IndicatorMap(IndicatorMapDecl),
     Doodad(DoodadDecl),
 }
 
@@ -248,7 +248,7 @@ pub(crate) struct GroupCompatDecl {
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub(crate) struct LedMapDecl {
+pub(crate) struct IndicatorMapDecl {
     pub(crate) name: Spanned<Interned>,
     pub(crate) decls: Vec<Spanned<VarDecl>>,
 }
@@ -309,7 +309,7 @@ pub(crate) enum SectionItem {
     Row(RowBody),
     Var(VarDecl),
     Doodad(DoodadDecl),
-    LedMap(LedMapDecl),
+    IndicatorMap(IndicatorMapDecl),
     Overlay(OverlayDecl),
 }
 

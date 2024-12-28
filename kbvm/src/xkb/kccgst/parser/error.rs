@@ -65,7 +65,7 @@ fn write_decl_candidate(f: &mut Formatter<'_>, actual: DeclCandidate) -> fmt::Re
         DeclCandidate::KeyName(_) => "a key name",
         DeclCandidate::Keys => "a keys declaration",
         DeclCandidate::KeyType => "a key type declaration",
-        DeclCandidate::LedMap => "an indicator mapping",
+        DeclCandidate::IndicatorMap => "an indicator mapping",
         DeclCandidate::IndicatorName(_) => "an indicator declaration",
         DeclCandidate::ModMap => "a mod-map declaration",
         DeclCandidate::Overlay => "an overlay declaration",

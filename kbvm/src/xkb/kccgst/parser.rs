@@ -15,11 +15,11 @@ use {
                     Call, CallArg, Compat, CompatmapDecl, CompositeMap, ConfigItem, ConfigItemType,
                     Coord, CoordAssignment, Decl, Decls, DirectOrIncluded, DoodadDecl, DoodadType,
                     Expr, ExprAssignment, Flag, FlagWrapper, Flags, Geometry, GeometryDecl,
-                    GroupCompatDecl, Include, IndicatorNameDecl, InterpretDecl, InterpretMatch,
-                    Item, ItemType, Key, KeyAliasDecl, KeyExprs, KeyNameDecl, KeySymbolsDecl,
-                    KeyTypeDecl, KeycodeDecl, Keycodes, Keys, LedMapDecl, MergeMode, ModMapDecl,
-                    NamedParam, NestedConfigItem, Outline, OverlayDecl, OverlayItem, Path,
-                    PathComponent, PathIndex, RowBody, RowBodyItem, SectionDecl, SectionItem,
+                    GroupCompatDecl, Include, IndicatorMapDecl, IndicatorNameDecl, InterpretDecl,
+                    InterpretMatch, Item, ItemType, Key, KeyAliasDecl, KeyExprs, KeyNameDecl,
+                    KeySymbolsDecl, KeyTypeDecl, KeycodeDecl, Keycodes, Keys, MergeMode,
+                    ModMapDecl, NamedParam, NestedConfigItem, Outline, OverlayDecl, OverlayItem,
+                    Path, PathComponent, PathIndex, RowBody, RowBodyItem, SectionDecl, SectionItem,
                     ShapeDecl, ShapeDeclType, Symbols, SymbolsDecl, Types, TypesDecl, VModDecl,
                     VModDef, Var, VarDecl, VarOrExpr,
                 },
@@ -69,7 +69,7 @@ enum DeclCandidate {
     KeyName(Interned),
     Keys,
     KeyType,
-    LedMap,
+    IndicatorMap,
     IndicatorName(Option<Span>),
     ModMap,
     Overlay,
@@ -194,7 +194,9 @@ impl Parser<'_, '_> {
     fn parse_item(&mut self) -> Result<Spanned<Item>, Spanned<ParserError>> {
         let flags = self.parse_flags();
         let i = self.parse_ident()?;
-        let meaning = self.meaning_cache.get_case_insensitive(self.interner, i.val);
+        let meaning = self
+            .meaning_cache
+            .get_case_insensitive(self.interner, i.val);
         let map = match meaning {
             Meaning::XkbKeymap | Meaning::XkbSemantics | Meaning::XkbLayout => {
                 self.parse_composite_map(i)?.map(ItemType::Composite)
@@ -369,7 +371,7 @@ impl Parser<'_, '_> {
                 DeclCandidate::GroupCompat => slf
                     .parse_group_compat_decl(span.lo)
                     .span_map(CompatmapDecl::GroupCompat),
-                DeclCandidate::LedMap => slf
+                DeclCandidate::IndicatorMap => slf
                     .parse_led_map_decl(span.lo)
                     .span_map(CompatmapDecl::IndicatorMap),
                 DeclCandidate::Var(t) => slf
@@ -420,9 +422,9 @@ impl Parser<'_, '_> {
                 DeclCandidate::Section => slf
                     .parse_section_decl(span.lo)
                     .span_map(GeometryDecl::Section),
-                DeclCandidate::LedMap => slf
+                DeclCandidate::IndicatorMap => slf
                     .parse_led_map_decl(span.lo)
-                    .span_map(GeometryDecl::LedMap),
+                    .span_map(GeometryDecl::IndicatorMap),
                 DeclCandidate::Doodad(meaning) => slf
                     .parse_doodad_decl(meaning.spanned2(span))
                     .span_map(GeometryDecl::Doodad),
@@ -704,7 +706,10 @@ impl Parser<'_, '_> {
         Ok(ty.spanned(lo, hi))
     }
 
-    fn parse_led_map_decl(&mut self, lo: u64) -> Result<Spanned<LedMapDecl>, Spanned<ParserError>> {
+    fn parse_led_map_decl(
+        &mut self,
+        lo: u64,
+    ) -> Result<Spanned<IndicatorMapDecl>, Spanned<ParserError>> {
         let name = self.parse_string()?;
         let obrace = self.consume_token(Obrace)?;
         let decls = self.parse_item_list(
@@ -714,7 +719,7 @@ impl Parser<'_, '_> {
             |slf| slf.parse_var_decl(None),
         )?;
         let hi = self.consume_token(punctuation![;])?.hi;
-        let decl = LedMapDecl {
+        let decl = IndicatorMapDecl {
             name,
             decls: decls.val,
         };
@@ -863,9 +868,9 @@ impl Parser<'_, '_> {
             DeclCandidate::Overlay => self
                 .parse_overlay_decl(t.span.lo)
                 .span_map(SectionItem::Overlay),
-            DeclCandidate::LedMap => self
+            DeclCandidate::IndicatorMap => self
                 .parse_led_map_decl(t.span.lo)
-                .span_map(SectionItem::LedMap),
+                .span_map(SectionItem::IndicatorMap),
             DeclCandidate::Doodad(m) => self
                 .parse_doodad_decl(m.spanned2(t.span))
                 .span_map(SectionItem::Doodad),
@@ -972,7 +977,7 @@ impl Parser<'_, '_> {
                     Meaning::Indicator => {
                         if let Some(next) = self.try_peek() {
                             if matches!(next.val, Token::String(_)) {
-                                return DeclCandidate::LedMap;
+                                return DeclCandidate::IndicatorMap;
                             }
                         }
                         DeclCandidate::IndicatorName(None)
