@@ -372,7 +372,7 @@ impl Parser<'_, '_> {
                     .parse_group_compat_decl(span.lo)
                     .span_map(CompatmapDecl::GroupCompat),
                 DeclCandidate::IndicatorMap => slf
-                    .parse_led_map_decl(span.lo)
+                    .parse_indicator_map_decl(span.lo)
                     .span_map(CompatmapDecl::IndicatorMap),
                 DeclCandidate::Var(t) => slf
                     .parse_var_decl(Some(t.spanned2(span)))
@@ -423,7 +423,7 @@ impl Parser<'_, '_> {
                     .parse_section_decl(span.lo)
                     .span_map(GeometryDecl::Section),
                 DeclCandidate::IndicatorMap => slf
-                    .parse_led_map_decl(span.lo)
+                    .parse_indicator_map_decl(span.lo)
                     .span_map(GeometryDecl::IndicatorMap),
                 DeclCandidate::Doodad(meaning) => slf
                     .parse_doodad_decl(meaning.spanned2(span))
@@ -706,7 +706,7 @@ impl Parser<'_, '_> {
         Ok(ty.spanned(lo, hi))
     }
 
-    fn parse_led_map_decl(
+    fn parse_indicator_map_decl(
         &mut self,
         lo: u64,
     ) -> Result<Spanned<IndicatorMapDecl>, Spanned<ParserError>> {
@@ -869,7 +869,7 @@ impl Parser<'_, '_> {
                 .parse_overlay_decl(t.span.lo)
                 .span_map(SectionItem::Overlay),
             DeclCandidate::IndicatorMap => self
-                .parse_led_map_decl(t.span.lo)
+                .parse_indicator_map_decl(t.span.lo)
                 .span_map(SectionItem::IndicatorMap),
             DeclCandidate::Doodad(m) => self
                 .parse_doodad_decl(m.spanned2(t.span))
