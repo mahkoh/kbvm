@@ -295,7 +295,7 @@ fn eval_i64(
         Expr::UnMinus(v) => fwd!(v).checked_neg().ok_or(Overflow),
         Expr::UnPlus(v) => Ok(fwd!(v)),
         Expr::UnNot(v) => Ok((fwd!(v) == 0) as i64),
-        Expr::UnInverse(v) => Ok(!fwd!(v)),
+        Expr::UnInverse(v) => Ok(!fwd!(v) & u32::MAX as i64),
         Expr::Path(p) => p.unique_ident().ok_or(UnknownValue).and_then(f),
         Expr::Integer(_, i) if allow_literal => Ok(*i),
         Expr::Parenthesized(p) => Ok(fwd!(p)),
