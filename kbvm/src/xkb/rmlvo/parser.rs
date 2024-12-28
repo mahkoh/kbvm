@@ -23,7 +23,6 @@ use {
             span::{Span, SpanExt, Spanned},
         },
     },
-    bstr::ByteVec,
     kbvm_proc::ad_hoc_display,
     linearize::Linearize,
     std::sync::{Arc, LazyLock},

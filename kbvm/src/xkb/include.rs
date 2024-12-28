@@ -46,7 +46,7 @@ pub(crate) fn parse_include(interner: &mut Interner, include: Spanned<Interned>)
         s: interner.get(include.val).to_owned(),
         interner,
         pos: 0,
-        span_lo: include.span.lo,
+        span_lo: include.span.lo + 1,
         first: true,
     }
 }
