@@ -28,7 +28,7 @@ impl AstCacheError {
 
 fn show_map(f: &mut Formatter<'_>, map: &Option<CodeSlice<'_>>) -> fmt::Result {
     if let Some(m) = map {
-        write!(f, ":{}", m.as_bytes().as_bstr())?;
+        write!(f, "({})", m.as_bytes().as_bstr())?;
     }
     Ok(())
 }
