@@ -107,9 +107,14 @@ impl AstCache {
         let mut first_emitted = false;
         let desired_map = file_map.map(MapName::Named).unwrap_or(MapName::Default);
         loop {
-            let idx = match value.map_names.entry(desired_map) {
-                Entry::Occupied(o) => *o.get(),
-                _ => loop {
+            let idx = 'get_idx: {
+                if let Entry::Occupied(o) = value.map_names.entry(desired_map) {
+                    if !matches!(value.maps[*o.get()].tokens_or_item, TokensOrItem::Invalid) {
+                        break 'get_idx *o.get();
+                    }
+                    o.remove();
+                }
+                loop {
                     let Some(lexer) = value.lexers.front_mut() else {
                         if desired_map == MapName::Default {
                             let first = value
@@ -200,7 +205,7 @@ impl AstCache {
                     {
                         break idx;
                     }
-                },
+                }
             };
             let entry = &mut value.maps[idx];
             let new_span = map.add(Some(&entry.file), Some(include_span), &entry.code);

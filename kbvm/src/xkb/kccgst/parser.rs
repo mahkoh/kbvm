@@ -194,9 +194,7 @@ impl Parser<'_, '_> {
     fn parse_item(&mut self) -> Result<Spanned<Item>, Spanned<ParserError>> {
         let flags = self.parse_flags();
         let i = self.parse_ident()?;
-        let meaning = self
-            .meaning_cache
-            .get_case_insensitive(self.interner, i.val);
+        let meaning = self.meaning_cache.get_case_insensitive(self.interner, i.val);
         let map = match meaning {
             Meaning::XkbKeymap | Meaning::XkbSemantics | Meaning::XkbLayout => {
                 self.parse_composite_map(i)?.map(ItemType::Composite)
