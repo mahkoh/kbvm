@@ -1481,13 +1481,17 @@ pub(crate) fn eval_symbols_field(
         }
         Meaning::Repeating | Meaning::Repeats | Meaning::Repeat => {
             deny_idx!();
-            let e = eval_interned(get_expr!(MissingSymbolsRepeatingValue))?;
-            let meaning = meaning_cache.get_case_insensitive(interner, e.val);
-            let repeating = match meaning {
-                Meaning::True | Meaning::Yes | Meaning::On => Some(true),
-                Meaning::False | Meaning::No | Meaning::Off => Some(false),
-                Meaning::Default => None,
-                _ => return Err(UnknownSymbolsRepeatingValue.spanned2(e.span)),
+            let repeating = if expr.is_none() {
+                Some(boolean()?)
+            } else {
+                let e = eval_interned(get_expr!(MissingSymbolsRepeatingValue))?;
+                let meaning = meaning_cache.get_case_insensitive(interner, e.val);
+                match meaning {
+                    Meaning::True | Meaning::Yes | Meaning::On => Some(true),
+                    Meaning::False | Meaning::No | Meaning::Off => Some(false),
+                    Meaning::Default => None,
+                    _ => return Err(UnknownSymbolsRepeatingValue.spanned2(e.span)),
+                }
             };
             SymbolsField::Repeating(repeating)
         }
