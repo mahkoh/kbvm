@@ -70,6 +70,7 @@ pub enum DiagnosticKind {
     TooManyVirtualModifiers,
     IgnoringVmodRedefinition,
     UnknownRulesEscapeSequence,
+    UsingFirstInsteadOfDefault,
 }
 
 pub struct Diagnostic {

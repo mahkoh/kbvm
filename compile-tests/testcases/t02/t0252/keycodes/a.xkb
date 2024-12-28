@@ -1,0 +1,7 @@
+partial xkb_keycodes {
+    <a> = 1;
+};
+
+default xkb_keycodes {
+    <a> = 2;
+};

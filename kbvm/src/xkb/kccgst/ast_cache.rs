@@ -44,6 +44,7 @@ struct SeenMap {
 
 #[derive(Debug)]
 enum TokensOrItem {
+    Invalid,
     Tokens(Vec<Spanned<Token>>),
     Item(Spanned<Item>),
 }
@@ -51,8 +52,15 @@ enum TokensOrItem {
 #[derive(Debug)]
 struct Value {
     lexers: VecDeque<Lexer>,
-    default_name: Option<Option<Interned>>,
-    maps: HashMap<Option<Interned>, SeenMap>,
+    maps: Vec<SeenMap>,
+    map_names: HashMap<MapName, usize>,
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+enum MapName {
+    Unnamed,
+    Default,
+    Named(Interned),
 }
 
 impl AstCache {
@@ -65,7 +73,7 @@ impl AstCache {
         meaning_cache: &mut MeaningCache,
         ty: CodeType,
         file: Interned,
-        mut file_map: Option<Interned>,
+        file_map: Option<Interned>,
         include_span: Span,
     ) -> Result<Spanned<Item>, Spanned<AstCacheError>> {
         let key = FileKey { ty, file };
@@ -91,23 +99,39 @@ impl AstCache {
                     .collect();
                 v.insert(Value {
                     lexers,
-                    default_name: None,
                     maps: Default::default(),
+                    map_names: Default::default(),
                 })
             }
         };
-        let real_file_map = file_map;
-        if file_map.is_none() {
-            if let Some(default_name) = value.default_name {
-                file_map = default_name;
-            }
-        }
+        let mut first_emitted = false;
+        let desired_map = file_map.map(MapName::Named).unwrap_or(MapName::Default);
         loop {
-            let mut entry = match value.maps.entry(file_map) {
-                Entry::Occupied(o) => o,
+            let idx = match value.map_names.entry(desired_map) {
+                Entry::Occupied(o) => *o.get(),
                 _ => loop {
                     let Some(lexer) = value.lexers.front_mut() else {
-                        return Err(not_found(interner, file, real_file_map, include_span));
+                        if desired_map == MapName::Default {
+                            let first = value
+                                .maps
+                                .iter()
+                                .position(|m| !matches!(m.tokens_or_item, TokensOrItem::Invalid));
+                            if let Some(first) = first {
+                                if !first_emitted {
+                                    first_emitted = true;
+                                    diagnostics.push(
+                                        map,
+                                        DiagnosticKind::UsingFirstInsteadOfDefault,
+                                        ad_hoc_display!(
+                                            "default map not found, using first instead"
+                                        )
+                                        .spanned2(include_span),
+                                    );
+                                }
+                                break first;
+                            }
+                        }
+                        return Err(not_found(interner, file, file_map, include_span));
                     };
                     let mut tokens = vec![];
                     match lexer.lex_item(interner, &mut tokens) {
@@ -139,13 +163,16 @@ impl AstCache {
                         );
                         continue;
                     }
+                    let seen_map = SeenMap {
+                        file: lexer.path().unwrap().clone(),
+                        code: lexer.code().clone(),
+                        span: lexer.span(),
+                        tokens_or_item: TokensOrItem::Tokens(tokens),
+                    };
+                    let idx = value.maps.len();
+                    value.maps.push(seen_map);
                     if let Some(default) = default {
-                        if value.default_name.is_none() {
-                            value.default_name = Some(name_ns);
-                            if file_map.is_none() {
-                                file_map = name_ns;
-                            }
-                        } else {
+                        if value.map_names.try_insert(MapName::Default, idx).is_err() {
                             diagnostics.push(
                                 map,
                                 DiagnosticKind::MultipleDefaultItems,
@@ -154,50 +181,46 @@ impl AstCache {
                             );
                         }
                     }
-                    let seen_map = SeenMap {
-                        file: lexer.path().unwrap().clone(),
-                        code: lexer.code().clone(),
-                        span: lexer.span(),
-                        tokens_or_item: TokensOrItem::Tokens(tokens),
-                    };
-                    let map = match value.maps.entry(name_ns) {
+                    let map_name = name_ns.map(MapName::Named).unwrap_or(MapName::Unnamed);
+                    match value.map_names.entry(map_name) {
                         Entry::Occupied(_) => {
                             diagnostics.push(
                                 map,
                                 DiagnosticKind::DuplicateItemName,
                                 ad_hoc_display!("duplicate item name in file")
-                                    .spanned2(name.map(|n| n.span).or(default).unwrap_or(ty.span)),
+                                    .spanned2(name.map(|n| n.span).unwrap_or(ty.span)),
                             );
-                            continue;
                         }
-                        Entry::Vacant(v) => v.insert_entry(seen_map),
-                    };
-                    if file_map == name_ns {
-                        break map;
+                        Entry::Vacant(v) => {
+                            v.insert_entry(idx);
+                        }
+                    }
+                    if desired_map == map_name
+                        || (default.is_some() && desired_map == MapName::Default)
+                    {
+                        break idx;
                     }
                 },
             };
-            let new_span = map.add(
-                Some(&entry.get().file),
-                Some(include_span),
-                &entry.get().code,
-            );
-            let delta = new_span.lo - entry.get().span.lo;
-            match &entry.get().tokens_or_item {
+            let entry = &mut value.maps[idx];
+            let new_span = map.add(Some(&entry.file), Some(include_span), &entry.code);
+            let delta = new_span.lo - entry.span.lo;
+            match &entry.tokens_or_item {
+                TokensOrItem::Invalid => {}
+                TokensOrItem::Item(item) => return Ok(item.clone_with_delta(delta)),
                 TokensOrItem::Tokens(t) => {
                     match parse_item(map, diagnostics, interner, meaning_cache, &t, delta) {
                         Ok(item) => {
                             let ret = item.clone_with_delta(delta);
-                            entry.get_mut().tokens_or_item = TokensOrItem::Item(item);
+                            entry.tokens_or_item = TokensOrItem::Item(item);
                             return Ok(ret);
                         }
                         Err(e) => {
                             diagnostics.push(map, e.val.diagnostic_kind(), e);
-                            entry.remove();
+                            entry.tokens_or_item = TokensOrItem::Invalid;
                         }
                     }
                 }
-                TokensOrItem::Item(item) => return Ok(item.clone_with_delta(delta)),
             }
         }
     }
