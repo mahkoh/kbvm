@@ -432,7 +432,7 @@ fn expand(
             let include = Include {
                 mm,
                 path: interned.spanned2(code_span),
-                resolved: None,
+                loaded: None,
             }
             .spanned2(stash.span);
             if prepend {

@@ -1,7 +1,7 @@
 use crate::xkb::{
     kccgst::ast::{
         CompatmapDecl, Component, ConfigItemType, Decl, Decls, DirectOrIncluded, GeometryDecl,
-        Included, Item, ItemType, KeycodeDecl, ResolvedInclude, SymbolsDecl, TypesDecl,
+        Included, Item, ItemType, KeycodeDecl, LoadedInclude, SymbolsDecl, TypesDecl,
     },
     span::Spanned,
 };
@@ -44,9 +44,9 @@ macro_rules! s {
                 fn embed(decl: &mut DirectOrIncluded<Self>) {
                     if let DirectOrIncluded::Direct(x) = decl {
                         if let $decl::Include(i) = x {
-                            if let Some(resolved) = i.resolved.take() {
+                            if let Some(loaded) = i.loaded.take() {
                                 let mut components = vec!();
-                                embed_config_item_type2(&mut components, resolved);
+                                embed_config_item_type2(&mut components, loaded);
                                 *decl = DirectOrIncluded::Included(Included {
                                     components,
                                 });
@@ -74,7 +74,7 @@ s! {
     GeometryDecl, Geometry;
 }
 
-fn embed_config_item_type2<T: Embeddable>(dst: &mut Vec<Component<T>>, src: Vec<ResolvedInclude>) {
+fn embed_config_item_type2<T: Embeddable>(dst: &mut Vec<Component<T>>, src: Vec<LoadedInclude>) {
     for el in src {
         let mut decls = match el.item.val.ty {
             ItemType::Composite(_) => vec![],

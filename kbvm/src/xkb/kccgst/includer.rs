@@ -8,7 +8,7 @@ use {
         kccgst::{
             ast::{
                 Compat, CompatmapDecl, ConfigItemType, DirectOrIncluded, Geometry, GeometryDecl,
-                Include, Item, ItemType, KeycodeDecl, Keycodes, ResolvedInclude, Symbols,
+                Include, Item, ItemType, KeycodeDecl, Keycodes, LoadedInclude, Symbols,
                 SymbolsDecl, Types, TypesDecl,
             },
             ast_cache::AstCache,
@@ -90,7 +90,7 @@ impl Includer<'_, '_> {
     process_ct!(process_geometry_includes, Geometry, GeometryDecl, Geometry);
 
     fn process_include(&mut self, interner: &mut Interner, include: &mut Include, ty: CodeType) {
-        let resolved = include.resolved.get_or_insert_default();
+        let resolved = include.loaded.get_or_insert_default();
         let mut iter = parse_include(interner, include.path);
         while let Some(i) = iter.next() {
             let i = match i {
@@ -127,7 +127,7 @@ impl Includer<'_, '_> {
             match res {
                 Ok(mut item) => {
                     self.process_includes(iter.interner(), &mut item.val);
-                    resolved.push(ResolvedInclude {
+                    resolved.push(LoadedInclude {
                         mm: i.merge_mode,
                         group: i.group,
                         item,

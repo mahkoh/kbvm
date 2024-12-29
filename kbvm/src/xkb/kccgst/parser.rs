@@ -441,7 +441,7 @@ impl Parser<'_, '_> {
         let ty = Include {
             mm,
             path,
-            resolved: None,
+            loaded: None,
         };
         Ok(ty.spanned2(path.span))
     }

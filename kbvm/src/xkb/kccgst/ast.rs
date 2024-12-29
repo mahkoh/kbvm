@@ -374,11 +374,11 @@ pub(crate) struct VModDef {
 pub(crate) struct Include {
     pub(crate) mm: Spanned<MergeMode>,
     pub(crate) path: Spanned<Interned>,
-    pub(crate) resolved: Option<Vec<ResolvedInclude>>,
+    pub(crate) loaded: Option<Vec<LoadedInclude>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub(crate) struct ResolvedInclude {
+pub(crate) struct LoadedInclude {
     pub(crate) mm: Option<Spanned<MergeMode>>,
     pub(crate) item: Spanned<Item>,
     pub(crate) group: Option<IncludeGroup>,
