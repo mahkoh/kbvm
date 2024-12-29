@@ -58,7 +58,7 @@ macro_rules! s {
                 fn unwrap_decls(i: ConfigItemType) -> Vec<Spanned<Decl<Self>>> {
                     match i {
                         ConfigItemType::$var(s) => s.decls.decls,
-                        _ => unreachable!(),
+                        _ => vec!(),
                     }
                 }
             }

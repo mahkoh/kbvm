@@ -20,8 +20,8 @@ use {
     thiserror::Error,
 };
 
-// const SINGLE: Option<&str> = Some("t0277");
-const SINGLE: Option<&str> = None;
+const SINGLE: Option<&str> = Some("t0281");
+// const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
 const WRITE_FAILED: bool = false;
 const SHOW_ALL_DIAGNOSTICS_IF_SINGLE: bool = true;
