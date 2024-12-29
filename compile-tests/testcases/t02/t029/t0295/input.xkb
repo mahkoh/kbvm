@@ -1,0 +1,7 @@
+xkb_keymap {
+    xkb_compat {
+        indicator "Caps Lock" {
+            groups=Group;
+        };
+    };
+};
