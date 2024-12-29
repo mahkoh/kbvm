@@ -38,12 +38,18 @@ fn main() {
         }
         for f in read_dir(f.path()).unwrap() {
             let f = f.unwrap();
-            if let Some(s) = SINGLE {
-                if f.file_name() != s {
-                    continue;
-                }
+            if !f.metadata().unwrap().is_dir() {
+                continue;
             }
-            cases.push(f.path());
+            for f in read_dir(f.path()).unwrap() {
+                let f = f.unwrap();
+                if let Some(s) = SINGLE {
+                    if f.file_name() != s {
+                        continue;
+                    }
+                }
+                cases.push(f.path());
+            }
         }
     }
     let results = Arc::new(Results {
