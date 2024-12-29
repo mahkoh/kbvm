@@ -1,0 +1,12 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        key <a> {
+            redirectgroups = Group2,
+            redirectgroups[0] = Group3,
+            [ A ],
+        };
+    };
+};
