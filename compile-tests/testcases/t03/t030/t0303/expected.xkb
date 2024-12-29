@@ -1,0 +1,31 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 8;
+
+        virtual indicator 1 = "A";
+        virtual indicator 2 = "B";
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+    };
+
+    xkb_compat {
+        indicator "A" {
+            modifiers = Mod1;
+            whichModState = Base+Locked+Effective;
+        };
+        indicator "B" {
+            modifiers = Mod1;
+            whichModState = Base+Locked+Effective;
+        };
+
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+    };
+};

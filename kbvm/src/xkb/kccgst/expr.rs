@@ -28,7 +28,7 @@ use {
     },
     isnt::std_1::primitive::IsntU8SliceExt,
     smallvec::SmallVec,
-    std::ops::{BitOr, Deref, Not},
+    std::ops::{BitAnd, BitOr, Deref, Not},
     thiserror::Error,
     EvalError::*,
 };
@@ -313,7 +313,7 @@ fn eval_keyed_mask<T>(
     f: &mut impl FnMut(Meaning) -> Result<T, EvalError>,
 ) -> Result<Spanned<T>, Spanned<EvalError>>
 where
-    T: BitOr<Output = T> + Not<Output = T>,
+    T: BitAnd<Output = T> + BitOr<Output = T> + Not<Output = T>,
 {
     macro_rules! fwd {
         ($val:expr) => {
@@ -328,7 +328,7 @@ where
         }),
         Expr::Parenthesized(p) => Ok(fwd!(p)),
         Expr::Add(l, r) => Ok(fwd!(l) | fwd!(r)),
-        Expr::Sub(l, r) => Ok(fwd!(l) | !fwd!(r)),
+        Expr::Sub(l, r) => Ok(fwd!(l) & !fwd!(r)),
         _ => Err(UnsupportedExpressionType),
     };
     res.span_either(expr.span)
