@@ -1,1 +1,1 @@
-xkb_keycodes { } };
+default xkb_keycodes { } };
