@@ -1,0 +1,13 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 99;
+    };
+    xkb_symbols {
+        key <a> {
+            [
+                LatchGroup(group = +Group2, latchToLock),
+                LatchGroup(group = -Group3, latchToLock),
+            ],
+        };
+    };
+};
