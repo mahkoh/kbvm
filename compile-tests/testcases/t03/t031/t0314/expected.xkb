@@ -1,0 +1,50 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 8;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 1;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+
+        type "ONE_LEVEL" {
+            modifiers = None;
+            level_name[Level1] = "Any";
+            map[None] = Level1;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        key.repeat = true;
+
+        key <a> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            type[Group2] = "ONE_LEVEL",
+            type[Group3] = "ONE_LEVEL",
+            type[Group4] = "ONE_LEVEL",
+            type[Group5] = "ONE_LEVEL",
+            type[Group6] = "ONE_LEVEL",
+            type[Group7] = "ONE_LEVEL",
+            type[Group8] = "ONE_LEVEL",
+            actions[Group1] = [ SetMods(modifiers = Shift) ],
+            actions[Group2] = [ SetMods(modifiers = Lock) ],
+            actions[Group3] = [ SetMods(modifiers = Control) ],
+            actions[Group4] = [ SetMods(modifiers = Mod1) ],
+            actions[Group5] = [ SetMods(modifiers = Mod2) ],
+            actions[Group6] = [ SetMods(modifiers = Mod3) ],
+            actions[Group7] = [ SetMods(modifiers = Mod4) ],
+            actions[Group8] = [ SetMods(modifiers = Mod5) ]
+        };
+    };
+};
