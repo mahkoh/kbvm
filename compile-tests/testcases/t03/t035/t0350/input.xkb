@@ -1,0 +1,20 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        key <a> {
+            symbols = [ any, A, any, any ],
+            symbols.symbols = [ B ],
+            symbols[0].symbols = [ B ],
+            symbols.symbols[0] = [ B ],
+            symbols[0] = [ B ],
+            [ { SetMods(mods = Mod1), SetMods(mods = Mod2) }],
+            repeats = true,
+            repeats[0] = false,
+            type = "FOUR_LEVEL",
+            type,
+            !type,
+        };
+    };
+};
