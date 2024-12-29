@@ -232,18 +232,13 @@ fn get_idx(
             }
         }
         let map_name = name_ns.map(MapName::Named).unwrap_or(MapName::Unnamed);
-        match value.map_names.entry(map_name) {
-            Entry::Occupied(_) => {
-                diagnostics.push(
-                    map,
-                    DiagnosticKind::DuplicateItemName,
-                    ad_hoc_display!("duplicate item name in file")
-                        .spanned2(name.map(|n| n.span).unwrap_or(ty.span)),
-                );
-            }
-            Entry::Vacant(v) => {
-                v.insert_entry(idx);
-            }
+        if value.map_names.try_insert(map_name, idx).is_err() {
+            diagnostics.push(
+                map,
+                DiagnosticKind::DuplicateItemName,
+                ad_hoc_display!("duplicate item name in file")
+                    .spanned2(name.map(|n| n.span).unwrap_or(ty.span)),
+            );
         }
         if desired_map == map_name || (default.is_some() && desired_map == MapName::Default) {
             return Ok(idx);
