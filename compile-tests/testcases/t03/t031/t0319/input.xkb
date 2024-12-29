@@ -1,0 +1,20 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+    };
+    xkb_compat {
+        interpret any + any {
+            action = SetMods(mods = Mod1);
+        };
+    };
+    xkb_symbols {
+        key <a> {
+            [ A ],
+        };
+        key <b> {
+            [ A ],
+        };
+        modmap Mod2 { <b> };
+    };
+};
