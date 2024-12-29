@@ -156,7 +156,7 @@ pub(crate) fn eval_group_mask(
             Meaning::None => return Ok(0),
             _ => {}
         };
-        let num = parse_u32_str_prefix(interner, i, "group").ok_or(UnknownGroup)?;
+        let num = parse_u32_1_to_32_str_prefix(interner, i, "group").ok_or(UnknownGroup)?;
         Ok(1 << (num - 1))
     })
     .span_map(GroupMask)
@@ -202,7 +202,7 @@ pub(crate) fn eval_level(
         .span_either(res.span)
 }
 
-fn parse_u32_str_prefix(interner: &Interner, i: Interned, prefix: &str) -> Option<u32> {
+fn parse_u32_1_to_32_str_prefix(interner: &Interner, i: Interned, prefix: &str) -> Option<u32> {
     let n = interner.get(i);
     let len = prefix.len();
     if n.len() < len {
@@ -228,7 +228,7 @@ fn eval_u32_str_prefix(
     err: EvalError,
 ) -> Result<Spanned<u32>, Spanned<EvalError>> {
     eval_u32(true, expr, |i| {
-        parse_u32_str_prefix(interner, i, prefix)
+        parse_u32_1_to_32_str_prefix(interner, i, prefix)
             .map(|num| num as _)
             .ok_or(err)
     })
@@ -241,7 +241,7 @@ fn eval_i32_str_prefix(
     err: EvalError,
 ) -> Result<Spanned<i32>, Spanned<EvalError>> {
     let res = eval_i64(true, expr, &mut |i| {
-        parse_u32_str_prefix(interner, i, prefix)
+        parse_u32_1_to_32_str_prefix(interner, i, prefix)
             .map(|num| num as _)
             .ok_or(err)
     })?;
