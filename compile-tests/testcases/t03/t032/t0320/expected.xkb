@@ -1,0 +1,69 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 8;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 1;
+        <b> = 2;
+        <c> = 3;
+        <d> = 4;
+        <e> = 5;
+        <f> = 6;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+
+        type "ONE_LEVEL" {
+            modifiers = None;
+            level_name[Level1] = "Any";
+            map[None] = Level1;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        modmap Mod2 { <a> };
+        modmap Mod2 { <b> };
+        modmap Mod2 { <c> };
+        modmap Mod2 { <d> };
+        modmap Mod2 { <e> };
+        modmap Mod2 { <f> };
+
+        key.repeat = true;
+
+        key <a> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ A ]
+        };
+        key <b> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ B ]
+        };
+        key <c> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ C ],
+            actions[Group1] = [ SetMods(modifiers = Mod3) ]
+        };
+        key <d> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ D ]
+        };
+        key <e> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ E ]
+        };
+        key <f> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ F ]
+        };
+    };
+};
