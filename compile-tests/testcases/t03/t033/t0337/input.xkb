@@ -1,0 +1,16 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_compat {
+        virtual_modifiers A;
+
+        interpret any {
+            virtualmod = A;
+        };
+    };
+    xkb_symbols {
+        key <a> { [ A ] };
+        modmap Mod1 { <a> };
+    };
+};

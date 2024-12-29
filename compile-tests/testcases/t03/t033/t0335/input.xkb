@@ -1,0 +1,20 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+    };
+    xkb_compat {
+        interpret.repeat;
+        interpret any {
+            !repeat;
+        };
+        !interpret.repeat;
+        interpret B {
+            repeat;
+        };
+    };
+    xkb_symbols {
+        key <a> { [ A ] };
+        key <b> { [ B ] };
+    };
+};
