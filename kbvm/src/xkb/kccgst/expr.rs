@@ -684,7 +684,7 @@ impl ActionParameters for ResolvedModsSet {
                 )?);
             }
             _ => {
-                return Err(EvalError::UnsupportedParameter.spanned2(meaning.span));
+                return Err(UnsupportedParameter.spanned2(meaning.span));
             }
         }
         Ok(())

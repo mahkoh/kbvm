@@ -1,0 +1,12 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        key <a> {
+            [ SetMods(mods = modmapmods) ],
+            [ SetMods(mods = usemodmapmods) ],
+        };
+        modmap Mod2 { <a> };
+    };
+};
