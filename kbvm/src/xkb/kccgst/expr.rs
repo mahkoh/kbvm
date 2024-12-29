@@ -150,7 +150,7 @@ pub(crate) fn eval_group_mask(
     meaning_cache: &mut MeaningCache,
     expr: Spanned<&Expr>,
 ) -> Result<Spanned<GroupMask>, Spanned<EvalError>> {
-    eval_u32(true, expr, |i| {
+    eval_u32(expr, |i| {
         match meaning_cache.get_case_insensitive(interner, i) {
             Meaning::All => return Ok(u32::MAX as _),
             Meaning::None => return Ok(0),
@@ -227,7 +227,7 @@ fn eval_u32_str_prefix(
     prefix: &str,
     err: EvalError,
 ) -> Result<Spanned<u32>, Spanned<EvalError>> {
-    eval_u32(true, expr, |i| {
+    eval_u32(expr, |i| {
         parse_u32_1_to_32_str_prefix(interner, i, prefix)
             .map(|num| num as _)
             .ok_or(err)
@@ -240,7 +240,7 @@ fn eval_i32_str_prefix(
     prefix: &str,
     err: EvalError,
 ) -> Result<Spanned<i32>, Spanned<EvalError>> {
-    let res = eval_i64(true, expr, &mut |i| {
+    let res = eval_i64(expr, &mut |i| {
         parse_u32_1_to_32_str_prefix(interner, i, prefix)
             .map(|num| num as _)
             .ok_or(err)
@@ -251,11 +251,10 @@ fn eval_i32_str_prefix(
 }
 
 pub(crate) fn eval_u32(
-    allow_literal: bool,
     expr: Spanned<&Expr>,
     mut f: impl FnMut(Interned) -> Result<i64, EvalError>,
 ) -> Result<Spanned<u32>, Spanned<EvalError>> {
-    u32::try_from(eval_i64(allow_literal, expr, &mut f)?.val)
+    u32::try_from(eval_i64(expr, &mut f)?.val)
         .map_err(|_| Overflow)
         .span_either(expr.span)
 }
@@ -277,13 +276,12 @@ pub(crate) fn eval_group_change(
 }
 
 fn eval_i64(
-    allow_literal: bool,
     expr: Spanned<&Expr>,
     f: &mut impl FnMut(Interned) -> Result<i64, EvalError>,
 ) -> Result<Spanned<i64>, Spanned<EvalError>> {
     macro_rules! fwd {
         ($val:expr) => {
-            eval_i64(allow_literal, $val.deref().as_ref(), f)?.val
+            eval_i64($val.deref().as_ref(), f)?.val
         };
     }
     macro_rules! bi {
@@ -297,7 +295,7 @@ fn eval_i64(
         Expr::UnNot(v) => Ok((fwd!(v) == 0) as i64),
         Expr::UnInverse(v) => Ok(!fwd!(v) & u32::MAX as i64),
         Expr::Path(p) => p.unique_ident().ok_or(UnknownValue).and_then(f),
-        Expr::Integer(_, i) if allow_literal => Ok(*i),
+        Expr::Integer(_, i) => Ok(*i),
         Expr::Parenthesized(p) => Ok(fwd!(p)),
         Expr::Mul(l, r) => bi!(checked_mul, l, r),
         Expr::Div(l, r) => bi!(checked_div, l, r),
