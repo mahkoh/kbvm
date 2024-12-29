@@ -163,28 +163,7 @@ fn get_idx(
         }
         o.remove();
     }
-    loop {
-        let Some(lexer) = value.lexers.front_mut() else {
-            if desired_map == MapName::Default {
-                let first = value
-                    .maps
-                    .iter()
-                    .position(|m| !matches!(m.tokens_or_item, TokensOrItem::Invalid));
-                if let Some(first) = first {
-                    if !*first_emitted {
-                        *first_emitted = true;
-                        diagnostics.push(
-                            map,
-                            DiagnosticKind::UsingFirstInsteadOfDefault,
-                            ad_hoc_display!("default map not found, using first instead")
-                                .spanned2(include_span),
-                        );
-                    }
-                    return Ok(first);
-                }
-            }
-            return Err(not_found(interner, file, file_map, include_span));
-        };
+    while let Some(lexer) = value.lexers.front_mut() {
         let mut tokens = vec![];
         match lexer.lex_item(interner, &mut tokens) {
             Ok(_) if tokens.is_empty() => {
@@ -244,4 +223,23 @@ fn get_idx(
             return Ok(idx);
         }
     }
+    if desired_map == MapName::Default {
+        let first = value
+            .maps
+            .iter()
+            .position(|m| !matches!(m.tokens_or_item, TokensOrItem::Invalid));
+        if let Some(first) = first {
+            if !*first_emitted {
+                *first_emitted = true;
+                diagnostics.push(
+                    map,
+                    DiagnosticKind::UsingFirstInsteadOfDefault,
+                    ad_hoc_display!("default map not found, using first instead")
+                        .spanned2(include_span),
+                );
+            }
+            return Ok(first);
+        }
+    }
+    Err(not_found(interner, file, file_map, include_span))
 }
