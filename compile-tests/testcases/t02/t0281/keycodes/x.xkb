@@ -1,2 +1,2 @@
-default xkb_symbols {
+default xkb_keymap {
 };

@@ -77,7 +77,7 @@ s! {
 fn embed_config_item_type2<T: Embeddable>(dst: &mut Vec<Component<T>>, src: Vec<ResolvedInclude>) {
     for el in src {
         let mut decls = match el.item.val.ty {
-            ItemType::Composite(_) => unreachable!(),
+            ItemType::Composite(_) => vec![],
             ItemType::Config(c) => T::unwrap_decls(c),
         };
         for decl in &mut decls {
