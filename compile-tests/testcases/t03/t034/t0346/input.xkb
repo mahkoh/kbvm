@@ -1,0 +1,33 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_types {
+        type "ONE_LEVEL" {
+            modifiers = Mod1;
+            modifiers[0] = Mod2;
+            modifiers[0].modifiers = Mod2;
+            modifiers.modifiers[0] = Mod2;
+            modifiers.modifiers = Mod2;
+            modifiers;
+            !modifiers;
+            map[Mod1] = Level2;
+            map = Level3;
+            map[Mod1];
+            !map[Mod1];
+            xyz = "";
+            preserve[Mod1] = Mod2;
+            preserve = Mod1;
+            preserve[Mod1];
+            !preserve[Mod1];
+            level_name[Level1] = "abc";
+            LEVELNAME[Level2] = "def";
+            levelname[Level2] = 1;
+            levelname[Level2];
+            !levelname[Level2];
+        };
+    };
+    xkb_symbols {
+        key <a> { [ A ] };
+    };
+};
