@@ -1,0 +1,5 @@
+xkb_keymap {
+    xkb_symbols {
+        modmap Mod1 { <a> };
+    };
+};
