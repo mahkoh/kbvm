@@ -881,7 +881,7 @@ fn handle_action_global<T: ActionParameters>(
     span: Span,
 ) -> Result<(), Spanned<EvalError>> {
     let cs = &var.path.val.components;
-    if cs.len() != 2 || cs[1].index.is_some() {
+    if cs.len() != 2 || cs[0].index.is_some() || cs[1].index.is_some() {
         return Err(UnsupportedParameter.spanned2(span));
     }
     let c = &cs[1];
