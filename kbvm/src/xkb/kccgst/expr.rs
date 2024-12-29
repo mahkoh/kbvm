@@ -658,7 +658,7 @@ impl ActionParameters for ResolvedNoAction {
         meaning: Spanned<Meaning>,
         _value: Spanned<ActionParameterValue<'_>>,
     ) -> Result<(), Spanned<EvalError>> {
-        Err(EvalError::UnsupportedParameter.spanned2(meaning.span))
+        Err(UnsupportedParameter.spanned2(meaning.span))
     }
 }
 
