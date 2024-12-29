@@ -246,8 +246,8 @@ fn eval_i32_str_prefix(
             .ok_or(err)
     })?;
     i32::try_from(res.val)
-        .map(|v| v.spanned2(res.span))
-        .map_err(|_| Overflow.spanned2(expr.span))
+        .map_err(|_| Overflow)
+        .span_either(res.span)
 }
 
 pub(crate) fn eval_u32(
