@@ -1,0 +1,16 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_compat {
+        interpret noSymbol + NoneOf(Mod1) {
+            action = SetMods(mods = Mod1);
+        };
+        interpret noSymbol + NoneOf(Mod2) {
+            action = SetMods(mods = Mod2);
+        };
+    };
+    xkb_symbols {
+        key <a> { [ A ] };
+    };
+};
