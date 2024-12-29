@@ -716,7 +716,7 @@ impl ActionParameters for ResolvedModsLatch {
                 )?);
             }
             _ => {
-                return Err(EvalError::UnsupportedParameter.spanned2(meaning.span));
+                return Err(UnsupportedParameter.spanned2(meaning.span));
             }
         }
         Ok(())
@@ -799,7 +799,7 @@ impl ActionParameters for ResolvedGroupLatch {
                 self.latch_to_lock = Some(boolean!(interner, meaning_cache, value)?)
             }
             _ => {
-                return Err(EvalError::UnsupportedParameter.spanned2(meaning.span));
+                return Err(UnsupportedParameter.spanned2(meaning.span));
             }
         }
         Ok(())
