@@ -29,15 +29,15 @@ xkb_keymap {
 
         key <a> {
             type[Group1] = "ONE_LEVEL",
-            type[Group4] = "ONE_LEVEL",
             type[Group5] = "ONE_LEVEL",
             type[Group6] = "ONE_LEVEL",
             type[Group7] = "ONE_LEVEL",
+            type[Group8] = "ONE_LEVEL",
             symbols[Group1] = [ A ],
-            symbols[Group4] = [ 0 ],
-            symbols[Group5] = [ 3 ],
-            symbols[Group6] = [ 9 ],
-            symbols[Group7] = [ 0x0000000a ]
+            symbols[Group5] = [ 0 ],
+            symbols[Group6] = [ 3 ],
+            symbols[Group7] = [ 9 ],
+            symbols[Group8] = [ 0x0000000a ]
         };
     };
 };
