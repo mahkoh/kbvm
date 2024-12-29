@@ -1,0 +1,13 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        key <a> {
+            [ SetMods(mods = ~Mod1) ],
+            [ SetMods(mods = 6) ],
+            [ SetMods(mods = 1 * 1) ],
+            [ SetMods(mods = all - (all - Mod1)) ],
+        };
+    };
+};
