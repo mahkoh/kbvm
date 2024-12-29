@@ -70,7 +70,10 @@ impl<'a> Iterator for IncludeIter<'a> {
         }
         let captures = match capture(&self.s, self.span_lo, self.pos) {
             Ok(c) => c,
-            Err(e) => return Some(Err(e)),
+            Err(e) => {
+                self.pos = self.s.len();
+                return Some(Err(e));
+            }
         };
         self.pos = captures.pos;
         let file = captures.file;
@@ -152,13 +155,6 @@ fn capture<'a>(
     if pos < slice.len() && slice[pos] == b'(' {
         pos += 1;
         let map_start = pos;
-        if matches!(slice.get(pos), None | Some(b')')) {
-            return Err(invalid_format(Span {
-                lo: lo + pos as u64,
-                hi: lo + pos as u64 + 1,
-            }));
-        }
-        pos += 1;
         let map_end = loop {
             match slice.get(pos) {
                 None => {
