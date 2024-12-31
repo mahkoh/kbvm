@@ -52,6 +52,8 @@ pub(crate) fn create_item(
     model: Option<Interned>,
     options: &[Interned],
     groups: &[Group],
+    max_includes: u64,
+    home: Option<&[u8]>,
 ) -> Item {
     let includes = create_includes(
         map,
@@ -63,6 +65,8 @@ pub(crate) fn create_item(
         model,
         options,
         groups,
+        max_includes,
+        home,
     );
     fn to_decls<T>(includes: Vec<Spanned<Include>>, map: impl Fn(Include) -> T) -> Decls<T> {
         Decls {
@@ -131,6 +135,8 @@ pub(crate) fn create_includes(
     model: Option<Interned>,
     options: &[Interned],
     groups: &[Group],
+    max_includes: u64,
+    home: Option<&[u8]>,
 ) -> StaticMap<MappingValue, Vec<Spanned<Include>>> {
     let options: HashSet<_> = options.iter().copied().collect();
 
@@ -146,6 +152,7 @@ pub(crate) fn create_includes(
     let mut mapping_values = vec![];
     let mut matched_groups = vec![GroupMatch::default(); groups.len()];
     let mut stash = vec![];
+    let mut num_includes_processed = 0;
     let mut includes = static_map! {
         _ => VecDeque::new(),
     };
@@ -165,7 +172,7 @@ pub(crate) fn create_includes(
     while let Some((_, lexer)) = lexers.last_mut() {
         tokens.clear();
         if let Err(e) = lexer.lex_line(interner, &mut tokens) {
-            diagnostics.push(map, DiagnosticKind::SyntaxError, e);
+            diagnostics.push(map, e.val.diagnostic_kind(), e);
             pop!();
             continue;
         }
@@ -180,6 +187,7 @@ pub(crate) fn create_includes(
             &mut cache,
             meaning_cache,
             &tokens,
+            home,
         ) {
             Ok(l) => l,
             Err(e) => {
@@ -192,6 +200,15 @@ pub(crate) fn create_includes(
                 macros.insert(n, v.to_vec());
             }
             Line::Include(i) => {
+                num_includes_processed += 1;
+                if num_includes_processed >= max_includes {
+                    diagnostics.push(
+                        map,
+                        DiagnosticKind::MaxIncludesReached,
+                        ad_hoc_display!("maximum number of includes reached").spanned2(line.span),
+                    );
+                    continue;
+                }
                 let active = active_includes.entry(i);
                 if matches!(active, Entry::Occupied(_)) {
                     diagnostics.push(

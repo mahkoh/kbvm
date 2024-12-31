@@ -49,7 +49,7 @@ fn test_round_trip(interner: &mut Interner, meaning_cache: &mut MeaningCache, pa
         let line = match line {
             Ok(l) => l,
             Err(e) => {
-                let diag = Diagnostic::new(&mut map, DiagnosticKind::SyntaxError, e.val, e.span);
+                let diag = Diagnostic::new(&mut map, e.val.diagnostic_kind(), e.val, e.span);
                 panic!("{}", diag.with_code());
             }
         };

@@ -50,7 +50,13 @@ pub(crate) enum ParserError {
 
 impl ParserError {
     pub(crate) fn diagnostic_kind(&self) -> DiagnosticKind {
-        DiagnosticKind::SyntaxError
+        match self {
+            ParserError::TooDeeplyNested => DiagnosticKind::TooDeeplyNested,
+            ParserError::ExpectedButEof(_) => DiagnosticKind::UnexpectedEof,
+            ParserError::UnexpectedDeclCandidate(_) => DiagnosticKind::UnexpectedDeclaration,
+            ParserError::UnexpectedToken(_) => DiagnosticKind::UnexpectedToken,
+            ParserError::InvalidU32(_) => DiagnosticKind::U32Overflow,
+        }
     }
 }
 

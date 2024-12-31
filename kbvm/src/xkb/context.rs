@@ -47,9 +47,22 @@ pub struct Kccgst {
     pub geometry: Vec<Element>,
 }
 
-#[derive(Default)]
 pub struct Context {
     paths: Vec<Arc<PathBuf>>,
+    max_includes: u64,
+    max_include_depth: u64,
+    home: Option<Vec<u8>>,
+}
+
+impl Default for Context {
+    fn default() -> Self {
+        Self {
+            paths: vec![],
+            max_includes: 1024,
+            max_include_depth: 128,
+            home: None,
+        }
+    }
 }
 
 pub struct RmlvoGroup<'a> {
@@ -166,6 +179,8 @@ impl Context {
             Option<Interned>,
             &[Interned],
             &[Group],
+            u64,
+            Option<&[u8]>,
         ) -> T,
     ) -> T {
         let mut intern = |s: &str| {
@@ -202,6 +217,8 @@ impl Context {
             model,
             &options,
             &groups,
+            self.max_includes,
+            self.home.as_deref(),
         )
     }
 
@@ -284,6 +301,8 @@ impl Context {
             interner,
             meaning_cache,
             item,
+            self.max_includes,
+            self.max_include_depth,
         );
         embed(item);
         let resolved = resolve(map, diagnostics, interner, meaning_cache, cooker, item);

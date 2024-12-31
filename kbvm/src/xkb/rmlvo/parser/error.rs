@@ -52,7 +52,14 @@ pub(crate) enum ParserError {
 
 impl ParserError {
     pub(crate) fn diagnostic_kind(&self) -> DiagnosticKind {
-        DiagnosticKind::SyntaxError
+        match self {
+            ParserError::ExpectedButEof(_) => DiagnosticKind::UnexpectedEof,
+            ParserError::UnexpectedToken(_) => DiagnosticKind::UnexpectedToken,
+            ParserError::ExpectedEol(_) => DiagnosticKind::ExpectedEol,
+            ParserError::IndexStart(_) => DiagnosticKind::ExpectedIndexStart,
+            ParserError::IndexEnd(_) => DiagnosticKind::ExpectedIndexEnd,
+            ParserError::Index(_) => DiagnosticKind::InvalidMatcherIndex,
+        }
     }
 }
 
@@ -174,7 +181,7 @@ impl Parser<'_, '_> {
         }
     }
 
-    pub(super) fn expected_eof(&self, token: Spanned<Token>) -> Spanned<ParserError> {
+    pub(super) fn expected_eol(&self, token: Spanned<Token>) -> Spanned<ParserError> {
         let actual = self.token_to_actual(token);
         ParserError::ExpectedEol(actual).spanned2(token.span)
     }

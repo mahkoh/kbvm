@@ -5,6 +5,7 @@ use {
     crate::xkb::{
         code::Code,
         code_slice::CodeSlice,
+        diagnostic::DiagnosticKind,
         interner::Interner,
         rmlvo::token::Token,
         span::{SpanExt, Spanned},
@@ -30,10 +31,19 @@ struct LineLexer<'a> {
 
 #[derive(Debug, Error, Eq, PartialEq)]
 pub(crate) enum LexerError {
-    #[error("Unterminated group name")]
-    UnterminatedGroupName,
+    #[error("empty macro name")]
+    EmptyMacroName,
     #[error("Unexpected byte {:?}", *.0 as char)]
     UnexpectedByte(u8),
+}
+
+impl LexerError {
+    pub(crate) fn diagnostic_kind(&self) -> DiagnosticKind {
+        match self {
+            LexerError::EmptyMacroName => DiagnosticKind::EmptyMacroName,
+            LexerError::UnexpectedByte(_) => DiagnosticKind::UnlexableByte,
+        }
+    }
 }
 
 enum One {
@@ -146,13 +156,13 @@ impl LineLexer<'_> {
             };
             return Ok(One::Token(t.spanned(lo, lo + 1)));
         }
-        let mut is_group = false;
+        let mut is_macro = false;
         if b == b'$' {
             b = match self.code.get(self.pos) {
                 Some(b) => *b,
-                _ => return Err(UnterminatedGroupName.spanned(lo, lo + 1)),
+                _ => return Err(EmptyMacroName.spanned(lo, lo + 1)),
             };
-            is_group = true;
+            is_macro = true;
             self.pos += 1;
             start += 1;
         }
@@ -170,7 +180,7 @@ impl LineLexer<'_> {
         }
         let end = self.pos;
         let value = self.interner.intern(&self.code.slice(start..end));
-        let token = match is_group {
+        let token = match is_macro {
             true => Token::GroupName(value),
             false => Token::Ident(value),
         };

@@ -47,7 +47,7 @@ fn warning() {
     let (c, d) = cook_(r#"\n\777\n"#);
     assert_eq!(c, "\n\n");
     assert_eq!(d.len(), 1);
-    assert_eq!(d[0].kind(), DiagnosticKind::OctalOverflow);
+    assert_eq!(d[0].kind(), DiagnosticKind::OctalStringEscapeOverflow);
 
     let (c, d) = cook_(r#"\n\q\n"#);
     assert_eq!(c, "\n\n");

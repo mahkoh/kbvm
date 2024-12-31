@@ -188,7 +188,7 @@ fn get_idx(
         if ty.val != key.ty {
             diagnostics.push(
                 map,
-                DiagnosticKind::UnexpectedConfigItemType,
+                DiagnosticKind::UnexpectedItemType,
                 ad_hoc_display!("unexpected item type").spanned2(ty.span),
             );
             continue;

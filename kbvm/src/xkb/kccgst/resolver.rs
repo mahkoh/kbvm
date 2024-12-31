@@ -598,7 +598,7 @@ impl VmodResolver<'_, '_, '_> {
                     match res {
                         Ok(m) => Some(m),
                         Err(e) => {
-                            self.r.diag(DiagnosticKind::InvalidModifierValue, e);
+                            self.r.diag(e.val.diagnostic_kind(), e);
                             continue;
                         }
                     }
@@ -807,8 +807,8 @@ impl ConfigWalker for KeycodesResolver<'_, '_, '_> {
                     }
                 }
                 self.r.diag(
-                    DiagnosticKind::UnknownVariable,
-                    ad_hoc_display!("unknown variable").spanned2(span),
+                    DiagnosticKind::UnknownKeycodesVariable,
+                    ad_hoc_display!("unknown keycodes variable").spanned2(span),
                 );
             }
             KeycodeDecl::IndicatorName(e) => {
@@ -832,7 +832,7 @@ impl ConfigWalker for KeycodesResolver<'_, '_, '_> {
                 let name = match res {
                     Ok(r) => r,
                     Err(e) => {
-                        self.r.diag(DiagnosticKind::InvalidIndicatorName, e);
+                        self.r.diag(e.val.diagnostic_kind(), e);
                         return;
                     }
                 };
@@ -878,7 +878,7 @@ impl TypesResolver<'_, '_, '_> {
         match res {
             Ok(v) => Some(v.val),
             Err(e) => {
-                self.r.diag(DiagnosticKind::InvalidTypeField, e);
+                self.r.diag(e.val.diagnostic_kind(), e);
                 None
             }
         }
@@ -939,8 +939,8 @@ impl ConfigWalker for TypesResolver<'_, '_, '_> {
                     .get_case_insensitive(self.r.interner, c.ident.val);
                 if c.index.is_some() || meaning != Meaning::Type {
                     self.r.diag(
-                        DiagnosticKind::UnknownVariable,
-                        ad_hoc_display!("unknown variable").spanned2(span),
+                        DiagnosticKind::UnknownTypesVariable,
+                        ad_hoc_display!("unknown types variable").spanned2(span),
                     );
                     return;
                 }
@@ -1013,7 +1013,7 @@ impl CompatResolver<'_, '_, '_> {
         match res {
             Ok(v) => Some(v),
             Err(e) => {
-                self.r.diag(DiagnosticKind::InvalidInterpField, e);
+                self.r.diag(e.val.diagnostic_kind(), e);
                 None
             }
         }
@@ -1036,7 +1036,7 @@ impl CompatResolver<'_, '_, '_> {
         match res {
             Ok(v) => Some(v),
             Err(e) => {
-                self.r.diag(DiagnosticKind::InvalidIndicatorField, e);
+                self.r.diag(e.val.diagnostic_kind(), e);
                 None
             }
         }
@@ -1069,7 +1069,7 @@ impl CompatResolver<'_, '_, '_> {
                     if let Some(x) = interp.$field {
                         if augment && old.interp.$field.is_some() {
                             self.r.diag(
-                                DiagnosticKind::IgnoredInterpField,
+                                DiagnosticKind::IgnoredInterpretField,
                                 ad_hoc_display!(concat!(
                                     "ignoring redefinition of interp field `",
                                     stringify!($field),
@@ -1178,7 +1178,7 @@ impl ConfigWalker for CompatResolver<'_, '_, '_> {
                 ) {
                     Ok(k) => k,
                     Err(e) => {
-                        self.r.diag(DiagnosticKind::UnknownKeysym, e);
+                        self.r.diag(e.val.diagnostic_kind(), e);
                         return;
                     }
                 };
@@ -1190,7 +1190,7 @@ impl ConfigWalker for CompatResolver<'_, '_, '_> {
                         match res {
                             Ok(f) => Some(f),
                             Err(e) => {
-                                self.r.diag(DiagnosticKind::InvalidFilter, e);
+                                self.r.diag(e.val.diagnostic_kind(), e);
                                 return;
                             }
                         }
@@ -1222,8 +1222,8 @@ impl ConfigWalker for CompatResolver<'_, '_, '_> {
                     .get_case_insensitive(self.r.interner, c.ident.val);
                 if c.index.is_some() {
                     self.r.diag(
-                        DiagnosticKind::UnknownVariable,
-                        ad_hoc_display!("unknown variable").spanned2(span),
+                        DiagnosticKind::UnknownCompatVariable,
+                        ad_hoc_display!("unknown compat variable").spanned2(span),
                     );
                     return;
                 }
@@ -1245,7 +1245,7 @@ impl ConfigWalker for CompatResolver<'_, '_, '_> {
                         &mut self.data.action_defaults,
                     );
                     if let Err(e) = res {
-                        self.r.diag(DiagnosticKind::InvalidActionDefault, e);
+                        self.r.diag(e.val.diagnostic_kind(), e);
                     }
                 }
             }
@@ -1411,7 +1411,7 @@ impl SymbolsResolver<'_, '_, '_> {
         match res {
             Ok(v) => Some(v),
             Err(e) => {
-                self.r.diag(DiagnosticKind::InvalidSymbolsField, e);
+                self.r.diag(e.val.diagnostic_kind(), e);
                 None
             }
         }
@@ -1468,7 +1468,7 @@ impl SymbolsResolver<'_, '_, '_> {
                         if augment && old.key_type.is_some() {
                             if let Some(KeyTypeRef::Named(n)) = &old.key_type {
                                 self.r.diag(
-                                    DiagnosticKind::IgnoredSymbolsField,
+                                    DiagnosticKind::IgnoredKeyField,
                                     ignoring_redefinition.spanned2(n.span),
                                 );
                             }
@@ -1483,7 +1483,7 @@ impl SymbolsResolver<'_, '_, '_> {
                         if augment && !old.levels[idx].is_empty() {
                             if let Some(span) = level.span() {
                                 self.r.diag(
-                                    DiagnosticKind::IgnoredSymbolsField,
+                                    DiagnosticKind::IgnoredKeyField,
                                     ignoring_redefinition.spanned2(span),
                                 );
                             }
@@ -1500,7 +1500,7 @@ impl SymbolsResolver<'_, '_, '_> {
                     if let Some(x) = key.$field {
                         if augment && old.key.$field.is_some() {
                             self.r.diag(
-                                DiagnosticKind::IgnoredSymbolsField,
+                                DiagnosticKind::IgnoredKeyField,
                                 ignoring_redefinition.spanned2(x.span),
                             );
                         } else {
@@ -1530,7 +1530,7 @@ impl SymbolsResolver<'_, '_, '_> {
         let target = &mut self.data.group_names[offset];
         if target.is_some() && mm.is_augment() {
             self.r.diag(
-                DiagnosticKind::IgnoredSymbolsField,
+                DiagnosticKind::IgnoredKeyField,
                 ad_hoc_display!("ignoring group name").spanned2(name.span),
             );
         } else {
@@ -1650,7 +1650,7 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
                     let key = match res {
                         Ok(k) => k,
                         Err(e) => {
-                            self.r.diag(DiagnosticKind::InvalidModMapEntry, e);
+                            self.r.diag(e.val.diagnostic_kind(), e);
                             return;
                         }
                     };
@@ -1668,7 +1668,7 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
                     Meaning::Key => {
                         if cs[0].index.is_some() {
                             self.r
-                                .diag(DiagnosticKind::InvalidSymbolsField, unknown_field);
+                                .diag(DiagnosticKind::UnknownSymbolsVariable, unknown_field);
                             return;
                         }
                         let field = self.parse_symbols_field(
@@ -1685,7 +1685,7 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
                     Meaning::Name | Meaning::Groupname => {
                         if cs.len() > 1 || cs[0].index.is_none() {
                             self.r
-                                .diag(DiagnosticKind::InvalidSymbolsField, unknown_field);
+                                .diag(DiagnosticKind::UnknownSymbolsVariable, unknown_field);
                             return;
                         }
                         let expr = match v.var.expr.as_ref() {
@@ -1708,7 +1708,7 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
                         let name = match name {
                             Ok(n) => n,
                             Err(e) => {
-                                self.r.diag(DiagnosticKind::InvalidGroupName, e);
+                                self.r.diag(e.val.diagnostic_kind(), e);
                                 return;
                             }
                         };
@@ -1719,7 +1719,7 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
                                 self.handle_group_name(mm, idx.val, name);
                             }
                             Err(e) => {
-                                self.r.diag(DiagnosticKind::InvalidGroupIndex, e);
+                                self.r.diag(e.val.diagnostic_kind(), e);
                             }
                         }
                     }
@@ -1733,7 +1733,7 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
                             &mut self.data.action_defaults,
                         );
                         if let Err(e) = res {
-                            self.r.diag(DiagnosticKind::InvalidActionDefault, e);
+                            self.r.diag(e.val.diagnostic_kind(), e);
                         }
                     }
                 }

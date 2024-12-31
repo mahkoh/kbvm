@@ -93,7 +93,7 @@ impl StringCooker {
                         };
                         diagnostics.push(
                             map,
-                            DiagnosticKind::OctalOverflow,
+                            DiagnosticKind::OctalStringEscapeOverflow,
                             StringCookerError::OctalOverflow.spanned2(span),
                         );
                         continue;

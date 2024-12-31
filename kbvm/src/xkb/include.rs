@@ -9,7 +9,8 @@ use {
             code_slice::CodeSlice,
             group::GroupIdx,
             include::error::{
-                invalid_format, invalid_group, missing_merge_mode, ParseIncludeError,
+                invalid_group, missing_file_name, missing_merge_mode, unterminated_map_name,
+                ParseIncludeError,
             },
             interner::{Interned, Interner},
             kccgst::MergeMode,
@@ -93,10 +94,10 @@ impl<'a> Iterator for IncludeIter<'a> {
         if let Some(g) = captures.group {
             let group_name = self.interner.intern(&g.val).spanned2(g.span);
             let Some(group_idx) = u32::from_bytes_dec(g.val.as_bytes()) else {
-                return Some(Err(invalid_group(&g.val, g.span)));
+                return Some(Err(invalid_group(&g.val, g.span.lo, g.span.hi)));
             };
             let Some(group_idx) = GroupIdx::new(group_idx) else {
-                return Some(Err(invalid_group(&g.val, g.span)));
+                return Some(Err(invalid_group(&g.val, g.span.lo, g.span.hi)));
             };
             group = Some(IncludeGroup {
                 group_name,
@@ -140,7 +141,7 @@ fn capture<'a>(
         _ => {}
     };
     if matches!(slice.get(pos), None | Some(b'(' | b'|' | b'+' | b':')) {
-        return Err(invalid_format(Span {
+        return Err(missing_file_name(Span {
             lo: lo + pos as u64,
             hi: lo + pos as u64 + 1,
         }));
@@ -158,10 +159,7 @@ fn capture<'a>(
         let map_end = loop {
             match slice.get(pos) {
                 None => {
-                    return Err(invalid_format(Span {
-                        lo: lo + pos as u64,
-                        hi: lo + pos as u64 + 1,
-                    }));
+                    return Err(unterminated_map_name(lo + pos as u64, lo + pos as u64 + 1));
                 }
                 Some(b')') => break pos,
                 _ => pos += 1,
@@ -179,10 +177,11 @@ fn capture<'a>(
         pos += 1;
         let group_start = pos;
         if !matches!(slice.get(pos), Some(b'0'..=b'9')) {
-            return Err(invalid_format(Span {
-                lo: lo + pos as u64,
-                hi: lo + pos as u64 + 1,
-            }));
+            return Err(invalid_group(
+                &slice.slice(group_start..group_start + 1),
+                lo + pos as u64,
+                lo + pos as u64 + 1,
+            ));
         }
         pos += 1;
         while matches!(slice.get(pos), Some(b'0'..=b'9')) {

@@ -55,6 +55,8 @@ fn test() {
         model,
         &options,
         &groups,
+        1024,
+        None,
     );
     let mut out = vec![];
     let mut formatter = Formatter::new(&interner, &mut out);

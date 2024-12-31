@@ -1,0 +1,44 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 8;
+
+        indicator 1 = "DUMMY";
+    };
+
+    xkb_types {
+        virtual_modifiers a00;
+        virtual_modifiers a01;
+        virtual_modifiers a02;
+        virtual_modifiers a03;
+        virtual_modifiers a04;
+        virtual_modifiers a05;
+        virtual_modifiers a06;
+        virtual_modifiers a07;
+        virtual_modifiers a08;
+        virtual_modifiers a09;
+        virtual_modifiers a10;
+        virtual_modifiers a11;
+        virtual_modifiers a12;
+        virtual_modifiers a13;
+        virtual_modifiers a14;
+        virtual_modifiers a15;
+        virtual_modifiers a16;
+        virtual_modifiers a17;
+        virtual_modifiers a18;
+        virtual_modifiers a19;
+        virtual_modifiers a20;
+        virtual_modifiers a21;
+        virtual_modifiers a22;
+        virtual_modifiers a23;
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+    };
+};

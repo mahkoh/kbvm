@@ -35,16 +35,40 @@ use {
 
 #[derive(Copy, Clone, Debug, Error)]
 pub(crate) enum EvalError {
-    #[error("calculation overflowed")]
-    Overflow,
-    #[error("identifier does not refer to a known value")]
-    UnknownValue,
+    #[error("modifier calculation overflowed")]
+    ModsCalculationOverflow,
+    #[error("keysym calculation overflowed")]
+    KeysymCalculationOverflow,
+    #[error("level calculation overflowed")]
+    LevelCalculationOverflow,
     #[error("unknown group")]
     UnknownGroup,
+    #[error("unsupported expression for group")]
+    UnsupportedExpressionForGroup,
+    #[error("unsupported expression for group change")]
+    UnsupportedExpressionForGroupChange,
+    #[error("group calculation overflowed")]
+    GroupCalculationOverflow,
     #[error("unknown level")]
     UnknownLevel,
-    #[error("expression type is not permitted in this position")]
-    UnsupportedExpressionType,
+    #[error("unsupported expression for level")]
+    UnsupportedExpressionForLevel,
+    #[error("unsupported expression for string")]
+    UnsupportedExpressionForString,
+    #[error("unsupported expression for boolean")]
+    UnsupportedExpressionForBoolean,
+    #[error("unsupported expression for keysym")]
+    UnsupportedExpressionForKeysym,
+    #[error("unsupported expression for mod mask")]
+    UnsupportedExpressionForModMask,
+    #[error("unsupported expression for key repeat")]
+    UnsupportedExpressionForKeyRepeats,
+    #[error("unsupported expression for LockMods(affect)")]
+    UnsupportedExpressionForLockModsAffect,
+    #[error("unsupported expression for action")]
+    UnsupportedExpressionForAction,
+    #[error("unsupported expression for symbols/actions")]
+    UnsupportedExpressionForSymbolsOrActions,
     #[error("unknown boolean value")]
     UnknownBooleanValue,
     #[error("unknown keysym")]
@@ -53,93 +77,219 @@ pub(crate) enum EvalError {
     UnknownAction,
     #[error("unimplemented action")]
     UnimplementedAction,
-    #[error("unsupported parameter")]
-    UnsupportedParameter,
-    #[error("missing argument")]
-    MissingArgument,
+    #[error("unknown NoAction parameter")]
+    UnknownParameterForNoAction,
+    #[error("unknown SetMods parameter")]
+    UnknownParameterForSetMods,
+    #[error("unknown LatchMods parameter")]
+    UnknownParameterForLatchMods,
+    #[error("unknown LockMods parameter")]
+    UnknownParameterForLockMods,
+    #[error("unknown SetGroup parameter")]
+    UnknownParameterForSetGroup,
+    #[error("unknown LatchGroup parameter")]
+    UnknownParameterForLatchGroup,
+    #[error("unknown LockGroup parameter")]
+    UnknownParameterForLockGroup,
+    #[error("missing value for SetMods(mods)")]
+    MissingValueForSetModsMods,
+    #[error("missing value for LatchMods(mods)")]
+    MissingValueForLatchModsMods,
+    #[error("missing value for LockMods(mods)")]
+    MissingValueForLockModsMods,
+    #[error("missing value for LockMods(affect)")]
+    MissingValueForLockModsAffect,
+    #[error("missing value for SetGroup(group)")]
+    MissingValueForSetGroupGroup,
+    #[error("missing value for LatchGroup(group)")]
+    MissingValueForLatchGroupGroup,
+    #[error("missing value for LockGroup(group)")]
+    MissingValueForLockGroupGroup,
     #[error("unknown modifier")]
     UnknownModifier,
-    #[error("unknown affect value")]
-    UnknownAffect,
-    #[error("filter must have exactly one argument")]
-    NotOneFilterArgument,
-    #[error("filter parameter must not have a name")]
-    NamedFilterArgParam,
-    #[error("unknown filter predicate")]
-    UnknownPredicate,
+    #[error("unknown LockMods(affect) value")]
+    UnknownLockModsAffect,
+    #[error("interpret filter must have exactly one argument")]
+    NotOneInterpretFilterArgument,
+    #[error("interpret filter argument must not have a name")]
+    NamedFilterArgArgument,
+    #[error("unknown interpret filter predicate")]
+    UnknownFilterPredicate,
     #[error("unknown `interpret` field")]
-    UnknownInterpField,
+    UnknownInterpretField,
     #[error("unimplemented `interpret` field")]
-    UnimplementedInterpField,
-    #[error("`action` parameter must have a value")]
-    MissingActionValue,
-    #[error("`virtualmodifier` parameter must have a value")]
-    MissingVirtualmodValue,
+    UnimplementedInterpretField,
+    #[error("interpret `action` argument must have a value")]
+    MissingInterpretActionValue,
+    #[error("interpret `virtualmodifier` argument must have a value")]
+    MissingInterpretVirtualmodValue,
     #[error("unknown virtual modifier")]
-    UnknownVirtualModifier,
+    UnknownInterpretVirtualModifier,
     #[error("unknown `type` field")]
     UnknownTypeField,
-    #[error("`modifiers` parameter must have a value")]
+    #[error("type `modifiers` argument must have a value")]
     MissingTypeModifiersValue,
-    #[error("`map` parameter must have a value")]
+    #[error("type `map` argument must have a value")]
     MissingTypeMapValue,
-    #[error("`preserve` parameter must have a value")]
+    #[error("type `preserve` argument must have a value")]
     MissingTypePreserveValue,
-    #[error("`level_name` parameter must have a value")]
+    #[error("type `level_name` argument must have a value")]
     MissingTypeLevelNameValue,
-    #[error("MissingUseModMapModValue")]
-    MissingUseModMapModValue,
-    #[error("InvalidUseModMapModValue")]
-    InvalidUseModMapModValue,
-    #[error("UnknownIndicatorMapField")]
-    UnknownIndicatorMapField,
-    #[error("MissingIndicatorMapModifiersValue")]
-    MissingIndicatorMapModifiersValue,
-    #[error("GroupOutOfBounds")]
+    #[error("interpret `useModMap` argument must have a value")]
+    MissingInterpretUseModMapModValue,
+    #[error("invalid interpret `useModMap` argument")]
+    InvalidInterpretUseModMapModValue,
+    #[error("unknown `indicator` field")]
+    UnknownIndicatorField,
+    #[error("indicator `modifiers` argument must have a value")]
+    MissingIndicatorModifiersValue,
+    #[error("out of bounds group value")]
     GroupOutOfBounds,
-    #[error("LevelOutOfBounds")]
+    #[error("out of bounds level value")]
     LevelOutOfBounds,
-    #[error("MissingIndicatorMapGroupsValue")]
-    MissingIndicatorMapGroupsValue,
-    #[error("UnknownControl")]
+    #[error("indicator `groups` argument must have a value")]
+    MissingIndicatorGroupsValue,
+    #[error("unknown control")]
     UnknownControl,
-    #[error("MissingIndicatorMapControlValue")]
-    MissingIndicatorMapControlValue,
-    #[error("UnknownModComponent")]
+    #[error("indicator `control` argument must have a value")]
+    MissingIndicatorControlValue,
+    #[error("unknown mod component")]
     UnknownModComponent,
-    #[error("MissingIndicatorMapWhichmodifierValue")]
-    MissingIndicatorMapWhichmodifierValue,
-    #[error("UnknownGroupComponent")]
+    #[error("unsupported expression for mod component")]
+    UnsupportedExpressionForModComponent,
+    #[error("unsupported expression for control")]
+    UnsupportedExpressionForControl,
+    #[error("indicator `whichModState` argument must have a value")]
+    MissingIndicatorWhichModStateValue,
+    #[error("unknown group component")]
     UnknownGroupComponent,
-    #[error("MissingIndicatorMapWhichgroupstateValue")]
-    MissingIndicatorMapWhichgroupstateValue,
-    #[error("UnknownKeycode")]
+    #[error("unsupported expression for group component")]
+    UnsupportedExpressionForGroupComponent,
+    #[error("indicator `whichGroupState` argument must have a value")]
+    MissingIndicatorWhichGroupStateValue,
+    #[error("unknown keycode")]
     UnknownKeycode,
-    #[error("InvalidSymbolsField")]
-    InvalidSymbolsField,
-    #[error("MissingSymbolsGroupsredirectValue")]
-    MissingSymbolsGroupsredirectValue,
-    #[error("MissingSymbolsSymbolsValue")]
-    MissingSymbolsSymbolsValue,
-    #[error("MissingSymbolsActionsValue")]
-    MissingSymbolsActionsValue,
-    #[error("MissingSymbolsVirtualmodifiersValue")]
-    MissingSymbolsVirtualmodifiersValue,
-    #[error("MissingSymbolsRepeatingValue")]
-    MissingSymbolsRepeatingValue,
-    #[error("UnknownSymbolsRepeatingValue")]
-    UnknownSymbolsRepeatingValue,
-    #[error("MissingSymbolsTypeValue")]
-    MissingSymbolsTypeValue,
-    #[error("UnknownKeyType")]
+    #[error("unknown `key` field")]
+    UnknownKeyField,
+    #[error("key `groupsRedirect` argument must have a value")]
+    MissingKeyGroupsRedirectValue,
+    #[error("key `symbols` argument must have a value")]
+    MissingKeySymbolsValue,
+    #[error("key `actions` argument must have a value")]
+    MissingKeyActionsValue,
+    #[error("key `virtual_modifiers` argument must have a value")]
+    MissingKeyVirtualModifiersValue,
+    #[error("unknown key `repeating` value")]
+    UnknownKeyRepeatingValue,
+    #[error("key `type` argument must have a value")]
+    MissingKeyTypeValue,
+    #[error("unknown key type")]
     UnknownKeyType,
+}
+
+impl EvalError {
+    pub(crate) fn diagnostic_kind(&self) -> DiagnosticKind {
+        macro_rules! map {
+            ($($ident:ident,)*) => {
+                match self {
+                    $(
+                        $ident => DiagnosticKind::$ident,
+                    )*
+                }
+            };
+        }
+        map! {
+            ModsCalculationOverflow,
+            KeysymCalculationOverflow,
+            LevelCalculationOverflow,
+            UnknownGroup,
+            UnsupportedExpressionForGroup,
+            UnsupportedExpressionForGroupChange,
+            GroupCalculationOverflow,
+            UnknownLevel,
+            UnsupportedExpressionForLevel,
+            UnsupportedExpressionForString,
+            UnsupportedExpressionForBoolean,
+            UnsupportedExpressionForKeysym,
+            UnsupportedExpressionForModMask,
+            UnsupportedExpressionForKeyRepeats,
+            UnsupportedExpressionForLockModsAffect,
+            UnsupportedExpressionForAction,
+            UnsupportedExpressionForSymbolsOrActions,
+            UnknownBooleanValue,
+            UnknownKeysym,
+            UnknownAction,
+            UnimplementedAction,
+            UnknownParameterForNoAction,
+            UnknownParameterForSetMods,
+            UnknownParameterForLatchMods,
+            UnknownParameterForLockMods,
+            UnknownParameterForSetGroup,
+            UnknownParameterForLatchGroup,
+            UnknownParameterForLockGroup,
+            MissingValueForSetModsMods,
+            MissingValueForLatchModsMods,
+            MissingValueForLockModsMods,
+            MissingValueForLockModsAffect,
+            MissingValueForSetGroupGroup,
+            MissingValueForLatchGroupGroup,
+            MissingValueForLockGroupGroup,
+            UnknownModifier,
+            UnknownLockModsAffect,
+            NotOneInterpretFilterArgument,
+            NamedFilterArgArgument,
+            UnknownFilterPredicate,
+            UnknownInterpretField,
+            UnimplementedInterpretField,
+            MissingInterpretActionValue,
+            MissingInterpretVirtualmodValue,
+            UnknownInterpretVirtualModifier,
+            UnknownTypeField,
+            MissingTypeModifiersValue,
+            MissingTypeMapValue,
+            MissingTypePreserveValue,
+            MissingTypeLevelNameValue,
+            MissingInterpretUseModMapModValue,
+            InvalidInterpretUseModMapModValue,
+            UnknownIndicatorField,
+            MissingIndicatorModifiersValue,
+            GroupOutOfBounds,
+            LevelOutOfBounds,
+            MissingIndicatorGroupsValue,
+            UnknownControl,
+            MissingIndicatorControlValue,
+            UnknownModComponent,
+            UnsupportedExpressionForModComponent,
+            UnsupportedExpressionForControl,
+            MissingIndicatorWhichModStateValue,
+            UnknownGroupComponent,
+            UnsupportedExpressionForGroupComponent,
+            MissingIndicatorWhichGroupStateValue,
+            UnknownKeycode,
+            UnknownKeyField,
+            MissingKeyGroupsRedirectValue,
+            MissingKeySymbolsValue,
+            MissingKeyActionsValue,
+            MissingKeyVirtualModifiersValue,
+            UnknownKeyRepeatingValue,
+            MissingKeyTypeValue,
+            UnknownKeyType,
+        }
+    }
 }
 
 pub(crate) fn eval_group(
     interner: &Interner,
     expr: Spanned<&Expr>,
 ) -> Result<Spanned<GroupIdx>, Spanned<EvalError>> {
-    let res = eval_u32_str_prefix(interner, expr, "group", UnknownGroup)?;
+    let res = eval_u32_str_prefix(
+        interner,
+        expr,
+        "group",
+        UnknownGroup,
+        UnsupportedExpressionForGroup,
+        GroupCalculationOverflow,
+    )?;
     GroupIdx::new(res.val)
         .ok_or(GroupOutOfBounds)
         .span_either(res.span)
@@ -150,15 +300,21 @@ pub(crate) fn eval_group_mask(
     meaning_cache: &mut MeaningCache,
     expr: Spanned<&Expr>,
 ) -> Result<Spanned<GroupMask>, Spanned<EvalError>> {
-    eval_u32(expr, |i| {
-        match meaning_cache.get_case_insensitive(interner, i) {
-            Meaning::All => return Ok(u32::MAX as _),
-            Meaning::None => return Ok(0),
-            _ => {}
-        };
-        let num = parse_u32_1_to_32_str_prefix(interner, i, "group").ok_or(UnknownGroup)?;
-        Ok(1 << (num - 1))
-    })
+    eval_u32(
+        expr,
+        UnknownGroup,
+        UnsupportedExpressionForGroup,
+        GroupCalculationOverflow,
+        |i| {
+            match meaning_cache.get_case_insensitive(interner, i) {
+                Meaning::All => return Ok(u32::MAX as _),
+                Meaning::None => return Ok(0),
+                _ => {}
+            };
+            let num = parse_u32_1_to_32_str_prefix(interner, i, "group").ok_or(UnknownGroup)?;
+            Ok(1 << (num - 1))
+        },
+    )
     .span_map(GroupMask)
 }
 
@@ -167,9 +323,14 @@ pub(crate) fn eval_control_mask(
     meaning_cache: &mut MeaningCache,
     expr: Spanned<&Expr>,
 ) -> Result<Spanned<ControlMask>, Spanned<EvalError>> {
-    eval_keyed_mask(interner, meaning_cache, expr, &mut |meaning| {
-        ControlMask::from_meaning(meaning).ok_or(UnknownControl)
-    })
+    eval_keyed_mask(
+        interner,
+        meaning_cache,
+        expr,
+        UnknownControl,
+        UnsupportedExpressionForControl,
+        &mut |meaning| ControlMask::from_meaning(meaning).ok_or(UnknownControl),
+    )
 }
 
 pub(crate) fn eval_mod_component_mask(
@@ -177,9 +338,14 @@ pub(crate) fn eval_mod_component_mask(
     meaning_cache: &mut MeaningCache,
     expr: Spanned<&Expr>,
 ) -> Result<Spanned<ModComponentMask>, Spanned<EvalError>> {
-    eval_keyed_mask(interner, meaning_cache, expr, &mut |meaning| {
-        ModComponentMask::from_meaning(meaning).ok_or(UnknownModComponent)
-    })
+    eval_keyed_mask(
+        interner,
+        meaning_cache,
+        expr,
+        UnknownModComponent,
+        UnsupportedExpressionForModComponent,
+        &mut |meaning| ModComponentMask::from_meaning(meaning).ok_or(UnknownModComponent),
+    )
 }
 
 pub(crate) fn eval_group_component_mask(
@@ -187,16 +353,28 @@ pub(crate) fn eval_group_component_mask(
     meaning_cache: &mut MeaningCache,
     expr: Spanned<&Expr>,
 ) -> Result<Spanned<GroupComponentMask>, Spanned<EvalError>> {
-    eval_keyed_mask(interner, meaning_cache, expr, &mut |meaning| {
-        GroupComponentMask::from_meaning(meaning).ok_or(UnknownGroupComponent)
-    })
+    eval_keyed_mask(
+        interner,
+        meaning_cache,
+        expr,
+        UnknownGroupComponent,
+        UnsupportedExpressionForGroupComponent,
+        &mut |meaning| GroupComponentMask::from_meaning(meaning).ok_or(UnknownGroupComponent),
+    )
 }
 
 pub(crate) fn eval_level(
     interner: &Interner,
     expr: Spanned<&Expr>,
 ) -> Result<Spanned<Level>, Spanned<EvalError>> {
-    let res = eval_u32_str_prefix(interner, expr, "level", UnknownLevel)?;
+    let res = eval_u32_str_prefix(
+        interner,
+        expr,
+        "level",
+        UnknownLevel,
+        UnsupportedExpressionForLevel,
+        LevelCalculationOverflow,
+    )?;
     Level::new(res.val)
         .ok_or(LevelOutOfBounds)
         .span_either(res.span)
@@ -225,38 +403,66 @@ fn eval_u32_str_prefix(
     interner: &Interner,
     expr: Spanned<&Expr>,
     prefix: &str,
-    err: EvalError,
+    unknown_value: EvalError,
+    unsupported_expression_type: EvalError,
+    overflow: EvalError,
 ) -> Result<Spanned<u32>, Spanned<EvalError>> {
-    eval_u32(expr, |i| {
-        parse_u32_1_to_32_str_prefix(interner, i, prefix)
-            .map(|num| num as _)
-            .ok_or(err)
-    })
+    eval_u32(
+        expr,
+        unknown_value,
+        unsupported_expression_type,
+        overflow,
+        |i| {
+            parse_u32_1_to_32_str_prefix(interner, i, prefix)
+                .map(|num| num as _)
+                .ok_or(unknown_value)
+        },
+    )
 }
 
 fn eval_i32_str_prefix(
     interner: &Interner,
     expr: Spanned<&Expr>,
     prefix: &str,
-    err: EvalError,
+    unknown_value: EvalError,
+    unsupported_expression_type: EvalError,
+    overflow: EvalError,
 ) -> Result<Spanned<i32>, Spanned<EvalError>> {
-    let res = eval_i64(expr, &mut |i| {
-        parse_u32_1_to_32_str_prefix(interner, i, prefix)
-            .map(|num| num as _)
-            .ok_or(err)
-    })?;
+    let res = eval_i64(
+        expr,
+        unknown_value,
+        unsupported_expression_type,
+        overflow,
+        &mut |i| {
+            parse_u32_1_to_32_str_prefix(interner, i, prefix)
+                .map(|num| num as _)
+                .ok_or(unknown_value)
+        },
+    )?;
     i32::try_from(res.val)
-        .map_err(|_| Overflow)
+        .map_err(|_| overflow)
         .span_either(res.span)
 }
 
 pub(crate) fn eval_u32(
     expr: Spanned<&Expr>,
+    unknown_value: EvalError,
+    unsupported_expression_type: EvalError,
+    overflow: EvalError,
     mut f: impl FnMut(Interned) -> Result<i64, EvalError>,
 ) -> Result<Spanned<u32>, Spanned<EvalError>> {
-    u32::try_from(eval_i64(expr, &mut f)?.val)
-        .map_err(|_| Overflow)
-        .span_either(expr.span)
+    u32::try_from(
+        eval_i64(
+            expr,
+            unknown_value,
+            unsupported_expression_type,
+            overflow,
+            &mut f,
+        )?
+        .val,
+    )
+    .map_err(|_| overflow)
+    .span_either(expr.span)
 }
 
 pub(crate) fn eval_group_change(
@@ -268,40 +474,60 @@ pub(crate) fn eval_group_change(
         Expr::UnMinus(e) => (e, true),
         _ => return eval_group(interner, expr).span_map(GroupChange::Absolute),
     };
-    let mut res = eval_i32_str_prefix(interner, expr.deref().as_ref(), "group", UnknownGroup)?;
+    let mut res = eval_i32_str_prefix(
+        interner,
+        expr.deref().as_ref(),
+        "group",
+        UnknownGroup,
+        UnsupportedExpressionForGroupChange,
+        GroupCalculationOverflow,
+    )?;
     if neg {
-        res.val = res.val.checked_neg().ok_or(Overflow.spanned2(expr.span))?;
+        res.val = res
+            .val
+            .checked_neg()
+            .ok_or(GroupCalculationOverflow.spanned2(expr.span))?;
     }
     Ok(res.map(GroupChange::Rel))
 }
 
 fn eval_i64(
     expr: Spanned<&Expr>,
+    unknown_value: EvalError,
+    unsupported_expression_type: EvalError,
+    overflow: EvalError,
     f: &mut impl FnMut(Interned) -> Result<i64, EvalError>,
 ) -> Result<Spanned<i64>, Spanned<EvalError>> {
     macro_rules! fwd {
         ($val:expr) => {
-            eval_i64($val.deref().as_ref(), f)?.val
+            eval_i64(
+                $val.deref().as_ref(),
+                unknown_value,
+                unsupported_expression_type,
+                overflow,
+                f,
+            )?
+            .val
         };
     }
     macro_rules! bi {
         ($op:ident, $l:expr, $r:expr) => {
-            fwd!($l).$op(fwd!($r)).ok_or(EvalError::Overflow)
+            fwd!($l).$op(fwd!($r)).ok_or(overflow)
         };
     }
     let res = match expr.val {
-        Expr::UnMinus(v) => fwd!(v).checked_neg().ok_or(Overflow),
+        Expr::UnMinus(v) => fwd!(v).checked_neg().ok_or(overflow),
         Expr::UnPlus(v) => Ok(fwd!(v)),
         Expr::UnNot(v) => Ok((fwd!(v) == 0) as i64),
         Expr::UnInverse(v) => Ok(!fwd!(v) & u32::MAX as i64),
-        Expr::Path(p) => p.unique_ident().ok_or(UnknownValue).and_then(f),
+        Expr::Path(p) => p.unique_ident().ok_or(unknown_value).and_then(f),
         Expr::Integer(_, i) => Ok(*i),
         Expr::Parenthesized(p) => Ok(fwd!(p)),
         Expr::Mul(l, r) => bi!(checked_mul, l, r),
         Expr::Div(l, r) => bi!(checked_div, l, r),
         Expr::Add(l, r) => bi!(checked_add, l, r),
         Expr::Sub(l, r) => bi!(checked_sub, l, r),
-        _ => Err(UnsupportedExpressionType),
+        _ => Err(unsupported_expression_type),
     };
     res.span_either(expr.span)
 }
@@ -310,6 +536,8 @@ fn eval_keyed_mask<T>(
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
     expr: Spanned<&Expr>,
+    unknown_value: EvalError,
+    unsupported_expression_type: EvalError,
     f: &mut impl FnMut(Meaning) -> Result<T, EvalError>,
 ) -> Result<Spanned<T>, Spanned<EvalError>>
 where
@@ -317,19 +545,27 @@ where
 {
     macro_rules! fwd {
         ($val:expr) => {
-            eval_keyed_mask::<T>(interner, meaning_cache, $val.deref().as_ref(), f)?.val
+            eval_keyed_mask::<T>(
+                interner,
+                meaning_cache,
+                $val.deref().as_ref(),
+                unknown_value,
+                unsupported_expression_type,
+                f,
+            )?
+            .val
         };
     }
     let res = match expr.val {
         Expr::UnNot(v) | Expr::UnInverse(v) => Ok(!fwd!(v)),
-        Expr::Path(p) => p.unique_ident().ok_or(UnknownValue).and_then(|i| {
+        Expr::Path(p) => p.unique_ident().ok_or(unknown_value).and_then(|i| {
             let meaning = meaning_cache.get_case_insensitive(interner, i);
             f(meaning)
         }),
         Expr::Parenthesized(p) => Ok(fwd!(p)),
         Expr::Add(l, r) => Ok(fwd!(l) | fwd!(r)),
         Expr::Sub(l, r) => Ok(fwd!(l) & !fwd!(r)),
-        _ => Err(UnsupportedExpressionType),
+        _ => Err(unsupported_expression_type),
     };
     res.span_either(expr.span)
 }
@@ -345,7 +581,7 @@ pub(crate) fn eval_string(
         Expr::String(e) => Ok(cooker
             .cook(map, diagnostics, interner, (*e).spanned2(expr.span))
             .spanned2(expr.span)),
-        _ => Err(UnsupportedExpressionType.spanned2(expr.span)),
+        _ => Err(UnsupportedExpressionForString.spanned2(expr.span)),
     }
 }
 
@@ -369,7 +605,7 @@ fn eval_boolean(
                 }
             })
             .ok_or(UnknownBooleanValue.spanned2(expr.span)),
-        _ => Err(UnsupportedExpressionType.spanned2(expr.span)),
+        _ => Err(UnsupportedExpressionForBoolean.spanned2(expr.span)),
     }
 }
 
@@ -399,13 +635,15 @@ pub(crate) fn eval_keysym(
     let res = match &expr.val {
         Expr::Path(p) => match p.unique_ident() {
             Some(id) => return keysym_from_ident(interner, meaning_cache, id.spanned2(expr.span)),
-            _ => Err(UnsupportedExpressionType),
+            _ => Err(UnknownKeysym),
         },
         Expr::Integer(_, i) => match *i {
             0..=9 => Ok(Keysym(KEY_0.0 + *i as u32)),
-            _ => u32::try_from(*i).map(Keysym).map_err(|_| Overflow),
+            _ => u32::try_from(*i)
+                .map(Keysym)
+                .map_err(|_| KeysymCalculationOverflow),
         },
-        _ => Err(UnsupportedExpressionType),
+        _ => Err(UnsupportedExpressionForKeysym),
     };
     res.span_either(expr.span)
 }
@@ -494,7 +732,7 @@ fn eval_mods_(
             .unique_ident()
             .and_then(name_to_mod)
             .ok_or(UnknownModifier),
-        Expr::Integer(_, v) => u32::try_from(*v).map_err(|_| Overflow),
+        Expr::Integer(_, v) => u32::try_from(*v).map_err(|_| ModsCalculationOverflow),
         Expr::Parenthesized(v) => return eval_mods_(v.deref().as_ref(), name_to_mod),
         Expr::Add(l, r) => {
             let l = eval_mods_(l.deref().as_ref(), name_to_mod)?;
@@ -506,18 +744,21 @@ fn eval_mods_(
             let r = eval_mods_(r.deref().as_ref(), name_to_mod)?;
             Ok(l.val.0 & !r.val.0)
         }
-        _ => Err(UnsupportedExpressionType),
+        _ => Err(UnsupportedExpressionForModMask),
     };
     res.map(ModifierMask).span_either(expr.span)
 }
 
-pub(crate) fn eval_interned(expr: Spanned<&Expr>) -> Result<Spanned<Interned>, Spanned<EvalError>> {
+pub(crate) fn eval_interned(
+    expr: Spanned<&Expr>,
+    unsupported_expression_type: EvalError,
+) -> Result<Spanned<Interned>, Spanned<EvalError>> {
     if let Expr::Path(p) = expr.val {
         if let Some(u) = p.unique_ident() {
             return Ok(u.spanned2(expr.span));
         }
     }
-    Err(UnsupportedExpressionType.spanned2(expr.span))
+    Err(unsupported_expression_type.spanned2(expr.span))
 }
 
 pub(crate) fn eval_filter(
@@ -542,7 +783,7 @@ pub(crate) fn eval_filter(
         let cs = &e.path.val.components;
         let c = &cs[0];
         if cs.len() != 1 || c.index.is_some() {
-            return Err(UnknownPredicate.spanned2(e.path.span));
+            return Err(UnknownFilterPredicate.spanned2(e.path.span));
         }
         let meaning = meaning_cache.get_case_insensitive(interner, c.ident.val);
         predicate = match meaning {
@@ -551,16 +792,16 @@ pub(crate) fn eval_filter(
             Meaning::AnyOf => Predicate::AnyOf,
             Meaning::AllOf => Predicate::AllOf,
             Meaning::Exactly => Predicate::Exactly,
-            _ => return Err(UnknownPredicate.spanned2(e.path.span)),
+            _ => return Err(UnknownFilterPredicate.spanned2(e.path.span)),
         };
         if e.args.len() != 1 {
-            return Err(NotOneFilterArgument.spanned2(expr.span));
+            return Err(NotOneInterpretFilterArgument.spanned2(expr.span));
         }
         let c = &e.args[0];
         expr = match &c.val {
             CallArg::Expr(e) => e.spanned2(c.span),
             CallArg::NamedParam(e) => {
-                return Err(NamedFilterArgParam.spanned2(e.name.span));
+                return Err(NamedFilterArgArgument.spanned2(e.name.span));
             }
         };
     }
@@ -577,6 +818,8 @@ enum ActionParameterValue<'a> {
 }
 
 trait ActionParameters: Clone {
+    const UNKNOWN_PARAMETER: EvalError;
+
     fn handle_field(
         &mut self,
         interner: &Interner,
@@ -600,10 +843,10 @@ macro_rules! boolean {
 }
 
 macro_rules! value {
-    ($value:expr) => {
+    ($value:expr, $err:expr) => {
         match $value.val {
             ActionParameterValue::Boolean(_) => {
-                return Err(EvalError::MissingArgument.spanned2($value.span));
+                return Err($err.spanned2($value.span));
             }
             ActionParameterValue::Expr(e) => e.spanned2($value.span),
         }
@@ -641,15 +884,17 @@ fn eval_action_affect(
                 Meaning::Unlock => (false, true),
                 Meaning::Both => (true, true),
                 Meaning::Neither => (false, false),
-                _ => return Err(UnknownAffect.spanned2(expr.span)),
+                _ => return Err(UnknownLockModsAffect.spanned2(expr.span)),
             };
             return Ok(ResolvedActionAffect { lock, unlock });
         }
     }
-    Err(UnsupportedExpressionType.spanned2(expr.span))
+    Err(UnsupportedExpressionForLockModsAffect.spanned2(expr.span))
 }
 
 impl ActionParameters for ResolvedNoAction {
+    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForNoAction;
+
     fn handle_field(
         &mut self,
         _interner: &Interner,
@@ -658,11 +903,13 @@ impl ActionParameters for ResolvedNoAction {
         meaning: Spanned<Meaning>,
         _value: Spanned<ActionParameterValue<'_>>,
     ) -> Result<(), Spanned<EvalError>> {
-        Err(UnsupportedParameter.spanned2(meaning.span))
+        Err(UnknownParameterForNoAction.spanned2(meaning.span))
     }
 }
 
 impl ActionParameters for ResolvedModsSet {
+    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForSetMods;
+
     fn handle_field(
         &mut self,
         interner: &Interner,
@@ -680,11 +927,11 @@ impl ActionParameters for ResolvedModsSet {
                     interner,
                     meaning_cache,
                     vmods,
-                    value!(value),
+                    value!(value, MissingValueForSetModsMods),
                 )?);
             }
             _ => {
-                return Err(UnsupportedParameter.spanned2(meaning.span));
+                return Err(UnknownParameterForSetMods.spanned2(meaning.span));
             }
         }
         Ok(())
@@ -692,6 +939,8 @@ impl ActionParameters for ResolvedModsSet {
 }
 
 impl ActionParameters for ResolvedModsLatch {
+    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForLatchMods;
+
     fn handle_field(
         &mut self,
         interner: &Interner,
@@ -712,11 +961,11 @@ impl ActionParameters for ResolvedModsLatch {
                     interner,
                     meaning_cache,
                     vmods,
-                    value!(value),
+                    value!(value, MissingValueForLatchModsMods),
                 )?);
             }
             _ => {
-                return Err(UnsupportedParameter.spanned2(meaning.span));
+                return Err(UnknownParameterForLatchMods.spanned2(meaning.span));
             }
         }
         Ok(())
@@ -724,6 +973,8 @@ impl ActionParameters for ResolvedModsLatch {
 }
 
 impl ActionParameters for ResolvedModsLock {
+    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForLockMods;
+
     fn handle_field(
         &mut self,
         interner: &Interner,
@@ -738,17 +989,21 @@ impl ActionParameters for ResolvedModsLock {
                     interner,
                     meaning_cache,
                     vmods,
-                    value!(value),
+                    value!(value, MissingValueForLockModsMods),
                 )?);
             }
             Meaning::Affect => {
                 self.affect = Some(
-                    eval_action_affect(interner, meaning_cache, value!(value))?
-                        .spanned2(value.span),
+                    eval_action_affect(
+                        interner,
+                        meaning_cache,
+                        value!(value, MissingValueForLockModsAffect),
+                    )?
+                    .spanned2(value.span),
                 );
             }
             _ => {
-                return Err(UnsupportedParameter.spanned2(meaning.span));
+                return Err(UnknownParameterForLockMods.spanned2(meaning.span));
             }
         }
         Ok(())
@@ -756,6 +1011,8 @@ impl ActionParameters for ResolvedModsLock {
 }
 
 impl ActionParameters for ResolvedGroupSet {
+    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForSetGroup;
+
     fn handle_field(
         &mut self,
         interner: &Interner,
@@ -766,13 +1023,16 @@ impl ActionParameters for ResolvedGroupSet {
     ) -> Result<(), Spanned<EvalError>> {
         match meaning.val {
             Meaning::Group => {
-                self.group = Some(eval_group_change(interner, value!(value))?);
+                self.group = Some(eval_group_change(
+                    interner,
+                    value!(value, MissingValueForSetGroupGroup),
+                )?);
             }
             Meaning::ClearLocks => {
                 self.clear_locks = Some(boolean!(interner, meaning_cache, value)?)
             }
             _ => {
-                return Err(UnsupportedParameter.spanned2(meaning.span));
+                return Err(UnknownParameterForSetGroup.spanned2(meaning.span));
             }
         }
         Ok(())
@@ -780,6 +1040,8 @@ impl ActionParameters for ResolvedGroupSet {
 }
 
 impl ActionParameters for ResolvedGroupLatch {
+    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForLatchGroup;
+
     fn handle_field(
         &mut self,
         interner: &Interner,
@@ -790,7 +1052,10 @@ impl ActionParameters for ResolvedGroupLatch {
     ) -> Result<(), Spanned<EvalError>> {
         match meaning.val {
             Meaning::Group => {
-                self.group = Some(eval_group_change(interner, value!(value))?);
+                self.group = Some(eval_group_change(
+                    interner,
+                    value!(value, MissingValueForLatchGroupGroup),
+                )?);
             }
             Meaning::ClearLocks => {
                 self.clear_locks = Some(boolean!(interner, meaning_cache, value)?)
@@ -799,7 +1064,7 @@ impl ActionParameters for ResolvedGroupLatch {
                 self.latch_to_lock = Some(boolean!(interner, meaning_cache, value)?)
             }
             _ => {
-                return Err(UnsupportedParameter.spanned2(meaning.span));
+                return Err(UnknownParameterForLatchGroup.spanned2(meaning.span));
             }
         }
         Ok(())
@@ -807,6 +1072,8 @@ impl ActionParameters for ResolvedGroupLatch {
 }
 
 impl ActionParameters for ResolvedGroupLock {
+    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForLockGroup;
+
     fn handle_field(
         &mut self,
         interner: &Interner,
@@ -817,10 +1084,13 @@ impl ActionParameters for ResolvedGroupLock {
     ) -> Result<(), Spanned<EvalError>> {
         match meaning.val {
             Meaning::Group => {
-                self.group = Some(eval_group_change(interner, value!(value))?);
+                self.group = Some(eval_group_change(
+                    interner,
+                    value!(value, MissingValueForLockGroupGroup),
+                )?);
             }
             _ => {
-                return Err(UnsupportedParameter.spanned2(meaning.span));
+                return Err(UnknownParameterForLockGroup.spanned2(meaning.span));
             }
         }
         Ok(())
@@ -847,9 +1117,9 @@ fn create_action<T: ActionParameters>(
                         p.spanned2(e.span),
                         ActionParameterValue::Boolean(false).spanned2(arg.span),
                     ),
-                    _ => return Err(UnsupportedParameter.spanned2(arg.span)),
+                    _ => return Err(T::UNKNOWN_PARAMETER.spanned2(arg.span)),
                 },
-                _ => return Err(UnsupportedParameter.spanned2(arg.span)),
+                _ => return Err(T::UNKNOWN_PARAMETER.spanned2(arg.span)),
             },
             CallArg::NamedParam(n) => (
                 (&n.name.val).spanned2(n.name.span),
@@ -859,7 +1129,7 @@ fn create_action<T: ActionParameters>(
         let ident = path
             .val
             .unique_ident()
-            .ok_or(UnsupportedParameter.spanned2(path.span))?;
+            .ok_or(T::UNKNOWN_PARAMETER.spanned2(path.span))?;
         let meaning = meaning_cache.get_case_insensitive(interner, ident);
         t.handle_field(
             interner,
@@ -882,7 +1152,7 @@ fn handle_action_global<T: ActionParameters>(
 ) -> Result<(), Spanned<EvalError>> {
     let cs = &var.path.val.components;
     if cs.len() != 2 || cs[0].index.is_some() || cs[1].index.is_some() {
-        return Err(UnsupportedParameter.spanned2(span));
+        return Err(T::UNKNOWN_PARAMETER.spanned2(span));
     }
     let c = &cs[1];
     let value = if let Some(e) = &var.expr {
@@ -970,7 +1240,7 @@ fn eval_action(
 ) -> Result<Spanned<ResolvedAction>, Spanned<EvalError>> {
     let call = match expr.val {
         Expr::Call(c) => c,
-        _ => return Err(UnsupportedExpressionType.spanned2(expr.span)),
+        _ => return Err(UnsupportedExpressionForAction.spanned2(expr.span)),
     };
     if call.path.val.components.len() > 1 || call.path.val.components[0].index.is_some() {
         return Err(UnknownAction.spanned2(call.path.span));
@@ -1039,11 +1309,11 @@ pub(crate) fn eval_interp_field(
         cs = &cs[1..];
     }
     if cs.len() != 1 {
-        return Err(UnknownInterpField.spanned2(var.path.span));
+        return Err(UnknownInterpretField.spanned2(var.path.span));
     }
     let c = &cs[0];
     if c.index.is_some() {
-        return Err(UnknownInterpField.spanned2(var.path.span));
+        return Err(UnknownInterpretField.spanned2(var.path.span));
     }
     let meaning = meaning_cache.get_case_insensitive(interner, c.ident.val);
     let mut boolean = || match &var.expr {
@@ -1053,7 +1323,7 @@ pub(crate) fn eval_interp_field(
     let res = match meaning {
         Meaning::Action => {
             let e = match &var.expr {
-                None => return Err(MissingActionValue.spanned2(span)),
+                None => return Err(MissingInterpretActionValue.spanned2(span)),
                 Some(e) => e,
             };
             InterpField::Action(
@@ -1062,7 +1332,7 @@ pub(crate) fn eval_interp_field(
         }
         Meaning::Virtualmodifier | Meaning::Virtualmod => {
             let e = match &var.expr {
-                None => return Err(MissingVirtualmodValue.spanned2(span)),
+                None => return Err(MissingInterpretVirtualmodValue.spanned2(span)),
                 Some(e) => e,
             };
             let mut vmod = None;
@@ -1072,14 +1342,14 @@ pub(crate) fn eval_interp_field(
                 }
             }
             let vmod = match vmod {
-                None => return Err(UnknownVirtualModifier.spanned2(e.span)),
+                None => return Err(UnknownInterpretVirtualModifier.spanned2(e.span)),
                 Some(v) => v,
             };
             InterpField::VirtualModifier(vmod.idx)
         }
         Meaning::Usemodmapmods | Meaning::Usemodmap => {
             let e = match &var.expr {
-                None => return Err(MissingUseModMapModValue.spanned2(span)),
+                None => return Err(MissingInterpretUseModMapModValue.spanned2(span)),
                 Some(e) => e,
             };
             let val = 'ok: {
@@ -1093,13 +1363,13 @@ pub(crate) fn eval_interp_field(
                         }
                     }
                 }
-                return Err(InvalidUseModMapModValue.spanned2(span));
+                return Err(InvalidInterpretUseModMapModValue.spanned2(span));
             };
             InterpField::LevelOneOnly(val)
         }
         Meaning::Repeat => InterpField::Repeat(boolean()?),
-        Meaning::Locking => return Err(UnimplementedInterpField.spanned2(var.path.span)),
-        _ => return Err(UnknownInterpField.spanned2(var.path.span)),
+        Meaning::Locking => return Err(UnimplementedInterpretField.spanned2(var.path.span)),
+        _ => return Err(UnknownInterpretField.spanned2(var.path.span)),
     };
     Ok(res.spanned2(span))
 }
@@ -1208,7 +1478,7 @@ pub(crate) fn eval_indicator_map_field(
         cs = &cs[1..];
     }
     if cs.len() != 1 || cs[0].index.is_some() {
-        return Err(UnknownIndicatorMapField.spanned2(var.path.span));
+        return Err(UnknownIndicatorField.spanned2(var.path.span));
     }
     let c = &cs[0];
     let meaning = meaning_cache.get_case_insensitive(interner, c.ident.val);
@@ -1222,31 +1492,31 @@ pub(crate) fn eval_indicator_map_field(
     }
     let field = match meaning {
         Meaning::Modifiers | Meaning::Mods => {
-            let value = get_expr!(MissingIndicatorMapModifiersValue);
+            let value = get_expr!(MissingIndicatorModifiersValue);
             let mods = eval_mods(interner, meaning_cache, mods, value)?;
             IndicatorMapField::Modifiers(mods)
         }
         Meaning::Groups => {
-            let value = get_expr!(MissingIndicatorMapGroupsValue);
+            let value = get_expr!(MissingIndicatorGroupsValue);
             let groups = eval_group_mask(interner, meaning_cache, value)?;
             IndicatorMapField::Groups(groups)
         }
         Meaning::Controls | Meaning::Ctrls => {
-            let value = get_expr!(MissingIndicatorMapControlValue);
+            let value = get_expr!(MissingIndicatorControlValue);
             let controls = eval_control_mask(interner, meaning_cache, value)?;
             IndicatorMapField::Controls(controls)
         }
         Meaning::Whichmodifierstate | Meaning::Whichmodstate => {
-            let value = get_expr!(MissingIndicatorMapWhichmodifierValue);
+            let value = get_expr!(MissingIndicatorWhichModStateValue);
             let components = eval_mod_component_mask(interner, meaning_cache, value)?;
             IndicatorMapField::WhichModifierState(components)
         }
         Meaning::Whichgroupstate => {
-            let value = get_expr!(MissingIndicatorMapWhichgroupstateValue);
+            let value = get_expr!(MissingIndicatorWhichGroupStateValue);
             let components = eval_group_component_mask(interner, meaning_cache, value)?;
             IndicatorMapField::WhichGroupState(components)
         }
-        _ => return Err(UnknownIndicatorMapField.spanned2(var.path.span)),
+        _ => return Err(UnknownIndicatorField.spanned2(var.path.span)),
     };
     Ok(field.spanned2(span))
 }
@@ -1291,7 +1561,6 @@ fn eval_symbols_list<T>(
     map: &mut CodeMap,
     interner: &Interner,
     diagnostic: &mut DiagnosticSink,
-    diagnostic_kind: DiagnosticKind,
     expr: Spanned<&Expr>,
     mut eval: impl FnMut(Spanned<&Expr>) -> Result<Option<Spanned<T>>, Spanned<EvalError>>,
 ) -> Result<(Option<GroupIdx>, GroupList<T>), Spanned<EvalError>> {
@@ -1300,7 +1569,7 @@ fn eval_symbols_list<T>(
         group = Some(eval_group(interner, e)?.val);
     }
     let Expr::BracketList(b) = expr.val else {
-        return Err(UnsupportedExpressionType.spanned2(expr.span));
+        return Err(UnsupportedExpressionForSymbolsOrActions.spanned2(expr.span));
     };
     let mut levels = Vec::with_capacity(b.len());
     for e in b {
@@ -1308,7 +1577,7 @@ fn eval_symbols_list<T>(
         let mut handle = |e: Spanned<&Expr>| match eval(e) {
             Ok(v) => v,
             Err(e) => {
-                diagnostic.push(map, diagnostic_kind, e);
+                diagnostic.push(map, e.val.diagnostic_kind(), e);
                 None
             }
         };
@@ -1359,7 +1628,7 @@ pub(crate) fn eval_symbols_field(
                 cs = &cs[1..];
             }
             if cs.len() != 1 {
-                return Err(InvalidSymbolsField.spanned2(path.span));
+                return Err(UnknownKeyField.spanned2(path.span));
             }
             c = Some(&cs[0]);
             meaning_cache.get_case_insensitive(interner, cs[0].ident.val)
@@ -1391,7 +1660,7 @@ pub(crate) fn eval_symbols_field(
     macro_rules! deny_idx {
         () => {
             if try_get_idx!().is_some() {
-                return Err(InvalidSymbolsField.spanned2(span));
+                return Err(UnknownKeyField.spanned2(span));
             }
         };
     }
@@ -1414,7 +1683,7 @@ pub(crate) fn eval_symbols_field(
                 diagnostics,
                 interner,
                 cooker,
-                get_expr!(MissingSymbolsTypeValue),
+                get_expr!(MissingKeyTypeValue),
             )?;
             if !key_types.key_types.contains_key(&name.val) {
                 match meaning_cache.get_case_sensitive(interner, name.val) {
@@ -1442,8 +1711,7 @@ pub(crate) fn eval_symbols_field(
             map,
             interner,
             diagnostics,
-            DiagnosticKind::InvalidKeysym,
-            get_expr!(MissingSymbolsSymbolsValue),
+            get_expr!(MissingKeySymbolsValue),
             |e| {
                 let ks = eval_keysym(interner, meaning_cache, e)?;
                 let ks = match ks.val {
@@ -1460,8 +1728,7 @@ pub(crate) fn eval_symbols_field(
             map,
             interner,
             diagnostics,
-            DiagnosticKind::InvalidAction,
-            get_expr!(MissingSymbolsActionsValue),
+            get_expr!(MissingKeyActionsValue),
             |e| {
                 let action = eval_action(interner, meaning_cache, mods, action_defaults, e)?;
                 let action = match action.val {
@@ -1474,22 +1741,22 @@ pub(crate) fn eval_symbols_field(
         .map(SymbolsField::Actions)?,
         Meaning::Vmods | Meaning::Virtualmods | Meaning::Virtualmodifiers => {
             deny_idx!();
-            eval_virtual_mods(mods, get_expr!(MissingSymbolsVirtualmodifiersValue))
+            eval_virtual_mods(mods, get_expr!(MissingKeyVirtualModifiersValue))
                 .map(|v| SymbolsField::Virtualmodifiers(v.val))?
         }
         Meaning::Repeating | Meaning::Repeats | Meaning::Repeat => {
             deny_idx!();
-            let repeating = if expr.is_none() {
-                Some(boolean()?)
-            } else {
-                let e = eval_interned(get_expr!(MissingSymbolsRepeatingValue))?;
+            let repeating = if let Some(expr) = expr {
+                let e = eval_interned(expr, UnsupportedExpressionForKeyRepeats)?;
                 let meaning = meaning_cache.get_case_insensitive(interner, e.val);
                 match meaning {
                     Meaning::True | Meaning::Yes | Meaning::On => Some(true),
                     Meaning::False | Meaning::No | Meaning::Off => Some(false),
                     Meaning::Default => None,
-                    _ => return Err(UnknownSymbolsRepeatingValue.spanned2(e.span)),
+                    _ => return Err(UnknownKeyRepeatingValue.spanned2(e.span)),
                 }
+            } else {
+                Some(boolean()?)
             };
             SymbolsField::Repeating(repeating)
         }
@@ -1509,11 +1776,11 @@ pub(crate) fn eval_symbols_field(
         }
         Meaning::Groupsredirect | Meaning::Redirectgroups => {
             deny_idx!();
-            let expr = get_expr!(MissingSymbolsGroupsredirectValue);
+            let expr = get_expr!(MissingKeyGroupsRedirectValue);
             let group = eval_group(interner, expr)?;
             SymbolsField::Groupsredirect(group.val)
         }
-        _ => return Err(InvalidSymbolsField.spanned2(span)),
+        _ => return Err(UnknownKeyField.spanned2(span)),
     };
     Ok(field.spanned2(span))
 }

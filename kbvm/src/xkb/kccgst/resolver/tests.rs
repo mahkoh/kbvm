@@ -131,6 +131,8 @@ fn test() {
             &mut interner,
             &mut meaning_cache,
             &mut parsed.val,
+            1024,
+            128,
         );
         embed(&mut parsed.val);
         // let mut out = vec![];

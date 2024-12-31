@@ -37,21 +37,27 @@ struct ItemLexer<'a> {
 
 #[derive(Debug, Error, Eq, PartialEq)]
 pub(crate) enum LexerError {
-    #[error("Unterminated key name")]
+    #[error("unterminated key name")]
     UnterminatedKeyName,
-    #[error("Unterminated String")]
+    #[error("unterminated string")]
     UnterminatedString,
-    #[error("Invalid float literal")]
+    #[error("invalid float literal")]
     InvalidFloatLiteral(#[source] ParseFloatError),
-    #[error("Invalid integer literal")]
+    #[error("invalid integer literal")]
     InvalidIntegerLiteral,
-    #[error("Unexpected byte {:?}", *.0 as char)]
+    #[error("unexpected byte {:?}", *.0 as char)]
     UnexpectedByte(u8),
 }
 
 impl LexerError {
     pub(crate) fn diagnostic_kind(&self) -> DiagnosticKind {
-        DiagnosticKind::SyntaxError
+        match self {
+            LexerError::UnterminatedKeyName => DiagnosticKind::UnterminatedKeyName,
+            LexerError::UnterminatedString => DiagnosticKind::UnterminatedString,
+            LexerError::InvalidFloatLiteral(_) => DiagnosticKind::InvalidFloatLiteral,
+            LexerError::InvalidIntegerLiteral => DiagnosticKind::InvalidIntegerLiteral,
+            LexerError::UnexpectedByte(_) => DiagnosticKind::UnlexableByte,
+        }
     }
 }
 

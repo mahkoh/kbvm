@@ -157,5 +157,5 @@ fn invalid_ident() {
 
 #[test]
 fn unterminated_group() {
-    assert_eq!(e("$"), LexerError::UnterminatedGroupName);
+    assert_eq!(e("$"), LexerError::EmptyMacroName);
 }

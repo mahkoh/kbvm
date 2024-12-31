@@ -25,7 +25,7 @@ use {
     },
     kbvm_proc::ad_hoc_display,
     linearize::Linearize,
-    std::sync::{Arc, LazyLock},
+    std::sync::Arc,
 };
 
 #[derive(Default)]
@@ -44,6 +44,7 @@ struct Parser<'a, 'b> {
     interner: &'a mut Interner,
     meaning_cache: &'a mut MeaningCache,
     pos: usize,
+    home: Option<&'a [u8]>,
 }
 
 #[derive(Debug)]
@@ -99,6 +100,7 @@ pub(crate) fn parse_line<'a>(
     cache: &'a mut ParserCache,
     meaning_cache: &mut MeaningCache,
     tokens: &[Spanned<Token>],
+    home: Option<&[u8]>,
 ) -> Result<Spanned<Line<'a>>, Spanned<ParserError>> {
     Parser {
         map,
@@ -107,6 +109,7 @@ pub(crate) fn parse_line<'a>(
         interner,
         meaning_cache,
         pos: 0,
+        home,
     }
     .parse_line(cache)
 }
@@ -215,7 +218,7 @@ impl Parser<'_, '_> {
         self.pos += 1;
         let ident = self.parse_any_ident()?;
         if let Some(t) = self.try_peek() {
-            return Err(self.expected_eof(t));
+            return Err(self.expected_eol(t));
         }
         let val = self.interner.get(ident.val);
         if !val.contains(&b'%') {
@@ -230,25 +233,20 @@ impl Parser<'_, '_> {
                 let hi = lo + 2;
                 match c {
                     b'%' => res.extend_from_slice(b"%"),
-                    b'H' => {
-                        static HOME: LazyLock<Option<Vec<u8>>> = LazyLock::new(|| {
-                            std::env::var_os("HOME").map(|v| v.into_encoded_bytes())
-                        });
-                        match &*HOME {
-                            None => {
-                                self.diagnostics.push(
-                                    self.map,
-                                    DiagnosticKind::UnknownRulesEscapeSequence,
-                                    ad_hoc_display!("$HOME is not set").spanned(lo, hi),
-                                );
-                                res.push(b'%');
-                                res.push(c);
-                            }
-                            Some(h) => {
-                                res.extend_from_slice(h);
-                            }
+                    b'H' => match self.home {
+                        None => {
+                            self.diagnostics.push(
+                                self.map,
+                                DiagnosticKind::HomeNotSet,
+                                ad_hoc_display!("$HOME is not set").spanned(lo, hi),
+                            );
+                            res.push(b'%');
+                            res.push(c);
                         }
-                    }
+                        Some(h) => {
+                            res.extend_from_slice(h);
+                        }
+                    },
                     b'S' => {
                         if let Some(default_include_dir) = DEFAULT_INCLUDE_DIR {
                             res.extend_from_slice(default_include_dir.as_bytes());

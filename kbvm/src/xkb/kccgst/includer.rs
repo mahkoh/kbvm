@@ -28,6 +28,8 @@ pub(crate) fn resolve_includes(
     interner: &mut Interner,
     meaning_cache: &mut MeaningCache,
     item: &mut Item,
+    max_includes: u64,
+    max_include_depth: u64,
 ) {
     let mut includer = Includer {
         diagnostics,
@@ -36,6 +38,10 @@ pub(crate) fn resolve_includes(
         loader,
         meaning_cache,
         active_includes: Default::default(),
+        num_includes: 0,
+        max_includes,
+        include_depth: 0,
+        max_include_depth,
     };
     includer.process_includes(interner, item);
 }
@@ -47,6 +53,10 @@ struct Includer<'a, 'b> {
     loader: &'a mut CodeLoader,
     meaning_cache: &'a mut MeaningCache,
     active_includes: HashSet<(CodeType, Interned, Option<Interned>)>,
+    num_includes: u64,
+    max_includes: u64,
+    include_depth: u64,
+    max_include_depth: u64,
 }
 
 macro_rules! process_ct {
@@ -63,6 +73,7 @@ macro_rules! process_ct {
 
 impl Includer<'_, '_> {
     fn process_includes(&mut self, interner: &mut Interner, item: &mut Item) {
+        self.include_depth += 1;
         match &mut item.ty {
             ItemType::Composite(c) => {
                 for i in &mut c.config_items {
@@ -71,6 +82,7 @@ impl Includer<'_, '_> {
             }
             ItemType::Config(c) => self.process_config_item_type(interner, c),
         }
+        self.include_depth -= 1;
     }
 
     fn process_config_item_type(&mut self, interner: &mut Interner, ty: &mut ConfigItemType) {
@@ -90,6 +102,14 @@ impl Includer<'_, '_> {
     process_ct!(process_geometry_includes, Geometry, GeometryDecl, Geometry);
 
     fn process_include(&mut self, interner: &mut Interner, include: &mut Include, ty: CodeType) {
+        if self.include_depth >= self.max_include_depth {
+            self.diagnostics.push(
+                self.map,
+                DiagnosticKind::MaxIncludeDepthReached,
+                ad_hoc_display!("maximum include depth ({}) reached", self.max_include_depth => u64).spanned2(include.path.span),
+            );
+            return;
+        }
         let resolved = include.loaded.get_or_insert_default();
         let mut iter = parse_include(interner, include.path);
         while let Some(i) = iter.next() {
@@ -100,6 +120,15 @@ impl Includer<'_, '_> {
                     continue;
                 }
             };
+            self.num_includes += 1;
+            if self.num_includes > self.max_includes {
+                self.diagnostics.push(
+                    self.map,
+                    DiagnosticKind::MaxIncludesReached,
+                    ad_hoc_display!("maximum number of includes reached").spanned2(i.file.span),
+                );
+                return;
+            }
             let mut span = i.file.span;
             if let Some(map) = i.map {
                 span.hi = map.span.hi + 1;
