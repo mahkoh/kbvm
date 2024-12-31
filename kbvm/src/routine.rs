@@ -1,17 +1,17 @@
 #[cfg(test)]
 mod tests;
 
-use isnt::std_1::primitive::IsntSliceExt;
 use {
     crate::modifier::ModifierMask,
     debug_fn::debug_fn,
     hashbrown::{hash_map::Entry, DefaultHashBuilder, HashMap, HashSet},
+    isnt::std_1::primitive::IsntSliceExt,
     linearize::{Linearize, StaticMap},
-    min_max_heap::MinMaxHeap,
     smallvec::SmallVec,
     std::{
         fmt::{Debug, Formatter},
         mem,
+        ops::Range,
         sync::Arc,
     },
 };
@@ -71,6 +71,7 @@ pub(crate) enum BinOp {
     LogAnd,
     LogOr,
     LogXor,
+    Eq,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -83,13 +84,13 @@ pub(crate) enum UnOp {
 #[derive(Clone, Eq, PartialEq, Hash)]
 pub(crate) enum Hi {
     // Generics ops
-    Skip {
-        n: usize,
+    Jump {
+        to: usize,
         args: SmallVec<[(Var, Var); 1]>,
     },
-    SkipIf {
+    JumpIf {
         rs: Var,
-        n: usize,
+        to: usize,
         args: SmallVec<[(Var, Var); 1]>,
     },
     RegLit {
@@ -114,10 +115,6 @@ pub(crate) enum Hi {
         op: UnOp,
         rd: Var,
         rs: Var,
-    },
-    Phi {
-        dst: Var,
-        src: Vec<Var>,
     },
     // State machine ops
     PressedModsInc {
@@ -152,8 +149,10 @@ impl Debug for Hi {
             Ok(())
         };
         match self {
-            Hi::Skip { n, args } => write!(f, "skip {n}, [{}]", debug_fn(|f| format_args(f, args))),
-            Hi::SkipIf { rs, n, args } => write!(
+            Hi::Jump { to: n, args } => {
+                write!(f, "skip {n}, [{}]", debug_fn(|f| format_args(f, args)))
+            }
+            Hi::JumpIf { rs, to: n, args } => write!(
                 f,
                 "skip_if v{}, {n}, [{}]",
                 rs.0,
@@ -164,24 +163,10 @@ impl Debug for Hi {
             Hi::GlobalStore { rs, g } => write!(f, "{g:?} = v{}", rs.0),
             Hi::BinOp { op, rd, rl, rr } => write!(f, "v{} = {op:?} v{}, v{}", rd.0, rl.0, rr.0),
             Hi::UnOp { op, rd, rs } => write!(f, "v{} = {op:?} v{}", rd.0, rs.0),
-            Hi::Phi { dst, src } => write!(
-                f,
-                "v{} = phi({})",
-                dst.0,
-                debug_fn(|f| {
-                    for (idx, v) in src.iter().enumerate() {
-                        if idx > 0 {
-                            write!(f, ", ")?;
-                        }
-                        write!(f, "v{}", v.0)?;
-                    }
-                    Ok(())
-                })
-            ),
             Hi::PressedModsInc { rs } => write!(f, "pressed_mods += v{}", rs.0),
             Hi::PressedModsDec { rs } => write!(f, "pressed_mods -= v{}", rs.0),
             Hi::LatchedModsLoad { rd } => write!(f, "v{} = latched_mods", rd.0),
-            Hi::LatchedModsStore { rs } => write!(f, "locked_mods = v{}", rs.0),
+            Hi::LatchedModsStore { rs } => write!(f, "latched_mods = v{}", rs.0),
             Hi::LockedModsLoad { rd } => write!(f, "v{} = locked_mods", rd.0),
             Hi::LockedModsStore { rs } => write!(f, "locked_mods = v{}", rs.0),
         }
@@ -251,16 +236,13 @@ impl Hi {
             | Hi::UnOp { .. }
             | Hi::LatchedModsLoad { .. }
             | Hi::LockedModsLoad { .. } => true,
-            Hi::Skip { .. }
-            | Hi::SkipIf { .. }
+            Hi::Jump { .. }
+            | Hi::JumpIf { .. }
             | Hi::GlobalStore { .. }
             | Hi::PressedModsInc { .. }
             | Hi::PressedModsDec { .. }
             | Hi::LatchedModsStore { .. }
             | Hi::LockedModsStore { .. } => false,
-            Hi::Phi { .. } => {
-                unreachable!()
-            }
         }
     }
 }
@@ -380,6 +362,7 @@ pub(crate) fn run<H>(
                     BinOp::LogAnd => ((l != 0) && (r != 0)) as u32,
                     BinOp::LogOr => ((l != 0) || (r != 0)) as u32,
                     BinOp::LogXor => ((l != 0) ^ (r != 0)) as u32,
+                    BinOp::Eq => (l == r) as u32,
                 };
             }
             Lo::UnOp { op, rd, rs } => {
@@ -419,28 +402,34 @@ pub(crate) fn run<H>(
 
 pub struct SkipAnchor {
     cond: Option<Var>,
-    idx: usize,
+    block: usize,
+    offset: usize,
 }
 
 impl Default for SkipAnchor {
     fn default() -> Self {
         Self {
             cond: None,
-            idx: !0,
+            block: !0,
+            offset: !0,
         }
     }
 }
 
 pub struct RoutineBuilder {
+    blocks: Vec<Vec<Hi>>,
     ops: Vec<Hi>,
     next_var: u64,
+    on_release: usize,
 }
 
 impl Routine {
     pub fn builder() -> RoutineBuilder {
         RoutineBuilder {
+            blocks: Default::default(),
             ops: Default::default(),
             next_var: 0,
+            on_release: 0,
         }
     }
 }
@@ -451,7 +440,13 @@ impl RoutineBuilder {
     }
 
     pub fn on_release(&mut self) -> &mut Self {
-        todo!()
+        self.ops.push(Hi::Jump {
+            to: self.blocks.len() + 1,
+            args: Default::default(),
+        });
+        self.blocks.push(mem::take(&mut self.ops));
+        self.on_release = self.blocks.len();
+        self
     }
 
     pub fn allocate_var(&mut self) -> Var {
@@ -468,42 +463,55 @@ impl RoutineBuilder {
     }
 
     pub fn prepare_skip(&mut self, anchor: &mut SkipAnchor) -> &mut Self {
-        let idx = self.ops.len();
-        self.ops.push(Hi::Skip {
-            n: 0,
+        let offset = self.ops.len();
+        self.ops.push(Hi::Jump {
+            to: 0,
             args: Default::default(),
         });
-        *anchor = SkipAnchor { cond: None, idx };
+        *anchor = SkipAnchor {
+            cond: None,
+            block: self.blocks.len(),
+            offset,
+        };
         self
     }
 
     pub fn prepare_conditional_skip(&mut self, var: Var, anchor: &mut SkipAnchor) -> &mut Self {
-        let idx = self.ops.len();
-        self.ops.push(Hi::Skip {
-            n: 0,
+        let offset = self.ops.len();
+        self.ops.push(Hi::Jump {
+            to: 0,
             args: Default::default(),
         });
         *anchor = SkipAnchor {
             cond: Some(var),
-            idx,
+            block: self.blocks.len(),
+            offset,
         };
         self
     }
 
     pub fn finish_skip(&mut self, anchor: &mut SkipAnchor) -> &mut Self {
-        let n = self.ops.len() - anchor.idx - 1;
+        if let Some(last) = self.ops.last() {
+            if !matches!(last, Hi::Jump { .. }) {
+                self.ops.push(Hi::Jump {
+                    to: self.blocks.len() + 1,
+                    args: Default::default(),
+                });
+            }
+            self.blocks.push(mem::take(&mut self.ops));
+        }
         let op = match anchor.cond {
-            None => Hi::Skip {
-                n,
+            None => Hi::Jump {
+                to: self.blocks.len(),
                 args: Default::default(),
             },
-            Some(rs) => Hi::SkipIf {
+            Some(rs) => Hi::JumpIf {
                 rs,
-                n,
+                to: self.blocks.len(),
                 args: Default::default(),
             },
         };
-        self.ops[anchor.idx] = op;
+        self.blocks[anchor.block][anchor.offset] = op;
         *anchor = Default::default();
         self
     }
@@ -786,86 +794,29 @@ impl RoutineBuilder {
 //     }
 // }
 
-fn convert_to_ssa(mut next_var: u64, ops: &[Hi]) -> Vec<Hi> {
-    let mut predecessors = vec![SmallVec::<[usize; 1]>::new(); ops.len() + 1];
-    let mut last_was_skip = true;
-    for (idx, op) in ops.iter().enumerate() {
-        if !last_was_skip {
-            predecessors[idx].push(idx - 1);
-        }
-        last_was_skip = false;
-        match op {
-            Hi::Skip { n, .. } if *n > 0 => {
-                predecessors[idx + *n + 1].push(idx);
-                last_was_skip = true;
-            }
-            Hi::SkipIf { n, .. } if *n > 0 => {
-                predecessors[idx + *n + 1].push(idx);
-            }
-            _ => {}
-        }
-    }
-    predecessors.pop();
-    let mut idom_candidates = MinMaxHeap::new();
-    let mut idom = vec![None; ops.len()];
-    for (idx, predecessors) in predecessors.iter().enumerate() {
-        if predecessors.is_empty() {
-            continue;
-        }
-        if predecessors.len() == 1 {
-            idom[idx] = Some(predecessors[0]);
-            continue;
-        }
-        idom_candidates.clear();
-        for &predecessor in predecessors {
-            if let Some(idom) = idom[predecessor] {
-                idom_candidates.push(idom);
-            }
-        }
-        while idom_candidates.len() > 1 {
-            if let Some(idom) = idom[idom_candidates.pop_max().unwrap()] {
-                idom_candidates.push(idom);
-            }
-        }
-        idom[idx] = idom_candidates.pop_max();
-    }
-    let mut dominance_frontiers = vec![SmallVec::<[usize; 1]>::new(); ops.len()];
-    for (idx, predecessors) in predecessors.iter().enumerate() {
-        if predecessors.len() < 2 {
-            continue;
-        }
-        for &predecessor in predecessors {
-            let mut runner = predecessor;
-            while Some(runner) != idom[idx] {
-                if ops[runner].defines_register() {
-                    if dominance_frontiers[runner].contains(&idx) {
-                        break;
-                    }
-                    dominance_frontiers[runner].push(idx);
-                }
-                runner = match idom[runner] {
-                    Some(i) => i,
-                    _ => break,
-                };
-            }
-        }
-    }
+fn convert_to_ssa(
+    mut next_var: u64,
+    blocks: &[Vec<Hi>],
+) -> (Vec<Hi>, Vec<Range<usize>>) {
     let mut allocate_var = || {
         let var = Var(next_var);
         next_var += 1;
         var
     };
     let mut current_block_arguments = HashSet::new();
-    let mut block_arguments = vec![Vec::<(Var, Var)>::new(); ops.len()];
-    for (idx, op) in ops.iter().enumerate().rev() {
+    let mut block_arguments = vec![Vec::<(Var, Var)>::new(); blocks.len()];
+    for (idx, ops) in blocks.iter().enumerate().rev() {
+        for op in ops.iter().rev() {
+
+        }
         match op {
-            Hi::Skip { n, .. } => {
-                if let Some(ba) = block_arguments.get(idx + *n) {
+            Hi::Jump { to, .. } => {
+                if let Some(ba) = block_arguments.get(to) {
                     current_block_arguments.extend(ba.iter().map(|b| b.1));
                 }
             }
-            Hi::SkipIf { rs, n, .. } => {
-                if let Some(ba) = block_arguments.get(idx + *n) {
+            Hi::JumpIf { rs, to, .. } => {
+                if let Some(ba) = block_arguments.get(to) {
                     current_block_arguments.extend(ba.iter().map(|b| b.1));
                 }
                 current_block_arguments.insert(*rs);
@@ -888,75 +839,72 @@ fn convert_to_ssa(mut next_var: u64, ops: &[Hi]) -> Vec<Hi> {
                 current_block_arguments.remove(rd);
                 current_block_arguments.insert(*rs);
             }
-            Hi::Phi { .. } => {}
-            Hi::PressedModsInc { rs, .. } => {
+            Hi::PressedModsInc { rs } => {
                 current_block_arguments.insert(*rs);
             }
-            Hi::PressedModsDec { rs, .. } => {
+            Hi::PressedModsDec { rs } => {
                 current_block_arguments.insert(*rs);
             }
-            Hi::LatchedModsLoad { rd, .. } => {
+            Hi::LatchedModsLoad { rd } => {
                 current_block_arguments.remove(rd);
             }
-            Hi::LatchedModsStore { rs, .. } => {
+            Hi::LatchedModsStore { rs } => {
                 current_block_arguments.insert(*rs);
             }
-            Hi::LockedModsLoad { rd, .. } => {
+            Hi::LockedModsLoad { rd } => {
                 current_block_arguments.remove(rd);
             }
-            Hi::LockedModsStore { rs, .. } => {
+            Hi::LockedModsStore { rs } => {
                 current_block_arguments.insert(*rs);
             }
         }
-        if predecessors[idx].len() > 1 {
+        if jump_targets[idx] {
             for &arg in &current_block_arguments {
-                block_arguments[idx].push((allocate_var(), arg));
+                block_arguments[idx].push((Var(0), arg));
             }
             current_block_arguments.clear();
+            block_arguments[idx].sort_by_key(|v| v.1 .0);
+            for (var, _) in &mut block_arguments[idx] {
+                *var = allocate_var();
+            }
         }
     }
     let mut jump_offset = 0usize;
     let mut res = vec![];
     let mut jump_sources = HashMap::<_, Vec<_>>::new();
     let mut names = HashMap::new();
-    let mut phis = vec![HashMap::<Var, Vec<Var>>::new(); ops.len()];
     let handle_jump_sources =
         |idx, jump_sources: &mut HashMap<_, _>, res: &mut Vec<_>, jump_offset: usize| {
             for (idx, offset) in jump_sources.remove(&idx).unwrap_or_default() {
                 match &mut res[idx] {
-                    Hi::Skip { n, .. } => *n += jump_offset - offset,
-                    Hi::SkipIf { n, .. } => *n += jump_offset - offset,
+                    Hi::Jump { to: n, .. } => *n += jump_offset - offset,
+                    Hi::JumpIf { to: n, .. } => *n += jump_offset - offset,
                     _ => unreachable!(),
                 }
             }
         };
     let mut last_was_skip = false;
+    let mut basic_blocks = vec![];
+    let mut current_block_start = 0;
     for (idx, op) in ops.iter().enumerate() {
-        if block_arguments[idx].is_not_empty() {
-            if !last_was_skip {
-                let mut args = SmallVec::new();
-                for (dst, src) in &block_arguments[idx] {
-                    if let Some(name) = names.get(dst) {
-                        args.push((*dst, *name));
-                    }
-                }
-                res.push(Hi::Skip {
-                    n: 0,
-                    args,
-                });
+        if jump_targets[idx] {
+            // if res.len() > current_block_start {
+            basic_blocks.push(current_block_start..res.len());
+            current_block_start = res.len();
+            // }
+            for (dst, src) in &block_arguments[idx] {
+                names.insert(*src, *dst);
             }
         }
         handle_jump_sources(idx, &mut jump_sources, &mut res, jump_offset);
-        for (&orig, new) in &mut phis[idx] {
-            let var = allocate_var();
-            res.push(Hi::Phi {
-                dst: var,
-                src: mem::take(new),
-            });
-            jump_offset += 1;
-            names.insert(orig, var);
-        }
-        let mut add_jump_source = |n: usize| {
+        let mut add_jump_source = |n: usize, args: &mut SmallVec<_>| {
+            if let Some(ba) = block_arguments.get(idx + n + 1) {
+                for (dst, src) in ba {
+                    if let Some(name) = names.get(src) {
+                        args.push((*dst, *name));
+                    }
+                }
+            }
             jump_sources
                 .entry(idx + n + 1)
                 .or_default()
@@ -966,32 +914,18 @@ fn convert_to_ssa(mut next_var: u64, ops: &[Hi]) -> Vec<Hi> {
             |rs: &mut Var, names: &HashMap<_, _>| *rs = names.get(rs).copied().unwrap_or(*rs);
         let mut rename_write = |rd: &mut Var, names: &mut HashMap<_, _>| {
             let var = allocate_var();
-            let entry = names.entry(*rd);
-            for &idx in &dominance_frontiers[idx] {
-                let entry = match phis[idx].entry(*rd) {
-                    Entry::Occupied(e) => e.into_mut(),
-                    Entry::Vacant(e) => {
-                        let src = e.insert(vec![]);
-                        if let Entry::Occupied(e) = &entry {
-                            src.push(*e.get());
-                        }
-                        src
-                    }
-                };
-                entry.push(var);
-            }
-            entry.insert(var);
+            names.insert(*rd, var);
             *rd = var;
         };
         let mut op = op.clone();
         last_was_skip = false;
         match &mut op {
-            Hi::Skip { n, .. } => {
-                add_jump_source(*n);
+            Hi::Jump { to: n, args } => {
+                add_jump_source(*n, args);
                 last_was_skip = true;
             }
-            Hi::SkipIf { rs, n, .. } => {
-                add_jump_source(*n);
+            Hi::JumpIf { rs, to: n, args } => {
+                add_jump_source(*n, args);
                 rename_read(rs, &names);
             }
             Hi::RegLit { rd, .. } => {
@@ -1030,12 +964,12 @@ fn convert_to_ssa(mut next_var: u64, ops: &[Hi]) -> Vec<Hi> {
             Hi::LockedModsStore { rs } => {
                 rename_read(rs, &names);
             }
-            Hi::Phi { .. } => {
-                unreachable!();
-            }
         }
         res.push(op);
     }
+    if res.len() > current_block_start {
+        basic_blocks.push(current_block_start..res.len());
+    }
     handle_jump_sources(ops.len(), &mut jump_sources, &mut res, jump_offset);
-    res
+    (res, basic_blocks)
 }

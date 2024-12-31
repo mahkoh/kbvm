@@ -1,8 +1,13 @@
 use {
-    crate::routine::{
-        convert_to_ssa, run, Global, Register, Routine, SkipAnchor, StateEventHandler,
+    crate::{
+        modifier::ModifierMask,
+        routine::{
+            convert_to_ssa, run, BinOp, Global, Register, Routine, SkipAnchor, StateEventHandler,
+        },
     },
+    isnt::std_1::primitive::IsntSliceExt,
     linearize::{Linearize, StaticMap},
+    std::mem,
     Global::*,
 };
 
@@ -408,19 +413,52 @@ fn log_not() {
 fn to_ssa() {
     let mut anchor1 = SkipAnchor::default();
     let mut anchor2 = SkipAnchor::default();
+    let mut anchor3 = SkipAnchor::default();
     let mut builder = Routine::builder();
-    let [r0, r1, r2] = builder.allocate_vars();
+    let action_mods = builder.allocate_var();
+    let locked_mods = builder.allocate_var();
+    let previously_locked = builder.allocate_var();
+    let latched_mods = builder.allocate_var();
+    let latch_to_lock = builder.allocate_var();
+    let key_version_before = builder.allocate_var();
+    let key_version_after = builder.allocate_var();
+    let key_version_equal = builder.allocate_var();
     builder
-        .load_lit(r0, 1)
-        .prepare_conditional_skip(r1, &mut anchor1)
-        .load_lit(r0, 2)
-        .prepare_conditional_skip(r1, &mut anchor2)
-        .load_lit(r0, 3)
-        .load_lit(r0, 4)
-        .finish_skip(&mut anchor1)
+        .load_lit(action_mods, 0b11)
+        .prepare_conditional_skip(action_mods, &mut anchor2)
+        .prepare_skip(&mut anchor3)
         .finish_skip(&mut anchor2)
-        .store_global(G0, r0);
-    println!("{:#?}", builder.ops);
-    let ops = convert_to_ssa(builder.next_var, &builder.ops);
+        // .load_lit(action_mods, 0b11)
+        .finish_skip(&mut anchor3)
+        .pressed_mods_inc(action_mods)
+        .load_global(key_version_before, G0)
+        .on_release()
+        .pressed_mods_dec(action_mods)
+        .load_global(key_version_after, G0)
+        .bin_op(
+            BinOp::Eq,
+            key_version_equal,
+            key_version_before,
+            key_version_after,
+        )
+        .prepare_conditional_skip(key_version_after, &mut anchor1)
+        .locked_mods_load(locked_mods)
+        .bit_and(previously_locked, locked_mods, action_mods)
+        .bit_nand(locked_mods, locked_mods, previously_locked)
+        .bit_nand(action_mods, action_mods, previously_locked)
+        .latched_mods_load(latched_mods)
+        .bit_and(latch_to_lock, latched_mods, action_mods)
+        .bit_nand(latched_mods, latched_mods, latch_to_lock)
+        .bit_nand(action_mods, action_mods, latch_to_lock)
+        .bit_or(locked_mods, locked_mods, latch_to_lock)
+        .bit_or(latched_mods, latched_mods, action_mods)
+        .locked_mods_store(locked_mods)
+        .latched_mods_store(latched_mods)
+        .finish_skip(&mut anchor1);
+    if builder.ops.is_not_empty() {
+        builder.blocks.push(mem::take(&mut builder.ops));
+    }
+    println!("{:#?}", builder.blocks);
+    let ops = convert_to_ssa(builder.next_var, &builder.blocks);
     println!("{:#?}", ops);
 }
