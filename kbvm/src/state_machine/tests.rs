@@ -35,46 +35,44 @@ fn test() {
         let _layer = group.add_layer(1);
     }
     {
-        let on_press = Routine::builder()
-            .load_lit(R0, SHIFT_MASK.0)
-            .pressed_mods_inc(R0)
+        let mut routine = Routine::builder();
+        let [r0] = routine.allocate_vars();
+        let routine = routine
+            .load_lit(r0, SHIFT_MASK.0)
+            .pressed_mods_inc(r0)
+            .on_release()
+            .pressed_mods_dec(r0)
             .build();
-        let on_release = Routine::builder().pressed_mods_dec(R0).build();
 
         builder
             .add_key(KEY_SHIFT)
             .add_group(0, &one_layer)
             .add_layer(0)
-            .on_press(&on_press)
-            .on_release(&on_release);
+            .routine(&routine);
     }
     {
-        const ACTION_MODS: Register = R0;
-        const LOCKED_CURRENT: Register = R1;
-        const LOCKED_ALREADY_PRESSED: Register = R2;
-        const LOCKED_AFTER_PRESSED: Register = R3;
-        const LOCKED_RELEASED: Register = R4;
-        let on_press = Routine::builder()
-            .load_lit(ACTION_MODS, LOCK_MASK.0)
-            .pressed_mods_inc(ACTION_MODS)
-            .locked_mods_load(LOCKED_CURRENT)
-            .bit_or(LOCKED_AFTER_PRESSED, ACTION_MODS, LOCKED_CURRENT)
-            .locked_mods_store(LOCKED_AFTER_PRESSED)
-            .build();
-        let on_release = Routine::builder()
-            .pressed_mods_dec(ACTION_MODS)
-            .bit_and(LOCKED_ALREADY_PRESSED, ACTION_MODS, LOCKED_CURRENT)
-            .locked_mods_load(LOCKED_CURRENT)
-            .bit_nand(LOCKED_RELEASED, LOCKED_CURRENT, LOCKED_ALREADY_PRESSED)
-            .locked_mods_store(LOCKED_RELEASED)
+        let mut routine = Routine::builder();
+        let [action_mods, locked_current, locked_already_pressed, locked_after_pressed, locked_released] =
+            routine.allocate_vars();
+        let routine = routine
+            .load_lit(action_mods, LOCK_MASK.0)
+            .pressed_mods_inc(action_mods)
+            .locked_mods_load(locked_current)
+            .bit_or(locked_after_pressed, action_mods, locked_current)
+            .locked_mods_store(locked_after_pressed)
+            .on_release()
+            .pressed_mods_dec(action_mods)
+            .bit_and(locked_already_pressed, action_mods, locked_current)
+            .locked_mods_load(locked_current)
+            .bit_nand(locked_released, locked_current, locked_already_pressed)
+            .locked_mods_store(locked_released)
             .build();
 
         builder
             .add_key(KEY_LOCK)
             .add_group(0, &one_layer)
             .add_layer(0)
-            .on_press(&on_press)
-            .on_release(&on_release);
+            .routine(&routine);
     }
     let state_machine = builder.build_state_machine();
     let mut state = State::default();

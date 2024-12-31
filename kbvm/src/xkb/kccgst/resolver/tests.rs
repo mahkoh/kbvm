@@ -153,9 +153,7 @@ fn test() {
         println!("{:#}", Keymap::from_resolved(&interner, &resolved));
     }
     for d in diag {
-        if d.kind() != DiagnosticKind::InvalidInterpField {
-            println!("{}", d.with_code());
-            println!();
-        }
+        println!("{}", d.with_code());
+        println!();
     }
 }

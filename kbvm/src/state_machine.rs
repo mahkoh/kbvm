@@ -30,8 +30,7 @@ pub(crate) struct KeyGroup {
 
 #[derive(Default)]
 pub(crate) struct KeyLayer {
-    pub(crate) on_press: Option<Routine>,
-    pub(crate) on_release: Option<Routine>,
+    pub(crate) routine: Option<Routine>,
 }
 
 #[derive(Default)]
@@ -226,10 +225,10 @@ impl StateMachine {
             key,
             down_log: 1,
             registers_log: Default::default(),
-            on_release: key_layer_opt.and_then(|l| l.on_release.clone()),
+            on_release: key_layer_opt.and_then(|l| l.routine.clone()),
         };
         if let Some(key_layer) = key_layer_opt {
-            if let Some(routine) = &key_layer.on_press {
+            if let Some(routine) = &key_layer.routine {
                 let mut handler = LogHandler {
                     state: &mut state.state_log,
                     events,

@@ -60,7 +60,8 @@ fn invalid_format() {
     let mut iter = iter(&mut map, &mut interner, "abc+");
     assert!(iter.next().unwrap().is_ok());
     let e = iter.next().unwrap().unwrap_err();
-    assert_eq!(e.val, ParseIncludeError::EmptyGroupName);
+    todo!()
+    // assert_eq!(e.val, ParseIncludeError::EmptyGroupName);
 }
 
 #[test]

@@ -13,7 +13,7 @@ impl Level {
         self.0
     }
 
-    // pub(crate) const fn to_offset(self) -> usize {
-    //     self.0 as usize - 1
-    // }
+    pub(crate) const fn to_offset(self) -> usize {
+        self.0 as usize - 1
+    }
 }

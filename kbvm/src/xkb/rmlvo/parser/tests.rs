@@ -44,6 +44,7 @@ fn test_round_trip(interner: &mut Interner, meaning_cache: &mut MeaningCache, pa
             &mut cache,
             meaning_cache,
             &tokens,
+            None,
         );
         tokens.clear();
         let line = match line {

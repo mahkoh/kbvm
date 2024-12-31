@@ -24,8 +24,7 @@ struct BuilderGroup {
 
 #[derive(Default)]
 struct BuilderLayer {
-    on_press: Option<Routine>,
-    on_release: Option<Routine>,
+    routine: Option<Routine>,
 }
 
 pub struct KeyBuilder<'a> {
@@ -60,8 +59,7 @@ impl Builder {
                             match layer {
                                 None => layers.push(KeyLayer::default()),
                                 Some(l) => layers.push(KeyLayer {
-                                    on_press: l.on_press.clone(),
-                                    on_release: l.on_release.clone(),
+                                    routine: l.routine.clone(),
                                 }),
                             }
                         }
@@ -117,13 +115,8 @@ impl GroupBuilder<'_> {
 }
 
 impl LayerBuilder<'_> {
-    pub fn on_press(&mut self, routine: &Routine) -> &mut Self {
-        self.layer.on_press = Some(routine.clone());
-        self
-    }
-
-    pub fn on_release(&mut self, routine: &Routine) -> &mut Self {
-        self.layer.on_release = Some(routine.clone());
+    pub fn routine(&mut self, routine: &Routine) -> &mut Self {
+        self.layer.routine = Some(routine.clone());
         self
     }
 }
