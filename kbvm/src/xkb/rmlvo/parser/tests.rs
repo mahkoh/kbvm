@@ -4,7 +4,7 @@ use {
         xkb::{
             code::Code,
             code_map::CodeMap,
-            diagnostic::{Diagnostic, DiagnosticKind, DiagnosticSink},
+            diagnostic::{Diagnostic, DiagnosticSink},
             interner::Interner,
             meaning::MeaningCache,
             rmlvo::{

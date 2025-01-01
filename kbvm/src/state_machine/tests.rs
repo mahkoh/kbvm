@@ -2,10 +2,7 @@ use crate::{
     builder::Builder,
     group_type::GroupType,
     modifier::{ModifierIndex, ModifierMask},
-    routine::{
-        Register::{self, *},
-        Routine,
-    },
+    routine::Routine,
     state_machine::{Keycode, State},
 };
 

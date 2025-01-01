@@ -4,10 +4,7 @@ mod tests;
 use {
     crate::modifier::ModifierMask,
     debug_fn::debug_fn,
-    hashbrown::{
-        hash_map::{Entry, OccupiedEntry},
-        DefaultHashBuilder, HashMap, HashSet,
-    },
+    hashbrown::{hash_map::Entry, HashMap, HashSet},
     isnt::std_1::primitive::IsntSliceExt,
     linearize::{Linearize, StaticMap},
     smallvec::SmallVec,
@@ -15,7 +12,6 @@ use {
         collections::VecDeque,
         fmt::{Debug, Formatter},
         mem,
-        ops::Range,
         sync::Arc,
     },
 };
@@ -76,6 +72,11 @@ pub(crate) enum BinOp {
     LogOr,
     LogXor,
     Eq,
+    Ne,
+    Ult,
+    Ilt,
+    Ule,
+    Ile,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -186,8 +187,11 @@ impl Debug for Lo {
             Lo::Skip { n } => {
                 write!(f, "skip {n}")
             }
-            Lo::SkipIf { rs, not, n } => {
-                write!(f, "skip_if{} {rs:?}, {n}", if *not { "_not" } else { "" })
+            Lo::SkipIf { rs, n } => {
+                write!(f, "skip_if {rs:?}, {n}")
+            }
+            Lo::SkipIfNot { rs, n } => {
+                write!(f, "skip_if_not {rs:?}, {n}")
             }
             Lo::Move { rd, rs } => {
                 write!(f, "{rd:?} = {rs:?}")
@@ -246,7 +250,10 @@ pub(crate) enum Lo {
     },
     SkipIf {
         rs: Register,
-        not: bool,
+        n: usize,
+    },
+    SkipIfNot {
+        rs: Register,
         n: usize,
     },
     Move {
@@ -309,26 +316,6 @@ pub(crate) enum Lo {
     },
 }
 
-impl Hi {
-    fn defines_register(&self) -> bool {
-        match self {
-            Hi::RegLit { .. }
-            | Hi::GlobalLoad { .. }
-            | Hi::BinOp { .. }
-            | Hi::UnOp { .. }
-            | Hi::LatchedModsLoad { .. }
-            | Hi::LockedModsLoad { .. } => true,
-            Hi::Jump { .. }
-            | Hi::JumpIf { .. }
-            | Hi::GlobalStore { .. }
-            | Hi::PressedModsInc { .. }
-            | Hi::PressedModsDec { .. }
-            | Hi::LatchedModsStore { .. }
-            | Hi::LockedModsStore { .. } => false,
-        }
-    }
-}
-
 pub trait StateEventHandler {
     fn mods_pressed_inc(&mut self, mods: ModifierMask) {
         let _ = mods;
@@ -380,9 +367,15 @@ pub(crate) fn run<H>(
             Lo::Skip { n } => {
                 i = i.saturating_add(n);
             }
-            Lo::SkipIf { rs, not, n } => {
+            Lo::SkipIf { rs, n } => {
                 let s = registers[rs];
-                if s != not as u32 {
+                if s != 0 {
+                    i = i.saturating_add(n);
+                }
+            }
+            Lo::SkipIfNot { rs, n } => {
+                let s = registers[rs];
+                if s == 0 {
                     i = i.saturating_add(n);
                 }
             }
@@ -460,6 +453,11 @@ pub(crate) fn run<H>(
                     BinOp::LogOr => ((l != 0) || (r != 0)) as u32,
                     BinOp::LogXor => ((l != 0) ^ (r != 0)) as u32,
                     BinOp::Eq => (l == r) as u32,
+                    BinOp::Ne => (l != r) as u32,
+                    BinOp::Ult => (l < r) as u32,
+                    BinOp::Ilt => ((l as i32) < (r as i32)) as u32,
+                    BinOp::Ule => (l <= r) as u32,
+                    BinOp::Ile => ((l as i32) <= (r as i32)) as u32,
                 };
             }
             Lo::UnOp { op, rd, rs } => {
@@ -734,6 +732,46 @@ impl RoutineBuilder {
         self.bin_op(BinOp::LogXor, rd, rl, rr)
     }
 
+    pub fn eq(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
+        self.bin_op(BinOp::Eq, rd, rl, rr)
+    }
+
+    pub fn ne(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
+        self.bin_op(BinOp::Ne, rd, rl, rr)
+    }
+
+    pub fn ule(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
+        self.bin_op(BinOp::Ule, rd, rl, rr)
+    }
+
+    pub fn ile(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
+        self.bin_op(BinOp::Ile, rd, rl, rr)
+    }
+
+    pub fn ult(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
+        self.bin_op(BinOp::Ult, rd, rl, rr)
+    }
+
+    pub fn ilt(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
+        self.bin_op(BinOp::Ilt, rd, rl, rr)
+    }
+
+    pub fn uge(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
+        self.bin_op(BinOp::Ule, rd, rr, rl)
+    }
+
+    pub fn ige(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
+        self.bin_op(BinOp::Ile, rd, rr, rl)
+    }
+
+    pub fn ugt(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
+        self.bin_op(BinOp::Ult, rd, rr, rl)
+    }
+
+    pub fn igt(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
+        self.bin_op(BinOp::Ilt, rd, rr, rl)
+    }
+
     fn un_op(&mut self, op: UnOp, rd: Var, rs: Var) -> &mut Self {
         self.ops.push(Hi::UnOp { op, rd, rs });
         self
@@ -861,7 +899,7 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) {
             names.insert(*src, *dst);
         }
         for op in block {
-            let mut add_jump_source = |to: usize, args: &mut SmallVec<_>| {
+            let add_jump_source = |to: usize, args: &mut SmallVec<_>| {
                 if let Some(ba) = block_arguments.get(to) {
                     for (dst, src) in ba {
                         if let Some(name) = names.get(src) {
@@ -1101,7 +1139,11 @@ impl RegisterAllocator {
         if n == 0 || self.out.is_empty() {
             return;
         }
-        self.out.push_front(Lo::SkipIf { rs, not, n });
+        let op = match not {
+            true => Lo::SkipIfNot { rs, n },
+            false => Lo::SkipIf { rs, n },
+        };
+        self.out.push_front(op);
     }
 
     fn translate_skip(&mut self, to: &usize, args: &[(Var, Var)]) {
@@ -1213,7 +1255,7 @@ impl RegisterAllocator {
                     self.translate_skip(to, args);
                 }
                 Hi::JumpIf { rs, not, to, args } => {
-                    let mut prev_len = self.out.len();
+                    let prev_len = self.out.len();
                     self.translate_skip(to, args);
                     if prev_len < self.out.len() {
                         let rs = self.get_var_register(idx, rs);

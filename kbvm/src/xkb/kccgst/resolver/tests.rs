@@ -3,7 +3,7 @@ use {
         code::Code,
         code_loader::CodeLoader,
         code_map::CodeMap,
-        diagnostic::{DiagnosticKind, DiagnosticSink},
+        diagnostic::DiagnosticSink,
         interner::Interner,
         kccgst::{
             ast_cache::AstCache, embedder::embed, includer::resolve_includes, lexer::Lexer,
