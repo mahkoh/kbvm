@@ -158,6 +158,7 @@ impl Context {
         }
     }
 
+    #[expect(clippy::too_many_arguments)]
     fn handle_rmlvo<T>(
         &self,
         diagnostics: &mut DiagnosticSink,
@@ -198,7 +199,7 @@ impl Context {
             .map(|o| intern(o).val)
             .collect();
         let groups: Vec<_> = groups
-            .into_iter()
+            .iter()
             .map(|group| {
                 let layout = group.layout;
                 let layout = layout.is_not_empty().then(|| intern(layout).val);
@@ -282,6 +283,7 @@ impl Context {
         ))
     }
 
+    #[expect(clippy::too_many_arguments)]
     fn handle_item(
         &self,
         diagnostics: &mut DiagnosticSink<'_>,
@@ -306,6 +308,6 @@ impl Context {
         );
         embed(item);
         let resolved = resolve(map, diagnostics, interner, meaning_cache, cooker, item);
-        Keymap::from_resolved(&interner, &resolved)
+        Keymap::from_resolved(interner, &resolved)
     }
 }

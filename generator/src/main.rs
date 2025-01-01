@@ -1,3 +1,5 @@
+#![expect(clippy::collapsible_else_if, clippy::single_char_add_str)]
+
 use {crate::phf::PhfHash, permutation::Permutation, std::fmt::Debug};
 
 mod keysyms;
@@ -19,7 +21,7 @@ fn generate_map(
     values: &mut [impl Debug],
 ) -> String {
     use std::fmt::Write;
-    let state = phf_generator::generate_hash(&keys);
+    let state = phf_generator::generate_hash(keys);
     Permutation::oneline(state.map).apply_inv_slice_in_place(values);
     let mut res = String::new();
     writeln!(

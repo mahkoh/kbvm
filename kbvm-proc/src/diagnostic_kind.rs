@@ -20,10 +20,7 @@ pub(crate) fn expand(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
             retain
         });
         let Some(severity) = severity else {
-            panic!(
-                "no severity attribute found for variant {}",
-                variant.ident.to_string()
-            );
+            panic!("no severity attribute found for variant {}", variant.ident,);
         };
         let severity: Path = severity;
         let name = &variant.ident;

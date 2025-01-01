@@ -17,9 +17,15 @@ use {
 
 pub(crate) struct CodeLoader {
     include_paths: Vec<Arc<PathBuf>>,
-    cache: HashMap<Key, Vec<Option<(Arc<PathBuf>, Code)>>>,
+    cache: HashMap<Key, Vec<Option<CodeFromPath>>>,
     partial_path: Vec<u8>,
     full_path: PathBuf,
+}
+
+#[derive(Clone)]
+struct CodeFromPath {
+    path: Arc<PathBuf>,
+    code: Code,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -97,7 +103,7 @@ impl CodeLoader {
 }
 
 pub(crate) struct CodeIter<'a> {
-    entry: &'a mut Vec<Option<(Arc<PathBuf>, Code)>>,
+    entry: &'a mut Vec<Option<CodeFromPath>>,
     ty: CodeIterTy<'a>,
 }
 
@@ -125,7 +131,7 @@ impl Iterator for CodeIter<'_> {
             };
             if let Some(entry) = self.entry.get(pos) {
                 if let Some(code) = entry {
-                    return Some(Ok(code.clone()));
+                    return Some(Ok((code.path.clone(), code.code.clone())));
                 }
                 continue;
             }
@@ -171,9 +177,12 @@ impl Iterator for CodeIter<'_> {
                 }
             };
             let code = Code::new(&code);
-            let res = (Arc::new(path.to_path_buf()), code);
+            let res = CodeFromPath {
+                path: Arc::new(path.to_path_buf()),
+                code,
+            };
             self.entry.push(Some(res.clone()));
-            return Some(Ok(res));
+            return Some(Ok((res.path, res.code)));
         }
     }
 }

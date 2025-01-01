@@ -13,7 +13,7 @@ use {
 
 #[derive(Clone, Debug, Error)]
 pub(crate) enum AstCacheError {
-    #[error("not found: `{}{}`", .file.as_bytes().as_bstr(), debug_fn(|f| show_map(f, &.map)))]
+    #[error("not found: `{}{}`", .file.as_bytes().as_bstr(), debug_fn(|f| show_map(f, .map)))]
     NotFound {
         file: CodeSlice<'static>,
         map: Option<CodeSlice<'static>>,

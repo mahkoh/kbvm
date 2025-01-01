@@ -20,6 +20,7 @@ use {
     kbvm_proc::ad_hoc_display,
 };
 
+#[expect(clippy::too_many_arguments)]
 pub(crate) fn resolve_includes(
     diagnostics: &mut DiagnosticSink<'_>,
     map: &mut CodeMap,

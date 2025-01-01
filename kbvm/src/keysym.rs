@@ -1,4 +1,5 @@
 #[rustfmt::skip]
+#[allow(clippy::identity_op)]
 pub(crate) mod generated;
 #[cfg(test)]
 mod tests;
@@ -90,7 +91,7 @@ impl Iterator for Keysyms {
     type Item = Keysym;
 
     fn next(&mut self) -> Option<Self::Item> {
-        while let Some(idx) = self.idx.next() {
+        for idx in self.idx.by_ref() {
             let data = &DATAS[idx as usize];
             if data.flags & IS_SECONDARY_IDX == 0 {
                 return Some(Keysym(data.keysym_or_definitive_idx));
@@ -381,7 +382,7 @@ fn from_str<const CASE_INSENSITIVE: bool>(s: &[u8]) -> Option<Keysym> {
                 0x000100..=0x10ffff => Some(cp | 0x01_00_00_00),
                 0x110000.. => None,
             };
-            return v.map(|v| Keysym(v));
+            return v.map(Keysym);
         }
         return None;
     }

@@ -244,6 +244,7 @@ pub(crate) struct ResolvedSymbols {
     pub(crate) group_names: Vec<Option<(GroupIdx, Spanned<Interned>)>>,
 }
 
+#[expect(clippy::enum_variant_names)]
 #[derive(Copy, Clone, Debug)]
 pub(crate) enum ResolvedAction {
     ResolvedNoAction(ResolvedNoAction),

@@ -349,6 +349,29 @@ pub struct Routine {
     pub(crate) spill: usize,
 }
 
+impl Debug for Routine {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        if f.alternate() {
+            for (name, ops) in [
+                ("on_press", &self.on_press),
+                ("on_release", &self.on_release),
+            ] {
+                writeln!(f, "{name}:")?;
+                for op in &**ops {
+                    writeln!(f, "    {op:?}")?;
+                }
+            }
+            Ok(())
+        } else {
+            f.debug_struct("Routine")
+                .field("on_press", &self.on_press)
+                .field("on_release", &self.on_release)
+                .field("spill", &self.spill)
+                .finish()
+        }
+    }
+}
+
 #[inline]
 pub(crate) fn run<H>(
     h: &mut H,
@@ -571,8 +594,8 @@ impl RoutineBuilder {
 
     pub fn allocate_vars<const N: usize>(&mut self) -> [Var; N] {
         let mut res = [Var(0); N];
-        for i in 0..N {
-            res[i] = Var(self.next_var);
+        for res in &mut res {
+            *res = Var(self.next_var);
             self.next_var += 1;
         }
         res
@@ -1179,7 +1202,9 @@ impl RegisterAllocator {
                             todo.push((dst_loc, *src));
                         }
                     }
-                    VariableLocation::Spilled(pos) => {
+                    VariableLocation::Spilled(pos) =>
+                    {
+                        #[expect(clippy::bool_comparison)]
                         if self.spill[pos] == false {
                             self.spill[pos] = true;
                             v.insert(dst_loc);

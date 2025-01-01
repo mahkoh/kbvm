@@ -394,17 +394,17 @@ pub(crate) enum MergeMode {
 }
 
 pub(crate) trait MergeModeExt {
-    fn is_augment(self) -> bool;
+    fn is_augment(&self) -> bool;
 
-    fn is_not_augment(self) -> bool;
+    fn is_not_augment(&self) -> bool;
 }
 
 impl MergeModeExt for Option<MergeMode> {
-    fn is_augment(self) -> bool {
+    fn is_augment(&self) -> bool {
         self.unwrap_or(MergeMode::Override) == MergeMode::Augment
     }
 
-    fn is_not_augment(self) -> bool {
+    fn is_not_augment(&self) -> bool {
         !self.is_augment()
     }
 }

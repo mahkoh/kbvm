@@ -34,7 +34,7 @@ trait Format {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result;
 }
 
-impl<'a, 'b> Writer<'a, 'b> {
+impl Writer<'_, '_> {
     fn write(&mut self, s: &str) -> fmt::Result {
         self.f.write_str(s)
     }

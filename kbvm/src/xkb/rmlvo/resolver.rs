@@ -42,6 +42,7 @@ pub struct Group {
     pub variant: Option<Interned>,
 }
 
+#[expect(clippy::too_many_arguments)]
 pub(crate) fn create_item(
     map: &mut CodeMap,
     interner: &mut Interner,
@@ -111,11 +112,10 @@ pub(crate) fn create_item(
         name: None,
         config_items: items.into_iter().map(|(_, v)| v.spanned(0, 0)).collect(),
     };
-    let item = Item {
+    Item {
         flags: Default::default(),
         ty: ItemType::Composite(map),
-    };
-    item
+    }
 }
 
 #[derive(Copy, Clone, Default)]
@@ -125,6 +125,7 @@ struct GroupMatch {
     matched_rule_key: bool,
 }
 
+#[expect(clippy::too_many_arguments)]
 pub(crate) fn create_includes(
     map: &mut CodeMap,
     interner: &mut Interner,
@@ -417,6 +418,7 @@ pub(crate) fn create_includes(
     includes.map_values(|v| v.into())
 }
 
+#[expect(clippy::too_many_arguments)]
 fn expand(
     map: &mut CodeMap,
     path: &Arc<PathBuf>,
@@ -662,7 +664,7 @@ fn parse_percent_encoding(
     }
     let mut merge_mode = None;
     let mut prefix = None;
-    let b = *bytes.get(0)?;
+    let b = *bytes.first()?;
     if matches!(b, b'|' | b'+') {
         let mm = match b == b'|' {
             true => MergeMode::Augment,
@@ -675,7 +677,7 @@ fn parse_percent_encoding(
         prefix = Some(b);
         bytes = &bytes[1..];
     }
-    let b = *bytes.get(0)?;
+    let b = *bytes.first()?;
     let component = match b {
         b'm' => Component::Model,
         b'l' => Component::Layout,

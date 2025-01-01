@@ -1662,7 +1662,7 @@ impl Diagnostic {
     }
 
     pub fn with_code(&self) -> impl Display + use<'_> {
-        WithCode { diagnostic: &self }
+        WithCode { diagnostic: self }
     }
 
     pub fn kind(&self) -> DiagnosticKind {

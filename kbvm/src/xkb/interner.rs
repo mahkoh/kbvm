@@ -31,7 +31,7 @@ impl Debug for Interner {
 }
 
 impl Interner {
-    pub(crate) fn intern<'a>(&mut self, code: &CodeSlice<'a>) -> Interned {
+    pub(crate) fn intern(&mut self, code: &CodeSlice<'_>) -> Interned {
         #[derive(Hash)]
         struct Ref<'a, 'b>(&'a CodeSlice<'b>);
         impl Equivalent<CodeSlice<'static>> for Ref<'_, '_> {

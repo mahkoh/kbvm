@@ -141,7 +141,10 @@ enum ResultError {
     #[error("text comparison failed")]
     TextComparisonFailed,
     #[error("memory comparison failed")]
-    MemoryComparisonFailed { expected: Keymap, actual: Keymap },
+    MemoryComparisonFailed {
+        expected: Box<Keymap>,
+        actual: Box<Keymap>,
+    },
     #[error("text comparison failed")]
     OutputComparisonFailed,
     #[error("round trip failed")]
@@ -232,8 +235,8 @@ fn test_kccgst(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Res
 
     if map_expected != map_actual {
         return Err(ResultError::MemoryComparisonFailed {
-            expected: map_expected,
-            actual: map_actual,
+            expected: Box::new(map_expected),
+            actual: Box::new(map_actual),
         });
     }
 

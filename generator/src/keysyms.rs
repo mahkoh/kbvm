@@ -20,7 +20,7 @@ fn generate_output() -> String {
     handle_header(&mut keysyms);
     handle_yaml(&mut keysyms);
     validate(&keysyms);
-    keysyms.sort_unstable_by(|l, _, r, _| l.cmp(&r));
+    keysyms.sort_unstable_by(|l, _, r, _| l.cmp(r));
     assign_indices(&mut keysyms);
     let longest_keysym_name = get_longest_keysym_name(&keysyms);
     let lowercase = create_lowercase_mapping(&keysyms);
@@ -109,7 +109,7 @@ fn handle_header(output: &mut IndexMap<u32, KeysymInfo>) {
         "#,
     )
     .unwrap();
-    for captures in regex.captures_iter(&header) {
+    for captures in regex.captures_iter(header) {
         let name = captures.name("name").unwrap().as_str();
         let id = &captures["id"];
         let id = u32::from_str_radix(id, 16).unwrap();
@@ -190,9 +190,7 @@ fn handle_yaml(output: &mut IndexMap<u32, KeysymInfo>) {
                 unreachable!("missing : in line {line:?}");
             };
             let hex = |s: &str| {
-                let Some(s) = s.strip_prefix("0x") else {
-                    return None;
-                };
+                let s = s.strip_prefix("0x")?;
                 let Ok(val) = u32::from_str_radix(s, 16) else {
                     return None;
                 };

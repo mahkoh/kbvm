@@ -1,3 +1,13 @@
+#![expect(
+    clippy::collapsible_else_if,
+    clippy::collapsible_if,
+    clippy::field_reassign_with_default,
+    clippy::should_implement_trait,
+    clippy::assertions_on_constants,
+    clippy::len_zero,
+    clippy::manual_range_contains
+)]
+
 pub mod builder;
 mod config;
 mod from_bytes;

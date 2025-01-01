@@ -1,4 +1,5 @@
 #[rustfmt::skip]
+#[allow(clippy::upper_case_acronyms)]
 mod generated;
 
 pub(crate) use generated::Meaning;

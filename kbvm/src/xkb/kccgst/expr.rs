@@ -390,9 +390,7 @@ fn parse_u32_1_to_32_str_prefix(interner: &Interner, i: Interned, prefix: &str) 
         return None;
     }
     let num = &n[len..];
-    let Some(num) = u32::from_bytes_dec(num) else {
-        return None;
-    };
+    let num = u32::from_bytes_dec(num)?;
     if num == 0 || num > u32::BITS {
         return None;
     };
@@ -1381,6 +1379,7 @@ pub(crate) enum TypeField {
     LevelName(Spanned<Level>, Spanned<Interned>),
 }
 
+#[expect(clippy::too_many_arguments)]
 pub(crate) fn eval_type_field(
     map: &mut CodeMap,
     diagnostics: &mut DiagnosticSink<'_>,
@@ -1605,6 +1604,7 @@ fn eval_symbols_list<T>(
     Ok((group, levels))
 }
 
+#[expect(clippy::too_many_arguments)]
 pub(crate) fn eval_symbols_field(
     map: &mut CodeMap,
     diagnostics: &mut DiagnosticSink,
@@ -1637,9 +1637,9 @@ pub(crate) fn eval_symbols_field(
             let mut meaning = Meaning::Symbols;
             let expr = expr.unwrap();
             if let Expr::BracketList(l) = &expr.val {
-                if let Some(first) = l.get(0) {
+                if let Some(first) = l.first() {
                     if let Expr::BraceList(l) = &first.val {
-                        if let Some(first) = l.get(0) {
+                        if let Some(first) = l.first() {
                             if let Expr::Call(_) = &first.val {
                                 meaning = Meaning::Actions;
                             }

@@ -64,6 +64,7 @@ enum MapName {
 }
 
 impl AstCache {
+    #[expect(clippy::too_many_arguments)]
     pub(crate) fn get(
         &mut self,
         diagnostics: &mut DiagnosticSink,
@@ -127,7 +128,7 @@ impl AstCache {
                 TokensOrItem::Invalid => {}
                 TokensOrItem::Item(item) => return Ok(item.clone_with_delta(delta)),
                 TokensOrItem::Tokens(t) => {
-                    match parse_item(map, diagnostics, interner, meaning_cache, &t, delta) {
+                    match parse_item(map, diagnostics, interner, meaning_cache, t, delta) {
                         Ok(item) => {
                             let ret = item.clone_with_delta(delta);
                             entry.tokens_or_item = TokensOrItem::Item(item);
@@ -144,6 +145,7 @@ impl AstCache {
     }
 }
 
+#[expect(clippy::too_many_arguments)]
 fn get_idx(
     diagnostics: &mut DiagnosticSink,
     map: &mut CodeMap,

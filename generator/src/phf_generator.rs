@@ -39,7 +39,7 @@ where
 
     let hashes: Vec<_> = entries.iter().map(|entry| phf::hash(entry, key)).collect();
 
-    let buckets_len = (hashes.len() + DEFAULT_LAMBDA - 1) / DEFAULT_LAMBDA;
+    let buckets_len = hashes.len().div_ceil(DEFAULT_LAMBDA);
     let buckets_len = buckets_len.next_power_of_two();
     let mut buckets = (0..buckets_len)
         .map(|i| Bucket {

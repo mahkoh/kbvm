@@ -294,7 +294,7 @@ fn fix_resolved_symbols(symbols: &mut ResolvedSymbols) {
                                 if s.val == ks {
                                     if group_idx < max_group
                                         || level_idx < max_level
-                                        || keycode == None
+                                        || keycode.is_none()
                                         || matches!(keycode, Some(k) if k > key.code)
                                     {
                                         max_group = group_idx;
@@ -323,7 +323,7 @@ fn fix_resolved_symbols(symbols: &mut ResolvedSymbols) {
 fn infer_key_type(group: &SymbolsKeyGroup) -> BuiltInKeytype {
     let get_symbol_of_level = |level: usize| {
         if let Some(l) = group.levels.get(level) {
-            for sym in &l.symbols {
+            if let Some(sym) = l.symbols.first() {
                 return Some(sym.val);
             }
             return Some(KEY_NoSymbol);
@@ -425,7 +425,7 @@ fn fix_combined_properties(
                         continue;
                     };
                     interp.version = version;
-                    if let Some(a) = interp.interp.action.clone() {
+                    if let Some(a) = interp.interp.action {
                         level.actions.push(a);
                     }
                     if (group_idx, level_idx) == (0, 0) || !interp.interp.level_one_only() {
@@ -1578,10 +1578,8 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
                     self.handle_group_name(mm, group, name);
                 }
             } else {
-                for name in data.group_names.into_iter() {
-                    if let Some((idx, name)) = name {
-                        self.handle_group_name(mm, idx, name);
-                    }
+                for (idx, name) in data.group_names.into_iter().flatten() {
+                    self.handle_group_name(mm, idx, name);
                 }
             }
         }

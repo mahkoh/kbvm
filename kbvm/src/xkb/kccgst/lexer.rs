@@ -103,7 +103,7 @@ impl Lexer {
     }
 }
 
-impl<'a> ItemLexer<'a> {
+impl ItemLexer<'_> {
     fn lex_item(&mut self, output: &mut Vec<Spanned<Token>>) -> Result<(), Spanned<LexerError>> {
         let mut depth = 0u64;
         while let Some(t) = self.lex_one()? {
@@ -237,7 +237,7 @@ impl<'a> ItemLexer<'a> {
             let hi = self.span_lo + end as u64;
             return Ok(Some(Ident(interned).spanned(lo, hi)));
         };
-        if matches!(b, b'0'..=b'9') {
+        if b.is_ascii_digit() {
             let mut hex = false;
             let mut digits_start = start;
             if b == b'0' && self.code.get(self.pos) == Some(&b'x') {

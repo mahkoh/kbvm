@@ -93,11 +93,13 @@ macro_rules! parse_inline_list {
     };
 }
 
+pub type TyAndName = (Option<Span>, Spanned<CodeType>, Option<Spanned<Interned>>);
+
 pub(crate) fn snoop_ty_and_name(
     tokens: &[Spanned<Token>],
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
-) -> Result<(Option<Span>, Spanned<CodeType>, Option<Spanned<Interned>>), Spanned<ParserError>> {
+) -> Result<TyAndName, Spanned<ParserError>> {
     let mut parser = Parser {
         diag: None,
         tokens,
@@ -735,7 +737,7 @@ impl Parser<'_, '_> {
             let indicator = self.parse_ident()?;
             if self
                 .meaning_cache
-                .get_case_insensitive(&self.interner, indicator.val)
+                .get_case_insensitive(self.interner, indicator.val)
                 != Meaning::Indicator
             {
                 return Err(self.unexpected_token(

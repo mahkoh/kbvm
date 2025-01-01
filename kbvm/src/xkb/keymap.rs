@@ -305,10 +305,8 @@ impl Keymap {
         let mut mod_maps = mod_maps.into_iter().collect::<Vec<_>>();
         mod_maps.sort_unstable();
         let mut group_names = Vec::with_capacity(resolved.symbols.group_names.len());
-        for m in &resolved.symbols.group_names {
-            if let Some((idx, m)) = m {
-                group_names.push((*idx, get_string(m.val)));
-            }
+        for (idx, m) in resolved.symbols.group_names.iter().flatten() {
+            group_names.push((*idx, get_string(m.val)));
         }
         let mut used_key_names = HashSet::new();
         let mut keys = Vec::with_capacity(resolved.symbols.keys.len());
@@ -397,9 +395,7 @@ fn map_symbol_groups(
         KeyTypeRef::BuiltIn(bi) => default_key_types[bi].as_ref(),
         KeyTypeRef::Named(n) => types_by_ident.get(&n.val),
     };
-    let Some(kt) = kt else {
-        return None;
-    };
+    let kt = kt?;
     let mut levels: Vec<_> = m
         .levels
         .iter()

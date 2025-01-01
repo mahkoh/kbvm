@@ -58,7 +58,7 @@ impl IncludeIter<'_> {
     }
 }
 
-impl<'a> Iterator for IncludeIter<'a> {
+impl Iterator for IncludeIter<'_> {
     type Item = Result<Include, Spanned<ParseIncludeError>>;
 
     fn next(&mut self) -> Option<Self::Item> {

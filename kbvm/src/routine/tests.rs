@@ -10,7 +10,7 @@ impl StateEventHandler for DummyHandler {}
 
 fn test(builder: RoutineBuilder, global: &[u32]) {
     let routine = builder.build();
-    println!("{:#?}", routine.on_press);
+    println!("{:#?}", routine);
     let mut registers = StaticMap::default();
     let mut globals = StaticMap::default();
     let mut spill = vec![0; routine.spill];
