@@ -566,7 +566,12 @@ impl RoutineBuilder {
         let mut on_press: Vec<_> = allocator.out.into();
         let mut snip = on_press.len();
         if let Some(on_release) = self.on_release {
-            snip = on_press.len() - allocator.block_offsets[on_release];
+            snip = on_press.len()
+                - allocator
+                    .block_offsets
+                    .get(on_release)
+                    .copied()
+                    .unwrap_or_default();
         }
         let on_release = on_press[snip..].to_owned();
         on_press.truncate(snip);
@@ -918,6 +923,7 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) {
     }
     let mut names = HashMap::new();
     for (idx, block) in blocks.iter_mut().enumerate() {
+        names.clear();
         for (dst, src) in &block_arguments[idx] {
             names.insert(*src, *dst);
         }
@@ -1074,46 +1080,56 @@ impl RegisterAllocator {
                 };
                 uses.push(idx);
             };
+            macro_rules! read {
+                ($r:expr) => {
+                    use_($r, true)
+                };
+            }
+            macro_rules! write {
+                ($r:expr) => {
+                    use_($r, false)
+                };
+            }
             match op {
                 Hi::Jump { .. } => {}
                 Hi::JumpIf { rs, .. } => {
-                    use_(rs, true);
+                    read!(rs);
                 }
                 Hi::RegLit { rd, .. } => {
-                    use_(rd, false);
+                    write!(rd);
                 }
                 Hi::GlobalLoad { rd, .. } => {
-                    use_(rd, false);
+                    write!(rd);
                 }
                 Hi::GlobalStore { rs, .. } => {
-                    use_(rs, true);
+                    read!(rs);
                 }
                 Hi::BinOp { rd, rl, rr, .. } => {
-                    use_(rl, true);
-                    use_(rr, true);
-                    use_(rd, false);
+                    read!(rl);
+                    read!(rr);
+                    write!(rd);
                 }
                 Hi::UnOp { rd, rs, .. } => {
-                    use_(rs, true);
-                    use_(rd, false);
+                    read!(rs);
+                    write!(rd);
                 }
                 Hi::PressedModsInc { rs, .. } => {
-                    use_(rs, true);
+                    read!(rs);
                 }
                 Hi::PressedModsDec { rs, .. } => {
-                    use_(rs, true);
+                    read!(rs);
                 }
                 Hi::LatchedModsLoad { rd, .. } => {
-                    use_(rd, false);
+                    write!(rd);
                 }
                 Hi::LatchedModsStore { rs, .. } => {
-                    use_(rs, true);
+                    read!(rs);
                 }
                 Hi::LockedModsLoad { rd, .. } => {
-                    use_(rd, false);
+                    write!(rd);
                 }
                 Hi::LockedModsStore { rs, .. } => {
-                    use_(rs, true);
+                    read!(rs);
                 }
             }
         }
