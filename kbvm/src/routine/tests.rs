@@ -56,10 +56,10 @@ fn skip_conditional() {
     let [r0, r1, r2] = builder.allocate_vars();
     let ops = builder
         .load_lit(r0, 1)
-        .prepare_conditional_skip(r1, &mut anchor)
+        .prepare_conditional_skip(r1, false, &mut anchor)
         .load_lit(r1, 2)
         .finish_skip(&mut anchor)
-        .prepare_conditional_skip(r0, &mut anchor)
+        .prepare_conditional_skip(r0, false, &mut anchor)
         .load_lit(r2, 3)
         .finish_skip(&mut anchor)
         .build();
@@ -425,10 +425,10 @@ fn to_ssa() {
     let key_version_equal = builder.allocate_var();
     builder
         .load_lit(action_mods, 0b11)
-        .prepare_conditional_skip(action_mods, &mut anchor2)
+        .prepare_conditional_skip(action_mods, false, &mut anchor2)
         .prepare_skip(&mut anchor3)
         .finish_skip(&mut anchor2)
-        // .load_lit(action_mods, 0b11)
+        .load_lit(action_mods, 0b11)
         .finish_skip(&mut anchor3)
         .pressed_mods_inc(action_mods)
         .load_global(key_version_before, G0)
@@ -441,7 +441,7 @@ fn to_ssa() {
             key_version_before,
             key_version_after,
         )
-        .prepare_conditional_skip(key_version_after, &mut anchor1)
+        .prepare_conditional_skip(key_version_after, true, &mut anchor1)
         .locked_mods_load(locked_mods)
         .bit_and(previously_locked, locked_mods, action_mods)
         .bit_nand(locked_mods, locked_mods, previously_locked)

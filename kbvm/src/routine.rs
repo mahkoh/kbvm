@@ -4,11 +4,15 @@ mod tests;
 use {
     crate::modifier::ModifierMask,
     debug_fn::debug_fn,
-    hashbrown::{hash_map::Entry, DefaultHashBuilder, HashMap, HashSet},
+    hashbrown::{
+        hash_map::{Entry, OccupiedEntry},
+        DefaultHashBuilder, HashMap, HashSet,
+    },
     isnt::std_1::primitive::IsntSliceExt,
     linearize::{Linearize, StaticMap},
     smallvec::SmallVec,
     std::{
+        collections::VecDeque,
         fmt::{Debug, Formatter},
         mem,
         ops::Range,
@@ -90,6 +94,7 @@ pub(crate) enum Hi {
     },
     JumpIf {
         rs: Var,
+        not: bool,
         to: usize,
         args: SmallVec<[(Var, Var); 1]>,
     },
@@ -149,12 +154,13 @@ impl Debug for Hi {
             Ok(())
         };
         match self {
-            Hi::Jump { to: n, args } => {
-                write!(f, "skip {n}, [{}]", debug_fn(|f| format_args(f, args)))
+            Hi::Jump { to, args } => {
+                write!(f, "jump {to}, [{}]", debug_fn(|f| format_args(f, args)))
             }
-            Hi::JumpIf { rs, to: n, args } => write!(
+            Hi::JumpIf { not, rs, to, args } => write!(
                 f,
-                "skip_if v{}, {n}, [{}]",
+                "jump_if{} v{}, {to}, [{}]",
+                if *not { "_not" } else { "" },
                 rs.0,
                 debug_fn(|f| format_args(f, args)),
             ),
@@ -205,6 +211,14 @@ pub(crate) enum Lo {
         op: UnOp,
         rd: Register,
         rs: Register,
+    },
+    SpillLoad {
+        rd: Register,
+        spill: usize,
+    },
+    SpillStore {
+        rs: Register,
+        spill: usize,
     },
     // State machine ops
     PressedModsInc {
@@ -402,6 +416,7 @@ pub(crate) fn run<H>(
 
 pub struct SkipAnchor {
     cond: Option<Var>,
+    not: bool,
     block: usize,
     offset: usize,
 }
@@ -410,6 +425,7 @@ impl Default for SkipAnchor {
     fn default() -> Self {
         Self {
             cond: None,
+            not: false,
             block: !0,
             offset: !0,
         }
@@ -470,13 +486,19 @@ impl RoutineBuilder {
         });
         *anchor = SkipAnchor {
             cond: None,
+            not: false,
             block: self.blocks.len(),
             offset,
         };
         self
     }
 
-    pub fn prepare_conditional_skip(&mut self, var: Var, anchor: &mut SkipAnchor) -> &mut Self {
+    pub fn prepare_conditional_skip(
+        &mut self,
+        var: Var,
+        inverse: bool,
+        anchor: &mut SkipAnchor,
+    ) -> &mut Self {
         let offset = self.ops.len();
         self.ops.push(Hi::Jump {
             to: 0,
@@ -484,6 +506,7 @@ impl RoutineBuilder {
         });
         *anchor = SkipAnchor {
             cond: Some(var),
+            not: inverse,
             block: self.blocks.len(),
             offset,
         };
@@ -507,6 +530,7 @@ impl RoutineBuilder {
             },
             Some(rs) => Hi::JumpIf {
                 rs,
+                not: anchor.not,
                 to: self.blocks.len(),
                 args: Default::default(),
             },
@@ -794,10 +818,7 @@ impl RoutineBuilder {
 //     }
 // }
 
-fn convert_to_ssa(
-    mut next_var: u64,
-    blocks: &[Vec<Hi>],
-) -> (Vec<Hi>, Vec<Range<usize>>) {
+fn convert_to_ssa(mut next_var: u64, blocks: &[Vec<Hi>]) -> Vec<Vec<Hi>> {
     let mut allocate_var = || {
         let var = Var(next_var);
         next_var += 1;
@@ -807,169 +828,377 @@ fn convert_to_ssa(
     let mut block_arguments = vec![Vec::<(Var, Var)>::new(); blocks.len()];
     for (idx, ops) in blocks.iter().enumerate().rev() {
         for op in ops.iter().rev() {
-
-        }
-        match op {
-            Hi::Jump { to, .. } => {
-                if let Some(ba) = block_arguments.get(to) {
-                    current_block_arguments.extend(ba.iter().map(|b| b.1));
-                }
-            }
-            Hi::JumpIf { rs, to, .. } => {
-                if let Some(ba) = block_arguments.get(to) {
-                    current_block_arguments.extend(ba.iter().map(|b| b.1));
-                }
-                current_block_arguments.insert(*rs);
-            }
-            Hi::RegLit { rd, .. } => {
-                current_block_arguments.remove(rd);
-            }
-            Hi::GlobalLoad { rd, .. } => {
-                current_block_arguments.remove(rd);
-            }
-            Hi::GlobalStore { rs, .. } => {
-                current_block_arguments.insert(*rs);
-            }
-            Hi::BinOp { rd, rl, rr, .. } => {
-                current_block_arguments.remove(rd);
-                current_block_arguments.insert(*rl);
-                current_block_arguments.insert(*rr);
-            }
-            Hi::UnOp { rd, rs, .. } => {
-                current_block_arguments.remove(rd);
-                current_block_arguments.insert(*rs);
-            }
-            Hi::PressedModsInc { rs } => {
-                current_block_arguments.insert(*rs);
-            }
-            Hi::PressedModsDec { rs } => {
-                current_block_arguments.insert(*rs);
-            }
-            Hi::LatchedModsLoad { rd } => {
-                current_block_arguments.remove(rd);
-            }
-            Hi::LatchedModsStore { rs } => {
-                current_block_arguments.insert(*rs);
-            }
-            Hi::LockedModsLoad { rd } => {
-                current_block_arguments.remove(rd);
-            }
-            Hi::LockedModsStore { rs } => {
-                current_block_arguments.insert(*rs);
-            }
-        }
-        if jump_targets[idx] {
-            for &arg in &current_block_arguments {
-                block_arguments[idx].push((Var(0), arg));
-            }
-            current_block_arguments.clear();
-            block_arguments[idx].sort_by_key(|v| v.1 .0);
-            for (var, _) in &mut block_arguments[idx] {
-                *var = allocate_var();
-            }
-        }
-    }
-    let mut jump_offset = 0usize;
-    let mut res = vec![];
-    let mut jump_sources = HashMap::<_, Vec<_>>::new();
-    let mut names = HashMap::new();
-    let handle_jump_sources =
-        |idx, jump_sources: &mut HashMap<_, _>, res: &mut Vec<_>, jump_offset: usize| {
-            for (idx, offset) in jump_sources.remove(&idx).unwrap_or_default() {
-                match &mut res[idx] {
-                    Hi::Jump { to: n, .. } => *n += jump_offset - offset,
-                    Hi::JumpIf { to: n, .. } => *n += jump_offset - offset,
-                    _ => unreachable!(),
-                }
-            }
-        };
-    let mut last_was_skip = false;
-    let mut basic_blocks = vec![];
-    let mut current_block_start = 0;
-    for (idx, op) in ops.iter().enumerate() {
-        if jump_targets[idx] {
-            // if res.len() > current_block_start {
-            basic_blocks.push(current_block_start..res.len());
-            current_block_start = res.len();
-            // }
-            for (dst, src) in &block_arguments[idx] {
-                names.insert(*src, *dst);
-            }
-        }
-        handle_jump_sources(idx, &mut jump_sources, &mut res, jump_offset);
-        let mut add_jump_source = |n: usize, args: &mut SmallVec<_>| {
-            if let Some(ba) = block_arguments.get(idx + n + 1) {
-                for (dst, src) in ba {
-                    if let Some(name) = names.get(src) {
-                        args.push((*dst, *name));
+            match op {
+                Hi::Jump { to, .. } => {
+                    if let Some(ba) = block_arguments.get(*to) {
+                        current_block_arguments.extend(ba.iter().map(|b| b.1));
                     }
                 }
-            }
-            jump_sources
-                .entry(idx + n + 1)
-                .or_default()
-                .push((res.len(), jump_offset));
-        };
-        let rename_read =
-            |rs: &mut Var, names: &HashMap<_, _>| *rs = names.get(rs).copied().unwrap_or(*rs);
-        let mut rename_write = |rd: &mut Var, names: &mut HashMap<_, _>| {
-            let var = allocate_var();
-            names.insert(*rd, var);
-            *rd = var;
-        };
-        let mut op = op.clone();
-        last_was_skip = false;
-        match &mut op {
-            Hi::Jump { to: n, args } => {
-                add_jump_source(*n, args);
-                last_was_skip = true;
-            }
-            Hi::JumpIf { rs, to: n, args } => {
-                add_jump_source(*n, args);
-                rename_read(rs, &names);
-            }
-            Hi::RegLit { rd, .. } => {
-                rename_write(rd, &mut names);
-            }
-            Hi::GlobalLoad { rd, .. } => {
-                rename_write(rd, &mut names);
-            }
-            Hi::GlobalStore { rs, .. } => {
-                rename_read(rs, &names);
-            }
-            Hi::BinOp { rd, rl, rr, .. } => {
-                rename_read(rl, &names);
-                rename_read(rr, &names);
-                rename_write(rd, &mut names);
-            }
-            Hi::UnOp { rd, rs, .. } => {
-                rename_read(rs, &names);
-                rename_write(rd, &mut names);
-            }
-            Hi::PressedModsInc { rs } => {
-                rename_read(rs, &names);
-            }
-            Hi::PressedModsDec { rs } => {
-                rename_read(rs, &names);
-            }
-            Hi::LatchedModsLoad { rd } => {
-                rename_write(rd, &mut names);
-            }
-            Hi::LatchedModsStore { rs } => {
-                rename_read(rs, &names);
-            }
-            Hi::LockedModsLoad { rd } => {
-                rename_write(rd, &mut names);
-            }
-            Hi::LockedModsStore { rs } => {
-                rename_read(rs, &names);
+                Hi::JumpIf { rs, to, .. } => {
+                    if let Some(ba) = block_arguments.get(*to) {
+                        current_block_arguments.extend(ba.iter().map(|b| b.1));
+                    }
+                    current_block_arguments.insert(*rs);
+                }
+                Hi::RegLit { rd, .. } => {
+                    current_block_arguments.remove(rd);
+                }
+                Hi::GlobalLoad { rd, .. } => {
+                    current_block_arguments.remove(rd);
+                }
+                Hi::GlobalStore { rs, .. } => {
+                    current_block_arguments.insert(*rs);
+                }
+                Hi::BinOp { rd, rl, rr, .. } => {
+                    current_block_arguments.remove(rd);
+                    current_block_arguments.insert(*rl);
+                    current_block_arguments.insert(*rr);
+                }
+                Hi::UnOp { rd, rs, .. } => {
+                    current_block_arguments.remove(rd);
+                    current_block_arguments.insert(*rs);
+                }
+                Hi::PressedModsInc { rs } => {
+                    current_block_arguments.insert(*rs);
+                }
+                Hi::PressedModsDec { rs } => {
+                    current_block_arguments.insert(*rs);
+                }
+                Hi::LatchedModsLoad { rd } => {
+                    current_block_arguments.remove(rd);
+                }
+                Hi::LatchedModsStore { rs } => {
+                    current_block_arguments.insert(*rs);
+                }
+                Hi::LockedModsLoad { rd } => {
+                    current_block_arguments.remove(rd);
+                }
+                Hi::LockedModsStore { rs } => {
+                    current_block_arguments.insert(*rs);
+                }
             }
         }
-        res.push(op);
+        for &arg in &current_block_arguments {
+            block_arguments[idx].push((Var(0), arg));
+        }
+        current_block_arguments.clear();
+        block_arguments[idx].sort_by_key(|v| v.1 .0);
+        for (var, _) in &mut block_arguments[idx] {
+            *var = allocate_var();
+        }
     }
-    if res.len() > current_block_start {
-        basic_blocks.push(current_block_start..res.len());
+    let mut res = vec![];
+    let mut names = HashMap::new();
+    for (idx, block) in blocks.iter().enumerate() {
+        for (dst, src) in &block_arguments[idx] {
+            names.insert(*src, *dst);
+        }
+        let mut new_block = vec![];
+        for op in block {
+            let mut add_jump_source = |to: usize, args: &mut SmallVec<_>| {
+                if let Some(ba) = block_arguments.get(to) {
+                    for (dst, src) in ba {
+                        if let Some(name) = names.get(src) {
+                            args.push((*dst, *name));
+                        }
+                    }
+                }
+            };
+            let rename_read =
+                |rs: &mut Var, names: &HashMap<_, _>| *rs = names.get(rs).copied().unwrap_or(*rs);
+            let mut rename_write = |rd: &mut Var, names: &mut HashMap<_, _>| {
+                let var = allocate_var();
+                names.insert(*rd, var);
+                *rd = var;
+            };
+            let mut op = op.clone();
+            match &mut op {
+                Hi::Jump { to, args } => {
+                    add_jump_source(*to, args);
+                }
+                Hi::JumpIf { rs, to, args, .. } => {
+                    add_jump_source(*to, args);
+                    rename_read(rs, &names);
+                }
+                Hi::RegLit { rd, .. } => {
+                    rename_write(rd, &mut names);
+                }
+                Hi::GlobalLoad { rd, .. } => {
+                    rename_write(rd, &mut names);
+                }
+                Hi::GlobalStore { rs, .. } => {
+                    rename_read(rs, &names);
+                }
+                Hi::BinOp { rd, rl, rr, .. } => {
+                    rename_read(rl, &names);
+                    rename_read(rr, &names);
+                    rename_write(rd, &mut names);
+                }
+                Hi::UnOp { rd, rs, .. } => {
+                    rename_read(rs, &names);
+                    rename_write(rd, &mut names);
+                }
+                Hi::PressedModsInc { rs } => {
+                    rename_read(rs, &names);
+                }
+                Hi::PressedModsDec { rs } => {
+                    rename_read(rs, &names);
+                }
+                Hi::LatchedModsLoad { rd } => {
+                    rename_write(rd, &mut names);
+                }
+                Hi::LatchedModsStore { rs } => {
+                    rename_read(rs, &names);
+                }
+                Hi::LockedModsLoad { rd } => {
+                    rename_write(rd, &mut names);
+                }
+                Hi::LockedModsStore { rs } => {
+                    rename_read(rs, &names);
+                }
+            }
+            new_block.push(op);
+        }
+        res.push(new_block);
     }
-    handle_jump_sources(ops.len(), &mut jump_sources, &mut res, jump_offset);
-    (res, basic_blocks)
+    res
+}
+
+fn allocate_registers(blocks: &[Vec<Hi>]) {
+    let mut registers = StaticMap::<Register, Option<(Var, usize)>>::default();
+    let mut spill = Vec::<bool>::new();
+    let mut in_variables = vec![];
+    let mut live_variables = HashMap::new();
+    let mut variable_uses = HashMap::<Var, SmallVec<[usize; 2]>>::new();
+    let mut live_ranges = HashMap::new();
+    let mut out = VecDeque::new();
+    let mut variable_location = HashMap::<Var, VariableLocation>::new();
+    #[derive(Copy, Clone)]
+    enum VariableLocation {
+        Register(Register),
+        Spilled(usize),
+    }
+    for block in blocks.iter().rev() {
+        in_variables.clear();
+        live_variables.clear();
+        live_ranges.clear();
+        for (idx, op) in block.iter().enumerate().rev() {
+            let read = |live_variables: &mut HashMap<_, _>, var: &Var| {
+                let _ = live_variables.try_insert(*var, idx + 1);
+            };
+            let write = |live_variables: &mut HashMap<_, _>, var: &Var| {
+                let end = match live_variables.remove(var) {
+                    None => idx + 1,
+                    Some(end) => end,
+                };
+                live_ranges.insert(*var, (idx + 1, end));
+            };
+            match op {
+                Hi::Jump { .. } => {}
+                Hi::JumpIf { rs, .. } => {
+                    read(&mut live_variables, rs);
+                }
+                Hi::RegLit { rd, .. } => {
+                    write(&mut live_variables, rd);
+                }
+                Hi::GlobalLoad { rd, .. } => {
+                    write(&mut live_variables, rd);
+                }
+                Hi::GlobalStore { rs, .. } => {
+                    read(&mut live_variables, rs);
+                }
+                Hi::BinOp { rd, rl, rr, .. } => {
+                    write(&mut live_variables, rd);
+                    read(&mut live_variables, rl);
+                    read(&mut live_variables, rr);
+                }
+                Hi::UnOp { rd, rs, .. } => {
+                    write(&mut live_variables, rd);
+                    read(&mut live_variables, rs);
+                }
+                Hi::PressedModsInc { rs, .. } => {
+                    read(&mut live_variables, rs);
+                }
+                Hi::PressedModsDec { rs, .. } => {
+                    read(&mut live_variables, rs);
+                }
+                Hi::LatchedModsLoad { rd, .. } => {
+                    write(&mut live_variables, rd);
+                }
+                Hi::LatchedModsStore { rs, .. } => {
+                    read(&mut live_variables, rs);
+                }
+                Hi::LockedModsLoad { rd, .. } => {
+                    write(&mut live_variables, rd);
+                }
+                Hi::LockedModsStore { rs, .. } => {
+                    read(&mut live_variables, rs);
+                }
+            }
+        }
+        for (var, end) in &live_variables {
+            live_ranges.insert(*var, (0, *end));
+        }
+        variable_uses.clear();
+        for (idx, op) in block.iter().enumerate() {
+            let use_ = |var: &Var| {
+                variable_uses.entry(*var).or_default().push(*idx);
+            };
+            match op {
+                Hi::Jump { .. } => {}
+                Hi::JumpIf { rs, .. } => {
+                    use_(rs);
+                }
+                Hi::RegLit { rd, .. } => {
+                    use_(rd);
+                }
+                Hi::GlobalLoad { rd, .. } => {
+                    use_(rd);
+                }
+                Hi::GlobalStore { rs, .. } => {
+                    use_(rs);
+                }
+                Hi::BinOp { rd, rl, rr, .. } => {
+                    use_(rd);
+                    use_(rl);
+                    use_(rr);
+                }
+                Hi::UnOp { rd, rs, .. } => {
+                    use_(rd);
+                    use_(rs);
+                }
+                Hi::PressedModsInc { rs, .. } => {
+                    use_(rs);
+                }
+                Hi::PressedModsDec { rs, .. } => {
+                    use_(rs);
+                }
+                Hi::LatchedModsLoad { rd, .. } => {
+                    use_(rd);
+                }
+                Hi::LatchedModsStore { rs, .. } => {
+                    use_(rs);
+                }
+                Hi::LockedModsLoad { rd, .. } => {
+                    use_(rd);
+                }
+                Hi::LockedModsStore { rs, .. } => {
+                    use_(rs);
+                }
+            }
+        }
+        let allocate_register = |variable_location: &mut HashMap<_, _>| {
+            let mut furthest_register = Register::R0;
+            let mut furthest_point = 0;
+            for (rs, next_use) in &mut registers {
+                match next_use {
+                    None => return rs,
+                    Some((_, point)) if *point < furthest_point => {
+                        furthest_register = rs;
+                        furthest_point = *point;
+                    }
+                    _ => {}
+                }
+            }
+            let r = furthest_register;
+            let var = registers[r].unwrap().0;
+            let spill = spill.iter().position(|v| !*v).unwrap_or_else(|| {
+                spill.push(false);
+                spill.len() - 1
+            });
+            out.push_front(Lo::SpillLoad { rd: r, spill });
+            variable_location.insert(var, VariableLocation::Spilled(spill));
+            r
+        };
+        let get_var_register = |var: &Var| {
+            let r = match variable_location.get(var) {
+                Some(VariableLocation::Register(rs)) => *rs,
+                Some(VariableLocation::Spilled(spill)) => {
+                    let r = allocate_register(&mut variable_location);
+                    out.push_front(Lo::SpillStore {
+                        rs: r,
+                        spill: *spill,
+                    });
+                    r
+                }
+                None => allocate_register(&mut variable_location),
+            };
+            registers[r] = Some((*var, variable_uses[var].pop().unwrap()));
+            r
+        };
+        let deallocate_var = |var: &Var| match variable_location.remove(var) {
+            Some(VariableLocation::Register(rs)) => registers[rs] = None,
+            Some(VariableLocation::Spilled(pos)) => spill[pos] = false,
+            None => {}
+        };
+        for (idx, op) in block.iter().enumerate().rev() {
+            match op {
+                Hi::Jump { .. } => {}
+                Hi::JumpIf { rs, .. } => {}
+                Hi::RegLit { rd: vrd, lit } => {
+                    let rd = get_var_register(vrd);
+                    deallocate_var(vrd);
+                    out.push_front(Lo::RegLit { rd, lit: *lit });
+                }
+                Hi::GlobalLoad { rd: vrd, g } => {
+                    let rd = get_var_register(vrd);
+                    deallocate_var(vrd);
+                    out.push_front(Lo::GlobalLoad { rd, g: *g });
+                }
+                Hi::GlobalStore { rs, g } => {
+                    let rs = get_var_register(rs);
+                    out.push_front(Lo::GlobalStore { rs, g: *g });
+                }
+                Hi::BinOp {
+                    rd: vrd,
+                    rl,
+                    rr,
+                    op,
+                } => {
+                    let rd = get_var_register(vrd);
+                    deallocate_var(vrd);
+                    let rl = get_var_register(rl);
+                    let rr = get_var_register(rr);
+                    out.push_front(Lo::BinOp {
+                        rd,
+                        rl,
+                        rr,
+                        op: *op,
+                    });
+                }
+                Hi::UnOp { rd: vrd, rs, op } => {
+                    let rd = get_var_register(vrd);
+                    deallocate_var(vrd);
+                    let rs = get_var_register(rs);
+                    out.push_front(Lo::UnOp { rd, rs, op: *op });
+                }
+                Hi::PressedModsInc { rs } => {
+                    let rs = get_var_register(rs);
+                    out.push_front(Lo::PressedModsInc { rs });
+                }
+                Hi::PressedModsDec { rs } => {
+                    let rs = get_var_register(rs);
+                    out.push_front(Lo::PressedModsDec { rs });
+                }
+                Hi::LatchedModsLoad { rd: vrd } => {
+                    let rd = get_var_register(vrd);
+                    deallocate_var(vrd);
+                    out.push_front(Lo::LatchedModsLoad { rd });
+                }
+                Hi::LatchedModsStore { rs } => {
+                    let rs = get_var_register(rs);
+                    out.push_front(Lo::LatchedModsStore { rs });
+                }
+                Hi::LockedModsLoad { rd: vrd } => {
+                    let rd = get_var_register(vrd);
+                    deallocate_var(vrd);
+                    out.push_front(Lo::LockedModsLoad { rd });
+                }
+                Hi::LockedModsStore { rs } => {
+                    let rs = get_var_register(rs);
+                    out.push_front(Lo::LockedModsStore { rs });
+                }
+            }
+        }
+    }
 }
