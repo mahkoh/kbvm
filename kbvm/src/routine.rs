@@ -80,6 +80,7 @@ pub(crate) enum BinOp {
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub(crate) enum UnOp {
+    Move,
     Neg,
     BitNot,
     LogNot,
@@ -179,7 +180,65 @@ impl Debug for Hi {
     }
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+impl Debug for Lo {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Lo::Skip { n } => {
+                write!(f, "skip {n}")
+            }
+            Lo::SkipIf { rs, not, n } => {
+                write!(f, "skip_if{} {rs:?}, {n}", if *not { "_not" } else { "" })
+            }
+            Lo::Move { rd, rs } => {
+                write!(f, "{rd:?} = {rs:?}")
+            }
+            Lo::SpillLoad { rd, pos } => {
+                write!(f, "{rd:?} = spill[{pos}]")
+            }
+            Lo::SpillStore { rs, pos } => {
+                write!(f, "spill[{pos}] = {rs:?}")
+            }
+            Lo::SpillMove { src, dst } => {
+                write!(f, "spill[{dst}] = spill[{src}]")
+            }
+            Lo::RegLit { rd, lit } => {
+                write!(f, "{rd:?} = {lit}")
+            }
+            Lo::GlobalLoad { rd, g } => {
+                write!(f, "{rd:?} = {g:?}")
+            }
+            Lo::GlobalStore { rs, g } => {
+                write!(f, "{g:?} = {rs:?}")
+            }
+            Lo::BinOp { op, rd, rl, rr } => {
+                write!(f, "{rd:?} = {op:?} {rl:?}, {rr:?}")
+            }
+            Lo::UnOp { op, rd, rs } => {
+                write!(f, "{rd:?} = {op:?} {rs:?}")
+            }
+            Lo::PressedModsInc { rs } => {
+                write!(f, "pressed_mods += {rs:?}")
+            }
+            Lo::PressedModsDec { rs } => {
+                write!(f, "pressed_mods -= {rs:?}")
+            }
+            Lo::LatchedModsLoad { rd } => {
+                write!(f, "{rd:?} = latched_mods")
+            }
+            Lo::LatchedModsStore { rs } => {
+                write!(f, "latched_mods = {rs:?}")
+            }
+            Lo::LockedModsLoad { rd } => {
+                write!(f, "{rd:?} = locked_mods")
+            }
+            Lo::LockedModsStore { rs } => {
+                write!(f, "locked_mods = {rs:?}")
+            }
+        }
+    }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub(crate) enum Lo {
     // Generics ops
     Skip {
@@ -187,7 +246,24 @@ pub(crate) enum Lo {
     },
     SkipIf {
         rs: Register,
+        not: bool,
         n: usize,
+    },
+    Move {
+        rd: Register,
+        rs: Register,
+    },
+    SpillLoad {
+        rd: Register,
+        pos: usize,
+    },
+    SpillStore {
+        rs: Register,
+        pos: usize,
+    },
+    SpillMove {
+        src: usize,
+        dst: usize,
     },
     RegLit {
         rd: Register,
@@ -211,14 +287,6 @@ pub(crate) enum Lo {
         op: UnOp,
         rd: Register,
         rs: Register,
-    },
-    SpillLoad {
-        rd: Register,
-        spill: usize,
-    },
-    SpillStore {
-        rs: Register,
-        spill: usize,
     },
     // State machine ops
     PressedModsInc {
@@ -289,7 +357,9 @@ pub trait StateEventHandler {
 
 #[derive(Clone)]
 pub struct Routine {
-    pub(crate) ops: Arc<[Lo]>,
+    pub(crate) on_press: Arc<[Lo]>,
+    pub(crate) on_release: Arc<[Lo]>,
+    pub(crate) spill: usize,
 }
 
 #[inline]
@@ -298,6 +368,7 @@ pub(crate) fn run<H>(
     ops: &[Lo],
     registers: &mut StaticMap<Register, u32>,
     globals: &mut StaticMap<Global, u32>,
+    spill: &mut [u32],
 ) where
     H: StateEventHandler,
 {
@@ -309,11 +380,23 @@ pub(crate) fn run<H>(
             Lo::Skip { n } => {
                 i = i.saturating_add(n);
             }
-            Lo::SkipIf { rs, n } => {
+            Lo::SkipIf { rs, not, n } => {
                 let s = registers[rs];
-                if s != 0 {
+                if s != not as u32 {
                     i = i.saturating_add(n);
                 }
+            }
+            Lo::Move { rd, rs } => {
+                registers[rd] = registers[rs];
+            }
+            Lo::SpillMove { src, dst } => {
+                spill[dst] = spill[src];
+            }
+            Lo::SpillLoad { rd, pos } => {
+                registers[rd] = spill[pos];
+            }
+            Lo::SpillStore { rs, pos } => {
+                spill[pos] = registers[rs];
             }
             Lo::RegLit { rd, lit } => {
                 registers[rd] = lit;
@@ -382,6 +465,7 @@ pub(crate) fn run<H>(
             Lo::UnOp { op, rd, rs } => {
                 let s = registers[rs];
                 registers[rd] = match op {
+                    UnOp::Move => s,
                     UnOp::Neg => s.wrapping_neg(),
                     UnOp::BitNot => !s,
                     UnOp::LogNot => (s == 0) as u32,
@@ -436,7 +520,7 @@ pub struct RoutineBuilder {
     blocks: Vec<Vec<Hi>>,
     ops: Vec<Hi>,
     next_var: u64,
-    on_release: usize,
+    on_release: Option<usize>,
 }
 
 impl Routine {
@@ -445,23 +529,41 @@ impl Routine {
             blocks: Default::default(),
             ops: Default::default(),
             next_var: 0,
-            on_release: 0,
+            on_release: None,
         }
     }
 }
 
 impl RoutineBuilder {
-    pub fn build(&self) -> Routine {
-        todo!()
+    pub fn build(mut self) -> Routine {
+        if self.ops.is_not_empty() {
+            self.blocks.push(mem::take(&mut self.ops));
+        }
+        convert_to_ssa(self.next_var, &mut self.blocks);
+        let mut allocator = RegisterAllocator::default();
+        allocator.allocate_registers(&self.blocks);
+        let mut on_press: Vec<_> = allocator.out.into();
+        let mut snip = on_press.len();
+        if let Some(on_release) = self.on_release {
+            snip = on_press.len() - allocator.block_offsets[on_release];
+        }
+        let on_release = on_press[snip..].to_owned();
+        on_press.truncate(snip);
+        Routine {
+            on_press: on_press.into(),
+            on_release: on_release.into(),
+            spill: allocator.spill.len(),
+        }
     }
 
     pub fn on_release(&mut self) -> &mut Self {
+        assert!(self.on_release.is_none());
         self.ops.push(Hi::Jump {
             to: self.blocks.len() + 1,
             args: Default::default(),
         });
         self.blocks.push(mem::take(&mut self.ops));
-        self.on_release = self.blocks.len();
+        self.on_release = Some(self.blocks.len());
         self
     }
 
@@ -637,6 +739,10 @@ impl RoutineBuilder {
         self
     }
 
+    pub fn move_(&mut self, rd: Var, rs: Var) -> &mut Self {
+        self.un_op(UnOp::Move, rd, rs)
+    }
+
     pub fn neg(&mut self, rd: Var, rs: Var) -> &mut Self {
         self.un_op(UnOp::Neg, rd, rs)
     }
@@ -680,145 +786,7 @@ impl RoutineBuilder {
     }
 }
 
-// struct RegisterAllocation {
-//     on_press: Vec<Op<Register>>,
-//     on_release: Vec<Op<Register>>,
-//     spill_size: usize,
-// }
-//
-// fn perform_register_allocation(ops: &[Op<Var>]) -> RegisterAllocation {
-//     let mut live_vars = HashMap::new();
-//     for (idx, op) in ops.iter().enumerate() {
-//         let access = |var: &Var| {
-//             live_vars.entry(*var).or_insert((idx, idx)).1 = idx + 1;
-//         };
-//         match op {
-//             Op::Skip { .. } => {}
-//             Op::SkipIf { rs, .. } => {
-//                 access(rs);
-//             }
-//             Op::RegLit { rd, .. } => {
-//                 access(rd);
-//             }
-//             Op::GlobalLoad { rd, .. } => {
-//                 access(rd);
-//             }
-//             Op::GlobalStore { rs, .. } => {
-//                 access(rs);
-//             }
-//             Op::BinOp { rd, rl, rr, .. } => {
-//                 access(rl);
-//                 access(rr);
-//                 access(rd);
-//             }
-//             Op::UnOp { rd, rs, .. } => {
-//                 access(rs);
-//                 access(rd);
-//             }
-//             Op::PressedModsInc { rs, .. } => {
-//                 access(rs);
-//             }
-//             Op::PressedModsDec { rs, .. } => {
-//                 access(rs);
-//             }
-//             Op::LatchedModsLoad { rd, .. } => {
-//                 access(rd);
-//             }
-//             Op::LatchedModsStore { rs, .. } => {
-//                 access(rs);
-//             }
-//             Op::LockedModsLoad { rd, .. } => {
-//                 access(rd);
-//             }
-//             Op::LockedModsStore { rs, .. } => {
-//                 access(rs);
-//             }
-//         }
-//     }
-//     let mut live_ranges = vec![];
-//     for (var, range) in live_vars {
-//         live_ranges.push((var, range.0, range.1));
-//     }
-//     live_ranges.sort_unstable_by_key(|k| k.1);
-//     enum VarLocation {
-//         Register(Register),
-//         Spilled(usize),
-//     }
-//     let mut var_locations = HashMap::new();
-//     let mut jump_offset = 0usize;
-//     let mut res = vec![];
-//     let mut jump_sources = HashMap::<_, Vec<_>>::new();
-//     let handle_jump_sources = |idx, jump_sources, res| {
-//         for (idx, offset) in jump_sources.remove(&idx).unwrap_or_default() {
-//             match &mut res[idx] {
-//                 Op::Skip { n } => *n += jump_offset - offset,
-//                 Op::SkipIf { n, .. } => *n += jump_offset - offset,
-//                 _ => unreachable!(),
-//             }
-//         }
-//     };
-//     for (idx, op) in ops.iter().enumerate() {
-//         handle_jump_sources(idx, &mut jump_sources, &mut res);
-//         let add_jump_source = |n: usize| {
-//             jump_sources
-//                 .entry(idx + n + 1)
-//                 .or_default()
-//                 .push((res.len(), jump_offset));
-//         };
-//         match op {
-//             Op::Skip { n } => {
-//                 add_jump_source(*n);
-//                 res.push(Op::Skip { n: *n });
-//             }
-//             Op::SkipIf { rs, n } => {
-//                 match var_locations.get(rs) {
-//                     None =>
-//                 }
-//                 add_jump_source(*n);
-//                 match var_locations
-//             }
-//             Op::RegLit { .. } => {}
-//             Op::GlobalLoad { .. } => {}
-//             Op::GlobalStore { .. } => {}
-//             Op::BinOp { .. } => {}
-//             Op::UnOp { .. } => {}
-//             Op::PressedModsInc { .. } => {}
-//             Op::PressedModsDec { .. } => {}
-//             Op::LatchedModsLoad { .. } => {}
-//             Op::LatchedModsStore { .. } => {}
-//             Op::LockedModsLoad { .. } => {}
-//             Op::LockedModsStore { .. } => {}
-//         }
-//     }
-//     handle_jump_sources(ops.len(), &mut jump_sources, &mut res);
-//     struct RegisterStatus {
-//         var: Var,
-//         hi: usize,
-//     }
-//     let mut used_registers: StaticMap<Register, Option<RegisterStatus>> = StaticMap::default();
-//     let mut spill_slots = vec![];
-//     enum VarStatus {}
-//     let mut register_ranges = vec![];
-//     for (var, lo, hi) in live_ranges {
-//         let register = 'get_register: {
-//             let mut max_hi = 0;
-//             let mut max_hi_register = Register::R0;
-//             for (register, status) in &mut used_registers {
-//                 match status {
-//                     None => break 'get_register register,
-//                     Some(s) => {
-//                         if s.hi > max_hi {
-//                             max_hi = s.hi;
-//                             max_hi_register = register;
-//                         }
-//                     }
-//                 }
-//             }
-//         };
-//     }
-// }
-
-fn convert_to_ssa(mut next_var: u64, blocks: &[Vec<Hi>]) -> Vec<Vec<Hi>> {
+fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) {
     let mut allocate_var = || {
         let var = Var(next_var);
         next_var += 1;
@@ -887,13 +855,11 @@ fn convert_to_ssa(mut next_var: u64, blocks: &[Vec<Hi>]) -> Vec<Vec<Hi>> {
             *var = allocate_var();
         }
     }
-    let mut res = vec![];
     let mut names = HashMap::new();
-    for (idx, block) in blocks.iter().enumerate() {
+    for (idx, block) in blocks.iter_mut().enumerate() {
         for (dst, src) in &block_arguments[idx] {
             names.insert(*src, *dst);
         }
-        let mut new_block = vec![];
         for op in block {
             let mut add_jump_source = |to: usize, args: &mut SmallVec<_>| {
                 if let Some(ba) = block_arguments.get(to) {
@@ -911,8 +877,7 @@ fn convert_to_ssa(mut next_var: u64, blocks: &[Vec<Hi>]) -> Vec<Vec<Hi>> {
                 names.insert(*rd, var);
                 *rd = var;
             };
-            let mut op = op.clone();
-            match &mut op {
+            match op {
                 Hi::Jump { to, args } => {
                     add_jump_source(*to, args);
                 }
@@ -957,248 +922,371 @@ fn convert_to_ssa(mut next_var: u64, blocks: &[Vec<Hi>]) -> Vec<Vec<Hi>> {
                     rename_read(rs, &names);
                 }
             }
-            new_block.push(op);
         }
-        res.push(new_block);
     }
-    res
 }
 
-fn allocate_registers(blocks: &[Vec<Hi>]) {
-    let mut registers = StaticMap::<Register, Option<(Var, usize)>>::default();
-    let mut spill = Vec::<bool>::new();
-    let mut in_variables = vec![];
-    let mut live_variables = HashMap::new();
-    let mut variable_uses = HashMap::<Var, SmallVec<[usize; 2]>>::new();
-    let mut live_ranges = HashMap::new();
-    let mut out = VecDeque::new();
-    let mut variable_location = HashMap::<Var, VariableLocation>::new();
-    #[derive(Copy, Clone)]
-    enum VariableLocation {
-        Register(Register),
-        Spilled(usize),
-    }
-    for block in blocks.iter().rev() {
-        in_variables.clear();
-        live_variables.clear();
-        live_ranges.clear();
-        for (idx, op) in block.iter().enumerate().rev() {
-            let read = |live_variables: &mut HashMap<_, _>, var: &Var| {
-                let _ = live_variables.try_insert(*var, idx + 1);
-            };
-            let write = |live_variables: &mut HashMap<_, _>, var: &Var| {
-                let end = match live_variables.remove(var) {
-                    None => idx + 1,
-                    Some(end) => end,
-                };
-                live_ranges.insert(*var, (idx + 1, end));
-            };
-            match op {
-                Hi::Jump { .. } => {}
-                Hi::JumpIf { rs, .. } => {
-                    read(&mut live_variables, rs);
-                }
-                Hi::RegLit { rd, .. } => {
-                    write(&mut live_variables, rd);
-                }
-                Hi::GlobalLoad { rd, .. } => {
-                    write(&mut live_variables, rd);
-                }
-                Hi::GlobalStore { rs, .. } => {
-                    read(&mut live_variables, rs);
-                }
-                Hi::BinOp { rd, rl, rr, .. } => {
-                    write(&mut live_variables, rd);
-                    read(&mut live_variables, rl);
-                    read(&mut live_variables, rr);
-                }
-                Hi::UnOp { rd, rs, .. } => {
-                    write(&mut live_variables, rd);
-                    read(&mut live_variables, rs);
-                }
-                Hi::PressedModsInc { rs, .. } => {
-                    read(&mut live_variables, rs);
-                }
-                Hi::PressedModsDec { rs, .. } => {
-                    read(&mut live_variables, rs);
-                }
-                Hi::LatchedModsLoad { rd, .. } => {
-                    write(&mut live_variables, rd);
-                }
-                Hi::LatchedModsStore { rs, .. } => {
-                    read(&mut live_variables, rs);
-                }
-                Hi::LockedModsLoad { rd, .. } => {
-                    write(&mut live_variables, rd);
-                }
-                Hi::LockedModsStore { rs, .. } => {
-                    read(&mut live_variables, rs);
-                }
-            }
-        }
-        for (var, end) in &live_variables {
-            live_ranges.insert(*var, (0, *end));
-        }
-        variable_uses.clear();
-        for (idx, op) in block.iter().enumerate() {
-            let use_ = |var: &Var| {
-                variable_uses.entry(*var).or_default().push(*idx);
-            };
-            match op {
-                Hi::Jump { .. } => {}
-                Hi::JumpIf { rs, .. } => {
-                    use_(rs);
-                }
-                Hi::RegLit { rd, .. } => {
-                    use_(rd);
-                }
-                Hi::GlobalLoad { rd, .. } => {
-                    use_(rd);
-                }
-                Hi::GlobalStore { rs, .. } => {
-                    use_(rs);
-                }
-                Hi::BinOp { rd, rl, rr, .. } => {
-                    use_(rd);
-                    use_(rl);
-                    use_(rr);
-                }
-                Hi::UnOp { rd, rs, .. } => {
-                    use_(rd);
-                    use_(rs);
-                }
-                Hi::PressedModsInc { rs, .. } => {
-                    use_(rs);
-                }
-                Hi::PressedModsDec { rs, .. } => {
-                    use_(rs);
-                }
-                Hi::LatchedModsLoad { rd, .. } => {
-                    use_(rd);
-                }
-                Hi::LatchedModsStore { rs, .. } => {
-                    use_(rs);
-                }
-                Hi::LockedModsLoad { rd, .. } => {
-                    use_(rd);
-                }
-                Hi::LockedModsStore { rs, .. } => {
-                    use_(rs);
-                }
-            }
-        }
-        let allocate_register = |variable_location: &mut HashMap<_, _>| {
-            let mut furthest_register = Register::R0;
-            let mut furthest_point = 0;
-            for (rs, next_use) in &mut registers {
-                match next_use {
-                    None => return rs,
-                    Some((_, point)) if *point < furthest_point => {
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+enum VariableLocation {
+    Register(Register),
+    Spilled(usize),
+}
+
+#[derive(Default)]
+struct RegisterAllocator {
+    registers: StaticMap<Register, Option<(Var, usize, usize)>>,
+    spill: Vec<bool>,
+    variable_uses: HashMap<Var, SmallVec<[usize; 2]>>,
+    out: VecDeque<Lo>,
+    variable_locations: HashMap<Var, VariableLocation>,
+    block_offsets: Vec<usize>,
+}
+
+impl RegisterAllocator {
+    fn allocate_register(&mut self, idx: usize) -> Register {
+        let mut furthest_register = Register::R0;
+        let mut furthest_point = usize::MAX;
+        for (rs, next_use) in &mut self.registers {
+            match next_use {
+                None => return rs,
+                Some((_, next_use, prev_use)) => {
+                    if *prev_use > idx && *next_use < furthest_point {
+                        furthest_point = *next_use;
                         furthest_register = rs;
-                        furthest_point = *point;
                     }
-                    _ => {}
                 }
             }
-            let r = furthest_register;
-            let var = registers[r].unwrap().0;
-            let spill = spill.iter().position(|v| !*v).unwrap_or_else(|| {
-                spill.push(false);
-                spill.len() - 1
-            });
-            out.push_front(Lo::SpillLoad { rd: r, spill });
-            variable_location.insert(var, VariableLocation::Spilled(spill));
-            r
+        }
+        let r = furthest_register;
+        let var = self.registers[r].unwrap().0;
+        let spill = self.spill.iter().position(|v| !*v).unwrap_or_else(|| {
+            self.spill.push(false);
+            self.spill.len() - 1
+        });
+        self.spill[spill] = true;
+        self.out.push_front(Lo::SpillLoad { rd: r, pos: spill });
+        self.variable_locations
+            .insert(var, VariableLocation::Spilled(spill));
+        r
+    }
+
+    fn get_var_register(&mut self, idx: usize, var: &Var) -> Register {
+        let next_location = self.variable_locations.get(var).copied();
+        let r = match next_location {
+            Some(VariableLocation::Register(rs)) => rs,
+            Some(VariableLocation::Spilled(pos)) => {
+                let r = self.allocate_register(idx);
+                self.spill[pos] = false;
+                self.out.push_front(Lo::SpillStore { rs: r, pos });
+                r
+            }
+            None => self.allocate_register(idx),
         };
-        let get_var_register = |var: &Var| {
-            let r = match variable_location.get(var) {
-                Some(VariableLocation::Register(rs)) => *rs,
-                Some(VariableLocation::Spilled(spill)) => {
-                    let r = allocate_register(&mut variable_location);
-                    out.push_front(Lo::SpillStore {
-                        rs: r,
-                        spill: *spill,
-                    });
-                    r
+        self.registers[r] = match self.variable_uses.get_mut(var).unwrap().pop() {
+            None => {
+                if next_location.is_some() {
+                    self.variable_locations.remove(var);
                 }
-                None => allocate_register(&mut variable_location),
+                None
+            }
+            Some(next_use) => {
+                self.variable_locations
+                    .insert(*var, VariableLocation::Register(r));
+                Some((*var, next_use, idx))
+            }
+        };
+        r
+    }
+
+    fn find_variable_uses(&mut self, block: &[Hi]) {
+        for (idx, op) in block.iter().enumerate() {
+            let mut use_ = |var: &Var, read: bool| {
+                let uses = match self.variable_uses.entry(*var) {
+                    Entry::Occupied(e) => e.into_mut(),
+                    Entry::Vacant(v) => {
+                        let e = v.insert(SmallVec::default());
+                        if read {
+                            e.push(0);
+                        }
+                        e
+                    }
+                };
+                uses.push(idx);
             };
-            registers[r] = Some((*var, variable_uses[var].pop().unwrap()));
-            r
-        };
-        let deallocate_var = |var: &Var| match variable_location.remove(var) {
-            Some(VariableLocation::Register(rs)) => registers[rs] = None,
-            Some(VariableLocation::Spilled(pos)) => spill[pos] = false,
-            None => {}
-        };
-        for (idx, op) in block.iter().enumerate().rev() {
             match op {
                 Hi::Jump { .. } => {}
-                Hi::JumpIf { rs, .. } => {}
-                Hi::RegLit { rd: vrd, lit } => {
-                    let rd = get_var_register(vrd);
-                    deallocate_var(vrd);
-                    out.push_front(Lo::RegLit { rd, lit: *lit });
+                Hi::JumpIf { rs, .. } => {
+                    use_(rs, true);
                 }
-                Hi::GlobalLoad { rd: vrd, g } => {
-                    let rd = get_var_register(vrd);
-                    deallocate_var(vrd);
-                    out.push_front(Lo::GlobalLoad { rd, g: *g });
+                Hi::RegLit { rd, .. } => {
+                    use_(rd, false);
+                }
+                Hi::GlobalLoad { rd, .. } => {
+                    use_(rd, false);
+                }
+                Hi::GlobalStore { rs, .. } => {
+                    use_(rs, true);
+                }
+                Hi::BinOp { rd, rl, rr, .. } => {
+                    use_(rl, true);
+                    use_(rr, true);
+                    use_(rd, false);
+                }
+                Hi::UnOp { rd, rs, .. } => {
+                    use_(rs, true);
+                    use_(rd, false);
+                }
+                Hi::PressedModsInc { rs, .. } => {
+                    use_(rs, true);
+                }
+                Hi::PressedModsDec { rs, .. } => {
+                    use_(rs, true);
+                }
+                Hi::LatchedModsLoad { rd, .. } => {
+                    use_(rd, false);
+                }
+                Hi::LatchedModsStore { rs, .. } => {
+                    use_(rs, true);
+                }
+                Hi::LockedModsLoad { rd, .. } => {
+                    use_(rd, false);
+                }
+                Hi::LockedModsStore { rs, .. } => {
+                    use_(rs, true);
+                }
+            }
+        }
+        for uses in self.variable_uses.values_mut() {
+            uses.pop();
+        }
+    }
+
+    fn acquire_unused_location(&mut self, src: Var) -> VariableLocation {
+        for (rs, next_use) in &mut self.registers {
+            if next_use.is_none() {
+                self.registers[rs] = Some((
+                    src,
+                    self.variable_uses
+                        .get(&src)
+                        .and_then(|v| v.last())
+                        .copied()
+                        .unwrap_or_default(),
+                    usize::MAX,
+                ));
+                return VariableLocation::Register(rs);
+            }
+        }
+        for (idx, used) in self.spill.iter_mut().enumerate() {
+            if !*used {
+                *used = true;
+                return VariableLocation::Spilled(idx);
+            }
+        }
+        self.spill.push(true);
+        VariableLocation::Spilled(self.spill.len() - 1)
+    }
+
+    fn encode_skip_if(&mut self, rs: Register, mut not: bool, mut n: usize) {
+        loop {
+            if n != 1 {
+                break;
+            }
+            let Some(Lo::Skip { n: m }) = self.out.front() else {
+                break;
+            };
+            n = *m;
+            not = !not;
+            self.out.pop_front();
+        }
+        if n == 0 || self.out.is_empty() {
+            return;
+        }
+        self.out.push_front(Lo::SkipIf { rs, not, n });
+    }
+
+    fn translate_skip(&mut self, to: &usize, args: &[(Var, Var)]) {
+        let n = self.out.len() - self.block_offsets.get(*to).copied().unwrap_or_default();
+        if n != 0 {
+            self.out.push_front(Lo::Skip { n });
+        }
+        let mut todo = vec![];
+        let mut preserve = HashSet::new();
+        for (dst, src) in args {
+            let dst_loc = self.variable_locations[dst];
+            match self.variable_locations.entry(*src) {
+                Entry::Occupied(o) => {
+                    if *o.get() != dst_loc {
+                        todo.push((dst_loc, *src));
+                        preserve.insert(*o.get());
+                    }
+                }
+                Entry::Vacant(v) => match dst_loc {
+                    VariableLocation::Register(r) => {
+                        if self.registers[r].is_none() {
+                            self.registers[r] = Some((
+                                *src,
+                                self.variable_uses
+                                    .get(src)
+                                    .and_then(|v| v.last())
+                                    .copied()
+                                    .unwrap_or_default(),
+                                usize::MAX,
+                            ));
+                            v.insert(dst_loc);
+                        } else {
+                            todo.push((dst_loc, *src));
+                        }
+                    }
+                    VariableLocation::Spilled(pos) => {
+                        if self.spill[pos] == false {
+                            self.spill[pos] = true;
+                            v.insert(dst_loc);
+                        } else {
+                            todo.push((dst_loc, *src));
+                        }
+                    }
+                },
+            }
+        }
+        if todo.is_empty() {
+            return;
+        }
+        let mut moved_out = vec![];
+        let mut ins = vec![];
+        let mut translate_move = |dst, src| match (dst, src) {
+            (VariableLocation::Spilled(dst), VariableLocation::Spilled(src)) => {
+                ins.push(Lo::SpillMove { src, dst });
+            }
+            (VariableLocation::Spilled(pos), VariableLocation::Register(rs)) => {
+                ins.push(Lo::SpillStore { rs, pos });
+            }
+            (VariableLocation::Register(rd), VariableLocation::Spilled(pos)) => {
+                ins.push(Lo::SpillLoad { rd, pos });
+            }
+            (VariableLocation::Register(rd), VariableLocation::Register(rs)) => {
+                ins.push(Lo::Move { rd, rs });
+            }
+        };
+        'outer: while todo.len() > 0 {
+            for (idx, &(dst, src)) in todo.iter().enumerate() {
+                if preserve.contains(&dst) {
+                    continue;
+                }
+                let src = match self.variable_locations.get(&src) {
+                    Some(src) => {
+                        preserve.remove(src);
+                        *src
+                    }
+                    None => {
+                        let loc = self.acquire_unused_location(src);
+                        self.variable_locations.insert(src, loc);
+                        loc
+                    }
+                };
+                translate_move(dst, src);
+                todo.swap_remove(idx);
+                continue 'outer;
+            }
+            let (dst, src) = todo.pop().unwrap();
+            let unused = self.acquire_unused_location(src);
+            let src = self.variable_locations[&src];
+            preserve.remove(&src);
+            translate_move(unused, src);
+            moved_out.push((dst, unused));
+        }
+        for (dst, src) in moved_out {
+            translate_move(dst, src);
+            match src {
+                VariableLocation::Register(r) => self.registers[r] = None,
+                VariableLocation::Spilled(pos) => self.spill[pos] = false,
+            }
+        }
+        while let Some(ins) = ins.pop() {
+            self.out.push_front(ins);
+        }
+    }
+
+    fn translate_instructions(&mut self, block: &[Hi]) {
+        for (idx, op) in block.iter().enumerate().rev() {
+            match op {
+                Hi::Jump { to, args } => {
+                    self.translate_skip(to, args);
+                }
+                Hi::JumpIf { rs, not, to, args } => {
+                    let mut prev_len = self.out.len();
+                    self.translate_skip(to, args);
+                    if prev_len < self.out.len() {
+                        let rs = self.get_var_register(idx, rs);
+                        self.encode_skip_if(rs, !*not, self.out.len() - prev_len);
+                    }
+                }
+                Hi::RegLit { rd, lit } => {
+                    let rd = self.get_var_register(idx, rd);
+                    self.out.push_front(Lo::RegLit { rd, lit: *lit });
+                }
+                Hi::GlobalLoad { rd, g } => {
+                    let rd = self.get_var_register(idx, rd);
+                    self.out.push_front(Lo::GlobalLoad { rd, g: *g });
                 }
                 Hi::GlobalStore { rs, g } => {
-                    let rs = get_var_register(rs);
-                    out.push_front(Lo::GlobalStore { rs, g: *g });
+                    let rs = self.get_var_register(idx, rs);
+                    self.out.push_front(Lo::GlobalStore { rs, g: *g });
                 }
-                Hi::BinOp {
-                    rd: vrd,
-                    rl,
-                    rr,
-                    op,
-                } => {
-                    let rd = get_var_register(vrd);
-                    deallocate_var(vrd);
-                    let rl = get_var_register(rl);
-                    let rr = get_var_register(rr);
-                    out.push_front(Lo::BinOp {
+                Hi::BinOp { rd, rl, rr, op } => {
+                    let rd = self.get_var_register(idx, rd);
+                    let rl = self.get_var_register(idx, rl);
+                    let rr = self.get_var_register(idx, rr);
+                    self.out.push_front(Lo::BinOp {
                         rd,
                         rl,
                         rr,
                         op: *op,
                     });
                 }
-                Hi::UnOp { rd: vrd, rs, op } => {
-                    let rd = get_var_register(vrd);
-                    deallocate_var(vrd);
-                    let rs = get_var_register(rs);
-                    out.push_front(Lo::UnOp { rd, rs, op: *op });
+                Hi::UnOp { rd, rs, op } => {
+                    let rd = self.get_var_register(idx, rd);
+                    let rs = self.get_var_register(idx, rs);
+                    if rd != rs || *op != UnOp::Move {
+                        self.out.push_front(Lo::UnOp { rd, rs, op: *op });
+                    }
                 }
                 Hi::PressedModsInc { rs } => {
-                    let rs = get_var_register(rs);
-                    out.push_front(Lo::PressedModsInc { rs });
+                    let rs = self.get_var_register(idx, rs);
+                    self.out.push_front(Lo::PressedModsInc { rs });
                 }
                 Hi::PressedModsDec { rs } => {
-                    let rs = get_var_register(rs);
-                    out.push_front(Lo::PressedModsDec { rs });
+                    let rs = self.get_var_register(idx, rs);
+                    self.out.push_front(Lo::PressedModsDec { rs });
                 }
-                Hi::LatchedModsLoad { rd: vrd } => {
-                    let rd = get_var_register(vrd);
-                    deallocate_var(vrd);
-                    out.push_front(Lo::LatchedModsLoad { rd });
+                Hi::LatchedModsLoad { rd } => {
+                    let rd = self.get_var_register(idx, rd);
+                    self.out.push_front(Lo::LatchedModsLoad { rd });
                 }
                 Hi::LatchedModsStore { rs } => {
-                    let rs = get_var_register(rs);
-                    out.push_front(Lo::LatchedModsStore { rs });
+                    let rs = self.get_var_register(idx, rs);
+                    self.out.push_front(Lo::LatchedModsStore { rs });
                 }
-                Hi::LockedModsLoad { rd: vrd } => {
-                    let rd = get_var_register(vrd);
-                    deallocate_var(vrd);
-                    out.push_front(Lo::LockedModsLoad { rd });
+                Hi::LockedModsLoad { rd } => {
+                    let rd = self.get_var_register(idx, rd);
+                    self.out.push_front(Lo::LockedModsLoad { rd });
                 }
                 Hi::LockedModsStore { rs } => {
-                    let rs = get_var_register(rs);
-                    out.push_front(Lo::LockedModsStore { rs });
+                    let rs = self.get_var_register(idx, rs);
+                    self.out.push_front(Lo::LockedModsStore { rs });
                 }
             }
+        }
+    }
+
+    fn allocate_registers(&mut self, blocks: &[Vec<Hi>]) {
+        self.block_offsets = vec![0; blocks.len()];
+        for (idx, block) in blocks.iter().enumerate().rev() {
+            self.registers.clear();
+            self.variable_uses.clear();
+            self.spill.iter_mut().for_each(|v| *v = false);
+            self.find_variable_uses(block);
+            self.translate_instructions(block);
+            self.block_offsets[idx] = self.out.len();
         }
     }
 }

@@ -192,9 +192,10 @@ impl StateMachine {
                         };
                         run(
                             &mut handler,
-                            &release.ops,
+                            &release.on_release,
                             &mut active.registers_log,
                             &mut state.globals,
+                            &mut [],
                         );
                     }
                     state.active.swap_remove(i);
@@ -235,9 +236,10 @@ impl StateMachine {
                 };
                 run(
                     &mut handler,
-                    &routine.ops,
+                    &routine.on_press,
                     &mut active.registers_log,
                     &mut state.globals,
+                    &mut [],
                 );
             }
         }

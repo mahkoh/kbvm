@@ -37,12 +37,12 @@ fn test() {
     {
         let mut routine = Routine::builder();
         let [r0] = routine.allocate_vars();
-        let routine = routine
+        routine
             .load_lit(r0, SHIFT_MASK.0)
             .pressed_mods_inc(r0)
             .on_release()
-            .pressed_mods_dec(r0)
-            .build();
+            .pressed_mods_dec(r0);
+        let routine = routine.build();
 
         builder
             .add_key(KEY_SHIFT)
@@ -54,7 +54,7 @@ fn test() {
         let mut routine = Routine::builder();
         let [action_mods, locked_current, locked_already_pressed, locked_after_pressed, locked_released] =
             routine.allocate_vars();
-        let routine = routine
+        routine
             .load_lit(action_mods, LOCK_MASK.0)
             .pressed_mods_inc(action_mods)
             .locked_mods_load(locked_current)
@@ -65,8 +65,8 @@ fn test() {
             .bit_and(locked_already_pressed, action_mods, locked_current)
             .locked_mods_load(locked_current)
             .bit_nand(locked_released, locked_current, locked_already_pressed)
-            .locked_mods_store(locked_released)
-            .build();
+            .locked_mods_store(locked_released);
+        let routine = routine.build();
 
         builder
             .add_key(KEY_LOCK)
