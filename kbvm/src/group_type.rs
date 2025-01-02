@@ -1,16 +1,17 @@
 use {crate::modifier::ModifierMask, hashbrown::HashMap, std::sync::Arc};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct GroupType {
     data: Arc<Data>,
 }
 
+#[derive(Debug)]
 struct Data {
     mask: ModifierMask,
     cases: Vec<Case>,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 struct Case {
     mods: ModifierMask,
     layer: usize,

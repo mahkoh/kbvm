@@ -5,7 +5,7 @@ use {
     crate::{
         group_type::GroupType,
         modifier::{ModifierMask, NUM_MODS, NUM_MODS_MASK},
-        routine::{run, Global, Register, Routine, StateEventHandler},
+        routine::{run, Component, Flag, Global, Register, Routine, StateEventHandler},
     },
     hashbrown::HashMap,
     kbvm_proc::CloneWithDelta,
@@ -129,32 +129,36 @@ impl StateEventHandler for LogHandler<'_> {
     }
 
     #[inline]
-    fn mods_latched_load(&self) -> ModifierMask {
-        self.state.mods_latched
-    }
-
-    #[inline]
-    fn mods_latched_store(&mut self, mods: ModifierMask) {
-        if self.state.mods_latched != mods {
-            self.state.mods_latched = mods;
-            self.events
-                .push(LogicalEvent::ModsLatched(self.state.mods_latched));
-            self.update_effective_mods();
+    fn component_load(&self, component: Component) -> u32 {
+        match component {
+            Component::ModsPressed => self.state.mods_pressed.0,
+            Component::ModsLatched => self.state.mods_latched.0,
+            Component::ModsLocked => self.state.mods_locked.0,
         }
     }
 
     #[inline]
-    fn mods_locked_load(&self) -> ModifierMask {
-        self.state.mods_locked
-    }
-
-    #[inline]
-    fn mods_locked_store(&mut self, mods: ModifierMask) {
-        if self.state.mods_locked != mods {
-            self.state.mods_locked = mods;
-            self.events
-                .push(LogicalEvent::ModsLocked(self.state.mods_locked));
-            self.update_effective_mods();
+    fn component_store(&mut self, component: Component, val: u32) {
+        macro_rules! store {
+            ($($camel:ident, $snake:ident;)*) => {
+                match component {
+                    $(
+                        Component::$camel => {
+                            if self.state.$snake.0 != val {
+                                self.state.$snake.0 = val;
+                                self.events
+                                    .push(LogicalEvent::$camel(self.state.$snake));
+                                self.update_effective_mods();
+                            }
+                        }
+                    )*
+                }
+            };
+        }
+        store! {
+            ModsPressed, mods_pressed;
+            ModsLatched, mods_latched;
+            ModsLocked, mods_locked;
         }
     }
 }
@@ -166,6 +170,7 @@ struct ActiveKey {
     key: Keycode,
     down_log: u32,
     registers_log: StaticMap<Register, u32>,
+    flags: StaticMap<Flag, u32>,
     on_release: Option<Routine>,
 }
 
@@ -195,6 +200,7 @@ impl StateMachine {
                             &release.on_release,
                             &mut active.registers_log,
                             &mut state.globals,
+                            &mut active.flags,
                             &mut [],
                         );
                     }
@@ -226,6 +232,7 @@ impl StateMachine {
             key,
             down_log: 1,
             registers_log: Default::default(),
+            flags: Default::default(),
             on_release: key_layer_opt.and_then(|l| l.routine.clone()),
         };
         if let Some(key_layer) = key_layer_opt {
@@ -239,6 +246,7 @@ impl StateMachine {
                     &routine.on_press,
                     &mut active.registers_log,
                     &mut state.globals,
+                    &mut active.flags,
                     &mut [],
                 );
             }

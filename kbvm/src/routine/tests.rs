@@ -13,6 +13,7 @@ fn test(builder: RoutineBuilder, global: &[u32]) {
     println!("{:#?}", routine);
     let mut registers = StaticMap::default();
     let mut globals = StaticMap::default();
+    let mut flags = StaticMap::default();
     let mut spill = vec![0; routine.spill];
     for ops in [&routine.on_press, &routine.on_release] {
         run(
@@ -20,6 +21,7 @@ fn test(builder: RoutineBuilder, global: &[u32]) {
             ops,
             &mut registers,
             &mut globals,
+            &mut flags,
             &mut spill,
         );
     }

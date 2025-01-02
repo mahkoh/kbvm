@@ -87,6 +87,18 @@ pub(crate) enum UnOp {
     LogNot,
 }
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
+pub enum Flag {
+    LaterKeyActuated,
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
+pub(crate) enum Component {
+    ModsPressed,
+    ModsLatched,
+    ModsLocked,
+}
+
 #[derive(Clone, Eq, PartialEq, Hash)]
 pub(crate) enum Hi {
     // Generics ops
@@ -124,23 +136,23 @@ pub(crate) enum Hi {
         rs: Var,
     },
     // State machine ops
+    FlagLoad {
+        rd: Var,
+        flag: Flag,
+    },
     PressedModsInc {
         rs: Var,
     },
     PressedModsDec {
         rs: Var,
     },
-    LatchedModsLoad {
+    ComponentLoad {
         rd: Var,
+        component: Component,
     },
-    LatchedModsStore {
+    ComponentStore {
         rs: Var,
-    },
-    LockedModsLoad {
-        rd: Var,
-    },
-    LockedModsStore {
-        rs: Var,
+        component: Component,
     },
 }
 
@@ -173,10 +185,9 @@ impl Debug for Hi {
             Hi::UnOp { op, rd, rs } => write!(f, "v{} = {op:?} v{}", rd.0, rs.0),
             Hi::PressedModsInc { rs } => write!(f, "pressed_mods += v{}", rs.0),
             Hi::PressedModsDec { rs } => write!(f, "pressed_mods -= v{}", rs.0),
-            Hi::LatchedModsLoad { rd } => write!(f, "v{} = latched_mods", rd.0),
-            Hi::LatchedModsStore { rs } => write!(f, "latched_mods = v{}", rs.0),
-            Hi::LockedModsLoad { rd } => write!(f, "v{} = locked_mods", rd.0),
-            Hi::LockedModsStore { rs } => write!(f, "locked_mods = v{}", rs.0),
+            Hi::ComponentLoad { rd, component } => write!(f, "v{} = {component:?}", rd.0),
+            Hi::ComponentStore { rs, component } => write!(f, "{component:?} = v{}", rs.0),
+            Hi::FlagLoad { rd, flag } => write!(f, "v{} = {flag:?}", rd.0),
         }
     }
 }
@@ -206,7 +217,7 @@ impl Debug for Lo {
                 write!(f, "spill[{dst}] = spill[{src}]")
             }
             Lo::RegLit { rd, lit } => {
-                write!(f, "{rd:?} = {lit}")
+                write!(f, "{rd:?} = 0x{lit:x}")
             }
             Lo::GlobalLoad { rd, g } => {
                 write!(f, "{rd:?} = {g:?}")
@@ -226,17 +237,14 @@ impl Debug for Lo {
             Lo::PressedModsDec { rs } => {
                 write!(f, "pressed_mods -= {rs:?}")
             }
-            Lo::LatchedModsLoad { rd } => {
-                write!(f, "{rd:?} = latched_mods")
+            Lo::ComponentLoad { rd, component } => {
+                write!(f, "{rd:?} = {component:?}")
             }
-            Lo::LatchedModsStore { rs } => {
-                write!(f, "latched_mods = {rs:?}")
+            Lo::ComponentStore { rs, component } => {
+                write!(f, "{component:?} = {rs:?}")
             }
-            Lo::LockedModsLoad { rd } => {
-                write!(f, "{rd:?} = locked_mods")
-            }
-            Lo::LockedModsStore { rs } => {
-                write!(f, "locked_mods = {rs:?}")
+            Lo::FlagLoad { rd, flag } => {
+                write!(f, "{rd:?} = {flag:?}")
             }
         }
     }
@@ -296,27 +304,27 @@ pub(crate) enum Lo {
         rs: Register,
     },
     // State machine ops
+    FlagLoad {
+        rd: Register,
+        flag: Flag,
+    },
     PressedModsInc {
         rs: Register,
     },
     PressedModsDec {
         rs: Register,
     },
-    LatchedModsLoad {
+    ComponentLoad {
         rd: Register,
+        component: Component,
     },
-    LatchedModsStore {
+    ComponentStore {
         rs: Register,
-    },
-    LockedModsLoad {
-        rd: Register,
-    },
-    LockedModsStore {
-        rs: Register,
+        component: Component,
     },
 }
 
-pub trait StateEventHandler {
+pub(crate) trait StateEventHandler {
     fn mods_pressed_inc(&mut self, mods: ModifierMask) {
         let _ = mods;
     }
@@ -325,20 +333,14 @@ pub trait StateEventHandler {
         let _ = mods;
     }
 
-    fn mods_latched_load(&self) -> ModifierMask {
-        ModifierMask(0)
+    fn component_load(&self, component: Component) -> u32 {
+        let _ = component;
+        0
     }
 
-    fn mods_latched_store(&mut self, mods: ModifierMask) {
-        let _ = mods;
-    }
-
-    fn mods_locked_load(&self) -> ModifierMask {
-        ModifierMask(0)
-    }
-
-    fn mods_locked_store(&mut self, mods: ModifierMask) {
-        let _ = mods;
+    fn component_store(&mut self, component: Component, val: u32) {
+        let _ = component;
+        let _ = val;
     }
 }
 
@@ -378,6 +380,7 @@ pub(crate) fn run<H>(
     ops: &[Lo],
     registers: &mut StaticMap<Register, u32>,
     globals: &mut StaticMap<Global, u32>,
+    flags: &mut StaticMap<Flag, u32>,
     spill: &mut [u32],
 ) where
     H: StateEventHandler,
@@ -500,19 +503,15 @@ pub(crate) fn run<H>(
                 let s = registers[rs];
                 h.mods_pressed_dec(ModifierMask(s));
             }
-            Lo::LatchedModsLoad { rd } => {
-                registers[rd] = h.mods_latched_load().0;
+            Lo::ComponentLoad { rd, component } => {
+                registers[rd] = h.component_load(component);
             }
-            Lo::LatchedModsStore { rs } => {
+            Lo::ComponentStore { rs, component } => {
                 let s = registers[rs];
-                h.mods_latched_store(ModifierMask(s));
+                h.component_store(component, s);
             }
-            Lo::LockedModsLoad { rd } => {
-                registers[rd] = h.mods_locked_load().0;
-            }
-            Lo::LockedModsStore { rs } => {
-                let s = registers[rs];
-                h.mods_locked_store(ModifierMask(s));
+            Lo::FlagLoad { rd, flag } => {
+                registers[rd] = flags[flag];
             }
         }
         i = i.saturating_add(1);
@@ -831,24 +830,39 @@ impl RoutineBuilder {
         self
     }
 
-    pub fn latched_mods_load(&mut self, rd: Var) -> &mut Self {
-        self.ops.push(Hi::LatchedModsLoad { rd });
+    fn component_load(&mut self, rd: Var, component: Component) -> &mut Self {
+        self.ops.push(Hi::ComponentLoad { rd, component });
         self
+    }
+
+    fn component_store(&mut self, rs: Var, component: Component) -> &mut Self {
+        self.ops.push(Hi::ComponentStore { rs, component });
+        self
+    }
+
+    pub fn latched_mods_load(&mut self, rd: Var) -> &mut Self {
+        self.component_load(rd, Component::ModsLatched)
     }
 
     pub fn latched_mods_store(&mut self, rs: Var) -> &mut Self {
-        self.ops.push(Hi::LatchedModsStore { rs });
-        self
+        self.component_store(rs, Component::ModsLatched)
     }
 
     pub fn locked_mods_load(&mut self, rd: Var) -> &mut Self {
-        self.ops.push(Hi::LockedModsLoad { rd });
-        self
+        self.component_load(rd, Component::ModsLocked)
     }
 
     pub fn locked_mods_store(&mut self, rs: Var) -> &mut Self {
-        self.ops.push(Hi::LockedModsStore { rs });
+        self.component_store(rs, Component::ModsLocked)
+    }
+
+    fn flag_load(&mut self, rd: Var, flag: Flag) -> &mut Self {
+        self.ops.push(Hi::FlagLoad { rd, flag });
         self
+    }
+
+    pub fn later_key_activated_load(&mut self, rd: Var) -> &mut Self {
+        self.flag_load(rd, Flag::LaterKeyActuated)
     }
 }
 
@@ -898,17 +912,14 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) {
                 Hi::PressedModsDec { rs } => {
                     current_block_arguments.insert(*rs);
                 }
-                Hi::LatchedModsLoad { rd } => {
+                Hi::ComponentLoad { rd, .. } => {
                     current_block_arguments.remove(rd);
                 }
-                Hi::LatchedModsStore { rs } => {
+                Hi::ComponentStore { rs, .. } => {
                     current_block_arguments.insert(*rs);
                 }
-                Hi::LockedModsLoad { rd } => {
+                Hi::FlagLoad { rd, .. } => {
                     current_block_arguments.remove(rd);
-                }
-                Hi::LockedModsStore { rs } => {
-                    current_block_arguments.insert(*rs);
                 }
             }
         }
@@ -976,17 +987,14 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) {
                 Hi::PressedModsDec { rs } => {
                     rename_read(rs, &names);
                 }
-                Hi::LatchedModsLoad { rd } => {
+                Hi::ComponentLoad { rd, .. } => {
                     rename_write(rd, &mut names);
                 }
-                Hi::LatchedModsStore { rs } => {
+                Hi::ComponentStore { rs, .. } => {
                     rename_read(rs, &names);
                 }
-                Hi::LockedModsLoad { rd } => {
+                Hi::FlagLoad { rd, .. } => {
                     rename_write(rd, &mut names);
-                }
-                Hi::LockedModsStore { rs } => {
-                    rename_read(rs, &names);
                 }
             }
         }
@@ -1119,17 +1127,14 @@ impl RegisterAllocator {
                 Hi::PressedModsDec { rs, .. } => {
                     read!(rs);
                 }
-                Hi::LatchedModsLoad { rd, .. } => {
+                Hi::ComponentLoad { rd, .. } => {
                     write!(rd);
                 }
-                Hi::LatchedModsStore { rs, .. } => {
+                Hi::ComponentStore { rs, .. } => {
                     read!(rs);
                 }
-                Hi::LockedModsLoad { rd, .. } => {
+                Hi::FlagLoad { rd, .. } => {
                     write!(rd);
-                }
-                Hi::LockedModsStore { rs, .. } => {
-                    read!(rs);
                 }
             }
         }
@@ -1341,21 +1346,23 @@ impl RegisterAllocator {
                     let rs = self.get_var_register(idx, rs);
                     self.out.push_front(Lo::PressedModsDec { rs });
                 }
-                Hi::LatchedModsLoad { rd } => {
+                Hi::ComponentLoad { rd, component } => {
                     let rd = self.get_var_register(idx, rd);
-                    self.out.push_front(Lo::LatchedModsLoad { rd });
+                    self.out.push_front(Lo::ComponentLoad {
+                        rd,
+                        component: *component,
+                    });
                 }
-                Hi::LatchedModsStore { rs } => {
+                Hi::ComponentStore { rs, component } => {
                     let rs = self.get_var_register(idx, rs);
-                    self.out.push_front(Lo::LatchedModsStore { rs });
+                    self.out.push_front(Lo::ComponentStore {
+                        rs,
+                        component: *component,
+                    });
                 }
-                Hi::LockedModsLoad { rd } => {
+                Hi::FlagLoad { rd, flag } => {
                     let rd = self.get_var_register(idx, rd);
-                    self.out.push_front(Lo::LockedModsLoad { rd });
-                }
-                Hi::LockedModsStore { rs } => {
-                    let rs = self.get_var_register(idx, rs);
-                    self.out.push_front(Lo::LockedModsStore { rs });
+                    self.out.push_front(Lo::FlagLoad { rd, flag: *flag });
                 }
             }
         }

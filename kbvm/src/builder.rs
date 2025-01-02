@@ -7,22 +7,23 @@ use {
     hashbrown::HashMap,
 };
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Builder {
     keys: HashMap<Keycode, BuilderKey>,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 struct BuilderKey {
     groups: Vec<Option<BuilderGroup>>,
 }
 
+#[derive(Debug)]
 struct BuilderGroup {
     ty: GroupType,
     layers: Vec<Option<BuilderLayer>>,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 struct BuilderLayer {
     routine: Option<Routine>,
 }
