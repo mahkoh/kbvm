@@ -13,22 +13,24 @@ use {
     std::fmt::{Debug, Formatter},
 };
 
+#[derive(Debug)]
 pub struct StateMachine {
     pub(crate) keys: HashMap<Keycode, KeyGroups>,
     // pub(crate) keys: Vec<KeyGroups>,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub(crate) struct KeyGroups {
     pub(crate) groups: Box<[Option<KeyGroup>]>,
 }
 
+#[derive(Debug)]
 pub(crate) struct KeyGroup {
     pub(crate) ty: GroupType,
     pub(crate) layers: Box<[KeyLayer]>,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub(crate) struct KeyLayer {
     pub(crate) routine: Option<Routine>,
 }
@@ -47,9 +49,9 @@ struct StateLog {
     mods_latched: ModifierMask,
     mods_locked: ModifierMask,
     mods_effective: ModifierMask,
-    _group_pressed: u32,
-    _group_latched: u32,
-    _group_locked: u32,
+    group_pressed: u32,
+    group_latched: u32,
+    group_locked: u32,
     group_effective: u32,
 }
 
@@ -134,31 +136,30 @@ impl StateEventHandler for LogHandler<'_> {
             Component::ModsPressed => self.state.mods_pressed.0,
             Component::ModsLatched => self.state.mods_latched.0,
             Component::ModsLocked => self.state.mods_locked.0,
+            Component::GroupPressed => self.state.group_pressed,
+            Component::GroupLatched => self.state.group_latched,
+            Component::GroupLocked => self.state.group_locked,
         }
     }
 
     #[inline]
     fn component_store(&mut self, component: Component, val: u32) {
-        macro_rules! store {
-            ($($camel:ident, $snake:ident;)*) => {
-                match component {
-                    $(
-                        Component::$camel => {
-                            if self.state.$snake.0 != val {
-                                self.state.$snake.0 = val;
-                                self.events
-                                    .push(LogicalEvent::$camel(self.state.$snake));
-                                self.update_effective_mods();
-                            }
-                        }
-                    )*
+        macro_rules! handle_mod {
+            ($camel:ident, $snake:ident) => {
+                if self.state.$snake.0 != val {
+                    self.state.$snake.0 = val;
+                    self.events.push(LogicalEvent::$camel(self.state.$snake));
+                    self.update_effective_mods();
                 }
             };
         }
-        store! {
-            ModsPressed, mods_pressed;
-            ModsLatched, mods_latched;
-            ModsLocked, mods_locked;
+        match component {
+            Component::ModsPressed => handle_mod!(ModsPressed, mods_pressed),
+            Component::ModsLatched => handle_mod!(ModsLatched, mods_latched),
+            Component::ModsLocked => handle_mod!(ModsLocked, mods_locked),
+            Component::GroupPressed => {}
+            Component::GroupLatched => {}
+            Component::GroupLocked => {}
         }
     }
 }

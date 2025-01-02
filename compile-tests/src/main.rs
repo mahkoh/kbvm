@@ -20,7 +20,7 @@ use {
     thiserror::Error,
 };
 
-// const SINGLE: Option<&str> = Some("t0143");
+// const SINGLE: Option<&str> = Some("t0358");
 const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
 const WRITE_FAILED: bool = false;
@@ -205,7 +205,7 @@ fn test_kccgst(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Res
         .parse_keymap(&mut diagnostics, Some(&input_path), &input)
         .map_err(ResultError::ParsingFailed)?;
 
-    // let builder = map_actual.to_builder();
+    // let builder = map_actual.to_builder().build_state_machine();
     // println!("{:#?}", builder);
 
     let map = format!("{:#}\n", map_actual);

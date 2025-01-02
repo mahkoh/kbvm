@@ -19,7 +19,7 @@ use {
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct Var(u64);
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
 pub(crate) enum Register {
     R0,
     R1,
@@ -31,7 +31,13 @@ pub(crate) enum Register {
     R7,
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
+impl Debug for Register {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "r{}", self.linearize())
+    }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
 pub enum Global {
     G0,
     G1,
@@ -51,7 +57,13 @@ pub enum Global {
     G15,
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+impl Debug for Global {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "g{}", self.linearize())
+    }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub(crate) enum BinOp {
     Add,
     Sub,
@@ -79,6 +91,38 @@ pub(crate) enum BinOp {
     Ile,
 }
 
+impl Debug for BinOp {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            BinOp::Add => "add",
+            BinOp::Sub => "sub",
+            BinOp::Mul => "mul",
+            BinOp::Udiv => "udiv",
+            BinOp::Idiv => "idiv",
+            BinOp::Urem => "urem",
+            BinOp::Irem => "irem",
+            BinOp::Shl => "shl",
+            BinOp::Lshr => "lshr",
+            BinOp::Ashr => "ashr",
+            BinOp::BitNand => "bit_nand",
+            BinOp::BitAnd => "bit_and",
+            BinOp::BitOr => "bit_or",
+            BinOp::BitXor => "bit_xor",
+            BinOp::LogNand => "log_nand",
+            BinOp::LogAnd => "log_and",
+            BinOp::LogOr => "log_or",
+            BinOp::LogXor => "log_xor",
+            BinOp::Eq => "eq",
+            BinOp::Ne => "ne",
+            BinOp::Ult => "ult",
+            BinOp::Ilt => "ilt",
+            BinOp::Ule => "ule",
+            BinOp::Ile => "ile",
+        };
+        f.write_str(s)
+    }
+}
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub(crate) enum UnOp {
     Move,
@@ -87,16 +131,42 @@ pub(crate) enum UnOp {
     LogNot,
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
 pub enum Flag {
     LaterKeyActuated,
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
+impl Debug for Flag {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Flag::LaterKeyActuated => "later_key_actuated",
+        };
+        f.write_str(s)
+    }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
 pub(crate) enum Component {
     ModsPressed,
     ModsLatched,
     ModsLocked,
+    GroupPressed,
+    GroupLatched,
+    GroupLocked,
+}
+
+impl Debug for Component {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Component::ModsPressed => "mods_pressed",
+            Component::ModsLatched => "mods_latched",
+            Component::ModsLocked => "mods_locked",
+            Component::GroupPressed => "group_pressed",
+            Component::GroupLatched => "group_latched",
+            Component::GroupLocked => "group_locked",
+        };
+        f.write_str(s)
+    }
 }
 
 #[derive(Clone, Eq, PartialEq, Hash)]
@@ -183,8 +253,8 @@ impl Debug for Hi {
             Hi::GlobalStore { rs, g } => write!(f, "{g:?} = v{}", rs.0),
             Hi::BinOp { op, rd, rl, rr } => write!(f, "v{} = {op:?} v{}, v{}", rd.0, rl.0, rr.0),
             Hi::UnOp { op, rd, rs } => write!(f, "v{} = {op:?} v{}", rd.0, rs.0),
-            Hi::PressedModsInc { rs } => write!(f, "pressed_mods += v{}", rs.0),
-            Hi::PressedModsDec { rs } => write!(f, "pressed_mods -= v{}", rs.0),
+            Hi::PressedModsInc { rs } => write!(f, "{:?} += v{}", Component::ModsPressed, rs.0),
+            Hi::PressedModsDec { rs } => write!(f, "{:?} -= v{}", Component::ModsPressed, rs.0),
             Hi::ComponentLoad { rd, component } => write!(f, "v{} = {component:?}", rd.0),
             Hi::ComponentStore { rs, component } => write!(f, "{component:?} = v{}", rs.0),
             Hi::FlagLoad { rd, flag } => write!(f, "v{} = {flag:?}", rd.0),
@@ -232,10 +302,10 @@ impl Debug for Lo {
                 write!(f, "{rd:?} = {op:?} {rs:?}")
             }
             Lo::PressedModsInc { rs } => {
-                write!(f, "pressed_mods += {rs:?}")
+                write!(f, "{:?} += {rs:?}", Component::ModsPressed)
             }
             Lo::PressedModsDec { rs } => {
-                write!(f, "pressed_mods -= {rs:?}")
+                write!(f, "{:?} -= {rs:?}", Component::ModsPressed)
             }
             Lo::ComponentLoad { rd, component } => {
                 write!(f, "{rd:?} = {component:?}")
@@ -840,6 +910,14 @@ impl RoutineBuilder {
         self
     }
 
+    pub fn pressed_mods_load(&mut self, rd: Var) -> &mut Self {
+        self.component_load(rd, Component::ModsPressed)
+    }
+
+    pub fn pressed_mods_store(&mut self, rs: Var) -> &mut Self {
+        self.component_store(rs, Component::ModsPressed)
+    }
+
     pub fn latched_mods_load(&mut self, rd: Var) -> &mut Self {
         self.component_load(rd, Component::ModsLatched)
     }
@@ -854,6 +932,30 @@ impl RoutineBuilder {
 
     pub fn locked_mods_store(&mut self, rs: Var) -> &mut Self {
         self.component_store(rs, Component::ModsLocked)
+    }
+
+    pub fn pressed_group_load(&mut self, rd: Var) -> &mut Self {
+        self.component_load(rd, Component::GroupPressed)
+    }
+
+    pub fn pressed_group_store(&mut self, rs: Var) -> &mut Self {
+        self.component_store(rs, Component::GroupPressed)
+    }
+
+    pub fn latched_group_load(&mut self, rd: Var) -> &mut Self {
+        self.component_load(rd, Component::GroupLatched)
+    }
+
+    pub fn latched_group_store(&mut self, rs: Var) -> &mut Self {
+        self.component_store(rs, Component::GroupLatched)
+    }
+
+    pub fn locked_group_load(&mut self, rd: Var) -> &mut Self {
+        self.component_load(rd, Component::GroupLocked)
+    }
+
+    pub fn locked_group_store(&mut self, rs: Var) -> &mut Self {
+        self.component_store(rs, Component::GroupLocked)
     }
 
     fn flag_load(&mut self, rd: Var, flag: Flag) -> &mut Self {

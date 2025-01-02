@@ -50,20 +50,26 @@ impl Builder {
     pub fn build_state_machine(&self) -> StateMachine {
         let mut map = HashMap::with_capacity(self.keys.len());
         for (keycode, key) in &self.keys {
+            let mut any_groups = false;
             let mut groups = Vec::with_capacity(key.groups.len());
             for group in &key.groups {
                 match group {
                     None => groups.push(None),
                     Some(g) => {
+                        let mut any_layers = false;
                         let mut layers = Vec::with_capacity(g.layers.len());
                         for layer in &g.layers {
                             match layer {
                                 None => layers.push(KeyLayer::default()),
-                                Some(l) => layers.push(KeyLayer {
-                                    routine: l.routine.clone(),
-                                }),
+                                Some(l) => {
+                                    any_layers |= l.routine.is_some();
+                                    layers.push(KeyLayer {
+                                        routine: l.routine.clone(),
+                                    })
+                                }
                             }
                         }
+                        any_groups |= any_layers;
                         groups.push(Some(KeyGroup {
                             ty: g.ty.clone(),
                             layers: layers.into_boxed_slice(),
@@ -71,22 +77,15 @@ impl Builder {
                     }
                 }
             }
-            map.insert(
-                *keycode,
-                KeyGroups {
-                    groups: groups.into_boxed_slice(),
-                },
-            );
+            if any_groups {
+                map.insert(
+                    *keycode,
+                    KeyGroups {
+                        groups: groups.into_boxed_slice(),
+                    },
+                );
+            }
         }
-        // let mut map: Vec<_> = map.into_iter().map(|(k, g)| (k, g)).collect();
-        // map.sort_by_key(|k| k.0);
-        // let max_keycode = map.keys().map(|k| k.0 as usize).max().unwrap_or_default();
-        // let mut vec = vec!();
-        // vec.resize_with(max_keycode + 1, Default::default);
-        // for (k, v) in map {
-        //     let idx = k.0 as usize;
-        //     vec[idx] = v;
-        // }
         StateMachine { keys: map }
     }
 }
