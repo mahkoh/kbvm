@@ -1539,6 +1539,12 @@ pub enum DiagnosticKind {
     UnknownKeyType,
 }
 
+impl DiagnosticKind {
+    pub fn severity(&self) -> Severity {
+        self.severity_()
+    }
+}
+
 pub struct Diagnostic {
     kind: DiagnosticKind,
     location: DiagnosticLocation,

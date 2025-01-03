@@ -21,6 +21,7 @@ pub struct Builder {
 
 #[derive(Default, Debug)]
 struct BuilderKey {
+    repeats: bool,
     groups: Vec<Option<BuilderGroup>>,
 }
 
@@ -135,10 +136,11 @@ impl Builder {
                     }
                 }
             }
-            if any_groups {
+            if any_groups || !key.repeats {
                 map.insert(
                     *keycode,
                     lookup::KeyGroups {
+                        repeats: key.repeats,
                         groups: groups.into_boxed_slice(),
                     },
                 );
@@ -153,6 +155,10 @@ impl Builder {
 }
 
 impl KeyBuilder<'_> {
+    pub fn repeats(&mut self, repeats: bool) {
+        self.groups.repeats = repeats;
+    }
+
     pub fn add_group(&mut self, group: usize, ty: &GroupType) -> GroupBuilder<'_> {
         if self.groups.groups.len() <= group {
             self.groups.groups.resize_with(group + 1, Default::default);

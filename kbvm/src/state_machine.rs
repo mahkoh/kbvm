@@ -58,6 +58,7 @@ struct StateLog {
     group_effective: u32,
 }
 
+#[derive(Copy, Clone)]
 pub enum LogicalEvent {
     ModsPressed(ModifierMask),
     ModsLatched(ModifierMask),
