@@ -1,14 +1,21 @@
 use {
     crate::{
         group_type::GroupType,
+        keysym::Keysym,
+        lookup::{self, Lookup},
+        modifier::{ModifierIndex, ModifierMask},
         routine::Routine,
-        state_machine::{KeyGroup, KeyGroups, KeyLayer, Keycode, StateMachine},
+        state_machine::{self, Keycode, StateMachine},
     },
     hashbrown::HashMap,
+    isnt::std_1::primitive::IsntSliceExt,
+    smallvec::SmallVec,
 };
 
 #[derive(Default, Debug)]
 pub struct Builder {
+    ctrl: Option<ModifierMask>,
+    caps: Option<ModifierMask>,
     keys: HashMap<Keycode, BuilderKey>,
 }
 
@@ -25,6 +32,7 @@ struct BuilderGroup {
 
 #[derive(Default, Debug)]
 struct BuilderLayer {
+    keysyms: SmallVec<[Keysym; 1]>,
     routine: Option<Routine>,
 }
 
@@ -41,6 +49,14 @@ pub struct LayerBuilder<'a> {
 }
 
 impl Builder {
+    pub fn set_ctrl(&mut self, ctrl: Option<ModifierIndex>) {
+        self.ctrl = ctrl.map(|c| c.to_mask());
+    }
+
+    pub fn set_caps(&mut self, caps: Option<ModifierIndex>) {
+        self.caps = caps.map(|c| c.to_mask());
+    }
+
     pub fn add_key(&mut self, key: Keycode) -> KeyBuilder<'_> {
         KeyBuilder {
             groups: self.keys.entry(key).or_default(),
@@ -60,17 +76,17 @@ impl Builder {
                         let mut layers = Vec::with_capacity(g.layers.len());
                         for layer in &g.layers {
                             match layer {
-                                None => layers.push(KeyLayer::default()),
+                                None => layers.push(state_machine::KeyLayer::default()),
                                 Some(l) => {
                                     any_layers |= l.routine.is_some();
-                                    layers.push(KeyLayer {
+                                    layers.push(state_machine::KeyLayer {
                                         routine: l.routine.clone(),
                                     })
                                 }
                             }
                         }
                         any_groups |= any_layers;
-                        groups.push(Some(KeyGroup {
+                        groups.push(Some(state_machine::KeyGroup {
                             ty: g.ty.clone(),
                             layers: layers.into_boxed_slice(),
                         }));
@@ -80,13 +96,59 @@ impl Builder {
             if any_groups {
                 map.insert(
                     *keycode,
-                    KeyGroups {
+                    state_machine::KeyGroups {
                         groups: groups.into_boxed_slice(),
                     },
                 );
             }
         }
         StateMachine { keys: map }
+    }
+
+    pub fn build_lookup(&self) -> Lookup {
+        let mut map = HashMap::with_capacity(self.keys.len());
+        for (keycode, key) in &self.keys {
+            let mut any_groups = false;
+            let mut groups = Vec::with_capacity(key.groups.len());
+            for group in &key.groups {
+                match group {
+                    None => groups.push(None),
+                    Some(g) => {
+                        let mut any_layers = false;
+                        let mut layers = Vec::with_capacity(g.layers.len());
+                        for layer in &g.layers {
+                            match layer {
+                                None => layers.push(lookup::KeyLayer::default()),
+                                Some(l) => {
+                                    any_layers |= l.keysyms.is_not_empty();
+                                    layers.push(lookup::KeyLayer {
+                                        symbols: l.keysyms.clone(),
+                                    })
+                                }
+                            }
+                        }
+                        any_groups |= any_layers;
+                        groups.push(Some(lookup::KeyGroup {
+                            ty: g.ty.clone(),
+                            layers: layers.into_boxed_slice(),
+                        }));
+                    }
+                }
+            }
+            if any_groups {
+                map.insert(
+                    *keycode,
+                    lookup::KeyGroups {
+                        groups: groups.into_boxed_slice(),
+                    },
+                );
+            }
+        }
+        Lookup {
+            ctrl: self.ctrl,
+            caps: self.caps,
+            keys: map,
+        }
     }
 }
 
@@ -117,6 +179,12 @@ impl GroupBuilder<'_> {
 impl LayerBuilder<'_> {
     pub fn routine(&mut self, routine: &Routine) -> &mut Self {
         self.layer.routine = Some(routine.clone());
+        self
+    }
+
+    pub fn keysyms(&mut self, keysyms: &[Keysym]) -> &mut Self {
+        self.layer.keysyms.clear();
+        self.layer.keysyms.extend_from_slice(keysyms);
         self
     }
 }

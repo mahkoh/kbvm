@@ -2,7 +2,7 @@
 mod tests;
 
 use {
-    crate::modifier::ModifierMask,
+    crate::{modifier::ModifierMask, state_machine::Keycode},
     debug_fn::debug_fn,
     hashbrown::{hash_map::Entry, HashMap, HashSet},
     isnt::std_1::primitive::IsntSliceExt,
@@ -224,6 +224,12 @@ pub(crate) enum Hi {
         rs: Var,
         component: Component,
     },
+    KeyDown {
+        rs: Var,
+    },
+    KeyUp {
+        rs: Var,
+    },
 }
 
 impl Debug for Hi {
@@ -258,6 +264,8 @@ impl Debug for Hi {
             Hi::ComponentLoad { rd, component } => write!(f, "v{} = {component:?}", rd.0),
             Hi::ComponentStore { rs, component } => write!(f, "{component:?} = v{}", rs.0),
             Hi::FlagLoad { rd, flag } => write!(f, "v{} = {flag:?}", rd.0),
+            Hi::KeyDown { rs } => write!(f, "key_down v{}", rs.0),
+            Hi::KeyUp { rs } => write!(f, "key_up v{}", rs.0),
         }
     }
 }
@@ -315,6 +323,12 @@ impl Debug for Lo {
             }
             Lo::FlagLoad { rd, flag } => {
                 write!(f, "{rd:?} = {flag:?}")
+            }
+            Lo::KeyDown { rs } => {
+                write!(f, "key_down {rs:?}")
+            }
+            Lo::KeyUp { rs } => {
+                write!(f, "key_up {rs:?}")
             }
         }
     }
@@ -392,6 +406,12 @@ pub(crate) enum Lo {
         rs: Register,
         component: Component,
     },
+    KeyDown {
+        rs: Register,
+    },
+    KeyUp {
+        rs: Register,
+    },
 }
 
 pub(crate) trait StateEventHandler {
@@ -411,6 +431,14 @@ pub(crate) trait StateEventHandler {
     fn component_store(&mut self, component: Component, val: u32) {
         let _ = component;
         let _ = val;
+    }
+
+    fn key_down(&mut self, keycode: Keycode) {
+        let _ = keycode;
+    }
+
+    fn key_up(&mut self, keycode: Keycode) {
+        let _ = keycode;
     }
 }
 
@@ -582,6 +610,14 @@ pub(crate) fn run<H>(
             }
             Lo::FlagLoad { rd, flag } => {
                 registers[rd] = flags[flag];
+            }
+            Lo::KeyDown { rs } => {
+                let s = registers[rs];
+                h.key_down(Keycode(s));
+            }
+            Lo::KeyUp { rs } => {
+                let s = registers[rs];
+                h.key_up(Keycode(s));
             }
         }
         i = i.saturating_add(1);
@@ -966,6 +1002,16 @@ impl RoutineBuilder {
     pub fn later_key_activated_load(&mut self, rd: Var) -> &mut Self {
         self.flag_load(rd, Flag::LaterKeyActuated)
     }
+
+    pub fn key_down(&mut self, rs: Var) -> &mut Self {
+        self.ops.push(Hi::KeyDown { rs });
+        self
+    }
+
+    pub fn key_up(&mut self, rs: Var) -> &mut Self {
+        self.ops.push(Hi::KeyUp { rs });
+        self
+    }
 }
 
 fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) {
@@ -1022,6 +1068,9 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) {
                 }
                 Hi::FlagLoad { rd, .. } => {
                     current_block_arguments.remove(rd);
+                }
+                Hi::KeyDown { rs } | Hi::KeyUp { rs } => {
+                    current_block_arguments.insert(*rs);
                 }
             }
         }
@@ -1097,6 +1146,9 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) {
                 }
                 Hi::FlagLoad { rd, .. } => {
                     rename_write(rd, &mut names);
+                }
+                Hi::KeyDown { rs } | Hi::KeyUp { rs } => {
+                    rename_read(rs, &names);
                 }
             }
         }
@@ -1237,6 +1289,9 @@ impl RegisterAllocator {
                 }
                 Hi::FlagLoad { rd, .. } => {
                     write!(rd);
+                }
+                Hi::KeyDown { rs } | Hi::KeyUp { rs } => {
+                    read!(rs);
                 }
             }
         }
@@ -1465,6 +1520,14 @@ impl RegisterAllocator {
                 Hi::FlagLoad { rd, flag } => {
                     let rd = self.get_var_register(idx, rd);
                     self.out.push_front(Lo::FlagLoad { rd, flag: *flag });
+                }
+                Hi::KeyDown { rs } => {
+                    let rs = self.get_var_register(idx, rs);
+                    self.out.push_front(Lo::KeyDown { rs });
+                }
+                Hi::KeyUp { rs } => {
+                    let rs = self.get_var_register(idx, rs);
+                    self.out.push_front(Lo::KeyUp { rs });
                 }
             }
         }

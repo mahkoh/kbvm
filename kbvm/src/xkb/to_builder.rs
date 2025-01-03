@@ -2,7 +2,9 @@ use {
     crate::{
         builder::Builder,
         group_type::GroupType,
-        routine::{Routine, RoutineBuilder, SkipAnchor},
+        modifier::ModifierIndex,
+        routine::{Routine, RoutineBuilder, SkipAnchor, Var},
+        state_machine::Keycode,
         xkb::{
             group::GroupChange,
             keymap::{Action, KeyType},
@@ -10,11 +12,14 @@ use {
         },
     },
     hashbrown::HashMap,
+    isnt::std_1::primitive::IsntSliceExt,
 };
 
 impl Keymap {
     pub fn to_builder(&self) -> Builder {
         let mut builder = Builder::default();
+        builder.set_ctrl(Some(ModifierIndex::CONTROL));
+        builder.set_caps(Some(ModifierIndex::LOCK));
         let mut types = HashMap::new();
         for ty in &self.types {
             let mut builder = GroupType::builder(ty.modifiers);
@@ -36,11 +41,14 @@ impl Keymap {
                 let ty = &types[&(&*group.key_type as *const KeyType)];
                 let mut builder = builder.add_group(idx, ty);
                 for (idx, layer) in group.levels.iter().enumerate() {
-                    if layer.actions.is_empty() {
+                    if layer.actions.is_empty() && layer.symbols.is_empty() {
                         continue;
                     }
                     let mut builder = builder.add_layer(idx);
-                    builder.routine(&actions_to_routine(&layer.actions));
+                    builder.keysyms(&layer.symbols);
+                    if layer.actions.is_not_empty() {
+                        builder.routine(&actions_to_routine(key.key_code, &layer.actions));
+                    }
                 }
             }
         }
@@ -48,20 +56,22 @@ impl Keymap {
     }
 }
 
-fn actions_to_routine(actions: &[Action]) -> Routine {
+fn actions_to_routine(key: Keycode, actions: &[Action]) -> Routine {
     let mut builder = Routine::builder();
-    encode_actions(&mut builder, actions);
+    let keycode = builder.allocate_var();
+    builder.load_lit(keycode, key.0).key_down(keycode);
+    encode_actions(&mut builder, actions, keycode);
     builder.build()
 }
 
-fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action]) {
+fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
     let Some(action) = actions.first() else {
-        builder.on_release();
+        builder.on_release().key_up(key);
         return;
     };
     macro_rules! encode_rest {
         () => {
-            encode_actions(builder, &actions[1..]);
+            encode_actions(builder, &actions[1..], key);
         };
     }
     match action {
@@ -113,6 +123,7 @@ fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action]) {
                 builder
                     .bit_and(already_latched, latched_mods, action_mods)
                     .bit_or(locked_mods, locked_mods, already_latched)
+                    .bit_nand(latched_mods, latched_mods, already_latched)
                     .bit_nand(action_mods, action_mods, already_latched);
             }
             builder

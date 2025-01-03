@@ -1,11 +1,14 @@
 use crate::{
-    state_machine::{Keycode, State},
+    modifier::ModifierMask,
+    state_machine::{Keycode, LogicalEvent, State},
     xkb::{diagnostic::DiagnosticSink, Context},
 };
 
 const KEY_SHIFT_L: Keycode = Keycode(50);
 const KEY_CONTROL_L: Keycode = Keycode(37);
 const KEY_NUM_LOCK: Keycode = Keycode(77);
+const KEY_CAPS: Keycode = Keycode(66);
+const KEY_Q: Keycode = Keycode(24);
 
 #[test]
 fn test() {
@@ -14,30 +17,45 @@ fn test() {
     let context = Context::default()
         .parse_keymap(&mut sink, None, MAP.as_bytes())
         .unwrap();
-    let state_machine = context.to_builder().build_state_machine();
-    println!("{:#?}", state_machine);
+    let builder = context.to_builder();
+    let state_machine = builder.build_state_machine();
+    let lookup = builder.build_lookup();
     let mut state = State::default();
+    let mut effective_mods = ModifierMask::default();
     let mut key = |key: Keycode, down: bool| {
         let mut events = vec![];
         state_machine.handle_key(&mut state, &mut events, key, down);
-        events
+        for event in events {
+            println!("{:#?}", event);
+            match event {
+                LogicalEvent::KeyDown(kc) => {
+                    let lookup = lookup.lookup(0, effective_mods, kc);
+                    println!("  {:?}", lookup);
+                    for sym in lookup {
+                        println!("  {:?}", sym);
+                    }
+                }
+                LogicalEvent::ModsEffective(mm) => effective_mods = mm,
+                _ => {}
+            }
+        }
     };
-    let events = key(KEY_SHIFT_L, true);
-    println!("{:#?}", events);
-    let events = key(KEY_NUM_LOCK, true);
-    println!("{:#?}", events);
-    let events = key(KEY_NUM_LOCK, false);
-    println!("{:#?}", events);
-    let events = key(KEY_CONTROL_L, true);
-    println!("{:#?}", events);
-    let events = key(KEY_SHIFT_L, false);
-    println!("{:#?}", events);
-    let events = key(KEY_CONTROL_L, false);
-    println!("{:#?}", events);
-    let events = key(KEY_NUM_LOCK, true);
-    println!("{:#?}", events);
-    let events = key(KEY_NUM_LOCK, false);
-    println!("{:#?}", events);
+    // key(KEY_CAPS, true);
+    // key(KEY_CAPS, false);
+    key(KEY_CONTROL_L, true);
+    // key(KEY_CONTROL_L, false);
+    key(KEY_Q, true);
+    key(KEY_Q, false);
+    // key(KEY_SHIFT_L, true);
+    // key(KEY_Q, true);
+    // key(KEY_Q, false);
+    // key(KEY_SHIFT_L, false);
+    // key(KEY_CONTROL_L, true);
+    // key(KEY_CONTROL_L, false);
+    // key(KEY_CONTROL_L, true);
+    // key(KEY_CONTROL_L, false);
+    // key(KEY_CONTROL_L, true);
+    // key(KEY_CONTROL_L, false);
 }
 
 const MAP: &str = r#"
@@ -218,7 +236,7 @@ xkb_keymap {
             action = LockMods(modifiers=Lock);
         };
         interpret Control_L {
-            action = SetMods(modifiers=Control);
+            action = LatchMods(modifiers=Control, latchToLock, clearLocks);
         };
         interpret Control_R {
             action = SetMods(modifiers=Control);
@@ -308,7 +326,11 @@ xkb_keymap {
         key  <28> { [ Return    ]            };
         key  <42> { [ Shift_L   ]            };
         key  <54> { [ Shift_R   ]            };
-        key  <29> { [ Control_L ]            };
+        // key  <29> { [ Control_L ]            };
+        key  <29> {
+            [ Control_L ],
+            [ { SetMods(mods = Control), LatchMods(mods = Control, latchToLock, clearLocks) } ]
+            };
         key <125> { [ Super_L   ]            };
         key  <56> { [ Alt_L     ]            };
         key  <57> { [ space     ]            };
@@ -329,7 +351,7 @@ xkb_keymap {
         key <52> { [ period,       greater    ] };
         key <53> { [ slash,        question   ] };
 
-        key <16> { [ q, Q ] };
+        key <16> { [ U8A9E ], [ q ] };
         key <17> { [ w, W ] };
         key <18> { [ e, E ] };
         key <19> { [ r, R ] };

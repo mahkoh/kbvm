@@ -20,7 +20,7 @@ struct Case {
 
 pub(crate) struct KeyTypeMapping {
     pub(crate) layer: usize,
-    pub(crate) _consumed: ModifierMask,
+    pub(crate) consumed: ModifierMask,
 }
 
 impl GroupType {
@@ -38,13 +38,13 @@ impl GroupType {
                 let consumed = mods & case.consumed;
                 return KeyTypeMapping {
                     layer: case.layer,
-                    _consumed: consumed,
+                    consumed,
                 };
             }
         }
         KeyTypeMapping {
             layer: 0,
-            _consumed: ModifierMask(0),
+            consumed: ModifierMask(0),
         }
     }
 }
