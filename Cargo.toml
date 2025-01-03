@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "compile-tests",
+    "type-tests",
     "generator",
     "kbvm",
     "kbvm-c",

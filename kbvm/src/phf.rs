@@ -61,6 +61,13 @@ impl PhfHash for [u8] {
     }
 }
 
+impl PhfHash for str {
+    #[inline]
+    fn phf_hash(&self, key: u64) -> (u32, u64) {
+        self.as_bytes().phf_hash(key)
+    }
+}
+
 impl PhfHash for u32 {
     #[inline]
     fn phf_hash(&self, key: u64) -> (u32, u64) {

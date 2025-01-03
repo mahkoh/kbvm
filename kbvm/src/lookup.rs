@@ -1,6 +1,3 @@
-#[cfg(test)]
-mod tests;
-
 #[expect(unused_imports)]
 use crate::builder::Builder;
 use {

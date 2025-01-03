@@ -34,6 +34,7 @@ impl Keymap {
         }
         for key in self.keys.values() {
             let mut builder = builder.add_key(key.key_code);
+            builder.repeats(key.repeat);
             for (idx, group) in key.groups.iter().enumerate() {
                 let Some(group) = group else {
                     continue;

@@ -6,11 +6,13 @@ mod keysyms;
 #[path = "../../kbvm/src/phf.rs"]
 mod phf;
 mod phf_generator;
+mod type_tests;
 mod xkb;
 
 fn main() {
     keysyms::main();
     xkb::main();
+    type_tests::main();
 }
 
 fn generate_map(
