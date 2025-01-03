@@ -19,7 +19,7 @@ fn test() {
         .unwrap();
     let builder = context.to_builder();
     let state_machine = builder.build_state_machine();
-    let lookup = builder.build_lookup();
+    let lookup = builder.build_lookup_table();
     let mut state = State::default();
     let mut effective_mods = ModifierMask::default();
     let mut key = |key: Keycode, down: bool| {

@@ -2,7 +2,7 @@ use {
     crate::{
         group_type::GroupType,
         keysym::Keysym,
-        lookup::{self, Lookup},
+        lookup::{self, LookupTable},
         modifier::{ModifierIndex, ModifierMask},
         routine::Routine,
         state_machine::{self, Keycode, StateMachine},
@@ -105,7 +105,7 @@ impl Builder {
         StateMachine { keys: map }
     }
 
-    pub fn build_lookup(&self) -> Lookup {
+    pub fn build_lookup_table(&self) -> LookupTable {
         let mut map = HashMap::with_capacity(self.keys.len());
         for (keycode, key) in &self.keys {
             let mut any_groups = false;
@@ -144,7 +144,7 @@ impl Builder {
                 );
             }
         }
-        Lookup {
+        LookupTable {
             ctrl: self.ctrl,
             caps: self.caps,
             keys: map,

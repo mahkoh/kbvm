@@ -8,7 +8,7 @@ use {
 };
 
 #[derive(Debug)]
-pub struct Lookup {
+pub struct LookupTable {
     pub(crate) ctrl: Option<ModifierMask>,
     pub(crate) caps: Option<ModifierMask>,
     pub(crate) keys: HashMap<Keycode, KeyGroups>,
@@ -31,14 +31,14 @@ pub(crate) struct KeyLayer {
 }
 
 #[derive(Copy, Clone)]
-pub struct Keysyms<'a> {
+pub struct Lookup<'a> {
     original_mods: ModifierMask,
     consumed_mods: ModifierMask,
     remaining_mods: ModifierMask,
     use_ctrl_fallback: bool,
     do_ctrl_transform: bool,
     do_caps_transform: bool,
-    lookup: &'a Lookup,
+    lookup: &'a LookupTable,
     groups: &'a [Option<KeyGroup>],
     syms: &'a [Keysym],
 }
@@ -60,7 +60,7 @@ pub struct KeysymProps {
     pub did_caps_transform: bool,
 }
 
-impl Debug for Keysyms<'_> {
+impl Debug for Lookup<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Keysyms")
             .field("original_mods", &self.original_mods)
@@ -73,8 +73,8 @@ impl Debug for Keysyms<'_> {
     }
 }
 
-impl Lookup {
-    pub fn lookup(&self, group: u32, mods: ModifierMask, keycode: Keycode) -> Keysyms<'_> {
+impl LookupTable {
+    pub fn lookup(&self, group: u32, mods: ModifierMask, keycode: Keycode) -> Lookup<'_> {
         let mut consumed = ModifierMask::default();
         let mut groups = &[][..];
         let mut syms = &[][..];
@@ -88,7 +88,7 @@ impl Lookup {
                 }
             }
         }
-        Keysyms {
+        Lookup {
             original_mods: mods,
             consumed_mods: consumed,
             remaining_mods: mods & !consumed,
@@ -102,7 +102,7 @@ impl Lookup {
     }
 }
 
-impl<'a> IntoIterator for Keysyms<'a> {
+impl<'a> IntoIterator for Lookup<'a> {
     type Item = KeysymProps;
     type IntoIter = KeysymsIter<'a>;
 
@@ -150,11 +150,9 @@ impl Iterator for KeysymsIter<'_> {
         self.syms = &self.syms[1..];
         let mut did_caps_transform = false;
         if self.do_caps_transform {
-            let caps = sym.to_uppercase();
-            if caps != sym {
-                did_caps_transform = true;
-                sym = caps;
-            }
+            let prev = sym;
+            let sym = sym.to_uppercase();
+            did_caps_transform = prev != sym;
         }
         let mut char = None;
         let mut did_ctrl_transform = false;
