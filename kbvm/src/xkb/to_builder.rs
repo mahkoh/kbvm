@@ -30,7 +30,6 @@ impl Keymap {
                     mapping.preserved,
                     mapping.level.to_offset(),
                 );
-                // break;
             }
             types.insert(&**ty as *const KeyType, builder.build());
         }
