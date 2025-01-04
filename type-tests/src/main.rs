@@ -20,7 +20,7 @@ use {
     parking_lot::Mutex,
     phf_map::PhfMap,
     std::{
-        fmt::Write,
+        fmt::{Display, Formatter, Write},
         fs::read_dir,
         io::{self, ErrorKind},
         path::{Path, PathBuf},
@@ -33,7 +33,7 @@ use {
     thiserror::Error,
 };
 
-// const SINGLE: Option<&str> = Some("t0004");
+// const SINGLE: Option<&str> = Some("t0001");
 const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
 const WRITE_FAILED: bool = false;
@@ -151,8 +151,6 @@ enum ResultError {
     TextComparisonFailed,
     #[error("could not write actual file")]
     WriteActualFailed(#[source] io::Error),
-    #[error("invalid key code `{0}`")]
-    InvalidKeyCode(u32),
 }
 
 fn test_thread(results: Arc<Results>) {
@@ -183,6 +181,20 @@ fn test_case(results: &Results, case: &Path) {
     results.results.lock().push(result);
 }
 
+enum NameOrKey {
+    Name(&'static str),
+    Key(u32),
+}
+
+impl Display for NameOrKey {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            NameOrKey::Name(n) => f.write_str(n),
+            NameOrKey::Key(k) => write!(f, "0x{k:x}"),
+        }
+    }
+}
+
 fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {
     let map_path = case.join("map.xkb");
     let map = std::fs::read(&map_path).map_err(ResultError::ReadMapFailed)?;
@@ -211,9 +223,9 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let key_name = |code: Keycode| {
         let (name, kc) = CODE_TO_NAME[&code.0];
         if kc != code.0 {
-            return Err(ResultError::InvalidKeyCode(kc));
+            return NameOrKey::Key(code.0);
         }
-        Ok(name)
+        NameOrKey::Name(name)
     };
     let handle_down = |actual: &mut String,
                        kc: Keycode,
@@ -225,7 +237,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
             actual,
             "key_{}({})",
             if is_repeat { "repeat" } else { "down" },
-            key_name(kc)?,
+            key_name(kc),
         )
         .unwrap();
         let lookup = lookup_table.lookup(group, mods, kc);
@@ -308,7 +320,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
                     if repeating_key == Some(kc) {
                         repeating_key = None;
                     }
-                    writeln!(actual, "key_up({})", key_name(kc)?).unwrap();
+                    writeln!(actual, "key_up({})", key_name(kc)).unwrap();
                 }
                 LogicalEvent::GroupPressed(g) => {
                     writeln!(actual, "group_pressed = 0x{g:x}").unwrap();
