@@ -1,0 +1,17 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <leftshift> {
+            [
+                LatchMods(mods = Shift),
+            ]
+        };
+        key <rightshift> {
+            [
+                LatchMods(mods = Shift+Mod1, latchToLock, clearLocks),
+            ]
+        };
+    };
+};
