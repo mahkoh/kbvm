@@ -397,12 +397,12 @@ impl Iterator for KeysymsIter<'_> {
     type Item = KeysymProps;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let sym = self.syms.first().copied()?;
+        let mut sym = self.syms.first().copied()?;
         self.syms = &self.syms[1..];
         let mut did_caps_transform = false;
         if self.do_caps_transform {
             let prev = sym;
-            let sym = sym.to_uppercase();
+            sym = sym.to_uppercase();
             did_caps_transform = prev != sym;
         }
         let mut char = None;
