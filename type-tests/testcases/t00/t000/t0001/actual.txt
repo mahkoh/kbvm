@@ -1,0 +1,13 @@
+key_down(i)
+sym = i, char = 'i'
+key_down(leftshift)
+mods_pressed = 0x00000001
+mods_effective = 0x00000001
+key_repeat(i)
+sym = I, char = 'I'
+key_up(leftshift)
+mods_pressed = 0x00000000
+mods_effective = 0x00000000
+key_repeat(i)
+sym = i, char = 'i'
+key_up(i)

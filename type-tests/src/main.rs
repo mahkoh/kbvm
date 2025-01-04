@@ -140,8 +140,6 @@ enum ResultError {
     ReadInputFailed(#[source] io::Error),
     #[error("could not read expected file")]
     ReadExpectedFailed(#[source] io::Error),
-    #[error("invalid input format `{0}`")]
-    InvalidInputFormat(String),
     #[error("invalid key name `{0}`")]
     InvalidKeyName(String),
     #[error("unknown command `{0}`")]
@@ -212,8 +210,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let mut mods = ModifierMask(0);
     let group = 0;
     let mut events = vec![];
-    let mut last_key = None;
-    let mut last_key_repeats = false;
+    let mut repeating_key = None;
     let key_name = |code: Keycode| {
         let (name, kc) = CODE_TO_NAME[&code.0];
         if kc != code.0 {
@@ -223,7 +220,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     };
     let handle_down = |actual: &mut String,
                        kc: Keycode,
-                       repeats: &mut bool,
+                       repeating_key: &mut Option<Keycode>,
                        mods: ModifierMask,
                        is_repeat: bool| {
         writeln!(
@@ -234,7 +231,10 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
         )
         .unwrap();
         let lookup = lookup_table.lookup(group, mods, kc);
-        *repeats = lookup.repeats();
+        println!("{:?}", lookup);
+        if lookup.repeats() {
+            *repeating_key = Some(kc);
+        }
         for p in lookup {
             write!(actual, "sym = {:?}", p.keysym()).unwrap();
             if let Some(char) = p.char() {
@@ -252,8 +252,13 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
         if line.is_empty() {
             continue;
         }
-        let Some((command, arg)) = line.split_once(' ') else {
-            return Err(ResultError::InvalidInputFormat(line.to_string()));
+        let mut arg = "";
+        let command = match line.split_once(' ') {
+            Some((c, a)) => {
+                arg = a;
+                c
+            },
+            _ => line,
         };
         let command = command.trim();
         let arg = arg.trim();
@@ -277,15 +282,8 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
                 key(false)?;
             }
             "repeat" => {
-                let Ok(n) = u32::from_str(arg) else {
-                    return Err(ResultError::InvalidRepeatCount(arg.to_string()));
-                };
-                if let Some(kc) = last_key {
-                    if last_key_repeats {
-                        for _ in 0..n {
-                            handle_down(&mut actual, kc, &mut last_key_repeats, mods, true)?;
-                        }
-                    }
+                if let Some(kc) = repeating_key {
+                    handle_down(&mut actual, kc, &mut repeating_key, mods, true)?;
                 }
             }
             _ => return Err(ResultError::UnknownCommand(command.to_string())),
@@ -306,11 +304,12 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
                     writeln!(actual, "mods_effective = {m:?}").unwrap();
                 }
                 LogicalEvent::KeyDown(kc) => {
-                    last_key = Some(kc);
-                    handle_down(&mut actual, kc, &mut last_key_repeats, mods, false)?;
+                    handle_down(&mut actual, kc, &mut repeating_key, mods, false)?;
                 }
                 LogicalEvent::KeyUp(kc) => {
-                    last_key = None;
+                    if repeating_key == Some(kc) {
+                        repeating_key = None;
+                    }
                     writeln!(actual, "key_up({})", key_name(kc)?).unwrap();
                 }
             };

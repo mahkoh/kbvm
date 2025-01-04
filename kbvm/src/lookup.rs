@@ -317,6 +317,7 @@ impl Debug for Lookup<'_> {
             .field("use_ctrl_fallback", &self.use_ctrl_fallback)
             .field("do_ctrl_transform", &self.do_ctrl_transform)
             .field("do_caps_transform", &self.do_caps_transform)
+            .field("repeats", &self.repeats)
             .finish_non_exhaustive()
     }
 }

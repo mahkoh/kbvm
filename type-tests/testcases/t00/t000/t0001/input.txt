@@ -1,3 +1,6 @@
-down leftctrl
-both i
-up leftctrl
+down i
+down leftshift
+repeat
+up leftshift
+repeat
+up i
