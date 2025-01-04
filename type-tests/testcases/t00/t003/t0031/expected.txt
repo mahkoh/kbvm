@@ -1,0 +1,14 @@
+both leftshift
+    key_down(leftshift)
+    group_pressed = 0x1
+    group_effective = 0x1
+    key_up(leftshift)
+    group_pressed = 0x0
+    group_latched = 0x1
+both leftshift
+    key_down(leftshift)
+    group_pressed = 0x1
+    group_effective = 0x2
+    key_up(leftshift)
+    group_pressed = 0x0
+    group_latched = 0x2
