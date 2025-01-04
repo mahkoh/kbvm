@@ -1,0 +1,5 @@
+both i
+down rightalt
+both i
+up rightalt
+both i

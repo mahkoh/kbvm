@@ -24,7 +24,6 @@ use {
         fs::read_dir,
         io::{self, ErrorKind},
         path::{Path, PathBuf},
-        str::FromStr,
         sync::{
             atomic::{AtomicUsize, Ordering::Relaxed},
             Arc,
@@ -144,8 +143,6 @@ enum ResultError {
     InvalidKeyName(String),
     #[error("unknown command `{0}`")]
     UnknownCommand(String),
-    #[error("invalid repeat count `{0}`")]
-    InvalidRepeatCount(String),
     #[error("could not parse keymap")]
     ParsingFailed(#[source] Diagnostic),
     #[error("could not write expected file")]
@@ -208,7 +205,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let input_path = case.join("input.txt");
     let input = std::fs::read_to_string(&input_path).map_err(ResultError::ReadInputFailed)?;
     let mut mods = ModifierMask(0);
-    let group = 0;
+    let mut group = 0;
     let mut events = vec![];
     let mut repeating_key = None;
     let key_name = |code: Keycode| {
@@ -221,6 +218,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let handle_down = |actual: &mut String,
                        kc: Keycode,
                        repeating_key: &mut Option<Keycode>,
+                       group: u32,
                        mods: ModifierMask,
                        is_repeat: bool| {
         writeln!(
@@ -257,7 +255,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
             Some((c, a)) => {
                 arg = a;
                 c
-            },
+            }
             _ => line,
         };
         let command = command.trim();
@@ -283,7 +281,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
             }
             "repeat" => {
                 if let Some(kc) = repeating_key {
-                    handle_down(&mut actual, kc, &mut repeating_key, mods, true)?;
+                    handle_down(&mut actual, kc, &mut repeating_key, group, mods, true)?;
                 }
             }
             _ => return Err(ResultError::UnknownCommand(command.to_string())),
@@ -304,13 +302,26 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
                     writeln!(actual, "mods_effective = {m:?}").unwrap();
                 }
                 LogicalEvent::KeyDown(kc) => {
-                    handle_down(&mut actual, kc, &mut repeating_key, mods, false)?;
+                    handle_down(&mut actual, kc, &mut repeating_key, group, mods, false)?;
                 }
                 LogicalEvent::KeyUp(kc) => {
                     if repeating_key == Some(kc) {
                         repeating_key = None;
                     }
                     writeln!(actual, "key_up({})", key_name(kc)?).unwrap();
+                }
+                LogicalEvent::GroupPressed(g) => {
+                    writeln!(actual, "group_pressed = 0x{g:x}").unwrap();
+                }
+                LogicalEvent::GroupLatched(g) => {
+                    writeln!(actual, "group_latched = 0x{g:x}").unwrap();
+                }
+                LogicalEvent::GroupLocked(g) => {
+                    writeln!(actual, "group_locked = 0x{g:x}").unwrap();
+                }
+                LogicalEvent::GroupEffective(g) => {
+                    group = g;
+                    writeln!(actual, "group_effective = 0x{g:x}").unwrap();
                 }
             };
         }

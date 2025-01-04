@@ -66,9 +66,11 @@ impl Builder {
 
     pub fn build_state_machine(&self) -> StateMachine {
         let mut map = HashMap::with_capacity(self.keys.len());
+        let mut num_groups = 0;
         for (keycode, key) in &self.keys {
             let mut any_groups = false;
             let mut groups = Vec::with_capacity(key.groups.len());
+            num_groups = num_groups.max(key.groups.len());
             for group in &key.groups {
                 match group {
                     None => groups.push(None),
@@ -103,7 +105,10 @@ impl Builder {
                 );
             }
         }
-        StateMachine { keys: map }
+        StateMachine {
+            num_groups: (num_groups as u32).max(1),
+            keys: map,
+        }
     }
 
     pub fn build_lookup_table(&self) -> LookupTable {

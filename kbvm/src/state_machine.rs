@@ -18,6 +18,7 @@ use {
 
 #[derive(Debug)]
 pub struct StateMachine {
+    pub(crate) num_groups: u32,
     pub(crate) keys: HashMap<Keycode, KeyGroups>,
     // pub(crate) keys: Vec<KeyGroups>,
 }
@@ -64,6 +65,10 @@ pub enum LogicalEvent {
     ModsLatched(ModifierMask),
     ModsLocked(ModifierMask),
     ModsEffective(ModifierMask),
+    GroupPressed(u32),
+    GroupLatched(u32),
+    GroupLocked(u32),
+    GroupEffective(u32),
     KeyDown(Keycode),
     KeyUp(Keycode),
 }
@@ -75,6 +80,10 @@ impl Debug for LogicalEvent {
             LogicalEvent::ModsLatched(m) => write!(f, "mods_latched = {m:?}"),
             LogicalEvent::ModsLocked(m) => write!(f, "mods_locked = {m:?}"),
             LogicalEvent::ModsEffective(m) => write!(f, "mods_effective = {m:?}"),
+            LogicalEvent::GroupPressed(g) => write!(f, "group_pressed = {g}"),
+            LogicalEvent::GroupLatched(g) => write!(f, "group_latched = {g}"),
+            LogicalEvent::GroupLocked(g) => write!(f, "group_locked = {g}"),
+            LogicalEvent::GroupEffective(g) => write!(f, "group_effective = {g}"),
             LogicalEvent::KeyDown(k) => write!(f, "key_down({})", k.0),
             LogicalEvent::KeyUp(k) => write!(f, "key_up({})", k.0),
         }
@@ -82,31 +91,75 @@ impl Debug for LogicalEvent {
 }
 
 struct LogHandler<'a> {
+    num_groups: u32,
     mods_pressed_count: &'a mut [u32; NUM_MODS],
     pub_state: &'a mut StateLog,
+    any_state_changed: bool,
     acc_state: StateLog,
     events: &'a mut Vec<LogicalEvent>,
 }
 
 impl LogHandler<'_> {
     fn flush_state(&mut self) {
+        if !self.any_state_changed {
+            return;
+        }
+        self.any_state_changed = false;
+        let acs = &mut self.acc_state;
+        acs.mods_effective = acs.mods_pressed | acs.mods_latched | acs.mods_locked;
+        acs.group_effective = acs
+            .group_locked
+            .wrapping_add(acs.group_pressed)
+            .wrapping_add(acs.group_latched);
+        macro_rules! wrap_value {
+            ($value:expr) => {
+                if $value >= self.num_groups {
+                    let tmp = $value as i32 as i64;
+                    if tmp < 0 {
+                        (tmp % self.num_groups as i64 + self.num_groups as i64) as u32
+                    } else {
+                        (tmp % self.num_groups as i64) as u32
+                    }
+                } else {
+                    $value
+                }
+            };
+        }
+        acs.group_locked = wrap_value!(acs.group_locked);
+        acs.group_effective = wrap_value!(acs.group_effective);
         macro_rules! flush {
             ($($camel:ident, $field:ident;)*) => {
                 $(
-                    if self.acc_state.$field != self.pub_state.$field {
-                        self.pub_state.$field = self.acc_state.$field;
-                        self.events.push(LogicalEvent::$camel(self.acc_state.$field));
+                    if acs.$field != self.pub_state.$field {
+                        self.pub_state.$field = acs.$field;
+                        self.events.push(LogicalEvent::$camel(acs.$field));
                     }
                 )*
             };
         }
-        self.acc_state.mods_effective =
-            self.acc_state.mods_pressed | self.acc_state.mods_latched | self.acc_state.mods_locked;
+        macro_rules! flush_rel_group {
+            ($($camel:ident, $field:ident;)*) => {
+                $(
+                    if acs.$field != self.pub_state.$field {
+                        self.pub_state.$field = acs.$field;
+                        self.events.push(LogicalEvent::$camel(wrap_value!(acs.$field)));
+                    }
+                )*
+            };
+        }
         flush! {
             ModsPressed, mods_pressed;
             ModsLatched, mods_latched;
             ModsLocked, mods_locked;
             ModsEffective, mods_effective;
+        }
+        flush_rel_group! {
+            GroupPressed, group_pressed;
+            GroupLatched, group_latched;
+        };
+        flush! {
+            GroupLocked, group_locked;
+            GroupEffective, group_effective;
         }
     }
 }
@@ -125,6 +178,7 @@ impl StateEventHandler for LogHandler<'_> {
             }
         }
         if changed {
+            self.any_state_changed = true;
             self.acc_state.mods_pressed |= mods;
         }
     }
@@ -142,6 +196,7 @@ impl StateEventHandler for LogHandler<'_> {
             }
         }
         if changed.0 != 0 {
+            self.any_state_changed = true;
             self.acc_state.mods_pressed &= !changed;
         }
     }
@@ -160,13 +215,14 @@ impl StateEventHandler for LogHandler<'_> {
 
     #[inline]
     fn component_store(&mut self, component: Component, val: u32) {
+        self.any_state_changed = true;
         match component {
             Component::ModsPressed => self.acc_state.mods_pressed.0 = val,
             Component::ModsLatched => self.acc_state.mods_latched.0 = val,
             Component::ModsLocked => self.acc_state.mods_locked.0 = val,
-            Component::GroupPressed => {}
-            Component::GroupLatched => {}
-            Component::GroupLocked => {}
+            Component::GroupPressed => self.acc_state.group_pressed = val,
+            Component::GroupLatched => self.acc_state.group_latched = val,
+            Component::GroupLocked => self.acc_state.group_locked = val,
         }
     }
 
@@ -213,10 +269,12 @@ impl StateMachine {
                 if active.down_log == 1 {
                     if let Some(release) = &active.on_release {
                         let mut handler = LogHandler {
+                            num_groups: self.num_groups,
                             mods_pressed_count: &mut state.mods_pressed_count,
                             acc_state: state.state_log,
                             pub_state: &mut state.state_log,
                             events,
+                            any_state_changed: false,
                         };
                         run(
                             &mut handler,
@@ -269,10 +327,12 @@ impl StateMachine {
             spill,
         };
         let mut handler = LogHandler {
+            num_groups: self.num_groups,
             mods_pressed_count: &mut state.mods_pressed_count,
             acc_state: state.state_log,
             pub_state: &mut state.state_log,
             events,
+            any_state_changed: false,
         };
         if let Some(on_press) = on_press {
             run(
