@@ -10,8 +10,10 @@ xkb_keymap {
             [ d ],
         };
         key <leftshift> {
-            actions[Group1] = [ LatchGroup(group = +1, latchToLock) ],
-            actions[Group2] = [ LatchGroup(group = +1, latchToLock) ],
+            [ LatchGroup(group = +1, latchToLock) ],
+            [ LatchGroup(group = +1, latchToLock) ],
+            [ LatchGroup(group = +1, latchToLock) ],
+            [ LatchGroup(group = +1, latchToLock) ],
         };
     };
 };
