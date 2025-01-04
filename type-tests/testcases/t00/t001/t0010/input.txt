@@ -1,0 +1,3 @@
+both capslock
+both leftalt
+both leftshift
