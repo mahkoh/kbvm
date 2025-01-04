@@ -1,0 +1,14 @@
+both rightshift
+    key_down(rightshift)
+    mods_pressed = 0x00000001
+    mods_locked = 0x00000001
+    mods_effective = 0x00000001
+    key_up(rightshift)
+    mods_pressed = 0x00000000
+both rightshift
+    key_down(rightshift)
+    mods_pressed = 0x00000001
+    key_up(rightshift)
+    mods_pressed = 0x00000000
+    mods_locked = 0x00000000
+    mods_effective = 0x00000000
