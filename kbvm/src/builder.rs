@@ -19,10 +19,19 @@ pub struct Builder {
     keys: HashMap<Keycode, BuilderKey>,
 }
 
+#[derive(Copy, Clone, Default, Debug)]
+pub enum Redirect {
+    #[default]
+    Wrap,
+    Clamp,
+    Fixed(usize),
+}
+
 #[derive(Default, Debug)]
 struct BuilderKey {
     repeats: bool,
     groups: Vec<Option<BuilderGroup>>,
+    redirect: Redirect,
 }
 
 #[derive(Debug)]
@@ -101,6 +110,7 @@ impl Builder {
                     *keycode,
                     state_machine::KeyGroups {
                         groups: groups.into_boxed_slice(),
+                        redirect: key.redirect,
                     },
                 );
             }
@@ -162,6 +172,10 @@ impl Builder {
 impl KeyBuilder<'_> {
     pub fn repeats(&mut self, repeats: bool) {
         self.groups.repeats = repeats;
+    }
+
+    pub fn redirect(&mut self, redirect: Redirect) {
+        self.groups.redirect = redirect;
     }
 
     pub fn add_group(&mut self, group: usize, ty: &GroupType) -> GroupBuilder<'_> {

@@ -1,0 +1,15 @@
+both h
+both e
+down compose
+both h
+both e
+up compose
+both scrolllock
+both h
+both e
+down compose
+both h
+both e
+up compose
+both h
+both e

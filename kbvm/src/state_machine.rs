@@ -3,11 +3,13 @@ mod tests;
 
 use {
     crate::{
+        builder::Redirect,
         group_type::GroupType,
         modifier::{ModifierMask, NUM_MODS, NUM_MODS_MASK},
         routine::{run, Component, Flag, Global, Lo, Register, Routine, StateEventHandler},
     },
     hashbrown::HashMap,
+    isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::CloneWithDelta,
     linearize::StaticMap,
     std::{
@@ -22,9 +24,10 @@ pub struct StateMachine {
     pub(crate) keys: HashMap<Keycode, KeyGroups>,
 }
 
-#[derive(Default, Debug)]
+#[derive(Debug)]
 pub(crate) struct KeyGroups {
     pub(crate) groups: Box<[Option<KeyGroup>]>,
+    pub(crate) redirect: Redirect,
 }
 
 #[derive(Debug)]
@@ -322,15 +325,34 @@ impl StateMachine {
         let mut on_release = None;
         let mut spill = Box::new([]) as Box<[u32]>;
         if let Some(key_groups) = self.keys.get(&key) {
-            if let Some(Some(key_group)) = key_groups.groups.get(group as usize) {
-                let mapping = key_group.ty.map(mods);
-                let layer = mapping.layer;
-                if let Some(key_layer) = key_group.layers.get(layer) {
-                    if let Some(routine) = &key_layer.routine {
-                        on_press = Some(&routine.on_press);
-                        on_release = Some(routine.on_release.clone());
-                        if routine.spill > 0 {
-                            spill = vec![0; routine.spill].into_boxed_slice();
+            if key_groups.groups.is_not_empty() {
+                let mut group = group as usize;
+                if group >= key_groups.groups.len() {
+                    match key_groups.redirect {
+                        Redirect::Wrap => {
+                            group = group % key_groups.groups.len();
+                        }
+                        Redirect::Clamp => {
+                            group = key_groups.groups.len() - 1;
+                        }
+                        Redirect::Fixed(n) => {
+                            group = n;
+                            if n >= key_groups.groups.len() {
+                                group = 0;
+                            }
+                        }
+                    }
+                }
+                if let Some(key_group) = &key_groups.groups[group] {
+                    let mapping = key_group.ty.map(mods);
+                    let layer = mapping.layer;
+                    if let Some(key_layer) = key_group.layers.get(layer) {
+                        if let Some(routine) = &key_layer.routine {
+                            on_press = Some(&routine.on_press);
+                            on_release = Some(routine.on_release.clone());
+                            if routine.spill > 0 {
+                                spill = vec![0; routine.spill].into_boxed_slice();
+                            }
                         }
                     }
                 }

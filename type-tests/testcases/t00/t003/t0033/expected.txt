@@ -1,0 +1,63 @@
+both h
+    key_down(h)
+    sym = h, char = 'h'
+    key_up(h)
+both e
+    key_down(e)
+    sym = e, char = 'e'
+    key_up(e)
+down compose
+    key_down(compose)
+    sym = ISO_Group_Latch
+    group_pressed = 0x1
+    group_effective = 0x1
+both h
+    key_down(h)
+    sym = hebrew_yod, char = 'י'
+    key_up(h)
+both e
+    key_down(e)
+    sym = hebrew_qoph, char = 'ק'
+    key_up(e)
+up compose
+    key_up(compose)
+    group_pressed = 0x0
+    group_effective = 0x0
+both scrolllock
+    key_down(scrolllock)
+    sym = ISO_Next_Group
+    group_locked = 0x1
+    group_effective = 0x1
+    key_up(scrolllock)
+both h
+    key_down(h)
+    sym = hebrew_yod, char = 'י'
+    key_up(h)
+both e
+    key_down(e)
+    sym = hebrew_qoph, char = 'ק'
+    key_up(e)
+down compose
+    key_down(compose)
+    group_pressed = 0x1
+    group_effective = 0x2
+both h
+    key_down(h)
+    sym = Cyrillic_ha, char = 'х'
+    key_up(h)
+both e
+    key_down(e)
+    sym = Cyrillic_ie, char = 'е'
+    key_up(e)
+up compose
+    key_up(compose)
+    group_pressed = 0x0
+    group_effective = 0x1
+both h
+    key_down(h)
+    sym = hebrew_yod, char = 'י'
+    key_up(h)
+both e
+    key_down(e)
+    sym = hebrew_qoph, char = 'ק'
+    key_up(e)
