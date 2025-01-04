@@ -1,0 +1,32 @@
+both h
+    key_down(h)
+    sym = h, char = 'h'
+    key_up(h)
+down leftshift
+    key_down(leftshift)
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+both e
+    key_down(e)
+    sym = E, char = 'E'
+    key_up(e)
+down rightshift
+    key_down(rightshift)
+both l
+    key_down(l)
+    sym = L, char = 'L'
+    key_up(l)
+up rightshift
+    key_up(rightshift)
+both l
+    key_down(l)
+    sym = L, char = 'L'
+    key_up(l)
+up leftshift
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+both o
+    key_down(o)
+    sym = o, char = 'o'
+    key_up(o)
