@@ -45,6 +45,7 @@ pub struct State {
     mods_pressed_count: [u32; NUM_MODS],
     state_log: StateLog,
     actuation: u64,
+    press: u64,
 }
 
 #[derive(Copy, Clone, Default)]
@@ -262,6 +263,9 @@ impl StateMachine {
     ) {
         self.handle_key_(state, events, key, down);
         state.actuation += 1;
+        if down {
+            state.press = state.actuation;
+        }
     }
 
     pub fn handle_key_(
@@ -282,6 +286,8 @@ impl StateMachine {
                     if let Some(release) = &active.on_release {
                         active.flags[Flag::LaterKeyActuated] =
                             (active.actuation < state.actuation) as u32;
+                        active.flags[Flag::LaterKeyPressed] =
+                            (active.actuation < state.press) as u32;
                         let mut handler = LogHandler {
                             num_groups: self.num_groups,
                             mods_pressed_count: &mut state.mods_pressed_count,

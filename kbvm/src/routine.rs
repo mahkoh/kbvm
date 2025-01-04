@@ -134,6 +134,7 @@ pub(crate) enum UnOp {
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
 pub enum Flag {
     LaterKeyActuated,
+    LaterKeyPressed,
 }
 
 impl Debug for Flag {
@@ -1001,6 +1002,10 @@ impl RoutineBuilder {
 
     pub fn later_key_actuated_load(&mut self, rd: Var) -> &mut Self {
         self.flag_load(rd, Flag::LaterKeyActuated)
+    }
+
+    pub fn later_key_pressed_load(&mut self, rd: Var) -> &mut Self {
+        self.flag_load(rd, Flag::LaterKeyPressed)
     }
 
     pub fn key_down(&mut self, rs: Var) -> &mut Self {
