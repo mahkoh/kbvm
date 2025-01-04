@@ -1,0 +1,10 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <h> { [ h, H ] };
+        key <capslock> { [ LockMods(mods = Lock) ] };
+    };
+};
+
