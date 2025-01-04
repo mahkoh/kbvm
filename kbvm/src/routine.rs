@@ -999,7 +999,7 @@ impl RoutineBuilder {
         self
     }
 
-    pub fn later_key_activated_load(&mut self, rd: Var) -> &mut Self {
+    pub fn later_key_actuated_load(&mut self, rd: Var) -> &mut Self {
         self.flag_load(rd, Flag::LaterKeyActuated)
     }
 

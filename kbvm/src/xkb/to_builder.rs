@@ -89,7 +89,7 @@ fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
                 let locked_mods = builder.allocate_var();
                 let later_keys_activated = builder.allocate_var();
                 builder
-                    .later_key_activated_load(later_keys_activated)
+                    .later_key_actuated_load(later_keys_activated)
                     .prepare_conditional_skip(later_keys_activated, false, &mut anchor)
                     .locked_mods_load(locked_mods)
                     .bit_nand(locked_mods, locked_mods, action_mods)
@@ -109,7 +109,7 @@ fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
             let locked_mods = builder.allocate_var();
             let later_keys_activated = builder.allocate_var();
             builder
-                .later_key_activated_load(later_keys_activated)
+                .later_key_actuated_load(later_keys_activated)
                 .prepare_conditional_skip(later_keys_activated, false, &mut anchor)
                 .locked_mods_load(locked_mods);
             if ml.clear_locks {
@@ -191,7 +191,7 @@ fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
                 let other_key_actuated = builder.allocate_var();
                 let group_one = builder.allocate_var();
                 builder
-                    .later_key_activated_load(other_key_actuated)
+                    .later_key_actuated_load(other_key_actuated)
                     .prepare_conditional_skip(other_key_actuated, false, &mut anchor)
                     .load_lit(group_one, 0)
                     .locked_group_store(group_one)
@@ -228,7 +228,7 @@ fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
             let mut latch_to_lock_anchor = SkipAnchor::default();
             let other_key_actuated = builder.allocate_var();
             builder
-                .later_key_activated_load(other_key_actuated)
+                .later_key_actuated_load(other_key_actuated)
                 .prepare_conditional_skip(
                     other_key_actuated,
                     false,

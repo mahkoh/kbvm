@@ -1,0 +1,32 @@
+key_down(capslock)
+mods_pressed = 0x00000001
+mods_locked = 0x00000001
+mods_effective = 0x00000001
+key_up(capslock)
+mods_pressed = 0x00000000
+key_down(leftshift)
+mods_pressed = 0x00000001
+key_up(leftshift)
+mods_pressed = 0x00000000
+mods_locked = 0x00000000
+mods_effective = 0x00000000
+key_down(capslock)
+mods_pressed = 0x00000001
+mods_locked = 0x00000001
+mods_effective = 0x00000001
+key_up(capslock)
+mods_pressed = 0x00000000
+key_down(leftshift)
+mods_pressed = 0x00000001
+key_down(i)
+sym = I, char = 'I'
+key_up(i)
+key_up(leftshift)
+mods_pressed = 0x00000000
+key_down(i)
+sym = I, char = 'I'
+key_down(leftshift)
+mods_pressed = 0x00000001
+key_up(i)
+key_up(leftshift)
+mods_pressed = 0x00000000

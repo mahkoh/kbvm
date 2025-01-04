@@ -20,7 +20,6 @@ use {
 pub struct StateMachine {
     pub(crate) num_groups: u32,
     pub(crate) keys: HashMap<Keycode, KeyGroups>,
-    // pub(crate) keys: Vec<KeyGroups>,
 }
 
 #[derive(Default, Debug)]
@@ -45,6 +44,7 @@ pub struct State {
     active: Vec<ActiveKey>,
     mods_pressed_count: [u32; NUM_MODS],
     state_log: StateLog,
+    actuation: u64,
 }
 
 #[derive(Copy, Clone, Default)]
@@ -243,6 +243,7 @@ impl StateEventHandler for LogHandler<'_> {
 pub struct Keycode(pub u32);
 
 struct ActiveKey {
+    actuation: u64,
     key: Keycode,
     down_log: u32,
     registers_log: StaticMap<Register, u32>,
@@ -259,6 +260,17 @@ impl StateMachine {
         key: Keycode,
         down: bool,
     ) {
+        self.handle_key_(state, events, key, down);
+        state.actuation += 1;
+    }
+
+    pub fn handle_key_(
+        &self,
+        state: &mut State,
+        events: &mut Vec<LogicalEvent>,
+        key: Keycode,
+        down: bool,
+    ) {
         for i in 0..state.active.len() {
             let active = &mut state.active[i];
             if active.key == key {
@@ -268,6 +280,8 @@ impl StateMachine {
                 }
                 if active.down_log == 1 {
                     if let Some(release) = &active.on_release {
+                        active.flags[Flag::LaterKeyActuated] =
+                            (active.actuation < state.actuation) as u32;
                         let mut handler = LogHandler {
                             num_groups: self.num_groups,
                             mods_pressed_count: &mut state.mods_pressed_count,
@@ -319,6 +333,7 @@ impl StateMachine {
             }
         }
         let mut active = ActiveKey {
+            actuation: state.actuation + 1,
             key,
             down_log: 1,
             registers_log: Default::default(),
