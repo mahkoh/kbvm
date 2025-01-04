@@ -332,6 +332,8 @@ impl LookupTable {
             repeats = key.repeats;
             if let Some(Some(group)) = key.groups.get(group as usize) {
                 let mapping = group.ty.map(mods);
+                // println!("{:?}", group.ty);
+                // println!("{:?}", mapping);
                 if let Some(layer) = group.layers.get(mapping.layer) {
                     consumed = mapping.consumed;
                     groups = &key.groups;

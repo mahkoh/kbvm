@@ -22,6 +22,7 @@ impl Keymap {
         builder.set_caps(Some(ModifierIndex::LOCK));
         let mut types = HashMap::new();
         for ty in &self.types {
+            // println!("{:?}", ty);
             let mut builder = GroupType::builder(ty.modifiers);
             for mapping in &ty.mappings {
                 builder.map_preserve(
@@ -29,6 +30,7 @@ impl Keymap {
                     mapping.preserved,
                     mapping.level.to_offset(),
                 );
+                // break;
             }
             types.insert(&**ty as *const KeyType, builder.build());
         }

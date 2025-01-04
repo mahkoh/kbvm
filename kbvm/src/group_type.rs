@@ -18,6 +18,7 @@ struct Case {
     consumed: ModifierMask,
 }
 
+#[derive(Debug)]
 pub(crate) struct KeyTypeMapping {
     pub(crate) layer: usize,
     pub(crate) consumed: ModifierMask,
@@ -44,7 +45,7 @@ impl GroupType {
         }
         KeyTypeMapping {
             layer: 0,
-            consumed: ModifierMask(0),
+            consumed: mods,
         }
     }
 }

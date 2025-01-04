@@ -34,7 +34,7 @@ use {
     thiserror::Error,
 };
 
-// const SINGLE: Option<&str> = Some("t0358");
+// const SINGLE: Option<&str> = Some("t0004");
 const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
 const WRITE_FAILED: bool = false;
@@ -231,6 +231,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
         )
         .unwrap();
         let lookup = lookup_table.lookup(group, mods, kc);
+        // println!("{:?}", lookup.into_iter());
         if lookup.repeats() {
             *repeating_key = Some(kc);
         }
