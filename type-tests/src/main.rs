@@ -235,7 +235,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
                        is_repeat: bool| {
         writeln!(
             actual,
-            "key_{}({})",
+            "    key_{}({})",
             if is_repeat { "repeat" } else { "down" },
             key_name(kc),
         )
@@ -246,7 +246,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
             *repeating_key = Some(kc);
         }
         for p in lookup {
-            write!(actual, "sym = {:?}", p.keysym()).unwrap();
+            write!(actual, "    sym = {:?}", p.keysym()).unwrap();
             if let Some(char) = p.char() {
                 write!(actual, ", char = {:?}", char).unwrap();
             }
@@ -262,6 +262,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
         if line.is_empty() {
             continue;
         }
+        writeln!(actual, "{}", line).unwrap();
         let mut arg = "";
         let command = match line.split_once(' ') {
             Some((c, a)) => {
@@ -301,17 +302,17 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
         for event in events.drain(..) {
             match event {
                 LogicalEvent::ModsPressed(m) => {
-                    writeln!(actual, "mods_pressed = {m:?}").unwrap();
+                    writeln!(actual, "    mods_pressed = {m:?}").unwrap();
                 }
                 LogicalEvent::ModsLatched(m) => {
-                    writeln!(actual, "mods_latched = {m:?}").unwrap();
+                    writeln!(actual, "    mods_latched = {m:?}").unwrap();
                 }
                 LogicalEvent::ModsLocked(m) => {
-                    writeln!(actual, "mods_locked = {m:?}").unwrap();
+                    writeln!(actual, "    mods_locked = {m:?}").unwrap();
                 }
                 LogicalEvent::ModsEffective(m) => {
                     mods = m;
-                    writeln!(actual, "mods_effective = {m:?}").unwrap();
+                    writeln!(actual, "    mods_effective = {m:?}").unwrap();
                 }
                 LogicalEvent::KeyDown(kc) => {
                     handle_down(&mut actual, kc, &mut repeating_key, group, mods, false)?;
@@ -320,20 +321,20 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
                     if repeating_key == Some(kc) {
                         repeating_key = None;
                     }
-                    writeln!(actual, "key_up({})", key_name(kc)).unwrap();
+                    writeln!(actual, "    key_up({})", key_name(kc)).unwrap();
                 }
                 LogicalEvent::GroupPressed(g) => {
-                    writeln!(actual, "group_pressed = 0x{g:x}").unwrap();
+                    writeln!(actual, "    group_pressed = 0x{g:x}").unwrap();
                 }
                 LogicalEvent::GroupLatched(g) => {
-                    writeln!(actual, "group_latched = 0x{g:x}").unwrap();
+                    writeln!(actual, "    group_latched = 0x{g:x}").unwrap();
                 }
                 LogicalEvent::GroupLocked(g) => {
-                    writeln!(actual, "group_locked = 0x{g:x}").unwrap();
+                    writeln!(actual, "    group_locked = 0x{g:x}").unwrap();
                 }
                 LogicalEvent::GroupEffective(g) => {
                     group = g;
-                    writeln!(actual, "group_effective = 0x{g:x}").unwrap();
+                    writeln!(actual, "    group_effective = 0x{g:x}").unwrap();
                 }
             };
         }

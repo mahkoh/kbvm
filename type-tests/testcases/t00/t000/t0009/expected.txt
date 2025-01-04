@@ -1,16 +1,19 @@
-key_down(rightshift)
-mods_pressed = 0x00000008
-mods_locked = 0x00000008
-mods_effective = 0x00000008
-key_up(rightshift)
-mods_pressed = 0x00000000
-key_down(leftalt)
-mods_pressed = 0x00000008
-key_up(leftalt)
-mods_pressed = 0x00000000
-key_down(leftshift)
-mods_pressed = 0x00000008
-key_up(leftshift)
-mods_pressed = 0x00000000
-mods_locked = 0x00000000
-mods_effective = 0x00000000
+both rightshift
+    key_down(rightshift)
+    mods_pressed = 0x00000008
+    mods_locked = 0x00000008
+    mods_effective = 0x00000008
+    key_up(rightshift)
+    mods_pressed = 0x00000000
+both leftalt
+    key_down(leftalt)
+    mods_pressed = 0x00000008
+    key_up(leftalt)
+    mods_pressed = 0x00000000
+both leftshift
+    key_down(leftshift)
+    mods_pressed = 0x00000008
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_locked = 0x00000000
+    mods_effective = 0x00000000

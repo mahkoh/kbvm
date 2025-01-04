@@ -1,11 +1,14 @@
-key_down(capslock)
-mods_pressed = 0x00000002
-mods_locked = 0x00000002
-mods_effective = 0x00000002
-key_up(capslock)
-mods_pressed = 0x00000000
-key_down(leftshift)
-mods_pressed = 0x00000001
-mods_effective = 0x00000003
-key_down(i)
-sym = i, char = 'i'
+both capslock
+    key_down(capslock)
+    mods_pressed = 0x00000002
+    mods_locked = 0x00000002
+    mods_effective = 0x00000002
+    key_up(capslock)
+    mods_pressed = 0x00000000
+down leftshift
+    key_down(leftshift)
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000003
+down i
+    key_down(i)
+    sym = i, char = 'i'
