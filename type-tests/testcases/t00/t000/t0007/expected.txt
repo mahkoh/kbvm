@@ -1,0 +1,8 @@
+key_down(capslock)
+mods_pressed = 0x00000002
+mods_locked = 0x00000002
+mods_effective = 0x00000002
+key_up(capslock)
+mods_pressed = 0x00000000
+key_down(i)
+sym = i, char = 'i'
