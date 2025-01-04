@@ -1,0 +1,7 @@
+both leftshift
+    key_down(leftshift)
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
