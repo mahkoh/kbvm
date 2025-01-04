@@ -1,0 +1,20 @@
+both h
+    key_down(h)
+    sym = h, char = 'h'
+    key_up(h)
+both e
+    key_down(e)
+    sym = e, char = 'e'
+    key_up(e)
+both l
+    key_down(l)
+    sym = l, char = 'l'
+    key_up(l)
+both l
+    key_down(l)
+    sym = l, char = 'l'
+    key_up(l)
+both o
+    key_down(o)
+    sym = o, char = 'o'
+    key_up(o)
