@@ -1,0 +1,8 @@
+down leftshift
+both a
+up leftshift
+down a
+down leftshift
+repeat
+up leftshift
+up a
