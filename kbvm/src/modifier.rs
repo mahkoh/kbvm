@@ -16,6 +16,7 @@ pub struct ModifierIndex(u32);
 pub struct ModifierMaskIter(u32);
 
 impl ModifierIndex {
+    pub(crate) const SHIFT: Self = Self::new(0).unwrap();
     pub(crate) const LOCK: Self = Self::new(1).unwrap();
     pub(crate) const CONTROL: Self = Self::new(2).unwrap();
 

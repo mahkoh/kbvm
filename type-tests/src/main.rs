@@ -231,7 +231,6 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
         )
         .unwrap();
         let lookup = lookup_table.lookup(group, mods, kc);
-        println!("{:?}", lookup);
         if lookup.repeats() {
             *repeating_key = Some(kc);
         }
