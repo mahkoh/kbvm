@@ -1,0 +1,35 @@
+down h
+    key_down(h)
+    sym = h, char = 'h'
+repeat
+    key_repeat(h)
+    sym = h, char = 'h'
+repeat
+    key_repeat(h)
+    sym = h, char = 'h'
+down leftshift
+    key_down(leftshift)
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+repeat
+    key_repeat(h)
+    sym = H, char = 'H'
+repeat
+    key_repeat(h)
+    sym = H, char = 'H'
+up leftshift
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+repeat
+    key_repeat(h)
+    sym = h, char = 'h'
+repeat
+    key_repeat(h)
+    sym = h, char = 'h'
+up h
+    key_up(h)
+both h
+    key_down(h)
+    sym = h, char = 'h'
+    key_up(h)
