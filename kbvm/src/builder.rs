@@ -29,23 +29,27 @@ pub enum Redirect {
 
 impl Redirect {
     #[inline]
-    pub(crate) fn apply(self, group: u32, len: usize) -> usize {
-        let mut n = group as usize;
-        if n >= len {
-            n = match self {
-                Redirect::Wrap => n % len,
-                Redirect::Clamp => len - 1,
-                Redirect::Fixed(f) => {
-                    n = f;
-                    if n >= len {
-                        0
-                    } else {
-                        n
-                    }
-                }
+    pub(crate) fn constrain(mut self, len: usize) -> Self {
+        if let Redirect::Fixed(n) = &mut self {
+            if *n >= len {
+                *n = 0;
             }
         }
-        n
+        self
+    }
+
+    #[inline]
+    pub(crate) fn apply(self, group: u32, len: usize) -> usize {
+        let n = group as usize;
+        if n >= len {
+            match self {
+                Redirect::Wrap => n % len,
+                Redirect::Clamp => len - 1,
+                Redirect::Fixed(f) => f,
+            }
+        } else {
+            n
+        }
     }
 }
 
@@ -131,8 +135,8 @@ impl Builder {
                 map.insert(
                     *keycode,
                     state_machine::KeyGroups {
+                        redirect: key.redirect.constrain(groups.len()),
                         groups: groups.into_boxed_slice(),
-                        redirect: key.redirect,
                     },
                 );
             }
@@ -178,7 +182,7 @@ impl Builder {
                     *keycode,
                     lookup::KeyGroups {
                         repeats: key.repeats,
-                        redirect: key.redirect,
+                        redirect: key.redirect.constrain(groups.len()),
                         groups: groups.into_boxed_slice(),
                     },
                 );
