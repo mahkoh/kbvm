@@ -286,8 +286,6 @@ impl StateMachine {
                     if let Some(release) = &active.on_release {
                         active.flags[Flag::LaterKeyActuated] =
                             (active.actuation < state.actuation) as u32;
-                        active.flags[Flag::LaterKeyPressed] =
-                            (active.actuation < state.press) as u32;
                         let mut handler = LogHandler {
                             num_groups: self.num_groups,
                             mods_pressed_count: &mut state.mods_pressed_count,
