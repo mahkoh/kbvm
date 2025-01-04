@@ -2,7 +2,8 @@
 use crate::builder::Builder;
 use {
     crate::{
-        group_type::GroupType, keysym::Keysym, modifier::ModifierMask, state_machine::Keycode,
+        builder::Redirect, group_type::GroupType, keysym::Keysym, modifier::ModifierMask,
+        state_machine::Keycode,
     },
     hashbrown::HashMap,
     smallvec::SmallVec,
@@ -197,6 +198,7 @@ pub struct LookupTable {
 #[derive(Default, Clone, Debug)]
 pub(crate) struct KeyGroups {
     pub(crate) repeats: bool,
+    pub(crate) redirect: Redirect,
     pub(crate) groups: Box<[Option<KeyGroup>]>,
 }
 
@@ -330,14 +332,17 @@ impl LookupTable {
         let mut repeats = true;
         if let Some(key) = self.keys.get(&keycode) {
             repeats = key.repeats;
-            if let Some(Some(group)) = key.groups.get(group as usize) {
-                let mapping = group.ty.map(mods);
-                // println!("{:?}", group.ty);
-                // println!("{:?}", mapping);
-                if let Some(layer) = group.layers.get(mapping.layer) {
-                    consumed = mapping.consumed;
-                    groups = &key.groups;
-                    syms = &layer.symbols;
+            if key.groups.len() > 0 {
+                let group = key.redirect.apply(group, key.groups.len());
+                if let Some(group) = &key.groups[group] {
+                    let mapping = group.ty.map(mods);
+                    // println!("{:?}", group.ty);
+                    // println!("{:?}", mapping);
+                    if let Some(layer) = group.layers.get(mapping.layer) {
+                        consumed = mapping.consumed;
+                        groups = &key.groups;
+                        syms = &layer.symbols;
+                    }
                 }
             }
         }

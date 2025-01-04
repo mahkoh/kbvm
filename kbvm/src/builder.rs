@@ -27,6 +27,28 @@ pub enum Redirect {
     Fixed(usize),
 }
 
+impl Redirect {
+    #[inline]
+    pub(crate) fn apply(self, group: u32, len: usize) -> usize {
+        let mut n = group as usize;
+        if n >= len {
+            n = match self {
+                Redirect::Wrap => n % len,
+                Redirect::Clamp => len - 1,
+                Redirect::Fixed(f) => {
+                    n = f;
+                    if n >= len {
+                        0
+                    } else {
+                        n
+                    }
+                }
+            }
+        }
+        n
+    }
+}
+
 #[derive(Default, Debug)]
 struct BuilderKey {
     repeats: bool,
@@ -156,6 +178,7 @@ impl Builder {
                     *keycode,
                     lookup::KeyGroups {
                         repeats: key.repeats,
+                        redirect: key.redirect,
                         groups: groups.into_boxed_slice(),
                     },
                 );

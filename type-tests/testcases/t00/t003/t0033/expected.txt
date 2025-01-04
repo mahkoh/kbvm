@@ -39,6 +39,7 @@ both e
     key_up(e)
 down compose
     key_down(compose)
+    sym = ISO_Group_Latch
     group_pressed = 0x1
     group_effective = 0x2
 both h

@@ -326,23 +326,7 @@ impl StateMachine {
         let mut spill = Box::new([]) as Box<[u32]>;
         if let Some(key_groups) = self.keys.get(&key) {
             if key_groups.groups.is_not_empty() {
-                let mut group = group as usize;
-                if group >= key_groups.groups.len() {
-                    match key_groups.redirect {
-                        Redirect::Wrap => {
-                            group = group % key_groups.groups.len();
-                        }
-                        Redirect::Clamp => {
-                            group = key_groups.groups.len() - 1;
-                        }
-                        Redirect::Fixed(n) => {
-                            group = n;
-                            if n >= key_groups.groups.len() {
-                                group = 0;
-                            }
-                        }
-                    }
-                }
+                let group = key_groups.redirect.apply(group, key_groups.groups.len());
                 if let Some(key_group) = &key_groups.groups[group] {
                     let mapping = key_group.ty.map(mods);
                     let layer = mapping.layer;
