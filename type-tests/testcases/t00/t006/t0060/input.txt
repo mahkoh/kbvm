@@ -1,0 +1,23 @@
+both h
+both compose
+down leftalt
+both h
+up leftalt
+both h
+both compose
+down leftalt
+# should wrap back to first group
+both h
+up leftalt
+both h
+both compose
+both h
+# two SetGroup(+1+'s should add up
+down rightalt
+both h
+down leftalt
+both h
+up leftalt
+both h
+up rightalt
+both h
