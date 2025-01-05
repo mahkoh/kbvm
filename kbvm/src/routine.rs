@@ -1171,6 +1171,7 @@ struct RegisterAllocator {
     registers: StaticMap<Register, Option<(Var, usize, usize)>>,
     spill: Vec<bool>,
     variable_uses: HashMap<Var, SmallVec<[usize; 2]>>,
+    prefix: VecDeque<Lo>,
     out: VecDeque<Lo>,
     variable_locations: HashMap<Var, VariableLocation>,
     block_offsets: Vec<usize>,
@@ -1191,6 +1192,7 @@ impl RegisterAllocator {
                 }
             }
         }
+        assert!(furthest_point < usize::MAX);
         let r = furthest_register;
         let var = self.registers[r].unwrap().0;
         let spill = self.spill.iter().position(|v| !*v).unwrap_or_else(|| {
@@ -1204,14 +1206,18 @@ impl RegisterAllocator {
         r
     }
 
-    fn get_var_register(&mut self, idx: usize, var: &Var) -> Register {
+    fn get_var_register(&mut self, idx: usize, var: &Var, read: bool) -> Register {
         let next_location = self.variable_locations.get(var).copied();
         let r = match next_location {
             Some(VariableLocation::Register(rs)) => rs,
             Some(VariableLocation::Spilled(pos)) => {
                 let r = self.allocate_register(idx);
                 self.spill[pos] = false;
-                self.out.push_front(Lo::SpillStore { rs: r, pos });
+                if read {
+                    self.prefix.push_front(Lo::SpillStore { rs: r, pos });
+                } else {
+                    self.out.push_front(Lo::SpillStore { rs: r, pos });
+                }
                 r
             }
             None => self.allocate_register(idx),
@@ -1230,6 +1236,14 @@ impl RegisterAllocator {
             }
         };
         r
+    }
+
+    fn get_read_register(&mut self, idx: usize, var: &Var) -> Register {
+        self.get_var_register(idx, var, true)
+    }
+
+    fn get_write_register(&mut self, idx: usize, var: &Var) -> Register {
+        self.get_var_register(idx, var, false)
     }
 
     fn find_variable_uses(&mut self, block: &[Hi]) {
@@ -1466,26 +1480,26 @@ impl RegisterAllocator {
                     let prev_len = self.out.len();
                     self.translate_skip(to, args);
                     if prev_len < self.out.len() {
-                        let rs = self.get_var_register(idx, rs);
+                        let rs = self.get_read_register(idx, rs);
                         self.encode_skip_if(rs, !*not, self.out.len() - prev_len);
                     }
                 }
                 Hi::RegLit { rd, lit } => {
-                    let rd = self.get_var_register(idx, rd);
+                    let rd = self.get_write_register(idx, rd);
                     self.out.push_front(Lo::RegLit { rd, lit: *lit });
                 }
                 Hi::GlobalLoad { rd, g } => {
-                    let rd = self.get_var_register(idx, rd);
+                    let rd = self.get_write_register(idx, rd);
                     self.out.push_front(Lo::GlobalLoad { rd, g: *g });
                 }
                 Hi::GlobalStore { rs, g } => {
-                    let rs = self.get_var_register(idx, rs);
+                    let rs = self.get_read_register(idx, rs);
                     self.out.push_front(Lo::GlobalStore { rs, g: *g });
                 }
                 Hi::BinOp { rd, rl, rr, op } => {
-                    let rd = self.get_var_register(idx, rd);
-                    let rl = self.get_var_register(idx, rl);
-                    let rr = self.get_var_register(idx, rr);
+                    let rd = self.get_write_register(idx, rd);
+                    let rl = self.get_read_register(idx, rl);
+                    let rr = self.get_read_register(idx, rr);
                     self.out.push_front(Lo::BinOp {
                         rd,
                         rl,
@@ -1494,51 +1508,55 @@ impl RegisterAllocator {
                     });
                 }
                 Hi::UnOp { rd, rs, op } => {
-                    let rd = self.get_var_register(idx, rd);
-                    let rs = self.get_var_register(idx, rs);
+                    let rd = self.get_write_register(idx, rd);
+                    let rs = self.get_read_register(idx, rs);
                     if rd != rs || *op != UnOp::Move {
                         self.out.push_front(Lo::UnOp { rd, rs, op: *op });
                     }
                 }
                 Hi::PressedModsInc { rs } => {
-                    let rs = self.get_var_register(idx, rs);
+                    let rs = self.get_read_register(idx, rs);
                     self.out.push_front(Lo::PressedModsInc { rs });
                 }
                 Hi::PressedModsDec { rs } => {
-                    let rs = self.get_var_register(idx, rs);
+                    let rs = self.get_read_register(idx, rs);
                     self.out.push_front(Lo::PressedModsDec { rs });
                 }
                 Hi::ComponentLoad { rd, component } => {
-                    let rd = self.get_var_register(idx, rd);
+                    let rd = self.get_write_register(idx, rd);
                     self.out.push_front(Lo::ComponentLoad {
                         rd,
                         component: *component,
                     });
                 }
                 Hi::ComponentStore { rs, component } => {
-                    let rs = self.get_var_register(idx, rs);
+                    let rs = self.get_read_register(idx, rs);
                     self.out.push_front(Lo::ComponentStore {
                         rs,
                         component: *component,
                     });
                 }
                 Hi::FlagLoad { rd, flag } => {
-                    let rd = self.get_var_register(idx, rd);
+                    let rd = self.get_write_register(idx, rd);
                     self.out.push_front(Lo::FlagLoad { rd, flag: *flag });
                 }
                 Hi::KeyDown { rs } => {
-                    let rs = self.get_var_register(idx, rs);
+                    let rs = self.get_read_register(idx, rs);
                     self.out.push_front(Lo::KeyDown { rs });
                 }
                 Hi::KeyUp { rs } => {
-                    let rs = self.get_var_register(idx, rs);
+                    let rs = self.get_read_register(idx, rs);
                     self.out.push_front(Lo::KeyUp { rs });
                 }
+            }
+            while let Some(op) = self.prefix.pop_back() {
+                self.out.push_front(op);
             }
         }
     }
 
     fn allocate_registers(&mut self, blocks: &[Vec<Hi>], init: &[Var]) {
+        // println!("{:#?}", blocks);
         self.block_offsets = vec![0; blocks.len()];
         for (idx, block) in blocks.iter().enumerate().rev() {
             self.registers.clear();
@@ -1550,7 +1568,7 @@ impl RegisterAllocator {
         }
         for init in init {
             self.variable_uses.entry(*init).or_default().push(0);
-            let rd = self.get_var_register(0, init);
+            let rd = self.get_write_register(0, init);
             self.out.push_front(Lo::RegLit { rd, lit: 0 });
         }
     }

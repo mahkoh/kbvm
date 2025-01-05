@@ -366,7 +366,7 @@ impl StateMachine {
                 &mut active.registers_log,
                 &mut state.globals,
                 &mut active.flags,
-                &mut [],
+                &mut active.spill,
             );
         } else {
             handler.key_down(key);
