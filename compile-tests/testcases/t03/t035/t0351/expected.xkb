@@ -68,7 +68,6 @@ xkb_keymap {
             level_name[Level1] = "Base";
             level_name[Level2] = "Number";
             map[None] = Level1;
-            map[Shift] = Level1;
         };
 
         type "ONE_LEVEL" {

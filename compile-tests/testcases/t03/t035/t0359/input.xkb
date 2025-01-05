@@ -1,0 +1,20 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+    };
+    xkb_types {
+        virtual_modifiers NumLock;
+
+        type "X" {
+            modifiers = Shift + NumLock;
+            map[NumLock] = Level2;
+            map[Shift] = Level2;
+        };
+    };
+    xkb_symbols {
+        key <a> { [ KP_1, KP_Home ] };
+        key.type = "X";
+        key <b> { [ KP_1, KP_Home ] };
+    };
+};

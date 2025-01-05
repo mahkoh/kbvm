@@ -545,18 +545,20 @@ fn create_used_default_key_types_(
     types: &mut Vec<Arc<KeyType>>,
 ) {
     macro_rules! vmod {
-        ($name:expr) => {
-            mods.iter()
+        ($name:expr) => {{
+            let m = mods
+                .iter()
                 .find(|m| *m.name == $name)
                 .map(|m| m.values)
-                .unwrap_or_default()
-        };
+                .unwrap_or_default();
+            (m.0 != 0).then_some(m)
+        }};
     }
     macro_rules! ty {
         ($name:ident {
-            modifiers = $($modifier:ident)|+ $(+ $other:expr)?,
+            modifiers = $($modifier:ident)|+ $(+ $($other:ident)|*)?,
             $(
-                map[$($map_modifier:ident)|+ $(+ $map_other:expr)?] = $map_level:literal preserve $($keep_modifier:ident)|*,
+                map[$($map_modifier:ident)|+ $(+ $($map_other:ident)|*)?] = $map_level:literal preserve $($keep_modifier:ident)|*,
             )*
             $(
                 name[$name_level:expr] = $level_name:expr,
@@ -565,15 +567,27 @@ fn create_used_default_key_types_(
             let mut used = HashSet::new();
             let mut mappings = vec![];
             $(
-                let modifiers = $(ModifierMask::$map_modifier)|* $(| $map_other)?;
-                if used.insert(modifiers) {
-                    mappings.push(
-                        KeyTypeMapping {
-                            modifiers,
-                            preserved: $(ModifierMask::$keep_modifier)|*,
-                            level: Level::new($map_level).unwrap(),
-                        },
-                    )
+                #[allow(unused_labels)]
+                'add_mapping: {
+                    #[allow(unused_mut, unused_assignments)]
+                    let mut other = ModifierMask::NONE;
+                    $(
+                        if let ($(Some($map_other),)*) = ($($map_other,)*) {
+                            other = $($map_other)|*;
+                        } else {
+                            break 'add_mapping;
+                        }
+                    )?
+                    let modifiers = $(ModifierMask::$map_modifier)|* | other;
+                    if used.insert(modifiers) {
+                        mappings.push(
+                            KeyTypeMapping {
+                                modifiers,
+                                preserved: $(ModifierMask::$keep_modifier)|*,
+                                level: Level::new($map_level).unwrap(),
+                            },
+                        )
+                    }
                 }
             )*
             mappings.shrink_to_fit();
@@ -586,7 +600,7 @@ fn create_used_default_key_types_(
             level_names.sort_unstable_by_key(|l| l.0);
             Arc::new(KeyType {
                 name: Arc::new(BuiltInKeytype::$name.name().to_string()),
-                modifiers: $(ModifierMask::$modifier)|* $(| $other)?,
+                modifiers: $(ModifierMask::$modifier)|* $(| $($other.unwrap_or_default())|+)?,
                 mappings,
                 level_names,
             })

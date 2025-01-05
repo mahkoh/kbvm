@@ -55,16 +55,26 @@ impl Vmodmap {
     }
 
     pub(crate) fn get_effective(&self, mask: ModifierMask) -> ModifierMask {
+        self.try_get_effective(mask).unwrap_or_else(|v| v)
+    }
+
+    pub(crate) fn try_get_effective(
+        &self,
+        mask: ModifierMask,
+    ) -> Result<ModifierMask, ModifierMask> {
+        let mut ok = true;
         let mut res = mask;
         res.0 &= 0xff;
         for m in &self.mods {
-            if let Some(def) = m.def {
-                if mask.contains(m.idx.to_mask()) {
-                    res |= def.val;
+            if mask.contains(m.idx.to_mask()) {
+                let def = m.def.map(|d| d.val).unwrap_or_default();
+                res |= def;
+                if def == ModifierMask::NONE {
+                    ok = false;
                 }
             }
         }
-        res
+        ok.then_some(res).ok_or(res)
     }
 }
 
