@@ -1,0 +1,13 @@
+down leftalt
+    key_down(leftalt)
+    mods_pressed = 0x00000008
+    mods_effective = 0x00000008
+both leftshift
+    key_down(leftshift)
+    group_locked = 0x1
+    group_effective = 0x1
+    key_up(leftshift)
+up leftalt
+    key_up(leftalt)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000

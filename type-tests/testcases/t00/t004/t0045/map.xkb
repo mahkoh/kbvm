@@ -1,0 +1,14 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <h> { [ h ], [ hebrew_yod ], [ Cyrillic_ha ], [ s ] };
+        key <e> { [ e ], [ hebrew_qoph ], [ Cyrillic_ie ], [ l ] };
+        key <k> { [ k ], [ hebrew_lamed ], [ Cyrillic_ka ], [ r ] };
+        key <f> { [ f ], [ hebrew_kaph ], [ Cyrillic_ef ], [ e ] };
+        key <o> { [ o ], [ hebrew_finalmem ], [ Cyrillic_o ], [ f ] };
+        key <compose> { [ LockGroup(group = +1) ] };
+    };
+};
+
