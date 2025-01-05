@@ -1,0 +1,167 @@
+# level 5
+down rightalt
+    key_down(rightalt)
+    sym = ISO_Level5_Shift
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000020
+both 5
+    key_down(5)
+    sym = periodcentered, char = '·'
+    key_up(5)
+both e
+    key_down(e)
+    sym = Up
+    key_up(e)
+both space
+    key_down(space)
+    sym = KP_0, char = '0'
+    key_up(space)
+both kp8
+    key_down(kp8)
+    sym = KP_Up
+    key_up(kp8)
+both esc
+    key_down(esc)
+    sym = Escape, char = '\u{1b}'
+    key_up(esc)
+up rightalt
+    key_up(rightalt)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+
+# level 6
+down rightalt
+    key_down(rightalt)
+    sym = ISO_Level5_Shift
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000020
+down rightshift
+    key_down(rightshift)
+    sym = Shift_R
+    mods_pressed = 0x00000021
+    mods_effective = 0x00000021
+both 5
+    key_down(5)
+    key_up(5)
+both 8
+    key_down(8)
+    sym = ISO_Left_Tab
+    key_up(8)
+both e
+    key_down(e)
+    sym = Up
+    key_up(e)
+both space
+    key_down(space)
+    sym = KP_0, char = '0'
+    key_up(space)
+both kp8
+    key_down(kp8)
+    sym = KP_Up
+    key_up(kp8)
+both esc
+    key_down(esc)
+    sym = Escape, char = '\u{1b}'
+    key_up(esc)
+up rightshift
+    key_up(rightshift)
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000020
+up rightalt
+    key_up(rightalt)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+
+# level 7
+down rightalt
+    key_down(rightalt)
+    sym = ISO_Level5_Shift
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000020
+down capslock
+    key_down(capslock)
+    sym = ISO_Level3_Shift
+    mods_pressed = 0x000000a0
+    mods_effective = 0x000000a0
+both 5
+    key_down(5)
+    sym = '∡', char = '∡'
+    key_up(5)
+both e
+    key_down(e)
+    sym = Greek_LAMDA, char = 'Λ'
+    key_up(e)
+both space
+    key_down(space)
+    sym = '\u{202f}', char = '\u{202f}'
+    key_up(space)
+both kp8
+    key_down(kp8)
+    sym = '⋂', char = '⋂'
+    key_up(kp8)
+both esc
+    key_down(esc)
+    sym = Escape, char = '\u{1b}'
+    key_up(esc)
+up capslock
+    key_up(capslock)
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000020
+up rightalt
+    key_up(rightalt)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+
+# level 8
+down rightalt
+    key_down(rightalt)
+    sym = ISO_Level5_Shift
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000020
+down capslock
+    key_down(capslock)
+    sym = ISO_Level3_Shift
+    mods_pressed = 0x000000a0
+    mods_effective = 0x000000a0
+down rightshift
+    key_down(rightshift)
+    sym = Shift_R
+    mods_pressed = 0x000000a1
+    mods_effective = 0x000000a1
+both tab
+    key_down(tab)
+    sym = ISO_Level5_Lock
+    mods_pressed = 0x000000b1
+    mods_locked = 0x00000010
+    mods_effective = 0x000000b1
+    key_up(tab)
+    mods_pressed = 0x000000a1
+both v
+    key_down(v)
+    sym = Greek_pi, char = 'π'
+    key_up(v)
+up rightshift
+    key_up(rightshift)
+    mods_pressed = 0x000000a0
+    mods_effective = 0x000000b0
+both v
+    key_down(v)
+    sym = asciitilde, char = '~'
+    key_up(v)
+up capslock
+    key_up(capslock)
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000030
+both v
+    key_down(v)
+    sym = p, char = 'p'
+    key_up(v)
+up rightalt
+    key_up(rightalt)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000010
+
+both v
+    key_down(v)
+    sym = Return, char = '\r'
+    key_up(v)

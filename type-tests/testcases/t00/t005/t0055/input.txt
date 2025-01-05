@@ -1,0 +1,45 @@
+# level 5
+down rightalt
+both 5
+both e
+both space
+both kp8
+both esc
+up rightalt
+
+# level 6
+down rightalt
+down rightshift
+both 5
+both 8
+both e
+both space
+both kp8
+both esc
+up rightshift
+up rightalt
+
+# level 7
+down rightalt
+down capslock
+both 5
+both e
+both space
+both kp8
+both esc
+up capslock
+up rightalt
+
+# level 8
+down rightalt
+down capslock
+down rightshift
+both tab
+both v
+up rightshift
+both v
+up capslock
+both v
+up rightalt
+
+both v
