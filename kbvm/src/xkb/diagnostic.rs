@@ -1537,6 +1537,17 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     UnknownKeyType,
+    /// A virtual-modifier declaration uses the name of a real modifier.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     virtual_modifiers Shift;
+    /// };
+    /// ```
+    #[severity = Error]
+    VirtualModifierHasRealName,
 }
 
 impl DiagnosticKind {

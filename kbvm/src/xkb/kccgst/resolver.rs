@@ -593,6 +593,16 @@ impl VmodResolver<'_, '_, '_> {
 
     fn handle_vmod_decl(&mut self, mm: Option<MergeMode>, e: &VModDecl) {
         for e in &e.defs {
+            if ident_to_real_mod_index(self.r.interner, self.r.meaning_cache, e.val.name.val)
+                .is_some()
+            {
+                self.r.diag(
+                    DiagnosticKind::VirtualModifierHasRealName,
+                    ad_hoc_display!("virtual modifier has real-modifier name")
+                        .spanned2(e.val.name.span),
+                );
+                continue;
+            }
             let value = match &e.val.val {
                 None => None,
                 Some(e) => {

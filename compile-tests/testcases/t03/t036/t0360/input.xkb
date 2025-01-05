@@ -1,0 +1,5 @@
+xkb_keymap {
+    xkb_types {
+        virtual_modifiers a, Shift, b;
+    };
+};
