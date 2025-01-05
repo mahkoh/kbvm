@@ -9,6 +9,7 @@ use {
     linearize::{Linearize, StaticMap},
     smallvec::SmallVec,
     std::{
+        array,
         collections::VecDeque,
         fmt::{Debug, Formatter},
         mem,
@@ -172,7 +173,6 @@ impl Debug for Component {
 #[derive(Clone, Eq, PartialEq, Hash)]
 enum Hi {
     // Generics ops
-    Nop,
     Jump {
         to: usize,
         args: SmallVec<[(Var, Var); 1]>,
@@ -245,9 +245,6 @@ impl Debug for Hi {
             Ok(())
         };
         match self {
-            Hi::Nop => {
-                write!(f, "nop")
-            }
             Hi::Jump { to, args } => {
                 write!(f, "jump {to}, [{}]", debug_fn(|f| format_args(f, args)))
             }
@@ -671,17 +668,17 @@ impl RoutineBuilder {
             self.blocks.push(mem::take(&mut self.ops));
         }
         let init = convert_to_ssa(self.next_var, &mut self.blocks);
+        // println!("{:#?}", self.blocks);
         let mut allocator = RegisterAllocator::default();
         allocator.allocate_registers(&self.blocks, &init);
         let mut on_press: Vec<_> = allocator.out.into();
         let mut snip = on_press.len();
         if let Some(on_release) = self.on_release {
-            snip = on_press.len()
-                - allocator
-                    .block_offsets
-                    .get(on_release)
-                    .copied()
-                    .unwrap_or_default();
+            snip -= allocator
+                .block_offsets
+                .get(on_release)
+                .copied()
+                .unwrap_or_default();
         }
         let on_release = on_press[snip..].to_owned();
         on_press.truncate(snip);
@@ -704,16 +701,13 @@ impl RoutineBuilder {
     }
 
     pub fn allocate_var(&mut self) -> Var {
-        self.allocate_vars::<1>()[0]
+        let res = Var(self.next_var);
+        self.next_var += 1;
+        res
     }
 
     pub fn allocate_vars<const N: usize>(&mut self) -> [Var; N] {
-        let mut res = [Var(0); N];
-        for res in &mut res {
-            *res = Var(self.next_var);
-            self.next_var += 1;
-        }
-        res
+        array::from_fn(|_| self.allocate_var())
     }
 
     pub fn prepare_skip(&mut self, anchor: &mut SkipAnchor) -> &mut Self {
@@ -738,7 +732,12 @@ impl RoutineBuilder {
         anchor: &mut SkipAnchor,
     ) -> &mut Self {
         let offset = self.ops.len();
-        self.ops.push(Hi::Nop);
+        self.ops.push(Hi::JumpIf {
+            rs: var,
+            not: inverse,
+            to: self.blocks.len() + 1,
+            args: Default::default(),
+        });
         *anchor = SkipAnchor {
             cond: Some(var),
             not: inverse,
@@ -1030,7 +1029,6 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) -> Vec<Var> {
     for (idx, ops) in blocks.iter().enumerate().rev() {
         for op in ops.iter().rev() {
             match op {
-                Hi::Nop => {}
                 Hi::Jump { to, .. } => {
                     if let Some(ba) = block_arguments.get(*to) {
                         current_block_arguments.extend(ba.iter().map(|b| b.1));
@@ -1113,7 +1111,6 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) -> Vec<Var> {
                 *rd = var;
             };
             match op {
-                Hi::Nop => {}
                 Hi::Jump { to, args } => {
                     add_jump_source(*to, args);
                 }
@@ -1279,7 +1276,6 @@ impl RegisterAllocator {
                 };
             }
             match op {
-                Hi::Nop => {}
                 Hi::Jump { .. } => {}
                 Hi::JumpIf { rs, .. } => {
                     read!(rs);
@@ -1481,15 +1477,14 @@ impl RegisterAllocator {
     fn translate_instructions(&mut self, block: &[Hi]) {
         for (idx, op) in block.iter().enumerate().rev() {
             match op {
-                Hi::Nop => {}
                 Hi::Jump { to, args } => {
                     self.translate_skip(to, args);
                 }
                 Hi::JumpIf { rs, not, to, args } => {
+                    let rs = self.get_read_register(idx, rs);
                     let prev_len = self.out.len();
                     self.translate_skip(to, args);
                     if prev_len < self.out.len() {
-                        let rs = self.get_read_register(idx, rs);
                         self.encode_skip_if(rs, !*not, self.out.len() - prev_len);
                     }
                 }

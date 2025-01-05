@@ -212,7 +212,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let lookup_table = builder.build_lookup_table();
     let mut state = State::default();
 
-    println!("{:#?}", state_machine);
+    // println!("{:#?}", state_machine);
 
     let mut actual = String::new();
 

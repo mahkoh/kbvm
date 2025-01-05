@@ -780,3 +780,36 @@ fn move_() {
     builder.finish_skip(&mut anchor3);
     test(builder, &[8, 0, 1, 2, 3, 4, 5, 6, 7]);
 }
+
+#[test]
+fn global_load() {
+    let mut builder = Routine::builder();
+    let [r0, r1] = builder.allocate_vars();
+    builder
+        .load_lit(r0, 1)
+        .store_global(G0, r0)
+        .load_global(r1, G0)
+        .store_global(G1, r1)
+        .store_global(G2, r0);
+    test(builder, &[1, 1, 1]);
+}
+
+#[test]
+fn fallthrough() {
+    let mut builder = Routine::builder();
+    const N: usize = 9;
+    let mut anchor1 = SkipAnchor::default();
+    let c = builder.allocate_var();
+    builder.load_lit(c, 0);
+    let v = builder.allocate_vars::<N>();
+    for i in 0..N {
+        builder.load_lit(v[i], i as u32);
+    }
+    builder.prepare_conditional_skip(c, false, &mut anchor1);
+    builder.store_global(G0, v[0]);
+    builder.finish_skip(&mut anchor1);
+    for i in 0..N {
+        builder.store_global(Global::from_linear((i + 1) % N).unwrap(), v[i]);
+    }
+    test(builder, &[8, 0, 1, 2, 3, 4, 5, 6, 7]);
+}
