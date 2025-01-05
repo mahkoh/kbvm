@@ -1,9 +1,10 @@
 use {
-    crate::routine::{run, Global, Routine, RoutineBuilder, SkipAnchor, StateEventHandler},
+    crate::routine::{
+        run, Global, Register, Routine, RoutineBuilder, SkipAnchor, StateEventHandler,
+    },
     linearize::{Linearize, LinearizeExt, StaticMap},
     Global::*,
 };
-use crate::routine::Register;
 
 struct DummyHandler;
 
@@ -754,6 +755,7 @@ fn move_() {
     const N: usize = Register::LENGTH + 1;
     let mut anchor1 = SkipAnchor::default();
     let mut anchor2 = SkipAnchor::default();
+    let mut anchor3 = SkipAnchor::default();
     let c = builder.allocate_var();
     builder.load_lit(c, 0);
     let v = builder.allocate_vars::<N>();
@@ -765,7 +767,7 @@ fn move_() {
         for i in 0..N {
             builder.store_global(Global::from_linear(i).unwrap(), v[i]);
         }
-        builder.prepare_skip(&mut anchor1);
+        builder.prepare_skip(&mut anchor3);
     }
     builder.finish_skip(&mut anchor2);
     {
@@ -775,5 +777,6 @@ fn move_() {
         builder.prepare_skip(&mut anchor1);
     }
     builder.finish_skip(&mut anchor1);
+    builder.finish_skip(&mut anchor3);
     test(builder, &[8, 0, 1, 2, 3, 4, 5, 6, 7]);
 }

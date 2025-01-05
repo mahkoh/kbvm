@@ -172,6 +172,7 @@ impl Debug for Component {
 #[derive(Clone, Eq, PartialEq, Hash)]
 enum Hi {
     // Generics ops
+    Nop,
     Jump {
         to: usize,
         args: SmallVec<[(Var, Var); 1]>,
@@ -244,6 +245,9 @@ impl Debug for Hi {
             Ok(())
         };
         match self {
+            Hi::Nop => {
+                write!(f, "nop")
+            }
             Hi::Jump { to, args } => {
                 write!(f, "jump {to}, [{}]", debug_fn(|f| format_args(f, args)))
             }
@@ -715,7 +719,7 @@ impl RoutineBuilder {
     pub fn prepare_skip(&mut self, anchor: &mut SkipAnchor) -> &mut Self {
         let offset = self.ops.len();
         self.ops.push(Hi::Jump {
-            to: 0,
+            to: self.blocks.len() + 1,
             args: Default::default(),
         });
         *anchor = SkipAnchor {
@@ -734,10 +738,7 @@ impl RoutineBuilder {
         anchor: &mut SkipAnchor,
     ) -> &mut Self {
         let offset = self.ops.len();
-        self.ops.push(Hi::Jump {
-            to: 0,
-            args: Default::default(),
-        });
+        self.ops.push(Hi::Nop);
         *anchor = SkipAnchor {
             cond: Some(var),
             not: inverse,
@@ -1029,6 +1030,7 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) -> Vec<Var> {
     for (idx, ops) in blocks.iter().enumerate().rev() {
         for op in ops.iter().rev() {
             match op {
+                Hi::Nop => {}
                 Hi::Jump { to, .. } => {
                     if let Some(ba) = block_arguments.get(*to) {
                         current_block_arguments.extend(ba.iter().map(|b| b.1));
@@ -1111,6 +1113,7 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) -> Vec<Var> {
                 *rd = var;
             };
             match op {
+                Hi::Nop => {}
                 Hi::Jump { to, args } => {
                     add_jump_source(*to, args);
                 }
@@ -1276,6 +1279,7 @@ impl RegisterAllocator {
                 };
             }
             match op {
+                Hi::Nop => {}
                 Hi::Jump { .. } => {}
                 Hi::JumpIf { rs, .. } => {
                     read!(rs);
@@ -1477,6 +1481,7 @@ impl RegisterAllocator {
     fn translate_instructions(&mut self, block: &[Hi]) {
         for (idx, op) in block.iter().enumerate().rev() {
             match op {
+                Hi::Nop => {}
                 Hi::Jump { to, args } => {
                     self.translate_skip(to, args);
                 }
