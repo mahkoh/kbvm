@@ -1,0 +1,59 @@
+both 1
+    key_down(1)
+    sym = 1, char = '1'
+    key_up(1)
+both q
+    key_down(q)
+    sym = Cyrillic_ya, char = 'я'
+    key_up(q)
+down leftshift
+    key_down(leftshift)
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+both 1
+    key_down(1)
+    sym = exclam, char = '!'
+    key_up(1)
+both q
+    key_down(q)
+    sym = Cyrillic_YA, char = 'Я'
+    key_up(q)
+up leftshift
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+both v
+    key_down(v)
+    sym = Cyrillic_zhe, char = 'ж'
+    key_up(v)
+both capslock
+    key_down(capslock)
+    mods_pressed = 0x00000002
+    mods_locked = 0x00000002
+    mods_effective = 0x00000002
+    key_up(capslock)
+    mods_pressed = 0x00000000
+both 1
+    key_down(1)
+    sym = 1, char = '1'
+    key_up(1)
+both v
+    key_down(v)
+    sym = Cyrillic_ZHE, char = 'Ж'
+    key_up(v)
+down rightshift
+    key_down(rightshift)
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000003
+both v
+    key_down(v)
+    sym = Cyrillic_zhe, char = 'ж'
+    key_up(v)
+up rightshift
+    key_up(rightshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000002
+both v
+    key_down(v)
+    sym = Cyrillic_ZHE, char = 'Ж'
+    key_up(v)
