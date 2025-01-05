@@ -30,7 +30,7 @@ fn generate_xkb() -> String {
         match seen_codes.entry(code) {
             Entry::Occupied(e) => writeln!(res, "    alias <{name}> = <{}>;", e.get()).unwrap(),
             Entry::Vacant(e) => {
-                writeln!(res, "    <{name}> = {code};").unwrap();
+                writeln!(res, "    <{name}> = {};", code + 8).unwrap();
                 e.insert(name);
             }
         }
@@ -44,7 +44,7 @@ fn generate_name_to_code() -> String {
     let mut values = vec![];
     for v in MAP {
         keys.push(v.0.as_bytes());
-        values.push((v.0, v.1));
+        values.push((v.0, v.1 + 8));
     }
     generate_map(
         "NAME_TO_CODE",
@@ -61,8 +61,8 @@ fn generate_code_to_name() -> String {
     let mut values = vec![];
     for v in MAP {
         if seen_codes.insert(v.1) {
-            keys.push(v.1);
-            values.push((v.0, v.1));
+            keys.push(v.1 + 8);
+            values.push((v.0, v.1 + 8));
         }
     }
     generate_map(
