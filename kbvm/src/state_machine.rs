@@ -299,7 +299,7 @@ impl StateMachine {
                         };
                         run(
                             &mut handler,
-                            &release,
+                            release,
                             &mut active.registers_log,
                             &mut state.globals,
                             &mut active.flags,

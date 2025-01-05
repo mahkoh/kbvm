@@ -1,8 +1,9 @@
 use {
     crate::routine::{run, Global, Routine, RoutineBuilder, SkipAnchor, StateEventHandler},
-    linearize::{Linearize, StaticMap},
+    linearize::{Linearize, LinearizeExt, StaticMap},
     Global::*,
 };
+use crate::routine::Register;
 
 struct DummyHandler;
 
@@ -745,4 +746,34 @@ fn igt() {
         .igt(r3, r2, r2)
         .store_global(G8, r3);
     test(builder, &[0, 1, 1]);
+}
+
+#[test]
+fn move_() {
+    let mut builder = Routine::builder();
+    const N: usize = Register::LENGTH + 1;
+    let mut anchor1 = SkipAnchor::default();
+    let mut anchor2 = SkipAnchor::default();
+    let c = builder.allocate_var();
+    builder.load_lit(c, 0);
+    let v = builder.allocate_vars::<N>();
+    for i in 0..N {
+        builder.load_lit(v[i], i as u32);
+    }
+    builder.prepare_conditional_skip(c, true, &mut anchor2);
+    {
+        for i in 0..N {
+            builder.store_global(Global::from_linear(i).unwrap(), v[i]);
+        }
+        builder.prepare_skip(&mut anchor1);
+    }
+    builder.finish_skip(&mut anchor2);
+    {
+        for i in 0..N {
+            builder.store_global(Global::from_linear((i + 1) % N).unwrap(), v[i]);
+        }
+        builder.prepare_skip(&mut anchor1);
+    }
+    builder.finish_skip(&mut anchor1);
+    test(builder, &[8, 0, 1, 2, 3, 4, 5, 6, 7]);
 }

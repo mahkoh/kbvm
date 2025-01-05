@@ -33,8 +33,8 @@ use {
     thiserror::Error,
 };
 
-// const SINGLE: Option<&str> = Some("t0003");
-const SINGLE: Option<&str> = None;
+const SINGLE: Option<&str> = Some("t0064");
+// const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
 const WRITE_FAILED: bool = false;
 const SHOW_ALL_DIAGNOSTICS_IF_SINGLE: bool = true;
@@ -106,11 +106,8 @@ fn main() {
         if let Err(err) = &result.result {
             any_failed = true;
             eprintln!("    Error: {}", Report::new(err));
-            match err {
-                ResultError::ParsingFailed(e) => {
-                    write_diagnostic(e);
-                }
-                _ => {}
+            if let ResultError::ParsingFailed(e) = err {
+                write_diagnostic(e);
             }
         }
     }
@@ -214,6 +211,8 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let state_machine = builder.build_state_machine();
     let lookup_table = builder.build_lookup_table();
     let mut state = State::default();
+
+    println!("{:#?}", state_machine);
 
     let mut actual = String::new();
 

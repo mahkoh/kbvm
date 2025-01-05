@@ -74,7 +74,7 @@ fn generate_code_to_name() -> String {
     )
 }
 
-static MAP: &[(&'static str, u32)] = &[
+static MAP: &[(&str, u32)] = &[
     ("esc", 1),
     ("1", 2),
     ("2", 3),

@@ -132,7 +132,7 @@ pub(crate) enum UnOp {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
-pub enum Flag {
+pub(crate) enum Flag {
     LaterKeyActuated,
 }
 
@@ -170,7 +170,7 @@ impl Debug for Component {
 }
 
 #[derive(Clone, Eq, PartialEq, Hash)]
-pub(crate) enum Hi {
+enum Hi {
     // Generics ops
     Jump {
         to: usize,
@@ -624,6 +624,7 @@ pub(crate) fn run<H>(
     }
 }
 
+#[derive(PartialEq)]
 pub struct SkipAnchor {
     cond: Option<Var>,
     not: bool,
@@ -747,6 +748,9 @@ impl RoutineBuilder {
     }
 
     pub fn finish_skip(&mut self, anchor: &mut SkipAnchor) -> &mut Self {
+        if anchor == &SkipAnchor::default() {
+            return self;
+        }
         if let Some(last) = self.ops.last() {
             if !matches!(last, Hi::Jump { .. }) {
                 self.ops.push(Hi::Jump {
@@ -1154,7 +1158,7 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) -> Vec<Var> {
         }
     }
     let mut init = vec![];
-    if let Some(first) = block_arguments.get(0) {
+    if let Some(first) = block_arguments.first() {
         init.extend(first.iter().map(|(dst, _)| *dst));
     }
     init
