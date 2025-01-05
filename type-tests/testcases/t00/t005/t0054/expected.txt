@@ -1,0 +1,199 @@
+# switch to the group
+both compose
+    key_down(compose)
+    sym = ISO_Next_Group
+    group_locked = 0x1
+    group_effective = 0x1
+    key_up(compose)
+both compose
+    key_down(compose)
+    sym = ISO_Next_Group
+    group_locked = 0x2
+    group_effective = 0x2
+    key_up(compose)
+both compose
+    key_down(compose)
+    sym = ISO_Next_Group
+    group_locked = 0x3
+    group_effective = 0x3
+    key_up(compose)
+
+# level 1
+both 1
+    key_down(1)
+    sym = 1, char = '1'
+    key_up(1)
+both q
+    key_down(q)
+    sym = x, char = 'x'
+    key_up(q)
+both kp7
+    key_down(kp7)
+    sym = KP_7, char = '7'
+    key_up(kp7)
+both esc
+    key_down(esc)
+    sym = Escape, char = '\u{1b}'
+    key_up(esc)
+
+# level 2 with shift
+down leftshift
+    key_down(leftshift)
+    sym = Shift_L
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+both 1
+    key_down(1)
+    sym = degree, char = '°'
+    key_up(1)
+both q
+    key_down(q)
+    sym = X, char = 'X'
+    key_up(q)
+both kp7
+    key_down(kp7)
+    sym = '✔', char = '✔'
+    key_up(kp7)
+both esc
+    key_down(esc)
+    sym = Escape, char = '\u{1b}'
+    key_up(esc)
+up leftshift
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+
+# Level 2 with the Lock modifier.
+down leftshift
+    key_down(leftshift)
+    sym = Shift_L
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+both rightshift
+    key_down(rightshift)
+    sym = Caps_Lock
+    mods_pressed = 0x00000003
+    mods_locked = 0x00000002
+    mods_effective = 0x00000003
+    key_up(rightshift)
+    mods_pressed = 0x00000001
+up leftshift
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000002
+both 6
+    key_down(6)
+    sym = 6, char = '6'
+    key_up(6)
+both h
+    key_down(h)
+    sym = S, char = 'S'
+    key_up(h)
+both kp3
+    key_down(kp3)
+    sym = KP_3, char = '3'
+    key_up(kp3)
+both esc
+    key_down(esc)
+    sym = Escape, char = '\u{1b}'
+    key_up(esc)
+down leftshift
+    key_down(leftshift)
+    sym = Shift_L
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000003
+both rightshift
+    key_down(rightshift)
+    sym = Caps_Lock
+    mods_pressed = 0x00000003
+    key_up(rightshift)
+    mods_pressed = 0x00000001
+    mods_locked = 0x00000000
+    mods_effective = 0x00000001
+up leftshift
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+
+# level 3
+down capslock
+    key_down(capslock)
+    sym = ISO_Level3_Shift
+    mods_pressed = 0x00000080
+    mods_effective = 0x00000080
+both 6
+    key_down(6)
+    sym = cent, char = '¢'
+    key_up(6)
+both q
+    key_down(q)
+    sym = ellipsis, char = '…'
+    key_up(q)
+both kp7
+    key_down(kp7)
+    sym = '↕', char = '↕'
+    key_up(kp7)
+both esc
+    key_down(esc)
+    sym = Escape, char = '\u{1b}'
+    key_up(esc)
+up capslock
+    key_up(capslock)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+
+# level 4
+down capslock
+    key_down(capslock)
+    sym = ISO_Level3_Shift
+    mods_pressed = 0x00000080
+    mods_effective = 0x00000080
+down leftshift
+    key_down(leftshift)
+    sym = Shift_L
+    mods_pressed = 0x00000081
+    mods_effective = 0x00000081
+both 5
+    key_down(5)
+    sym = malesymbol, char = '♂'
+    key_up(5)
+both e
+    key_down(e)
+    sym = Greek_lamda, char = 'λ'
+    key_up(e)
+both space
+    key_down(space)
+    sym = nobreakspace, char = '\u{a0}'
+    key_up(space)
+both kp8
+    key_down(kp8)
+    sym = intersection, char = '∩'
+    key_up(kp8)
+both esc
+    key_down(esc)
+    sym = Escape, char = '\u{1b}'
+    key_up(esc)
+up leftshift
+    key_up(leftshift)
+    mods_pressed = 0x00000080
+    mods_effective = 0x00000080
+up capslock
+    key_up(capslock)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+
+# level 5
+down rightalt
+    key_down(rightalt)
+    sym = ISO_Level5_Shift
+both esc
+    key_down(esc)
+    sym = Escape, char = '\u{1b}'
+    key_up(esc)
+up rightalt
+    key_up(rightalt)
+
+both v
+    key_down(v)
+    sym = p, char = 'p'
+    key_up(v)

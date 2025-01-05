@@ -33,7 +33,7 @@ use {
     thiserror::Error,
 };
 
-// const SINGLE: Option<&str> = Some("t0001");
+// const SINGLE: Option<&str> = Some("t0054");
 const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
 const WRITE_FAILED: bool = false;
@@ -207,6 +207,9 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let map = context
         .parse_keymap(&mut diagnostics, Some(&map_path), &map)
         .map_err(ResultError::ParsingFailed)?;
+
+    // println!("{:#}", map);
+
     let builder = map.to_builder();
     let state_machine = builder.build_state_machine();
     let lookup_table = builder.build_lookup_table();
@@ -255,6 +258,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
         Ok(())
     };
     for mut line in input.lines() {
+        writeln!(actual, "{}", line).unwrap();
         if let Some((pre, _)) = line.split_once("#") {
             line = pre;
         }
@@ -262,7 +266,6 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
         if line.is_empty() {
             continue;
         }
-        writeln!(actual, "{}", line).unwrap();
         let mut arg = "";
         let command = match line.split_once(' ') {
             Some((c, a)) => {

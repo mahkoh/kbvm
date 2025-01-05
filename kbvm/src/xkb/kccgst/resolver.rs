@@ -459,9 +459,8 @@ fn fix_combined_properties(
         let mut new_map = IndexMap::new();
         let mut new_preserved = IndexMap::new();
         for (mask, val) in &ty.map {
-            let effective = match mods.try_get_effective(*mask) {
-                Ok(e) => e,
-                _ => continue,
+            let Ok(effective) = mods.try_get_effective(*mask) else {
+                continue;
             };
             if let indexmap::map::Entry::Vacant(v) = new_map.entry(effective) {
                 v.insert(*val);
