@@ -752,7 +752,7 @@ fn igt() {
 #[test]
 fn move_() {
     let mut builder = Routine::builder();
-    const N: usize = Register::LENGTH + 1;
+    const N: usize = 9;
     let mut anchor1 = SkipAnchor::default();
     let mut anchor2 = SkipAnchor::default();
     let mut anchor3 = SkipAnchor::default();
