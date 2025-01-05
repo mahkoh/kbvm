@@ -1,0 +1,7 @@
+both h
+down capslock
+both e
+both l
+both l
+up capslock
+both o

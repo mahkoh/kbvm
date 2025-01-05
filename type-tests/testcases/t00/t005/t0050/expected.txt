@@ -1,0 +1,28 @@
+both h
+    key_down(h)
+    sym = h, char = 'h'
+    key_up(h)
+down capslock
+    key_down(capslock)
+    mods_pressed = 0x00000002
+    mods_locked = 0x00000002
+    mods_effective = 0x00000002
+both e
+    key_down(e)
+    sym = E, char = 'E'
+    key_up(e)
+both l
+    key_down(l)
+    sym = L, char = 'L'
+    key_up(l)
+both l
+    key_down(l)
+    sym = L, char = 'L'
+    key_up(l)
+up capslock
+    key_up(capslock)
+    mods_pressed = 0x00000000
+both o
+    key_down(o)
+    sym = O, char = 'O'
+    key_up(o)
