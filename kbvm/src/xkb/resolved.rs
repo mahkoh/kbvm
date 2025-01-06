@@ -15,7 +15,7 @@ use {
             span::{Span, Spanned},
         },
     },
-    hashbrown::HashMap,
+    hashbrown::{DefaultHashBuilder, HashMap},
     indexmap::IndexMap,
     linearize::Linearize,
     smallvec::SmallVec,
@@ -87,18 +87,19 @@ pub(crate) struct ResolvedKeyTypeWithName {
 #[derive(Clone, Default, Debug)]
 pub(crate) struct ResolvedKeyType {
     pub(crate) modifiers: Option<Spanned<ModifierMask>>,
-    pub(crate) map: IndexMap<ModifierMask, Spanned<Level>>,
-    pub(crate) preserved: IndexMap<ModifierMask, Spanned<ModifierMask>>,
+    pub(crate) map: IndexMap<ModifierMask, Spanned<Level>, DefaultHashBuilder>,
+    pub(crate) preserved: IndexMap<ModifierMask, Spanned<ModifierMask>, DefaultHashBuilder>,
     pub(crate) names: HashMap<Level, Spanned<Interned>>,
 }
 
 #[derive(Default, Debug)]
 pub(crate) struct ResolvedCompat {
     pub(crate) interp_default: Interp,
-    pub(crate) interps: IndexMap<(Option<Keysym>, Option<Filter>), InterpWithKey>,
+    pub(crate) interps:
+        IndexMap<(Option<Keysym>, Option<Filter>), InterpWithKey, DefaultHashBuilder>,
     pub(crate) interps_sorted: Vec<InterpWithKey>,
     pub(crate) indicator_map_default: IndicatorMap,
-    pub(crate) indicator_maps: IndexMap<Interned, IndicatorMapWithKey>,
+    pub(crate) indicator_maps: IndexMap<Interned, IndicatorMapWithKey, DefaultHashBuilder>,
     pub(crate) action_defaults: ActionDefaults,
 }
 

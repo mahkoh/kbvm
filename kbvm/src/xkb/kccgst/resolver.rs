@@ -42,7 +42,7 @@ use {
             string_cooker::StringCooker,
         },
     },
-    hashbrown::hash_map::Entry,
+    hashbrown::{hash_map::Entry, DefaultHashBuilder},
     indexmap::IndexMap,
     isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::ad_hoc_display,
@@ -456,8 +456,8 @@ fn fix_combined_properties(
         if let Some(mask) = &mut ty.modifiers {
             mask.val = mods.get_effective(mask.val);
         }
-        let mut new_map = IndexMap::new();
-        let mut new_preserved = IndexMap::new();
+        let mut new_map = IndexMap::with_hasher(DefaultHashBuilder::default());
+        let mut new_preserved = IndexMap::with_hasher(DefaultHashBuilder::default());
         for (mask, val) in &ty.map {
             let Ok(effective) = mods.try_get_effective(*mask) else {
                 continue;

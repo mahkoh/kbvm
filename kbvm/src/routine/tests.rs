@@ -1,6 +1,6 @@
 use {
     crate::routine::{
-        run, Global, Register, Routine, RoutineBuilder, SkipAnchor, StateEventHandler,
+        run, Global, Routine, RoutineBuilder, SkipAnchor, StateEventHandler,
     },
     linearize::{Linearize, LinearizeExt, StaticMap},
     Global::*,
@@ -465,6 +465,18 @@ fn bit_not() {
         .store_global(G0, r0)
         .store_global(G1, r1);
     test(builder, &[0xff0, !0xff0]);
+}
+
+#[test]
+fn move2() {
+    let mut builder = Routine::builder();
+    let [r0, r1] = builder.allocate_vars();
+    builder
+        .load_lit(r0, 1)
+        .move_(r1, r0)
+        .store_global(G0, r0)
+        .store_global(G1, r1);
+    test(builder, &[1, 1]);
 }
 
 #[test]

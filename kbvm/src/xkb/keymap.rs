@@ -22,7 +22,7 @@ use {
     },
     arrayvec::ArrayVec,
     bstr::ByteSlice,
-    hashbrown::{hash_map::Entry, HashMap, HashSet},
+    hashbrown::{hash_map::Entry, DefaultHashBuilder, HashMap, HashSet},
     indexmap::IndexMap,
     linearize::{static_map, Linearize, StaticMap},
     smallvec::SmallVec,
@@ -39,7 +39,7 @@ pub struct Keymap {
     pub(crate) virtual_modifiers: Vec<VirtualModifier>,
     pub(crate) mod_maps: Vec<(ModifierIndex, ModMapValue)>,
     pub(crate) group_names: Vec<(GroupIdx, Arc<String>)>,
-    pub(crate) keys: IndexMap<state_machine::Keycode, Symbol>,
+    pub(crate) keys: IndexMap<state_machine::Keycode, Symbol, DefaultHashBuilder>,
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]

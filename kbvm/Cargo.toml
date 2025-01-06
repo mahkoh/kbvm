@@ -5,16 +5,16 @@ edition = "2021"
 
 [dependencies]
 kbvm-proc = { path = "../kbvm-proc" }
-thiserror = "2.0.5"
-bstr = "1.11.0"
-arrayvec = "0.7.6"
-linearize = { version = "0.1.1", features = ["derive"] }
-hashbrown = "0.15.2"
-isnt = "0.1.0"
-debug-fn = "1.0.0"
-smallvec = "1.13.2"
-indexmap = "2.7.0"
-cfg-if = "1.0.0"
+thiserror = { version = "2.0.5", default-features = false }
+bstr = { version = "1.11.0", default-features = false }
+arrayvec = { version = "0.7.6", default-features = false }
+linearize = { version = "0.1.1", default-features = false, features = ["derive"] }
+hashbrown = { version = "0.15.2", default-features = false, features = ["default-hasher"] }
+isnt = { version = "0.1.0", default-features = false }
+debug-fn = { version = "1.0.0", default-features = false }
+smallvec = { version = "1.13.2", default-features = false }
+indexmap = { version = "2.7.0", default-features = false }
+cfg-if = { version = "1.0.0", default-features = false }
 
 [build-dependencies]
 pkg-config = "0.3.31"
