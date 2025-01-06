@@ -807,6 +807,52 @@ fn global_load() {
 }
 
 #[test]
+fn global_load2() {
+    let mut builder = Routine::builder();
+    let mut anchor1 = SkipAnchor::default();
+    let [r0, r1] = builder.allocate_vars();
+    builder
+        .load_lit(r0, 1)
+        .store_global(G0, r0)
+        .prepare_skip(&mut anchor1)
+        .finish_skip(&mut anchor1)
+        .load_global(r1, G0)
+        .store_global(G1, r1)
+        .store_global(G2, r0);
+    test(builder, &[1, 1, 1]);
+}
+
+#[test]
+fn binop() {
+    let mut builder = Routine::builder();
+    let mut anchor1 = SkipAnchor::default();
+    let [r0, r1, r2] = builder.allocate_vars();
+    builder
+        .load_lit(r0, 1)
+        .load_lit(r2, 1)
+        .store_global(G0, r0)
+        .prepare_skip(&mut anchor1)
+        .finish_skip(&mut anchor1)
+        .add(r1, r0, r2)
+        .store_global(G1, r1);
+    test(builder, &[1, 2]);
+}
+
+#[test]
+fn neg2() {
+    let mut builder = Routine::builder();
+    let mut anchor1 = SkipAnchor::default();
+    let [r0, r1] = builder.allocate_vars();
+    builder
+        .load_lit(r0, 1)
+        .prepare_skip(&mut anchor1)
+        .finish_skip(&mut anchor1)
+        .neg(r1, r0)
+        .store_global(G0, r1);
+    test(builder, &[!0]);
+}
+
+#[test]
 fn fallthrough() {
     let mut builder = Routine::builder();
     const N: usize = 9;
