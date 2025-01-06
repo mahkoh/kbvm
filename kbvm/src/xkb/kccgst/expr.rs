@@ -9,7 +9,7 @@ use {
             controls::ControlMask,
             diagnostic::{DiagnosticKind, DiagnosticSink},
             group::{GroupChange, GroupIdx, GroupMask},
-            group_component::GroupComponentMask,
+            group_component::GroupComponent,
             interner::{Interned, Interner},
             kccgst::ast::{CallArg, Expr, Path, Var},
             level::Level,
@@ -348,19 +348,22 @@ pub(crate) fn eval_mod_component_mask(
     )
 }
 
-pub(crate) fn eval_group_component_mask(
+pub(crate) fn eval_group_component(
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
     expr: Spanned<&Expr>,
-) -> Result<Spanned<GroupComponentMask>, Spanned<EvalError>> {
-    eval_keyed_mask(
-        interner,
-        meaning_cache,
-        expr,
-        UnknownGroupComponent,
-        UnsupportedExpressionForGroupComponent,
-        &mut |meaning| GroupComponentMask::from_meaning(meaning).ok_or(UnknownGroupComponent),
-    )
+) -> Result<Spanned<GroupComponent>, Spanned<EvalError>> {
+    let interned = eval_interned(expr, UnsupportedExpressionForGroupComponent)?;
+    let meaning = meaning_cache.get_case_insensitive(interner, interned.val);
+    let component = match meaning {
+        Meaning::None => GroupComponent::None,
+        Meaning::Base => GroupComponent::Base,
+        Meaning::Latched => GroupComponent::Latched,
+        Meaning::Locked => GroupComponent::Locked,
+        Meaning::Effective => GroupComponent::Effective,
+        _ => return Err(UnknownGroupComponent.spanned2(expr.span)),
+    };
+    Ok(component.spanned2(expr.span))
 }
 
 pub(crate) fn eval_level(
@@ -1461,7 +1464,7 @@ pub(crate) enum IndicatorMapField {
     Groups(Spanned<GroupMask>),
     Controls(Spanned<ControlMask>),
     WhichModifierState(Spanned<ModComponentMask>),
-    WhichGroupState(Spanned<GroupComponentMask>),
+    WhichGroupState(Spanned<GroupComponent>),
 }
 
 pub(crate) fn eval_indicator_map_field(
@@ -1512,7 +1515,7 @@ pub(crate) fn eval_indicator_map_field(
         }
         Meaning::Whichgroupstate => {
             let value = get_expr!(MissingIndicatorWhichGroupStateValue);
-            let components = eval_group_component_mask(interner, meaning_cache, value)?;
+            let components = eval_group_component(interner, meaning_cache, value)?;
             IndicatorMapField::WhichGroupState(components)
         }
         _ => return Err(UnknownIndicatorField.spanned2(var.path.span)),

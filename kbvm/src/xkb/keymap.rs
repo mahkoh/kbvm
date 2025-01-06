@@ -8,7 +8,7 @@ use {
         xkb::{
             controls::ControlMask,
             group::{GroupChange, GroupIdx, GroupMask},
-            group_component::GroupComponentMask,
+            group_component::GroupComponent,
             indicator::IndicatorIdx,
             interner::{Interned, Interner},
             level::Level,
@@ -57,7 +57,7 @@ pub(crate) struct Indicator {
     pub(crate) group_mask: GroupMask,
     pub(crate) controls: ControlMask,
     pub(crate) mod_components: ModComponentMask,
-    pub(crate) group_components: GroupComponentMask,
+    pub(crate) group_components: GroupComponent,
 }
 
 #[derive(Debug, PartialEq)]
@@ -229,12 +229,7 @@ impl Keymap {
             } else if mod_components == ModComponentMask::NONE {
                 mod_components = ModComponentMask::EFFECTIVE;
             }
-            let mut group_components = map.which_group_state.despan().unwrap_or_default();
-            if group_mask.0 == 0 {
-                group_components = GroupComponentMask::NONE;
-            } else if group_components == GroupComponentMask::NONE {
-                group_components = GroupComponentMask::EFFECTIVE;
-            }
+            let group_components = map.which_group_state.despan().unwrap_or_default();
             let i = Indicator {
                 virt: map.virt,
                 index: match map.idx {

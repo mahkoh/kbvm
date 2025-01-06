@@ -1,10 +1,24 @@
-#[derive(Copy, Clone, Default, Eq, PartialEq)]
-pub(crate) struct GroupComponentMask(u8);
+use std::fmt::{Display, Formatter};
 
-keyed_bitfield! {
-    GroupComponentMask:
-    0 => BASE => Base,
-    1 => LATCHED => Latched,
-    2 => LOCKED => Locked,
-    3 => EFFECTIVE => Effective | Any,
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
+pub(crate) enum GroupComponent {
+    None,
+    Base,
+    Latched,
+    Locked,
+    #[default]
+    Effective,
+}
+
+impl Display for GroupComponent {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            GroupComponent::None => "None",
+            GroupComponent::Base => "Base",
+            GroupComponent::Latched => "Latched",
+            GroupComponent::Locked => "Locked",
+            GroupComponent::Effective => "Effective",
+        };
+        f.write_str(s)
+    }
 }

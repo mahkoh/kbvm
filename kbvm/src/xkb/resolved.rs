@@ -6,7 +6,7 @@ use {
         xkb::{
             controls::ControlMask,
             group::{GroupChange, GroupIdx, GroupMask},
-            group_component::GroupComponentMask,
+            group_component::GroupComponent,
             indicator::IndicatorIdx,
             interner::Interned,
             level::Level,
@@ -149,7 +149,7 @@ pub(crate) struct IndicatorMap {
     pub(crate) groups: Option<Spanned<GroupMask>>,
     pub(crate) controls: Option<Spanned<ControlMask>>,
     pub(crate) which_modifier_state: Option<Spanned<ModComponentMask>>,
-    pub(crate) which_group_state: Option<Spanned<GroupComponentMask>>,
+    pub(crate) which_group_state: Option<Spanned<GroupComponent>>,
 }
 
 #[derive(Default, Clone, Debug)]

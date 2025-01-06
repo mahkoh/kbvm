@@ -235,11 +235,11 @@ impl Format for CompatIndicator<'_> {
                 f.write_nesting()?;
                 write!(f.f, "groups = 0x{:08x};", i.group_mask.0)?;
                 f.write_newline()?;
-                if i.group_components != GroupComponentMask::EFFECTIVE {
-                    f.write_nesting()?;
-                    write!(f.f, "whichGroupState = {};", i.group_components)?;
-                    f.write_newline()?;
-                }
+            }
+            if i.group_components != GroupComponent::Effective {
+                f.write_nesting()?;
+                write!(f.f, "whichGroupState = {};", i.group_components)?;
+                f.write_newline()?;
             }
             if i.controls != ControlMask::NONE {
                 f.write_nesting()?;
