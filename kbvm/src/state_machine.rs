@@ -271,7 +271,7 @@ impl StateMachine {
         }
     }
 
-    pub fn handle_key_(
+    fn handle_key_(
         &self,
         state: &mut State,
         events: &mut Vec<LogicalEvent>,
