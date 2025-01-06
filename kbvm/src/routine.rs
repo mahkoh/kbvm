@@ -1386,7 +1386,7 @@ impl RegisterAllocator {
             self.out.push_front(Lo::Skip { n });
         }
         let mut todo = vec![];
-        let mut preserve = HashSet::new();
+        let mut preserve = HashSet::<VariableLocation>::new();
         for (dst, src) in args {
             let dst_loc = self.variable_locations[dst];
             match self.variable_locations.entry(*src) {

@@ -341,7 +341,6 @@ dependencies = [
  "arrayvec",
  "bstr",
  "cfg-if",
- "criterion",
  "debug-fn",
  "hashbrown",
  "indexmap",
@@ -349,10 +348,20 @@ dependencies = [
  "kbvm-proc",
  "libxkbcommon-test-linker",
  "linearize",
- "parking_lot",
  "pkg-config",
  "smallvec",
  "thiserror",
+ "walkdir",
+]
+
+[[package]]
+name = "kbvm-benches"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "kbvm",
+ "libxkbcommon-test-linker",
+ "parking_lot",
  "walkdir",
 ]
 

@@ -1109,7 +1109,7 @@ fn load_spilled_before_skip() {
     let mut anchor1 = SkipAnchor::default();
     let mut anchor2 = SkipAnchor::default();
     const N: usize = Register::LENGTH;
-    let mut u = builder.allocate_vars::<N>();
+    let u = builder.allocate_vars::<N>();
     builder.load_lit(b, 99);
     for i in 0..N {
         builder.load_lit(u[i], i as u32);
@@ -1172,8 +1172,8 @@ fn load_spill_to_spill() {
     let mut anchor1 = SkipAnchor::default();
     let mut anchor2 = SkipAnchor::default();
     const N: usize = Register::LENGTH + 1;
-    let mut v = builder.allocate_vars::<N>();
-    let mut u = builder.allocate_vars::<N>();
+    let v = builder.allocate_vars::<N>();
+    let u = builder.allocate_vars::<N>();
     for i in 0..N {
         builder.load_lit(v[i], i as u32);
     }
@@ -1191,4 +1191,85 @@ fn load_spill_to_spill() {
     }
     builder.finish_skip(&mut anchor2);
     test(builder, &[N as u32 - 1]);
+}
+
+#[test]
+fn load_spill_to_spill_reuse() {
+    let mut builder = Routine::builder();
+    let mut anchor1 = SkipAnchor::default();
+    let mut anchor2 = SkipAnchor::default();
+    const N: usize = Register::LENGTH + 1;
+    let v = builder.allocate_vars::<N>();
+    let u = builder.allocate_vars::<N>();
+    for i in 0..N {
+        builder.load_lit(v[i], i as u32);
+    }
+    for i in 0..u.len() {
+        builder.load_lit(u[i], i as u32);
+    }
+    builder.prepare_skip(&mut anchor1);
+    {
+        let w = builder.allocate_vars::<{ 2 * N }>();
+        for i in 0..w.len() {
+            builder.load_lit(w[i], i as u32);
+        }
+        for i in 0..w.len() {
+            builder.store_global(G2, w[i]);
+        }
+    }
+    for i in 0..u.len() {
+        builder.store_global(G1, u[i]);
+    }
+    builder.prepare_skip(&mut anchor2);
+    builder.finish_skip(&mut anchor1);
+    for i in 0..N {
+        builder.store_global(G0, v[i]);
+    }
+    builder.finish_skip(&mut anchor2);
+    test(builder, &[N as u32 - 1]);
+}
+
+#[test]
+fn rotation() {
+    let mut builder = Routine::builder();
+    let mut anchor1 = SkipAnchor::default();
+    let mut anchor2 = SkipAnchor::default();
+    let [a, b, c] = builder.allocate_vars();
+    builder
+        .load_lit(a, 1)
+        .load_lit(b, 2)
+        .load_lit(c, 3)
+        .prepare_skip(&mut anchor1)
+        .store_global(G0, b)
+        .store_global(G1, c)
+        .store_global(G2, a)
+        .prepare_skip(&mut anchor2)
+        .finish_skip(&mut anchor1)
+        .store_global(G0, a)
+        .store_global(G1, b)
+        .store_global(G2, c)
+        .finish_skip(&mut anchor2);
+    test(builder, &[1, 2, 3]);
+}
+
+#[test]
+fn large_rotation() {
+    let mut builder = Routine::builder();
+    let mut anchor1 = SkipAnchor::default();
+    let mut anchor2 = SkipAnchor::default();
+    const N: usize = Register::LENGTH + 1;
+    let v = builder.allocate_vars::<N>();
+    for i in 0..N {
+        builder.load_lit(v[i], i as u32);
+    }
+    builder.prepare_skip(&mut anchor1);
+    for i in 0..N {
+        builder.store_global(Global::from_linear(i).unwrap(), v[(i + 1) % N]);
+    }
+    builder.prepare_skip(&mut anchor2).finish_skip(&mut anchor1);
+    for i in 0..N {
+        builder.store_global(Global::from_linear(i).unwrap(), v[i]);
+    }
+    builder.finish_skip(&mut anchor2);
+    test(builder, &[0, 1, 2, 3, 4, 5, 6, 7, 8]);
 }

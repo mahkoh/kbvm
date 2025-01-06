@@ -21,14 +21,4 @@ pkg-config = "0.3.31"
 
 [dev-dependencies]
 libxkbcommon-test-linker = { path = "../libxkbcommon-test-linker" }
-criterion = "0.5.1"
 walkdir = "2.5.0"
-parking_lot = "0.12.3"
-
-[[bench]]
-name = "benchmark"
-harness = false
-
-[[bench]]
-name = "state_machine"
-harness = false
