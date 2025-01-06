@@ -1,13 +1,13 @@
-use std::mem;
-use isnt::std_1::vec::IsntVecExt;
 use {
     crate::routine::{
-        run, Global, Register, Routine, RoutineBuilder, SkipAnchor, StateEventHandler,
+        convert_to_ssa, run, Flag, Global, Hi, Register, Routine, RoutineBuilder, SkipAnchor,
+        StateEventHandler,
     },
+    isnt::std_1::vec::IsntVecExt,
     linearize::{Linearize, LinearizeExt, StaticMap},
+    std::mem,
     Global::*,
 };
-use crate::routine::{convert_to_ssa, Hi};
 
 struct DummyHandler;
 
@@ -961,7 +961,7 @@ fn get_args(f: impl FnOnce(&mut RoutineBuilder)) -> usize {
     }
     convert_to_ssa(builder.next_var, &mut builder.blocks);
     println!("{:#?}", builder.blocks);
-    let Hi::Jump { args, .. } =  &builder.blocks[0][0] else {
+    let Hi::Jump { args, .. } = &builder.blocks[0][0] else {
         unreachable!();
     };
     args.len()
@@ -981,6 +981,51 @@ fn pressed_mods_dec() {
     let n = get_args(|builder| {
         let v = builder.allocate_var();
         builder.pressed_mods_dec(v);
+    });
+    assert_eq!(n, 1);
+}
+
+#[test]
+fn component_load() {
+    let n = get_args(|builder| {
+        let v = builder.allocate_var();
+        builder.latched_mods_load(v).store_global(G0, v);
+    });
+    assert_eq!(n, 0);
+}
+
+#[test]
+fn component_store() {
+    let n = get_args(|builder| {
+        let v = builder.allocate_var();
+        builder.latched_mods_store(v);
+    });
+    assert_eq!(n, 1);
+}
+
+#[test]
+fn flag_load() {
+    let n = get_args(|builder| {
+        let v = builder.allocate_var();
+        builder.later_key_actuated_load(v).store_global(G0, v);
+    });
+    assert_eq!(n, 0);
+}
+
+#[test]
+fn key_down() {
+    let n = get_args(|builder| {
+        let v = builder.allocate_var();
+        builder.key_down(v);
+    });
+    assert_eq!(n, 1);
+}
+
+#[test]
+fn key_up() {
+    let n = get_args(|builder| {
+        let v = builder.allocate_var();
+        builder.key_up(v);
     });
     assert_eq!(n, 1);
 }
