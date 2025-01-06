@@ -1,0 +1,38 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <compose> {
+            [ LockGroup(Group=+1) ],
+        };
+        key <leftshift> {
+            [ a ], [ a ], [ a ], [ a ], [ a ], [ a ],
+            [ a ], [ a ], [ a ], [ a ], [ a ], [ a ],
+        };
+        key <a> {
+            groupsClamp,
+            [ a ],
+            [ A ],
+            [ Greek_alpha ],
+        };
+        key <b> {
+            groupsWrap,
+            [ a ],
+            [ A ],
+            [ Greek_alpha ],
+        };
+        key <c> {
+            groupsRedirect = Group2,
+            [ a ],
+            [ A ],
+            [ Greek_alpha ],
+        };
+        key <d> {
+            groupsRedirect = Group4,
+            [ a ],
+            [ A ],
+            [ Greek_alpha ],
+        };
+    };
+};
