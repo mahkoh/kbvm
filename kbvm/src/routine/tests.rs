@@ -1,3 +1,4 @@
+use std::array;
 use {
     crate::routine::{
         convert_to_ssa, run, Flag, Global, Hi, Register, Routine, RoutineBuilder, SkipAnchor,
@@ -767,7 +768,7 @@ fn igt() {
 #[test]
 fn move_() {
     let mut builder = Routine::builder();
-    const N: usize = 9;
+    const N: usize = Register::LENGTH + 1;
     let mut anchor1 = SkipAnchor::default();
     let mut anchor2 = SkipAnchor::default();
     let mut anchor3 = SkipAnchor::default();
@@ -858,7 +859,7 @@ fn neg2() {
 #[test]
 fn fallthrough() {
     let mut builder = Routine::builder();
-    const N: usize = 9;
+    const N: usize = Register::LENGTH + 1;
     let mut anchor1 = SkipAnchor::default();
     let c = builder.allocate_var();
     builder.load_lit(c, 0);
@@ -1044,4 +1045,21 @@ fn un_rename() {
     let [r0] = builder.allocate_vars();
     builder.load_lit(r0, 1).neg(r0, r0).store_global(G0, r0);
     test(builder, &[!0]);
+}
+
+#[test]
+fn spill_many() {
+    let mut builder = Routine::builder();
+    const N: usize = Global::LENGTH;
+    let v = builder.allocate_vars::<N>();
+    for i in 0..N {
+        builder.load_lit(v[i], i as u32);
+    }
+    for i in 0..N {
+        builder.store_global(Global::from_linear(i).unwrap(), v[i]);
+    }
+    for i in 0..N {
+        builder.store_global(Global::from_linear(i).unwrap(), v[i]);
+    }
+    test(builder, &array::from_fn::<_, N, _>(|n| n as u32));
 }

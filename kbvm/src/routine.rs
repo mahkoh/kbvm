@@ -1174,27 +1174,29 @@ struct RegisterAllocator {
 
 impl RegisterAllocator {
     fn allocate_register(&mut self, idx: usize) -> Register {
-        let mut furthest_register = Register::R0;
-        let mut furthest_point = usize::MAX;
+        let mut earliest_register = None;
+        let mut earliest_point = usize::MAX;
         for (rs, next_use) in &mut self.registers {
             match next_use {
                 None => return rs,
                 Some((_, next_use, prev_use)) => {
-                    if *prev_use > idx && *next_use < furthest_point {
-                        furthest_point = *next_use;
-                        furthest_register = rs;
+                    if *prev_use > idx && *next_use < earliest_point {
+                        earliest_point = *next_use;
+                        earliest_register = Some(rs);
                     }
                 }
             }
         }
-        assert!(furthest_point < usize::MAX);
-        let r = furthest_register;
+        let r = earliest_register.unwrap();
         let var = self.registers[r].unwrap().0;
         let spill = self.spill.iter().position(|v| !*v).unwrap_or_else(|| {
             self.spill.push(false);
             self.spill.len() - 1
         });
         self.spill[spill] = true;
+        if self.out.front() == Some(&Lo::SpillStore { rs: r, pos: spill }) {
+            self.out.pop_front();
+        }
         self.out.push_front(Lo::SpillLoad { rd: r, pos: spill });
         self.variable_locations
             .insert(var, VariableLocation::Spilled(spill));
