@@ -1092,3 +1092,103 @@ fn spill_prefix() {
     builder.store_global(G0, a);
     test(builder, &[1, !0]);
 }
+
+#[test]
+fn load_spilled_before_skip() {
+    /*
+       r0 = 0x63
+       spill[0] = r0
+       ...
+       r0 = spill[0]
+       skip 9
+       ...
+       g0 = r0
+    */
+    let mut builder = Routine::builder();
+    let [b] = builder.allocate_vars();
+    let mut anchor1 = SkipAnchor::default();
+    let mut anchor2 = SkipAnchor::default();
+    const N: usize = Register::LENGTH;
+    let mut u = builder.allocate_vars::<N>();
+    builder.load_lit(b, 99);
+    for i in 0..N {
+        builder.load_lit(u[i], i as u32);
+    }
+    builder.prepare_skip(&mut anchor1);
+    for i in 0..N {
+        builder.store_global(G1, u[i]);
+    }
+    builder.prepare_skip(&mut anchor2);
+    builder.finish_skip(&mut anchor1);
+    builder.store_global(G0, b);
+    builder.finish_skip(&mut anchor2);
+    test(builder, &[99]);
+}
+
+#[test]
+fn load_spill_to_spill() {
+    /*
+        r0 = 0x0
+        spill[1] = r0
+        r0 = 0x1
+        spill[9] = r0
+        r0 = 0x2
+        spill[8] = r0
+        r0 = 0x3
+        spill[7] = r0
+        r0 = 0x4
+        spill[6] = r0
+        r0 = 0x5
+        spill[5] = r0
+        r0 = 0x6
+        spill[4] = r0
+        r0 = 0x7
+        spill[3] = r0
+        r0 = 0x8
+        spill[2] = r0
+        r0 = spill[1]
+        spill[0] = spill[2]
+        r1 = spill[3]
+        r2 = spill[4]
+        r3 = spill[5]
+        r4 = spill[6]
+        r5 = spill[7]
+        r6 = spill[8]
+        r7 = spill[9]
+        skip 11
+        ...
+        g0 = r0
+        r0 = spill[0]
+        g0 = r7
+        g0 = r6
+        g0 = r5
+        g0 = r4
+        g0 = r3
+        g0 = r2
+        g0 = r1
+        g0 = r0
+    */
+    let mut builder = Routine::builder();
+    let mut anchor1 = SkipAnchor::default();
+    let mut anchor2 = SkipAnchor::default();
+    const N: usize = Register::LENGTH + 1;
+    let mut v = builder.allocate_vars::<N>();
+    let mut u = builder.allocate_vars::<N>();
+    for i in 0..N {
+        builder.load_lit(v[i], i as u32);
+    }
+    for i in 0..N {
+        builder.load_lit(u[i], i as u32);
+    }
+    builder.prepare_skip(&mut anchor1);
+    for i in 0..N {
+        builder.store_global(G1, u[i]);
+    }
+    builder.prepare_skip(&mut anchor2);
+    builder.finish_skip(&mut anchor1);
+    for i in 0..N {
+        builder.store_global(G0, v[i]);
+    }
+    builder.finish_skip(&mut anchor2);
+    test(builder, &[N as u32 - 1]);
+}

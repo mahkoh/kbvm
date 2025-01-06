@@ -1163,8 +1163,13 @@ enum VariableLocation {
 
 #[derive(Copy, Clone)]
 struct RegisterOwner {
+    // the variable currently stored in the register
     var: Var,
+    // the index of the next use of the variable (in revere order). this is only a hint
+    // used to decide which register to spill.
     earlier_use: usize,
+    // the next time this register is used. this is used to prevent the same register
+    // being allocated multiple times for a single instruction.
     later_use: usize,
 }
 
