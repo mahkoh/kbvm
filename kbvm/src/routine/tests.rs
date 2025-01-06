@@ -1,3 +1,5 @@
+use std::mem;
+use isnt::std_1::vec::IsntVecExt;
 use {
     crate::routine::{
         run, Global, Register, Routine, RoutineBuilder, SkipAnchor, StateEventHandler,
@@ -5,6 +7,7 @@ use {
     linearize::{Linearize, LinearizeExt, StaticMap},
     Global::*,
 };
+use crate::routine::{convert_to_ssa, Hi};
 
 struct DummyHandler;
 
@@ -946,4 +949,38 @@ fn many_uninit() {
         builder.store_global(Global::from_linear(idx).unwrap(), *r);
     }
     test(builder, &[]);
+}
+
+fn get_args(f: impl FnOnce(&mut RoutineBuilder)) -> usize {
+    let mut builder = Routine::builder();
+    let mut anchor1 = SkipAnchor::default();
+    builder.prepare_skip(&mut anchor1).finish_skip(&mut anchor1);
+    f(&mut builder);
+    if builder.ops.is_not_empty() {
+        builder.blocks.push(mem::take(&mut builder.ops));
+    }
+    convert_to_ssa(builder.next_var, &mut builder.blocks);
+    println!("{:#?}", builder.blocks);
+    let Hi::Jump { args, .. } =  &builder.blocks[0][0] else {
+        unreachable!();
+    };
+    args.len()
+}
+
+#[test]
+fn pressed_mods_inc() {
+    let n = get_args(|builder| {
+        let v = builder.allocate_var();
+        builder.pressed_mods_inc(v);
+    });
+    assert_eq!(n, 1);
+}
+
+#[test]
+fn pressed_mods_dec() {
+    let n = get_args(|builder| {
+        let v = builder.allocate_var();
+        builder.pressed_mods_dec(v);
+    });
+    assert_eq!(n, 1);
 }
