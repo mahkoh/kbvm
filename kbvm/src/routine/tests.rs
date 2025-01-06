@@ -1029,3 +1029,19 @@ fn key_up() {
     });
     assert_eq!(n, 1);
 }
+
+#[test]
+fn bin_rename() {
+    let mut builder = Routine::builder();
+    let [r0] = builder.allocate_vars();
+    builder.load_lit(r0, 1).add(r0, r0, r0).store_global(G0, r0);
+    test(builder, &[2]);
+}
+
+#[test]
+fn un_rename() {
+    let mut builder = Routine::builder();
+    let [r0] = builder.allocate_vars();
+    builder.load_lit(r0, 1).neg(r0, r0).store_global(G0, r0);
+    test(builder, &[!0]);
+}
