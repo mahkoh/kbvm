@@ -667,10 +667,10 @@ impl RoutineBuilder {
         if self.ops.is_not_empty() {
             self.blocks.push(mem::take(&mut self.ops));
         }
-        let init = convert_to_ssa(self.next_var, &mut self.blocks);
+        convert_to_ssa(self.next_var, &mut self.blocks);
         // println!("{:#?}", self.blocks);
         let mut allocator = RegisterAllocator::default();
-        allocator.allocate_registers(&self.blocks, &init);
+        allocator.allocate_registers(&self.blocks);
         let mut on_press: Vec<_> = allocator.out.into();
         let mut snip = on_press.len();
         if let Some(on_release) = self.on_release {
@@ -1018,7 +1018,7 @@ impl RoutineBuilder {
     }
 }
 
-fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) -> Vec<Var> {
+fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) {
     let mut allocate_var = || {
         let var = Var(next_var);
         next_var += 1;
@@ -1078,10 +1078,9 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) -> Vec<Var> {
                 }
             }
         }
-        for &arg in &current_block_arguments {
+        for arg in current_block_arguments.drain() {
             block_arguments[idx].push((Var(0), arg));
         }
-        current_block_arguments.clear();
         block_arguments[idx].sort_by_key(|v| v.1 .0);
         for (var, _) in &mut block_arguments[idx] {
             *var = allocate_var();
@@ -1097,14 +1096,11 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) -> Vec<Var> {
             let add_jump_source = |to: usize, args: &mut SmallVec<_>| {
                 if let Some(ba) = block_arguments.get(to) {
                     for (dst, src) in ba {
-                        if let Some(name) = names.get(src) {
-                            args.push((*dst, *name));
-                        }
+                        args.push((*dst, names[src]));
                     }
                 }
             };
-            let rename_read =
-                |rs: &mut Var, names: &HashMap<_, _>| *rs = names.get(rs).copied().unwrap_or(*rs);
+            let rename_read = |rs: &mut Var, names: &HashMap<_, _>| *rs = names[rs];
             let mut rename_write = |rd: &mut Var, names: &mut HashMap<_, _>| {
                 let var = allocate_var();
                 names.insert(*rd, var);
@@ -1157,11 +1153,6 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) -> Vec<Var> {
             }
         }
     }
-    let mut init = vec![];
-    if let Some(first) = block_arguments.first() {
-        init.extend(first.iter().map(|(dst, _)| *dst));
-    }
-    init
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
@@ -1559,7 +1550,7 @@ impl RegisterAllocator {
         }
     }
 
-    fn allocate_registers(&mut self, blocks: &[Vec<Hi>], init: &[Var]) {
+    fn allocate_registers(&mut self, blocks: &[Vec<Hi>]) {
         // println!("{:#?}", blocks);
         self.block_offsets = vec![0; blocks.len()];
         for (idx, block) in blocks.iter().enumerate().rev() {
@@ -1569,11 +1560,6 @@ impl RegisterAllocator {
             self.find_variable_uses(block);
             self.translate_instructions(block);
             self.block_offsets[idx] = self.out.len();
-        }
-        for init in init {
-            self.variable_uses.entry(*init).or_default().push(0);
-            let rd = self.get_write_register(0, init);
-            self.out.push_front(Lo::RegLit { rd, lit: 0 });
         }
     }
 }

@@ -1,6 +1,6 @@
 use {
     crate::routine::{
-        run, Global, Routine, RoutineBuilder, SkipAnchor, StateEventHandler,
+        run, Global, Register, Routine, RoutineBuilder, SkipAnchor, StateEventHandler,
     },
     linearize::{Linearize, LinearizeExt, StaticMap},
     Global::*,
@@ -824,4 +824,80 @@ fn fallthrough() {
         builder.store_global(Global::from_linear((i + 1) % N).unwrap(), v[i]);
     }
     test(builder, &[8, 0, 1, 2, 3, 4, 5, 6, 7]);
+}
+
+#[test]
+fn double_jump() {
+    let mut builder = Routine::builder();
+    let mut anchor1 = SkipAnchor::default();
+    let [r0, r1, r2, r3] = builder.allocate_vars();
+    builder
+        .load_lit(r0, 1)
+        .prepare_skip(&mut anchor1)
+        .load_lit(r1, 1)
+        .finish_skip(&mut anchor1)
+        .load_lit(r2, 1)
+        .prepare_skip(&mut anchor1)
+        .load_lit(r3, 1)
+        .finish_skip(&mut anchor1)
+        .store_global(G0, r0)
+        .store_global(G1, r1)
+        .store_global(G2, r2)
+        .store_global(G3, r3);
+    test(builder, &[1, 0, 1, 0]);
+}
+
+#[test]
+fn double_cond_jump() {
+    let mut builder = Routine::builder();
+    let mut anchor1 = SkipAnchor::default();
+    let [r0, r1, r2, r3, r4] = builder.allocate_vars();
+    builder
+        .load_lit(r4, 1)
+        .load_lit(r0, 1)
+        .prepare_conditional_skip(r4, false, &mut anchor1)
+        .load_lit(r1, 1)
+        .finish_skip(&mut anchor1)
+        .load_lit(r2, 1)
+        .prepare_conditional_skip(r4, false, &mut anchor1)
+        .load_lit(r3, 1)
+        .finish_skip(&mut anchor1)
+        .store_global(G0, r0)
+        .store_global(G1, r1)
+        .store_global(G2, r2)
+        .store_global(G3, r3);
+    test(builder, &[1, 0, 1, 0]);
+}
+
+#[test]
+fn double_cond_jump2() {
+    let mut builder = Routine::builder();
+    let mut anchor1 = SkipAnchor::default();
+    let [r0, r1, r2, r3, r4, r5] = builder.allocate_vars();
+    builder
+        .load_lit(r4, 1)
+        .load_lit(r5, 0)
+        .load_lit(r0, 1)
+        .prepare_conditional_skip(r4, false, &mut anchor1)
+        .load_lit(r1, 1)
+        .finish_skip(&mut anchor1)
+        .load_lit(r2, 1)
+        .prepare_conditional_skip(r5, false, &mut anchor1)
+        .load_lit(r3, 1)
+        .finish_skip(&mut anchor1)
+        .store_global(G0, r0)
+        .store_global(G1, r1)
+        .store_global(G2, r2)
+        .store_global(G3, r3);
+    test(builder, &[1, 0, 1, 1]);
+}
+
+#[test]
+fn many_uninit() {
+    let mut builder = Routine::builder();
+    let r = builder.allocate_vars::<{ Register::LENGTH + 1 }>();
+    for (idx, r) in r.iter().enumerate() {
+        builder.store_global(Global::from_linear(idx).unwrap(), *r);
+    }
+    test(builder, &[]);
 }
