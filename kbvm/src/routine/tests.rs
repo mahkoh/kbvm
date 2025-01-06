@@ -1,12 +1,11 @@
-use std::array;
 use {
     crate::routine::{
-        convert_to_ssa, run, Flag, Global, Hi, Register, Routine, RoutineBuilder, SkipAnchor,
+        convert_to_ssa, run, Global, Hi, Register, Routine, RoutineBuilder, SkipAnchor,
         StateEventHandler,
     },
     isnt::std_1::vec::IsntVecExt,
     linearize::{Linearize, LinearizeExt, StaticMap},
-    std::mem,
+    std::{array, mem},
     Global::*,
 };
 
@@ -1062,4 +1061,34 @@ fn spill_many() {
         builder.store_global(Global::from_linear(i).unwrap(), v[i]);
     }
     test(builder, &array::from_fn::<_, N, _>(|n| n as u32));
+}
+
+#[test]
+fn spill_prefix() {
+    /*
+       Check that spill is written before the read operation.
+
+       r0 = 0x1
+       spill[0] = r0
+       r0 = Neg r0
+       g1 = r0
+       ...
+       r0 = spill[0]
+       ...
+       g0 = r0
+    */
+    let mut builder = Routine::builder();
+    let [a, b] = builder.allocate_vars();
+    const N: usize = Register::LENGTH;
+    let v = builder.allocate_vars::<N>();
+    builder.load_lit(a, 1);
+    builder.neg(b, a).store_global(G1, b);
+    for i in 0..N {
+        builder.load_lit(v[i], 0);
+    }
+    for i in 0..N {
+        builder.store_global(Global::from_linear(i + 2).unwrap(), v[i]);
+    }
+    builder.store_global(G0, a);
+    test(builder, &[1, !0]);
 }

@@ -1161,9 +1161,16 @@ enum VariableLocation {
     Spilled(usize),
 }
 
+#[derive(Copy, Clone)]
+struct RegisterOwner {
+    var: Var,
+    earlier_use: usize,
+    later_use: usize,
+}
+
 #[derive(Default)]
 struct RegisterAllocator {
-    registers: StaticMap<Register, Option<(Var, usize, usize)>>,
+    registers: StaticMap<Register, Option<RegisterOwner>>,
     spill: Vec<bool>,
     variable_uses: HashMap<Var, SmallVec<[usize; 2]>>,
     prefix: VecDeque<Lo>,
@@ -1179,16 +1186,16 @@ impl RegisterAllocator {
         for (rs, next_use) in &mut self.registers {
             match next_use {
                 None => return rs,
-                Some((_, next_use, prev_use)) => {
-                    if *prev_use > idx && *next_use < earliest_point {
-                        earliest_point = *next_use;
+                Some(ro) => {
+                    if ro.later_use > idx && ro.earlier_use < earliest_point {
+                        earliest_point = ro.earlier_use;
                         earliest_register = Some(rs);
                     }
                 }
             }
         }
         let r = earliest_register.unwrap();
-        let var = self.registers[r].unwrap().0;
+        let var = self.registers[r].unwrap().var;
         let spill = self.spill.iter().position(|v| !*v).unwrap_or_else(|| {
             self.spill.push(false);
             self.spill.len() - 1
@@ -1229,7 +1236,11 @@ impl RegisterAllocator {
             Some(next_use) => {
                 self.variable_locations
                     .insert(*var, VariableLocation::Register(r));
-                Some((*var, next_use, idx))
+                Some(RegisterOwner {
+                    var: *var,
+                    earlier_use: next_use,
+                    later_use: idx,
+                })
             }
         };
         r
@@ -1319,15 +1330,16 @@ impl RegisterAllocator {
     fn acquire_unused_location(&mut self, src: Var) -> VariableLocation {
         for (rs, next_use) in &mut self.registers {
             if next_use.is_none() {
-                self.registers[rs] = Some((
-                    src,
-                    self.variable_uses
+                *next_use = Some(RegisterOwner {
+                    var: src,
+                    earlier_use: self
+                        .variable_uses
                         .get(&src)
                         .and_then(|v| v.last())
                         .copied()
                         .unwrap_or_default(),
-                    usize::MAX,
-                ));
+                    later_use: usize::MAX,
+                });
                 return VariableLocation::Register(rs);
             }
         }
@@ -1382,15 +1394,16 @@ impl RegisterAllocator {
                 Entry::Vacant(v) => match dst_loc {
                     VariableLocation::Register(r) => {
                         if self.registers[r].is_none() {
-                            self.registers[r] = Some((
-                                *src,
-                                self.variable_uses
+                            self.registers[r] = Some(RegisterOwner {
+                                var: *src,
+                                earlier_use: self
+                                    .variable_uses
                                     .get(src)
                                     .and_then(|v| v.last())
                                     .copied()
                                     .unwrap_or_default(),
-                                usize::MAX,
-                            ));
+                                later_use: usize::MAX,
+                            });
                             v.insert(dst_loc);
                         } else {
                             todo.push((dst_loc, *src));
@@ -1507,7 +1520,11 @@ impl RegisterAllocator {
                 Hi::UnOp { rd, rs, op } => {
                     let rd = self.get_write_register(idx, rd);
                     let rs = self.get_read_register(idx, rs);
-                    if rd != rs || *op != UnOp::Move {
+                    if *op == UnOp::Move {
+                        if rd != rs {
+                            self.out.push_front(Lo::Move { rd, rs });
+                        }
+                    } else {
                         self.out.push_front(Lo::UnOp { rd, rs, op: *op });
                     }
                 }
