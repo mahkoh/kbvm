@@ -9,6 +9,7 @@
 )]
 
 pub mod builder;
+pub mod components;
 mod config;
 mod from_bytes;
 pub mod group_type;
@@ -21,3 +22,5 @@ mod phf_map;
 pub mod routine;
 pub mod state_machine;
 pub mod xkb;
+
+pub use components::Components;

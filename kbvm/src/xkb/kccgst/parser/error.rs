@@ -219,7 +219,7 @@ pub(crate) enum ActualToken {
     Token(Token),
 }
 
-impl Parser<'_, '_> {
+impl Parser<'_, '_, '_> {
     pub(super) fn too_deeply_nested(&self, span: Span) -> Spanned<ParserError> {
         ParserError::TooDeeplyNested.spanned2(span + self.diagnostic_delta)
     }

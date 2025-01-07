@@ -1,24 +1,27 @@
 use {
-    crate::xkb::{
-        code::Code,
-        code_loader::CodeLoader,
-        code_map::CodeMap,
-        diagnostic::{Diagnostic, DiagnosticSink},
-        interner::{Interned, Interner},
-        kccgst::{
-            self,
-            ast::{Include, Item},
-            ast_cache::AstCache,
-            embedder::embed,
-            includer::resolve_includes,
-            parser::parse_item,
-            resolver::resolve,
+    crate::{
+        config::DEFAULT_INCLUDE_DIR,
+        xkb::{
+            code::Code,
+            code_loader::CodeLoader,
+            code_map::CodeMap,
+            diagnostic::{Diagnostic, DiagnosticSink},
+            interner::{Interned, Interner},
+            kccgst::{
+                self,
+                ast::{Include, Item},
+                ast_cache::AstCache,
+                embedder::embed,
+                includer::resolve_includes,
+                parser::parse_item,
+                resolver::resolve,
+            },
+            keymap::Keymap,
+            meaning::MeaningCache,
+            rmlvo::{self, parser::MappingValue, resolver::Group},
+            span::{SpanExt, Spanned},
+            string_cooker::StringCooker,
         },
-        keymap::Keymap,
-        meaning::MeaningCache,
-        rmlvo::{self, parser::MappingValue, resolver::Group},
-        span::{SpanExt, Spanned},
-        string_cooker::StringCooker,
     },
     bstr::ByteSlice,
     isnt::std_1::primitive::IsntStrExt,
@@ -54,13 +57,70 @@ pub struct Context {
     home: Option<Vec<u8>>,
 }
 
-impl Default for Context {
-    fn default() -> Self {
-        Self {
-            paths: vec![],
-            max_includes: 1024,
-            max_include_depth: 128,
-            home: None,
+pub struct ContextBuilder {
+    enable_system_dirs: bool,
+    enable_environment: bool,
+    max_includes: u64,
+    max_include_depth: u64,
+    prefix: Vec<PathBuf>,
+    suffix: Vec<PathBuf>,
+}
+
+impl ContextBuilder {
+    pub fn set_enable_system_dirs(&mut self, val: bool) {
+        self.enable_system_dirs = val;
+    }
+
+    pub fn set_enable_environment(&mut self, val: bool) {
+        self.enable_system_dirs = val;
+    }
+
+    pub fn prepend_path(&mut self, path: &(impl AsRef<Path> + ?Sized)) {
+        self.prefix.push(path.as_ref().to_path_buf());
+    }
+
+    pub fn append_path(&mut self, path: &(impl AsRef<Path> + ?Sized)) {
+        self.prefix.push(path.as_ref().to_path_buf());
+    }
+
+    pub fn build(mut self) -> Context {
+        let mut home = None;
+        let mut xdg_config_home = None;
+        if self.enable_environment {
+            home = std::env::var("HOME").ok();
+            xdg_config_home = std::env::var("XDG_CONFIG_HOME").ok();
+        }
+        let mut paths = vec![];
+        macro_rules! push {
+            ($path:expr) => {
+                paths.push(Arc::new($path.into()))
+            };
+        }
+        while let Some(p) = self.prefix.pop() {
+            push!(p);
+        }
+        if let Some(config) = &xdg_config_home {
+            push!(format!("{config}/xkb"));
+        } else if let Some(home) = &home {
+            push!(format!("{home}/.config/xkb"));
+        }
+        if let Some(home) = &home {
+            push!(format!("{home}/.xkb"));
+        }
+        if self.enable_system_dirs {
+            push!("/etc/xkb".to_string());
+            if let Some(did) = DEFAULT_INCLUDE_DIR {
+                push!(did);
+            }
+        }
+        for p in self.suffix.drain(..) {
+            push!(p);
+        }
+        Context {
+            paths,
+            max_includes: self.max_includes,
+            max_include_depth: self.max_include_depth,
+            home: home.map(|h| h.into_bytes()),
         }
     }
 }
@@ -71,8 +131,15 @@ pub struct RmlvoGroup<'a> {
 }
 
 impl Context {
-    pub fn add_include_path(&mut self, path: &Path) {
-        self.paths.push(Arc::new(path.to_path_buf()));
+    pub fn builder() -> ContextBuilder {
+        ContextBuilder {
+            enable_system_dirs: true,
+            enable_environment: false,
+            max_includes: 1024,
+            max_include_depth: 128,
+            prefix: vec![],
+            suffix: vec![],
+        }
     }
 
     pub fn create_keymap_from_rmlvo(
@@ -286,7 +353,7 @@ impl Context {
     #[expect(clippy::too_many_arguments)]
     fn handle_item(
         &self,
-        diagnostics: &mut DiagnosticSink<'_>,
+        diagnostics: &mut DiagnosticSink<'_, '_>,
         map: &mut CodeMap,
         cache: &mut AstCache,
         loader: &mut CodeLoader,

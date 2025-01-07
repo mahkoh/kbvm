@@ -22,7 +22,7 @@ use {
 
 #[expect(clippy::too_many_arguments)]
 pub(crate) fn resolve_includes(
-    diagnostics: &mut DiagnosticSink<'_>,
+    diagnostics: &mut DiagnosticSink<'_, '_>,
     map: &mut CodeMap,
     cache: &mut AstCache,
     loader: &mut CodeLoader,
@@ -47,8 +47,8 @@ pub(crate) fn resolve_includes(
     includer.process_includes(interner, item);
 }
 
-struct Includer<'a, 'b> {
-    diagnostics: &'a mut DiagnosticSink<'b>,
+struct Includer<'a, 'b, 'c> {
+    diagnostics: &'a mut DiagnosticSink<'b, 'c>,
     map: &'a mut CodeMap,
     cache: &'a mut AstCache,
     loader: &'a mut CodeLoader,
@@ -72,7 +72,7 @@ macro_rules! process_ct {
     };
 }
 
-impl Includer<'_, '_> {
+impl Includer<'_, '_, '_> {
     fn process_includes(&mut self, interner: &mut Interner, item: &mut Item) {
         self.include_depth += 1;
         match &mut item.ty {

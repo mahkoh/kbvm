@@ -9,18 +9,22 @@ use {
     kbvm_proc::diagnostic_kind,
     std::{
         error::Error,
-        fmt::{Debug, Display, Formatter},
+        fmt::{Debug, Display, Formatter, Write},
         ops::Deref,
         path::PathBuf,
         sync::Arc,
     },
 };
 
-pub struct DiagnosticSink<'a> {
+pub struct DiagnosticSink<'a, 'b> {
     diagnostics: &'a mut Vec<Diagnostic>,
+    filter: Option<&'b mut dyn FnMut(DiagnosticKind) -> bool>,
 }
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
+#[non_exhaustive]
 pub enum Severity {
+    Debug,
     Warning,
     Error,
 }
@@ -853,7 +857,7 @@ pub enum DiagnosticKind {
     ///     };
     /// };
     /// ```
-    #[severity = Error]
+    #[severity = Debug]
     UnimplementedAction,
     /// An unknown parameter appears in a `NoAction` action.
     ///
@@ -1110,7 +1114,7 @@ pub enum DiagnosticKind {
     ///     };
     /// };
     /// ```
-    #[severity = Warning]
+    #[severity = Debug]
     UnimplementedInterpretField,
     /// The `action` field in an interpret statement does not have a value.
     ///
@@ -1242,6 +1246,19 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     InvalidInterpretUseModMapModValue,
+    /// A indicator statement contains an unimplemented field.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_compat {
+    ///     indicator "A" {
+    ///         !allowExplicit;
+    ///     };
+    /// };
+    /// ```
+    #[severity = Debug]
+    UnimplementedIndicatorField,
     /// A indicator statement contains an unknown field.
     ///
     /// # Example
@@ -1575,9 +1592,16 @@ struct WithCode<'a> {
     diagnostic: &'a Diagnostic,
 }
 
-impl<'a> DiagnosticSink<'a> {
+impl<'a, 'b> DiagnosticSink<'a, 'b> {
     pub fn new(diagnostics: &'a mut Vec<Diagnostic>) -> Self {
-        Self { diagnostics }
+        Self {
+            diagnostics,
+            filter: None,
+        }
+    }
+
+    pub fn set_filter(&mut self, filter: &'b mut dyn FnMut(DiagnosticKind) -> bool) {
+        self.filter = Some(filter);
     }
 
     pub(crate) fn push(
@@ -1586,6 +1610,11 @@ impl<'a> DiagnosticSink<'a> {
         kind: DiagnosticKind,
         message: Spanned<impl Display + Send + Sync + 'static>,
     ) {
+        if let Some(filter) = self.filter.as_mut() {
+            if !filter(kind) {
+                return;
+            }
+        }
         let diagnostic = Diagnostic::new(map, kind, message.val, message.span);
         self.diagnostics.push(diagnostic);
     }
@@ -1648,16 +1677,32 @@ impl DiagnosticLocation {
         )?;
         if with_code {
             f.write_str(":\n")?;
-            write!(f, ">> {}\n   ", self.line.as_bytes().as_bstr())?;
-            for _ in 0..self.in_line_offset {
+            write!(f, ">> ")?;
+            let mut extra_offset = 0;
+            let (prefix, suffix) = self.line.split_at(self.in_line_offset);
+            if prefix.contains(&b'\t') {
+                for c in prefix.as_bstr().chars() {
+                    if c == '\t' {
+                        extra_offset += 3;
+                        f.write_str("    ")?;
+                    } else {
+                        f.write_char(c)?;
+                    }
+                }
+                write!(f, "{}", suffix.as_bstr())?;
+            } else {
+                write!(f, "{}", self.line.as_bstr())?;
+            }
+            write!(f, "\n   ")?;
+            for _ in 0..(self.in_line_offset + extra_offset) {
                 f.write_str(" ")?
             }
             f.write_str("^")?;
             for _ in 1..self.in_line_len {
                 f.write_str("~")?;
             }
-            f.write_str("\n")?;
             if let Some(inner) = &self.inner {
+                f.write_str("\n")?;
                 inner.deref().fmt(f, true)?;
             }
         }

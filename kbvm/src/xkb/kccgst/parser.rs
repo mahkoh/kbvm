@@ -43,13 +43,13 @@ use {
     Punctuation::{Cbrace, Obrace, Obracket},
 };
 
-struct Diag<'a, 'b> {
+struct Diag<'a, 'b, 'c> {
     map: &'a mut CodeMap,
-    diagnostics: &'a mut DiagnosticSink<'b>,
+    diagnostics: &'a mut DiagnosticSink<'b, 'c>,
 }
 
-struct Parser<'a, 'b> {
-    diag: Option<Diag<'a, 'b>>,
+struct Parser<'a, 'b, 'c> {
+    diag: Option<Diag<'a, 'b, 'c>>,
     tokens: &'a [Spanned<Token>],
     interner: &'a Interner,
     meaning_cache: &'a mut MeaningCache,
@@ -162,7 +162,7 @@ pub(crate) fn parse_item(
     .parse_item()
 }
 
-impl Parser<'_, '_> {
+impl Parser<'_, '_, '_> {
     fn next(
         &mut self,
         expected: &'static [Expected],

@@ -52,7 +52,7 @@ use {
 
 pub(crate) fn resolve(
     map: &mut CodeMap,
-    diagnostics: &mut DiagnosticSink<'_>,
+    diagnostics: &mut DiagnosticSink<'_, '_>,
     interner: &mut Interner,
     meaning_cache: &mut MeaningCache,
     cooker: &mut StringCooker,
@@ -121,45 +121,45 @@ pub(crate) fn resolve(
     }
 }
 
-struct Resolver<'a, 'b> {
+struct Resolver<'a, 'b, 'c> {
     map: &'a mut CodeMap,
     interner: &'a mut Interner,
     meaning_cache: &'a mut MeaningCache,
-    diagnostics: &'a mut DiagnosticSink<'b>,
+    diagnostics: &'a mut DiagnosticSink<'b, 'c>,
     cooker: &'a mut StringCooker,
 }
 
-struct VmodResolver<'a, 'b, 'c> {
-    r: &'a mut Resolver<'b, 'c>,
+struct VmodResolver<'a, 'b, 'c, 'd> {
+    r: &'a mut Resolver<'b, 'c, 'd>,
     data: Vmodmap,
 }
 
-struct KeycodesResolver<'a, 'b, 'c> {
-    r: &'a mut Resolver<'b, 'c>,
+struct KeycodesResolver<'a, 'b, 'c, 'd> {
+    r: &'a mut Resolver<'b, 'c, 'd>,
     data: ResolvedKeycodes,
 }
 
-struct TypesResolver<'a, 'b, 'c> {
-    r: &'a mut Resolver<'b, 'c>,
+struct TypesResolver<'a, 'b, 'c, 'd> {
+    r: &'a mut Resolver<'b, 'c, 'd>,
     mods: &'a Vmodmap,
     data: ResolvedTypes,
 }
 
-struct CompatResolver<'a, 'b, 'c> {
-    r: &'a mut Resolver<'b, 'c>,
+struct CompatResolver<'a, 'b, 'c, 'd> {
+    r: &'a mut Resolver<'b, 'c, 'd>,
     mods: &'a Vmodmap,
     data: ResolvedCompat,
 }
 
-struct SymbolsResolver<'a, 'b, 'c> {
-    r: &'a mut Resolver<'b, 'c>,
+struct SymbolsResolver<'a, 'b, 'c, 'd> {
+    r: &'a mut Resolver<'b, 'c, 'd>,
     mods: &'a Vmodmap,
     keycodes: &'a ResolvedKeycodes,
     types: &'a ResolvedTypes,
     data: ResolvedSymbols,
 }
 
-fn fix_resolved_keycodes(r: &mut Resolver<'_, '_>, keycodes: &mut ResolvedKeycodes) {
+fn fix_resolved_keycodes(r: &mut Resolver<'_, '_, '_>, keycodes: &mut ResolvedKeycodes) {
     let mut res = ResolvedKeycodes::default();
     res.keycode_to_name = mem::take(&mut keycodes.keycode_to_name);
     res.indicators = mem::take(&mut keycodes.indicators);
@@ -201,7 +201,7 @@ fn fix_resolved_keycodes(r: &mut Resolver<'_, '_>, keycodes: &mut ResolvedKeycod
 }
 
 fn fix_resolved_compat(
-    resolver: &mut Resolver<'_, '_>,
+    resolver: &mut Resolver<'_, '_, '_>,
     keycodes: &mut ResolvedKeycodes,
     compat: &mut ResolvedCompat,
 ) {
@@ -501,7 +501,7 @@ fn fix_combined_properties(
     }
 }
 
-impl Resolver<'_, '_> {
+impl Resolver<'_, '_, '_> {
     fn diag(
         &mut self,
         kind: DiagnosticKind,
@@ -517,7 +517,7 @@ impl Resolver<'_, '_> {
     }
 }
 
-impl VmodResolver<'_, '_, '_> {
+impl VmodResolver<'_, '_, '_, '_> {
     fn resolve(mut self, e: &Item) -> Vmodmap {
         match &e.ty {
             ItemType::Composite(e) => {
@@ -709,7 +709,7 @@ trait ConfigWalker: Sized {
     }
 }
 
-impl KeycodesResolver<'_, '_, '_> {
+impl KeycodesResolver<'_, '_, '_, '_> {
     fn handle_key(&mut self, mm: Option<MergeMode>, name: Spanned<Interned>, ty: ResolvedKeyKind) {
         let key = ResolvedKey { name, kind: ty };
         let e1 = match ty {
@@ -765,7 +765,7 @@ impl KeycodesResolver<'_, '_, '_> {
     }
 }
 
-impl ConfigWalker for KeycodesResolver<'_, '_, '_> {
+impl ConfigWalker for KeycodesResolver<'_, '_, '_, '_> {
     type Data = ResolvedKeycodes;
 
     type Decl = KeycodeDecl;
@@ -874,7 +874,7 @@ impl ResolvedKeyType {
     }
 }
 
-impl TypesResolver<'_, '_, '_> {
+impl TypesResolver<'_, '_, '_, '_> {
     fn parse_field(&mut self, decl: &VarDecl, span: Span, skip_first: bool) -> Option<TypeField> {
         let res = eval_type_field(
             self.r.map,
@@ -909,7 +909,7 @@ impl TypesResolver<'_, '_, '_> {
     }
 }
 
-impl ConfigWalker for TypesResolver<'_, '_, '_> {
+impl ConfigWalker for TypesResolver<'_, '_, '_, '_> {
     type Data = ResolvedTypes;
 
     type Decl = TypesDecl;
@@ -1006,7 +1006,7 @@ impl IndicatorMap {
     }
 }
 
-impl CompatResolver<'_, '_, '_> {
+impl CompatResolver<'_, '_, '_, '_> {
     fn parse_interp_field(
         &mut self,
         decl: &VarDecl,
@@ -1156,7 +1156,7 @@ impl CompatResolver<'_, '_, '_> {
     }
 }
 
-impl ConfigWalker for CompatResolver<'_, '_, '_> {
+impl ConfigWalker for CompatResolver<'_, '_, '_, '_> {
     type Data = ResolvedCompat;
     type Decl = CompatmapDecl;
 
@@ -1396,7 +1396,7 @@ impl SymbolsKey {
     }
 }
 
-impl SymbolsResolver<'_, '_, '_> {
+impl SymbolsResolver<'_, '_, '_, '_> {
     fn parse_symbols_field(
         &mut self,
         not: Option<Span>,
@@ -1551,7 +1551,7 @@ impl SymbolsResolver<'_, '_, '_> {
     }
 }
 
-impl ConfigWalker for SymbolsResolver<'_, '_, '_> {
+impl ConfigWalker for SymbolsResolver<'_, '_, '_, '_> {
     type Data = ResolvedSymbols;
     type Decl = SymbolsDecl;
 

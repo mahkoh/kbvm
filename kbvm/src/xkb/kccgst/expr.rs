@@ -7,7 +7,10 @@ use {
         xkb::{
             code_map::CodeMap,
             controls::ControlMask,
-            diagnostic::{DiagnosticKind, DiagnosticSink},
+            diagnostic::{
+                DiagnosticKind::{self},
+                DiagnosticSink,
+            },
             group::{GroupChange, GroupIdx, GroupMask},
             group_component::GroupComponent,
             interner::{Interned, Interner},
@@ -141,6 +144,8 @@ pub(crate) enum EvalError {
     InvalidInterpretUseModMapModValue,
     #[error("unknown `indicator` field")]
     UnknownIndicatorField,
+    #[error("unimplemented `indicator` field")]
+    UnimplementedIndicatorField,
     #[error("indicator `modifiers` argument must have a value")]
     MissingIndicatorModifiersValue,
     #[error("out of bounds group value")]
@@ -252,6 +257,7 @@ impl EvalError {
             MissingInterpretUseModMapModValue,
             InvalidInterpretUseModMapModValue,
             UnknownIndicatorField,
+            UnimplementedIndicatorField,
             MissingIndicatorModifiersValue,
             GroupOutOfBounds,
             LevelOutOfBounds,
@@ -1385,7 +1391,7 @@ pub(crate) enum TypeField {
 #[expect(clippy::too_many_arguments)]
 pub(crate) fn eval_type_field(
     map: &mut CodeMap,
-    diagnostics: &mut DiagnosticSink<'_>,
+    diagnostics: &mut DiagnosticSink<'_, '_>,
     cooker: &mut StringCooker,
     interner: &mut Interner,
     meaning_cache: &mut MeaningCache,
@@ -1517,6 +1523,9 @@ pub(crate) fn eval_indicator_map_field(
             let value = get_expr!(MissingIndicatorWhichGroupStateValue);
             let components = eval_group_component(interner, meaning_cache, value)?;
             IndicatorMapField::WhichGroupState(components)
+        }
+        Meaning::Allowexplicit | Meaning::Indicatordriveskbd | Meaning::Indicatordriveskeyboard => {
+            return Err(UnimplementedIndicatorField.spanned2(var.path.span))
         }
         _ => return Err(UnknownIndicatorField.spanned2(var.path.span)),
     };

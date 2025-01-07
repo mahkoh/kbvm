@@ -717,7 +717,7 @@ fn create_lexer(
     map: &mut CodeMap,
     interner: &mut Interner,
     loader: &mut CodeLoader,
-    diagnostics: &mut DiagnosticSink<'_>,
+    diagnostics: &mut DiagnosticSink<'_, '_>,
     path: Spanned<Interned>,
 ) -> Option<Lexer> {
     let (real_path, code) = 'find_code: {

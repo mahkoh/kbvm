@@ -4,6 +4,7 @@ mod tests;
 use {
     crate::{
         builder::Redirect,
+        components::Components,
         group_type::GroupType,
         modifier::{ModifierMask, NUM_MODS, NUM_MODS_MASK},
         routine::{run, Component, Flag, Global, Lo, Register, Routine, StateEventHandler},
@@ -46,21 +47,9 @@ pub struct State {
     globals: StaticMap<Global, u32>,
     active: Vec<ActiveKey>,
     mods_pressed_count: [u32; NUM_MODS],
-    state_log: StateLog,
+    components: Components,
     actuation: u64,
     press: u64,
-}
-
-#[derive(Copy, Clone, Default)]
-struct StateLog {
-    mods_pressed: ModifierMask,
-    mods_latched: ModifierMask,
-    mods_locked: ModifierMask,
-    mods_effective: ModifierMask,
-    group_pressed: u32,
-    group_latched: u32,
-    group_locked: u32,
-    group_effective: u32,
 }
 
 #[derive(Copy, Clone)]
@@ -97,9 +86,9 @@ impl Debug for LogicalEvent {
 struct LogHandler<'a> {
     num_groups: u32,
     mods_pressed_count: &'a mut [u32; NUM_MODS],
-    pub_state: &'a mut StateLog,
+    pub_state: &'a mut Components,
     any_state_changed: bool,
-    acc_state: StateLog,
+    acc_state: Components,
     events: &'a mut Vec<LogicalEvent>,
 }
 
@@ -244,7 +233,29 @@ impl StateEventHandler for LogHandler<'_> {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, CloneWithDelta)]
-pub struct Keycode(pub u32);
+pub struct Keycode(pub(crate) u32);
+
+impl Keycode {
+    #[inline]
+    pub fn from_raw(kc: u32) -> Self {
+        Self(kc)
+    }
+
+    #[inline]
+    pub fn to_raw(self) -> u32 {
+        self.0
+    }
+
+    #[inline]
+    pub fn from_evdev(kc: u32) -> Self {
+        Self(kc.saturating_add(8))
+    }
+
+    #[inline]
+    pub fn to_evdev(self) -> u32 {
+        self.0.saturating_sub(8)
+    }
+}
 
 struct ActiveKey {
     actuation: u64,
@@ -292,8 +303,8 @@ impl StateMachine {
                         let mut handler = LogHandler {
                             num_groups: self.num_groups,
                             mods_pressed_count: &mut state.mods_pressed_count,
-                            acc_state: state.state_log,
-                            pub_state: &mut state.state_log,
+                            acc_state: state.components,
+                            pub_state: &mut state.components,
                             events,
                             any_state_changed: false,
                         };
@@ -319,8 +330,8 @@ impl StateMachine {
         if !down {
             return;
         }
-        let group = state.state_log.group_effective;
-        let mods = state.state_log.mods_effective;
+        let group = state.components.group_effective;
+        let mods = state.components.mods_effective;
         let mut on_press = None;
         let mut on_release = None;
         let mut spill = Box::new([]) as Box<[u32]>;
@@ -354,8 +365,8 @@ impl StateMachine {
         let mut handler = LogHandler {
             num_groups: self.num_groups,
             mods_pressed_count: &mut state.mods_pressed_count,
-            acc_state: state.state_log,
-            pub_state: &mut state.state_log,
+            acc_state: state.components,
+            pub_state: &mut state.components,
             events,
             any_state_changed: false,
         };
@@ -375,5 +386,12 @@ impl StateMachine {
         }
         handler.flush_state();
         state.active.push(active);
+    }
+}
+
+impl State {
+    #[inline]
+    pub fn components(&self) -> Components {
+        self.components
     }
 }

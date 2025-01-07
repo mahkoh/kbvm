@@ -37,9 +37,9 @@ pub struct ParserCache {
     rule_values: Vec<RuleValue>,
 }
 
-struct Parser<'a, 'b> {
+struct Parser<'a, 'b, 'c> {
     map: &'a mut CodeMap,
-    diagnostics: &'a mut DiagnosticSink<'b>,
+    diagnostics: &'a mut DiagnosticSink<'b, 'c>,
     tokens: &'a [Spanned<Token>],
     interner: &'a mut Interner,
     meaning_cache: &'a mut MeaningCache,
@@ -114,7 +114,7 @@ pub(crate) fn parse_line<'a>(
     .parse_line(cache)
 }
 
-impl Parser<'_, '_> {
+impl Parser<'_, '_, '_> {
     fn next(
         &mut self,
         expected: &'static [Expected],

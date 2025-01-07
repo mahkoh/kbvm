@@ -197,10 +197,11 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let map = std::fs::read(&map_path).map_err(ResultError::ReadMapFailed)?;
 
     let mut diagnostics = DiagnosticSink::new(diagnostics);
-    let mut context = Context::default();
-    context.add_include_path(case);
-    context.add_include_path(&case.join("extra-includes"));
-    context.add_include_path("./include".as_ref());
+    let mut context = Context::builder();
+    context.append_path(case);
+    context.append_path(&case.join("extra-includes"));
+    context.append_path("./include");
+    let context = context.build();
     let map = context
         .parse_keymap(&mut diagnostics, Some(&map_path), &map)
         .map_err(ResultError::ParsingFailed)?;
@@ -223,9 +224,9 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let mut events = vec![];
     let mut repeating_key = None;
     let key_name = |code: Keycode| {
-        let (name, kc) = CODE_TO_NAME[&code.0];
-        if kc != code.0 {
-            return NameOrKey::Key(code.0);
+        let (name, kc) = CODE_TO_NAME[&code.to_raw()];
+        if kc != code.to_raw() {
+            return NameOrKey::Key(code.to_raw());
         }
         NameOrKey::Name(name)
     };
@@ -280,7 +281,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
             if arg != kn {
                 return Err(ResultError::InvalidKeyName(arg.to_string()));
             }
-            Ok(Keycode(kc))
+            Ok(Keycode::from_raw(kc))
         };
         events.clear();
         let mut key = |down: bool| {
