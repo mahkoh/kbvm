@@ -31,12 +31,26 @@ use {
     },
 };
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Context {
     paths: Vec<Arc<PathBuf>>,
     max_includes: u64,
     max_include_depth: u64,
-    home: Option<Vec<u8>>,
+    env: Environment,
+}
+
+#[derive(Clone, Debug, Default)]
+pub(crate) struct Environment {
+    pub(crate) home: Option<String>,
+    pub(crate) xlocaledir: String,
+    pub(crate) xcomposefile: Option<String>,
+    pub(crate) xkb_default_rules: String,
+    pub(crate) xkb_default_model: String,
+    pub(crate) xkb_default_layout: String,
+    pub(crate) xkb_default_variant: String,
+    pub(crate) xkb_default_options: String,
+    pub(crate) xkb_config_extra_path: String,
+    pub(crate) xkb_config_root: String,
 }
 
 pub struct ContextBuilder {
@@ -68,10 +82,45 @@ impl ContextBuilder {
     pub fn build(mut self) -> Context {
         let mut home = None;
         let mut xdg_config_home = None;
+        let mut xkb_default_rules = None;
+        let mut xkb_default_model = None;
+        let mut xkb_default_layout = None;
+        let mut xkb_default_variant = None;
+        let mut xkb_default_options = None;
+        let mut xkb_config_extra_path = None;
+        let mut xkb_config_root = None;
+        let mut xlocaledir = None;
+        let mut xcomposefile = None;
         if self.enable_environment {
-            home = std::env::var("HOME").ok();
-            xdg_config_home = std::env::var("XDG_CONFIG_HOME").ok();
+            let fetch = |name| std::env::var(name).ok();
+            home = fetch("HOME");
+            xdg_config_home = fetch("XDG_CONFIG_HOME");
+            xkb_default_rules = fetch("XKB_DEFAULT_RULES");
+            xkb_default_model = fetch("XKB_DEFAULT_MODEL");
+            xkb_default_layout = fetch("XKB_DEFAULT_LAYOUT");
+            xkb_default_variant = fetch("XKB_DEFAULT_VARIANT");
+            xkb_default_options = fetch("XKB_DEFAULT_OPTIONS");
+            xkb_config_extra_path = fetch("XKB_CONFIG_EXTRA_PATH");
+            xkb_config_root = fetch("XKB_CONFIG_ROOT");
+            xlocaledir = fetch("XLOCALEDIR");
+            xcomposefile = fetch("XCOMPOSEFILE");
         }
+        macro_rules! or_default {
+            ($var:ident, $default:expr) => {
+                let $var = match $var {
+                    Some(v) => v,
+                    _ => $default.to_string(),
+                };
+            };
+        }
+        or_default!(xlocaledir, "/usr/share/X11/locale");
+        or_default!(xkb_default_rules, "evdev");
+        or_default!(xkb_default_model, "pc105");
+        or_default!(xkb_default_layout, "us");
+        or_default!(xkb_default_variant, "");
+        or_default!(xkb_default_options, "");
+        or_default!(xkb_config_extra_path, "/etc/xkb");
+        or_default!(xkb_config_root, DEFAULT_INCLUDE_DIR);
         let mut paths = vec![];
         macro_rules! push {
             ($path:expr) => {
@@ -90,10 +139,8 @@ impl ContextBuilder {
             push!(format!("{home}/.xkb"));
         }
         if self.enable_system_dirs {
-            push!("/etc/xkb".to_string());
-            if let Some(did) = DEFAULT_INCLUDE_DIR {
-                push!(did);
-            }
+            push!(xkb_config_extra_path.clone());
+            push!(xkb_config_root.clone());
         }
         for p in self.suffix.drain(..) {
             push!(p);
@@ -102,7 +149,18 @@ impl ContextBuilder {
             paths,
             max_includes: self.max_includes,
             max_include_depth: self.max_include_depth,
-            home: home.map(|h| h.into_bytes()),
+            env: Environment {
+                home,
+                xlocaledir,
+                xcomposefile,
+                xkb_default_rules,
+                xkb_default_model,
+                xkb_default_layout,
+                xkb_default_variant,
+                xkb_default_options,
+                xkb_config_extra_path,
+                xkb_config_root,
+            },
         }
     }
 }
@@ -230,7 +288,7 @@ impl Context {
             &[Interned],
             &[Group],
             u64,
-            Option<&[u8]>,
+            &Environment,
         ) -> T,
     ) -> T {
         let mut intern = |s: &str| {
@@ -268,7 +326,7 @@ impl Context {
             &options,
             &groups,
             self.max_includes,
-            self.home.as_deref(),
+            &self.env,
         )
     }
 

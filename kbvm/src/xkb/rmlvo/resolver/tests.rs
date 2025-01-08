@@ -3,6 +3,7 @@ use {
         code::Code,
         code_loader::CodeLoader,
         code_map::CodeMap,
+        context::Environment,
         diagnostic::DiagnosticSink,
         interner::Interner,
         kccgst::formatter::{Format, Formatter},
@@ -56,7 +57,7 @@ fn test() {
         &options,
         &groups,
         1024,
-        None,
+        &Environment::default(),
     );
     let mut out = vec![];
     let mut formatter = Formatter::new(&interner, &mut out);

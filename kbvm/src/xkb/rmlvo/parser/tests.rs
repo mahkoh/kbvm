@@ -4,6 +4,7 @@ use {
         xkb::{
             code::Code,
             code_map::CodeMap,
+            context::Environment,
             diagnostic::{Diagnostic, DiagnosticSink},
             interner::Interner,
             meaning::MeaningCache,
@@ -44,7 +45,7 @@ fn test_round_trip(interner: &mut Interner, meaning_cache: &mut MeaningCache, pa
             &mut cache,
             meaning_cache,
             &tokens,
-            None,
+            &Environment::default(),
         );
         tokens.clear();
         let line = match line {
@@ -75,11 +76,9 @@ fn round_trip() {
             test_round_trip(&mut interner, &mut meaning_cache, f.path());
         }
     }
-    if let Some(default_dir) = DEFAULT_INCLUDE_DIR {
-        test_round_trip(
-            &mut interner,
-            &mut meaning_cache,
-            format!("{}/rules/evdev", default_dir).as_ref(),
-        );
-    }
+    test_round_trip(
+        &mut interner,
+        &mut meaning_cache,
+        format!("{}/rules/evdev", DEFAULT_INCLUDE_DIR).as_ref(),
+    );
 }

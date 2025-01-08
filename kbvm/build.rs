@@ -15,25 +15,15 @@ fn main() {
             default_include_dir = Some(var);
         }
     }
-    #[cfg(unix)]
-    if default_include_dir.is_none() {
-        default_include_dir = Some("/usr/share/X11/xkb".to_string());
-    }
     let mut config = open("config.rs").unwrap();
-    if let Some(dir) = &default_include_dir {
-        writeln!(
-            config,
-            "pub const DEFAULT_INCLUDE_DIR: Option<&'static str> = Some(\"{}\");",
-            dir
-        )
-        .unwrap();
-    } else {
-        writeln!(
-            config,
-            "pub const DEFAULT_INCLUDE_DIR: Option<&'static str> = None;",
-        )
-        .unwrap();
-    }
+    writeln!(
+        config,
+        "pub const DEFAULT_INCLUDE_DIR: &str = \"{}\";",
+        default_include_dir
+            .as_deref()
+            .unwrap_or("/usr/share/X11/xkb"),
+    )
+    .unwrap();
 }
 
 fn open(s: &str) -> io::Result<BufWriter<File>> {

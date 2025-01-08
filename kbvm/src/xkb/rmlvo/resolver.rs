@@ -8,6 +8,7 @@ use {
             code::Code,
             code_loader::{CodeLoader, CodeType},
             code_map::CodeMap,
+            context::Environment,
             diagnostic::{DiagnosticKind, DiagnosticSink},
             group::GroupIdx,
             interner::{Interned, Interner},
@@ -54,7 +55,7 @@ pub(crate) fn create_item(
     options: &[Interned],
     groups: &[Group],
     max_includes: u64,
-    home: Option<&[u8]>,
+    env: &Environment,
 ) -> Item {
     let includes = create_includes(
         map,
@@ -67,7 +68,7 @@ pub(crate) fn create_item(
         options,
         groups,
         max_includes,
-        home,
+        env,
     );
     fn to_decls<T>(includes: Vec<Spanned<Include>>, map: impl Fn(Include) -> T) -> Decls<T> {
         Decls {
@@ -137,7 +138,7 @@ pub(crate) fn create_includes(
     options: &[Interned],
     groups: &[Group],
     max_includes: u64,
-    home: Option<&[u8]>,
+    env: &Environment,
 ) -> StaticMap<MappingValue, Vec<Spanned<Include>>> {
     let options: HashSet<_> = options.iter().copied().collect();
 
@@ -188,7 +189,7 @@ pub(crate) fn create_includes(
             &mut cache,
             meaning_cache,
             &tokens,
-            home,
+            env,
         ) {
             Ok(l) => l,
             Err(e) => {

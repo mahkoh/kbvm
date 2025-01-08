@@ -4,11 +4,11 @@ mod tests;
 
 use {
     crate::{
-        config::DEFAULT_INCLUDE_DIR,
         from_bytes::FromBytes,
         xkb::{
             code::Code,
             code_map::CodeMap,
+            context::Environment,
             diagnostic::{DiagnosticKind, DiagnosticSink},
             group::GroupIdx,
             interner::{Interned, Interner},
@@ -44,7 +44,7 @@ struct Parser<'a, 'b, 'c> {
     interner: &'a mut Interner,
     meaning_cache: &'a mut MeaningCache,
     pos: usize,
-    home: Option<&'a [u8]>,
+    env: &'a Environment,
 }
 
 #[derive(Debug)]
@@ -100,7 +100,7 @@ pub(crate) fn parse_line<'a>(
     cache: &'a mut ParserCache,
     meaning_cache: &mut MeaningCache,
     tokens: &[Spanned<Token>],
-    home: Option<&[u8]>,
+    env: &Environment,
 ) -> Result<Spanned<Line<'a>>, Spanned<ParserError>> {
     Parser {
         map,
@@ -109,7 +109,7 @@ pub(crate) fn parse_line<'a>(
         interner,
         meaning_cache,
         pos: 0,
-        home,
+        env,
     }
     .parse_line(cache)
 }
@@ -233,7 +233,7 @@ impl Parser<'_, '_, '_> {
                 let hi = lo + 2;
                 match c {
                     b'%' => res.extend_from_slice(b"%"),
-                    b'H' => match self.home {
+                    b'H' => match &self.env.home {
                         None => {
                             self.diagnostics.push(
                                 self.map,
@@ -244,17 +244,16 @@ impl Parser<'_, '_, '_> {
                             res.push(c);
                         }
                         Some(h) => {
-                            res.extend_from_slice(h);
+                            res.extend_from_slice(h.as_bytes());
                         }
                     },
                     b'S' => {
-                        if let Some(default_include_dir) = DEFAULT_INCLUDE_DIR {
-                            res.extend_from_slice(default_include_dir.as_bytes());
-                            res.extend_from_slice(b"/rules");
-                        }
+                        res.extend_from_slice(&self.env.xkb_config_root.as_bytes());
+                        res.extend_from_slice(b"/rules");
                     }
                     b'E' => {
-                        res.extend_from_slice(b"/etc/xkb/rules");
+                        res.extend_from_slice(&self.env.xkb_config_extra_path.as_bytes());
+                        res.extend_from_slice(b"/rules");
                     }
                     _ => {
                         self.diagnostics.push(

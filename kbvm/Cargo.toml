@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 kbvm-proc = { path = "../kbvm-proc" }
 thiserror = { version = "2.0.5", default-features = false }
-bstr = { version = "1.11.0", default-features = false }
+bstr = { version = "1.11.0", default-features = false, features = ["alloc"] }
 arrayvec = { version = "0.7.6", default-features = false }
 linearize = { version = "0.1.1", default-features = false, features = ["derive"] }
 hashbrown = { version = "0.15.2", default-features = false, features = ["default-hasher"] }
