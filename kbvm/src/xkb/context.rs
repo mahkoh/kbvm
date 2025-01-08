@@ -31,6 +31,7 @@ use {
     },
 };
 
+///
 #[derive(Clone, Debug)]
 pub struct Context {
     paths: Vec<Arc<PathBuf>>,
@@ -101,47 +102,25 @@ impl ContextBuilder {
     }
 
     pub fn build(mut self) -> Context {
-        let mut home = None;
-        let mut xdg_config_home = None;
-        let mut xkb_default_rules = None;
-        let mut xkb_default_model = None;
-        let mut xkb_default_layout = None;
-        let mut xkb_default_variant = None;
-        let mut xkb_default_options = None;
-        let mut xkb_config_extra_path = None;
-        let mut xkb_config_root = None;
-        let mut xlocaledir = None;
-        let mut xcomposefile = None;
-        if self.enable_environment {
-            let fetch = |name| std::env::var(name).ok();
-            home = fetch("HOME");
-            xdg_config_home = fetch("XDG_CONFIG_HOME");
-            xkb_default_rules = fetch("XKB_DEFAULT_RULES");
-            xkb_default_model = fetch("XKB_DEFAULT_MODEL");
-            xkb_default_layout = fetch("XKB_DEFAULT_LAYOUT");
-            xkb_default_variant = fetch("XKB_DEFAULT_VARIANT");
-            xkb_default_options = fetch("XKB_DEFAULT_OPTIONS");
-            xkb_config_extra_path = fetch("XKB_CONFIG_EXTRA_PATH");
-            xkb_config_root = fetch("XKB_CONFIG_ROOT");
-            xlocaledir = fetch("XLOCALEDIR");
-            xcomposefile = fetch("XCOMPOSEFILE");
-        }
-        macro_rules! or_default {
-            ($var:ident, $default:expr) => {
-                let $var = match $var {
+        macro_rules! getenv {
+            ($env:expr) => {{
+                let mut tmp = None;
+                if self.enable_environment {
+                    tmp = std::env::var($env).ok();
+                }
+                tmp
+            }};
+            ($env:expr, $default:expr) => {
+                match getenv!($env) {
                     Some(v) => v,
                     _ => $default.to_string(),
-                };
+                }
             };
         }
-        or_default!(xlocaledir, "/usr/share/X11/locale");
-        or_default!(xkb_default_rules, "evdev");
-        or_default!(xkb_default_model, "pc105");
-        or_default!(xkb_default_layout, "us");
-        or_default!(xkb_default_variant, "");
-        or_default!(xkb_default_options, "");
-        or_default!(xkb_config_extra_path, "/etc/xkb");
-        or_default!(xkb_config_root, DEFAULT_INCLUDE_DIR);
+        let home = getenv!("HOME");
+        let xdg_config_home = getenv!("XDG_CONFIG_HOME");
+        let xkb_config_extra_path = getenv!("XKB_CONFIG_EXTRA_PATH", "/etc/xkb");
+        let xkb_config_root = getenv!("XKB_CONFIG_ROOT", DEFAULT_INCLUDE_DIR);
         let mut paths = vec![];
         macro_rules! push {
             ($path:expr) => {
@@ -172,13 +151,13 @@ impl ContextBuilder {
             max_include_depth: self.max_include_depth,
             env: Environment {
                 home,
-                xlocaledir,
-                xcomposefile,
-                xkb_default_rules,
-                xkb_default_model,
-                xkb_default_layout,
-                xkb_default_variant,
-                xkb_default_options,
+                xlocaledir: getenv!("XLOCALEDIR", "/usr/share/X11/locale"),
+                xcomposefile: getenv!("XCOMPOSEFILE"),
+                xkb_default_rules: getenv!("XKB_DEFAULT_RULES", "evdev"),
+                xkb_default_model: getenv!("XKB_DEFAULT_MODEL", "pc105"),
+                xkb_default_layout: getenv!("XKB_DEFAULT_LAYOUT", "us"),
+                xkb_default_variant: getenv!("XKB_DEFAULT_VARIANT", ""),
+                xkb_default_options: getenv!("XKB_DEFAULT_OPTIONS", ""),
                 xkb_config_extra_path,
                 xkb_config_root,
             },

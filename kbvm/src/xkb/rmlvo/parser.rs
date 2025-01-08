@@ -248,11 +248,11 @@ impl Parser<'_, '_, '_> {
                         }
                     },
                     b'S' => {
-                        res.extend_from_slice(&self.env.xkb_config_root.as_bytes());
+                        res.extend_from_slice(self.env.xkb_config_root.as_bytes());
                         res.extend_from_slice(b"/rules");
                     }
                     b'E' => {
-                        res.extend_from_slice(&self.env.xkb_config_extra_path.as_bytes());
+                        res.extend_from_slice(self.env.xkb_config_extra_path.as_bytes());
                         res.extend_from_slice(b"/rules");
                     }
                     _ => {
