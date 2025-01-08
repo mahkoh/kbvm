@@ -1,35 +1,83 @@
 mod format;
 mod from_lookup;
+mod from_resolved;
+pub mod iterators;
+mod to_builder;
 
 use {
     crate::{
+        builder::Redirect,
+        group::{GroupDelta, GroupIndex},
         keysym::Keysym,
         modifier::{ModifierIndex, ModifierMask},
         state_machine,
         xkb::{
             controls::ControlMask,
-            group::{GroupChange, GroupIdx, GroupMask},
+            group::{GroupIdx, GroupMask},
             group_component::GroupComponent,
             indicator::IndicatorIdx,
-            interner::{Interned, Interner},
+            keymap::{
+                actions::{
+                    GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
+                    ModsLockAction, ModsSetAction,
+                },
+                iterators::{Groups, Keys, Levels, Mappings, VirtualModifiers},
+            },
             level::Level,
             mod_component::ModComponentMask,
-            resolved::{
-                BuiltInKeytype, GroupsRedirect, KeyTypeRef, ModMapField, Resolved, ResolvedAction,
-                ResolvedActionMods, ResolvedKeyKind, SymbolsKeyGroup,
-            },
-            span::{Despan, Spanned},
+            resolved::GroupsRedirect,
         },
     },
-    arrayvec::ArrayVec,
-    bstr::ByteSlice,
-    hashbrown::{hash_map::Entry, DefaultHashBuilder, HashMap, HashSet},
+    hashbrown::DefaultHashBuilder,
     indexmap::IndexMap,
-    linearize::{static_map, Linearize, StaticMap},
     smallvec::SmallVec,
-    std::{fmt::Write, sync::Arc},
+    std::sync::Arc,
+};
+#[expect(unused_imports)]
+use {
+    crate::{lookup::LookupTable, xkb::Context},
+    std::fmt::Display,
 };
 
+/// A fully resolved XKB keymap.
+///
+/// This object is usually created from a [`Context`] but can also be created via
+/// [`LookupTable::to_xkb_keymap`].
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_keymap {
+///     xkb_keycodes {
+///         <a> = 38;
+///         <leftshift> = 50;
+///     };
+///     xkb_types { };
+///     xkb_compat { };
+///     xkb_symbols {
+///         key <a> {
+///             [ a, A ],
+///         };
+///         key <leftshift> {
+///             [ Shift_L ],
+///             [ SetMods(mods = Shift) ],
+///         };
+///     };
+/// };
+/// ```
+///
+/// # Formatting
+///
+/// This type implements [`Display`] which will format the map in XKB text format. By
+/// default, the map will be formatted in a single line. You can enable multi-line
+/// formatting by using the alternate modifier `#`.
+///
+/// ```
+/// # use kbvm::xkb::Keymap;
+/// fn pretty_print_keymap(keymap: &Keymap) -> String {
+///     format!("{keymap:#}")
+/// }
+/// ```
 #[derive(Debug, PartialEq)]
 pub struct Keymap {
     pub(crate) name: Option<Arc<String>>,
@@ -40,7 +88,7 @@ pub struct Keymap {
     pub(crate) virtual_modifiers: Vec<VirtualModifier>,
     pub(crate) mod_maps: Vec<(ModifierIndex, ModMapValue)>,
     pub(crate) group_names: Vec<(GroupIdx, Arc<String>)>,
-    pub(crate) keys: IndexMap<state_machine::Keycode, Symbol, DefaultHashBuilder>,
+    pub(crate) keys: IndexMap<state_machine::Keycode, Key, DefaultHashBuilder>,
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -67,644 +115,342 @@ pub(crate) struct Keycode {
     pub(crate) keycode: state_machine::Keycode,
 }
 
+/// A virtual modifier.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_compat {
+///     virtual_modifiers V1 = 0x100;
+/// };
+/// ```
 #[derive(Debug, PartialEq)]
-pub(crate) struct VirtualModifier {
+pub struct VirtualModifier {
     pub(crate) name: Arc<String>,
     pub(crate) values: ModifierMask,
 }
 
+/// A key type.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_types {
+///     type "X" {
+///         modifiers = Shift+Mod1;
+///         map[Shift] = Level2;
+///         map[Mod1] = Level2;
+///     };
+/// };
+/// ```
 #[derive(Debug, PartialEq)]
-pub(crate) struct KeyType {
+pub struct KeyType {
     pub(crate) name: Arc<String>,
     pub(crate) modifiers: ModifierMask,
     pub(crate) mappings: Vec<KeyTypeMapping>,
     pub(crate) level_names: Vec<(Level, Arc<String>)>,
 }
 
+/// A key-type mapping.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_types {
+///     type "X" {
+///         modifiers = Shift+Mod1;
+///         map[Shift] = Level2;
+///         map[Mod1] = Level2;
+///     };
+/// };
+/// ```
+///
+/// This object might refer to either `map[Shift]` or `map[Mod1]`.
 #[derive(Debug, PartialEq)]
-pub(crate) struct KeyTypeMapping {
+pub struct KeyTypeMapping {
     pub(crate) modifiers: ModifierMask,
     pub(crate) preserved: ModifierMask,
     pub(crate) level: Level,
 }
 
+/// An XKB action.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_symbols {
+///     key <leftshift> {
+///         [ SetMods(mods = Shift) ],
+///     };
+/// };
+/// ```
 #[derive(Clone, Debug, PartialEq)]
-pub(crate) enum Action {
-    ModsSet(ModsSet),
-    ModsLatch(ModsLatch),
-    ModsLock(ModsLock),
-    GroupSet(GroupSet),
-    GroupLatch(GroupLatch),
-    GroupLock(GroupLock),
+#[non_exhaustive]
+pub enum Action {
+    /// A `SetMods` action.
+    ModsSet(ModsSetAction),
+    /// A `LatchMods` action.
+    ModsLatch(ModsLatchAction),
+    /// A `LockMods` action.
+    ModsLock(ModsLockAction),
+    /// A `SetGroup` action.
+    GroupSet(GroupSetAction),
+    /// A `LatchGroup` action.
+    GroupLatch(GroupLatchAction),
+    /// A `LockGroup` action.
+    GroupLock(GroupLockAction),
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub(crate) struct ModsSet {
-    pub(crate) clear_locks: bool,
-    pub(crate) modifiers: ModifierMask,
+/// The XKB actions supported by KBVM.
+pub mod actions {
+    use crate::{modifier::ModifierMask, xkb::group};
+
+    /// A `SetMods` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ SetMods(mods = Shift) ],
+    ///     };
+    /// };
+    /// ```
+    #[derive(Clone, Debug, PartialEq)]
+    pub struct ModsSetAction {
+        pub(crate) clear_locks: bool,
+        pub(crate) modifiers: ModifierMask,
+    }
+
+    /// A `LatchMods` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ LatchMods(mods = Shift) ],
+    ///     };
+    /// };
+    /// ```
+    #[derive(Clone, Debug, PartialEq)]
+    pub struct ModsLatchAction {
+        pub(crate) clear_locks: bool,
+        pub(crate) latch_to_lock: bool,
+        pub(crate) modifiers: ModifierMask,
+    }
+
+    /// A `LockMods` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ LockMods(mods = Shift) ],
+    ///     };
+    /// };
+    /// ```
+    #[derive(Clone, Debug, PartialEq)]
+    pub struct ModsLockAction {
+        pub(crate) modifiers: ModifierMask,
+        pub(crate) lock: bool,
+        pub(crate) unlock: bool,
+    }
+
+    /// A `SetGroup` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <compose> {
+    ///         [ SetGroup(group = +1) ],
+    ///     };
+    /// };
+    /// ```
+    #[derive(Clone, Debug, PartialEq)]
+    pub struct GroupSetAction {
+        pub(crate) group: group::GroupChange,
+        pub(crate) clear_locks: bool,
+    }
+
+    /// A `LatchGroup` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <compose> {
+    ///         [ LatchGroup(group = +1) ],
+    ///     };
+    /// };
+    /// ```
+    #[derive(Clone, Debug, PartialEq)]
+    pub struct GroupLatchAction {
+        pub(crate) group: group::GroupChange,
+        pub(crate) clear_locks: bool,
+        pub(crate) latch_to_lock: bool,
+    }
+
+    /// A `LockGroup` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <compose> {
+    ///         [ LockGroup(group = +1) ],
+    ///     };
+    /// };
+    /// ```
+    #[derive(Clone, Debug, PartialEq)]
+    pub struct GroupLockAction {
+        pub(crate) group: group::GroupChange,
+    }
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub(crate) struct ModsLatch {
-    pub(crate) clear_locks: bool,
-    pub(crate) latch_to_lock: bool,
-    pub(crate) modifiers: ModifierMask,
+/// A group change performed by an [`Action`].
+pub enum GroupChange {
+    /// An absolute change of a group.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <compose> {
+    ///         [ SetGroup(group = Group2) ],
+    ///     };
+    /// };
+    /// ```
+    Absolute(GroupIndex),
+    /// A relative change of a group.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <compose> {
+    ///         [ SetGroup(group = +1) ],
+    ///     };
+    /// };
+    /// ```
+    Relative(GroupDelta),
 }
 
+/// A key.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_symbols {
+///     key <a> { [ a, A ] };
+/// };
+/// ```
 #[derive(Clone, Debug, PartialEq)]
-pub(crate) struct ModsLock {
-    pub(crate) modifiers: ModifierMask,
-    pub(crate) lock: bool,
-    pub(crate) unlock: bool,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub(crate) struct GroupSet {
-    pub(crate) group: GroupChange,
-    pub(crate) clear_locks: bool,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub(crate) struct GroupLatch {
-    pub(crate) group: GroupChange,
-    pub(crate) clear_locks: bool,
-    pub(crate) latch_to_lock: bool,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub(crate) struct GroupLock {
-    pub(crate) group: GroupChange,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub(crate) struct Symbol {
+pub struct Key {
     pub(crate) key_name: Arc<String>,
     pub(crate) key_code: state_machine::Keycode,
-    pub(crate) groups: Vec<Option<SymbolGroup>>,
+    pub(crate) groups: Vec<Option<KeyGroup>>,
     pub(crate) repeat: bool,
     pub(crate) redirect: GroupsRedirect,
 }
 
+/// A key group.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_symbols {
+///     key <a> {
+///         [ a, A ],
+///         [ b, B ],
+///     };
+/// };
+/// ```
+///
+/// This object might refer to either `[ a, A ]` or `[ b, B ]`.
 #[derive(Clone, Debug, PartialEq)]
-pub(crate) struct SymbolGroup {
+pub struct KeyGroup {
     pub(crate) key_type: Arc<KeyType>,
-    pub(crate) levels: Vec<SymbolLevel>,
+    pub(crate) levels: Vec<KeyLevel>,
 }
 
+/// A key level.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_symbols {
+///     key <a> {
+///         symbols[Group1] = [ a,          A                    ],
+///         actions[Group1] = [ NoAction(), SetMods(mods = Mod1) ],
+///         symbols[Group2] = [ b,          B                    ],
+///     };
+/// };
+/// ```
+///
+/// This object might refer to any of
+///
+/// - `a`,
+/// - `A` / `SetMods(mods = Mod1)`,
+/// - `b`, or
+/// - `B`.
 #[derive(Clone, Debug, Default, PartialEq)]
-pub(crate) struct SymbolLevel {
+pub struct KeyLevel {
     pub(crate) symbols: SmallVec<[Keysym; 1]>,
     pub(crate) actions: SmallVec<[Action; 1]>,
 }
 
 impl Keymap {
-    pub(crate) fn from_resolved(interner: &Interner, resolved: &Resolved) -> Self {
-        let mut string_cache = HashMap::<_, Arc<String>>::new();
-        let mut get_string = |i: Interned| match string_cache.entry(i) {
-            Entry::Occupied(o) => o.get().clone(),
-            Entry::Vacant(v) => {
-                let s = Arc::new(interner.get(i).as_bstr().to_string());
-                v.insert(s.clone());
-                s
-            }
-        };
-        let mut virtual_modifiers = Vec::with_capacity(resolved.mods.len());
-        for m in &resolved.mods {
-            virtual_modifiers.push(VirtualModifier {
-                name: get_string(m.name.val),
-                values: m.def.despan().unwrap_or_default(),
-            });
-        }
-        virtual_modifiers.sort_unstable_by(|l, r| l.name.cmp(&r.name));
-        if virtual_modifiers.is_empty() {
-            // https://gitlab.freedesktop.org/xorg/xserver/-/issues/1774
-            virtual_modifiers.push(VirtualModifier::dummy());
-        }
-        let mut types_by_ident = HashMap::new();
-        let mut types = Vec::with_capacity(resolved.types.key_types.len() + 8);
-        let mut used_types = HashSet::new();
-        for ty in resolved.types.key_types.values() {
-            let mut mappings = Vec::with_capacity(ty.ty.map.len());
-            for (n, v) in &ty.ty.map {
-                mappings.push(KeyTypeMapping {
-                    modifiers: *n,
-                    preserved: ty.ty.preserved.get(n).copied().despan().unwrap_or_default(),
-                    level: v.val,
-                });
-            }
-            mappings.sort_unstable_by_key(|k| (k.level, k.modifiers.0));
-            let mut level_names = Vec::with_capacity(ty.ty.names.len());
-            for (level, name) in &ty.ty.names {
-                level_names.push((*level, get_string(name.val)));
-            }
-            level_names.sort_unstable_by_key(|l| l.0);
-            let t = KeyType {
-                name: get_string(ty.name.val),
-                modifiers: ty.ty.modifiers.despan().unwrap_or_default(),
-                mappings,
-                level_names,
-            };
-            let t = Arc::new(t);
-            types_by_ident.insert(ty.name.val, t.clone());
-            types.push(t);
-        }
-        let default_key_types = create_used_default_key_types(
-            interner,
-            &virtual_modifiers,
-            resolved,
-            &mut types,
-            &mut types_by_ident,
-        );
-        types.sort_unstable_by(|l, r| l.name.cmp(&r.name));
-        let mut indicators = Vec::with_capacity(resolved.compat.indicator_maps.len());
-        for i in resolved.compat.indicator_maps.values() {
-            let map = &i.indicator_map;
-            let modifier_mask = map.modifiers.despan().unwrap_or_default();
-            let group_mask = map.groups.despan().unwrap_or_default();
-            let mut mod_components = map.which_modifier_state.despan().unwrap_or_default();
-            if modifier_mask.0 == 0 {
-                mod_components = ModComponentMask::NONE;
-            } else if mod_components == ModComponentMask::NONE {
-                mod_components = ModComponentMask::EFFECTIVE;
-            }
-            let group_components = map.which_group_state.despan().unwrap_or_default();
-            let i = Indicator {
-                virt: map.virt,
-                index: match map.idx {
-                    Some(i) => i,
-                    None => continue,
-                },
-                name: get_string(i.name.val),
-                modifier_mask,
-                group_mask,
-                controls: map.controls.despan().unwrap_or_default(),
-                mod_components,
-                group_components,
-            };
-            indicators.push(i);
-        }
-        for i in &resolved.keycodes.indicators {
-            if resolved.compat.indicator_maps.contains_key(&i.name.val) {
-                continue;
-            }
-            let i = Indicator {
-                virt: i.virt.is_some(),
-                index: i.idx.val,
-                name: get_string(i.name.val),
-                modifier_mask: Default::default(),
-                group_mask: Default::default(),
-                controls: Default::default(),
-                mod_components: Default::default(),
-                group_components: Default::default(),
-            };
-            indicators.push(i);
-        }
-        indicators.sort_unstable_by_key(|i| i.index.raw());
-        if indicators.is_empty() {
-            // https://gitlab.freedesktop.org/xorg/xserver/-/issues/1775
-            indicators.push(Indicator::dummy());
-        }
-        let mut mod_maps = HashSet::with_capacity(resolved.symbols.mod_map_entries.len());
-        for m in resolved.symbols.mod_map_entries.values() {
-            if let Some(idx) = m.modifier {
-                let (kc, ks) = match m.key.val {
-                    ModMapField::Keysym(s, Some(k)) => (k, Some(s)),
-                    ModMapField::Keycode(k) => (k, None),
-                    _ => continue,
-                };
-                if !resolved.symbols.keys.contains_key(&kc) {
-                    continue;
-                }
-                if let Some(name) = resolved.keycodes.keycode_to_name.get(&kc) {
-                    mod_maps.insert((
-                        idx.val,
-                        ModMapValue {
-                            key_name: get_string(*name),
-                            key_sym: ks,
-                        },
-                    ));
-                }
-            }
-        }
-        let mut mod_maps = mod_maps.into_iter().collect::<Vec<_>>();
-        mod_maps.sort_unstable();
-        let mut group_names = Vec::with_capacity(resolved.symbols.group_names.len());
-        for (idx, m) in resolved.symbols.group_names.iter().flatten() {
-            group_names.push((*idx, get_string(m.val)));
-        }
-        let mut used_key_names = HashSet::new();
-        let mut keys = Vec::with_capacity(resolved.symbols.keys.len());
-        for key in resolved.symbols.keys.values() {
-            let mut groups: Vec<_> = key
-                .key
-                .groups
-                .iter()
-                .map(|g| {
-                    map_symbol_groups(
-                        &mut used_types,
-                        &default_key_types,
-                        &types_by_ident,
-                        key.key.modmap,
-                        g,
-                    )
-                })
-                .collect();
-            while let Some(None) = groups.last() {
-                groups.pop();
-            }
-            used_key_names.insert(key.name.val);
-            let mut redirect = key
-                .key
-                .groups_redirect
-                .despan()
-                .unwrap_or(GroupsRedirect::Wrap);
-            if let GroupsRedirect::Redirect(g) = redirect {
-                if g.to_offset() >= groups.len() {
-                    redirect = GroupsRedirect::Redirect(GroupIdx::ONE);
-                }
-            }
-            let k = Symbol {
-                key_name: get_string(key.name.val),
-                key_code: key.code,
-                repeat: key.key.repeating.despan().flatten().unwrap_or(false),
-                redirect,
-                groups,
-            };
-            keys.push(k);
-        }
-        keys.sort_unstable_by(|l, r| l.key_name.cmp(&r.key_name));
-        let keys = keys.into_iter().map(|k| (k.key_code, k)).collect();
-        let mut keycodes = Vec::with_capacity(resolved.keycodes.name_to_key.len());
-        // https://gitlab.freedesktop.org/xorg/xserver/-/issues/1780
-        let mut max_keycode = 255;
-        for key in resolved.keycodes.name_to_key.values() {
-            if !used_key_names.contains(&key.name.val) {
-                continue;
-            }
-            if let ResolvedKeyKind::Real(r) = &key.kind {
-                let k = Keycode {
-                    name: get_string(key.name.val),
-                    keycode: r.val,
-                };
-                max_keycode = max_keycode.max(r.val.0);
-                keycodes.push(k);
-            }
-        }
-        keycodes.sort_unstable_by(|l, r| l.name.cmp(&r.name));
-        types.retain(|kt| used_types.contains(&(&**kt as *const KeyType)));
-        Self {
-            name: resolved.name.despan().map(get_string),
-            max_keycode,
-            indicators,
-            keycodes,
-            types,
-            virtual_modifiers,
-            mod_maps,
-            group_names,
-            keys,
+    /// Returns an iterator over the virtual modifiers of this map.
+    ///
+    /// Note that the real modifiers are not included in this iterator. The real modifiers
+    /// use the following hard-coded assignments:
+    ///
+    /// | name         | index | mask   |
+    /// | ------------ | ----- | ------ |
+    /// | Shift        | `0`   | `0x01` |
+    /// | Lock         | `1`   | `0x02` |
+    /// | Control      | `2`   | `0x04` |
+    /// | Mod1/Alt     | `3`   | `0x08` |
+    /// | Mod2/NumLock | `4`   | `0x10` |
+    /// | Mod3         | `5`   | `0x20` |
+    /// | Mod4/Logo    | `6`   | `0x40` |
+    /// | Mod5         | `7`   | `0x80` |
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_compat {
+    ///     virtual_modifiers A;
+    ///     virtual_modifiers B;
+    ///     virtual_modifiers C;
+    /// };
+    /// ```
+    ///
+    /// The iterator returns 3 elements, one for A, one for B, and one for C.
+    pub fn virtual_modifiers(&self) -> VirtualModifiers<'_> {
+        VirtualModifiers {
+            modifiers: self.virtual_modifiers.iter(),
         }
     }
-}
 
-fn map_symbol_groups(
-    used_types: &mut HashSet<*const KeyType>,
-    default_key_types: &StaticMap<BuiltInKeytype, Option<Arc<KeyType>>>,
-    types_by_ident: &HashMap<Interned, Arc<KeyType>>,
-    modmap: ModifierMask,
-    m: &SymbolsKeyGroup,
-) -> Option<SymbolGroup> {
-    let Some(ktr) = &m.key_type else {
-        return None;
-    };
-    let kt = match ktr {
-        KeyTypeRef::BuiltIn(bi) => default_key_types[bi].as_ref(),
-        KeyTypeRef::Named(n) => types_by_ident.get(&n.val),
-    };
-    let kt = kt?;
-    let mut levels: Vec<_> = m
-        .levels
-        .iter()
-        .map(|m| {
-            let symbols = m.symbols.iter().map(|s| s.val).collect();
-            let actions = m
-                .actions
-                .iter()
-                .flat_map(|a| map_action(modmap, &a.val))
-                .collect();
-            SymbolLevel { symbols, actions }
-        })
-        .collect();
-    while let Some(last) = levels.last() {
-        if last.symbols.is_empty() && last.actions.is_empty() {
-            levels.pop();
-        } else {
-            break;
-        }
-    }
-    if levels.is_empty() {
-        return None;
-    }
-    used_types.insert(&**kt);
-    Some(SymbolGroup {
-        key_type: kt.clone(),
-        levels,
-    })
-}
-
-fn map_action(modmap: ModifierMask, a: &ResolvedAction) -> Option<Action> {
-    let map_action_mods = |mods: &Option<Spanned<ResolvedActionMods>>| {
-        let mods = mods
-            .despan()
-            .map(|m| match m {
-                ResolvedActionMods::ModMap => modmap,
-                ResolvedActionMods::Explicit(e) => e,
-            })
-            .unwrap_or_default();
-        (mods.0 != 0).then_some(mods)
-    };
-    let action = match a {
-        ResolvedAction::ResolvedNoAction(_) => return None,
-        ResolvedAction::ResolvedModsSet(m) => Action::ModsSet(ModsSet {
-            clear_locks: m.clear_locks.despan().unwrap_or_default(),
-            modifiers: map_action_mods(&m.modifiers)?,
-        }),
-        ResolvedAction::ResolvedModsLatch(m) => Action::ModsLatch(ModsLatch {
-            clear_locks: m.clear_locks.despan().unwrap_or_default(),
-            latch_to_lock: m.latch_to_lock.despan().unwrap_or_default(),
-            modifiers: map_action_mods(&m.modifiers)?,
-        }),
-        ResolvedAction::ResolvedModsLock(m) => {
-            let (lock, unlock) = match m.affect.despan() {
-                None => (true, true),
-                Some(a) => (a.lock, a.unlock),
-            };
-            Action::ModsLock(ModsLock {
-                modifiers: map_action_mods(&m.modifiers)?,
-                lock,
-                unlock,
-            })
-        }
-        ResolvedAction::ResolvedGroupSet(m) => Action::GroupSet(GroupSet {
-            group: m.group.despan().unwrap_or_default(),
-            clear_locks: m.clear_locks.despan().unwrap_or_default(),
-        }),
-        ResolvedAction::ResolvedGroupLatch(m) => Action::GroupLatch(GroupLatch {
-            group: m.group.despan().unwrap_or_default(),
-            clear_locks: m.clear_locks.despan().unwrap_or_default(),
-            latch_to_lock: m.latch_to_lock.despan().unwrap_or_default(),
-        }),
-        ResolvedAction::ResolvedGroupLock(m) => Action::GroupLock(GroupLock {
-            group: m.group.despan().unwrap_or_default(),
-        }),
-    };
-    Some(action)
-}
-
-fn create_used_default_key_types(
-    interner: &Interner,
-    mods: &[VirtualModifier],
-    resolved: &Resolved,
-    types: &mut Vec<Arc<KeyType>>,
-    types_by_ident: &mut HashMap<Interned, Arc<KeyType>>,
-) -> StaticMap<BuiltInKeytype, Option<Arc<KeyType>>> {
-    let mut need_to_create = static_map! {
-        _ => true,
-    };
-    let mut used = static_map! {
-        _ => false,
-    };
-    let mut res = static_map! {
-        _ => None,
-    };
-    let bi_to_interned: StaticMap<BuiltInKeytype, _> = static_map! {
-        bi => interner.get_existing(bi.name().as_bytes()),
-    };
-    for (bi, interned) in &bi_to_interned {
-        if let Some(interned) = interned {
-            if let Some(ty) = types_by_ident.get(interned) {
-                res[bi] = Some(ty.clone());
-                need_to_create[bi] = false;
-            }
-        }
-    }
-    const N: usize = BuiltInKeytype::LENGTH;
-    let mut missing_ident: ArrayVec<_, N> = bi_to_interned
-        .clone()
-        .into_iter()
-        .flat_map(|(bi, i)| i.map(|i| (i, bi)))
-        .collect();
-    for key in resolved.symbols.keys.values() {
-        for group in &key.key.groups {
-            if let Some(kt) = &group.key_type {
-                match kt {
-                    KeyTypeRef::BuiltIn(bi) => used[*bi] = true,
-                    KeyTypeRef::Named(n) => {
-                        for (idx, (i, bi)) in missing_ident.iter().enumerate() {
-                            if *i == n.val {
-                                used[*bi] = true;
-                                missing_ident.swap_remove(idx);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    need_to_create = need_to_create.map(|bi, v| v && used[bi]);
-    create_used_default_key_types_(mods, &mut res, need_to_create, types);
-    for (bi, interned) in &bi_to_interned {
-        if let Some(interned) = interned {
-            if let Some(ty) = &res[bi] {
-                types_by_ident.insert(*interned, ty.clone());
-            }
-        }
-    }
-    res
-}
-
-fn create_used_default_key_types_(
-    mods: &[VirtualModifier],
-    res: &mut StaticMap<BuiltInKeytype, Option<Arc<KeyType>>>,
-    need_to_create: StaticMap<BuiltInKeytype, bool>,
-    types: &mut Vec<Arc<KeyType>>,
-) {
-    macro_rules! vmod {
-        ($name:expr) => {{
-            let m = mods
-                .iter()
-                .find(|m| *m.name == $name)
-                .map(|m| m.values)
-                .unwrap_or_default();
-            (m.0 != 0).then_some(m)
-        }};
-    }
-    macro_rules! ty {
-        ($name:ident {
-            modifiers = $($modifier:ident)|+ $(+ $($other:ident)|*)?,
-            $(
-                map[$($map_modifier:ident)|+ $(+ $($map_other:ident)|*)?] = $map_level:literal preserve $($keep_modifier:ident)|*,
-            )*
-            $(
-                name[$name_level:expr] = $level_name:expr,
-            )*
-        }) => {{
-            let mut used = HashSet::new();
-            let mut mappings = vec![];
-            $(
-                #[allow(unused_labels)]
-                'add_mapping: {
-                    #[allow(unused_mut, unused_assignments)]
-                    let mut other = ModifierMask::NONE;
-                    $(
-                        if let ($(Some($map_other),)*) = ($($map_other,)*) {
-                            other = $($map_other)|*;
-                        } else {
-                            break 'add_mapping;
-                        }
-                    )?
-                    let modifiers = $(ModifierMask::$map_modifier)|* | other;
-                    if used.insert(modifiers) {
-                        mappings.push(
-                            KeyTypeMapping {
-                                modifiers,
-                                preserved: $(ModifierMask::$keep_modifier)|*,
-                                level: Level::new($map_level).unwrap(),
-                            },
-                        )
-                    }
-                }
-            )*
-            mappings.shrink_to_fit();
-            mappings.sort_unstable_by_key(|k| (k.level, k.modifiers.0));
-            let mut level_names = vec![
-                $(
-                    (Level::new($name_level).unwrap(), Arc::new($level_name.to_string())),
-                )*
-            ];
-            level_names.sort_unstable_by_key(|l| l.0);
-            Arc::new(KeyType {
-                name: Arc::new(BuiltInKeytype::$name.name().to_string()),
-                modifiers: $(ModifierMask::$modifier)|* $(| $($other.unwrap_or_default())|+)?,
-                mappings,
-                level_names,
-            })
-        }};
-    }
-    macro_rules! ty_cached {
-        ($($tt:tt)*) => {{
-            static T: std::sync::LazyLock<Arc<KeyType>> = std::sync::LazyLock::new(|| {
-                ty!($($tt)*)
-            });
-            T.clone()
-        }};
-    }
-    let num_lock = vmod!("NumLock");
-    let level_three = vmod!("LevelThree");
-    for (bi, need_to_create) in need_to_create {
-        if need_to_create {
-            let kt = match bi {
-                BuiltInKeytype::OneLevel => ty_cached! {
-                    OneLevel {
-                        modifiers = NONE,
-                        map[NONE] = 1 preserve NONE,
-                        name[1] = "Any",
-                    }
-                },
-                BuiltInKeytype::Alphabetic => ty_cached! {
-                    Alphabetic {
-                        modifiers = SHIFT|LOCK,
-                        map[SHIFT] = 2 preserve NONE,
-                        map[LOCK] = 2 preserve NONE,
-                        name[1] = "Base",
-                        name[2] = "Caps",
-                    }
-                },
-                BuiltInKeytype::Keypad => ty! {
-                    Keypad {
-                        modifiers = SHIFT + num_lock,
-                        map[NONE] = 1 preserve NONE,
-                        map[NONE + num_lock] = 2 preserve NONE,
-                        map[SHIFT + num_lock] = 1 preserve NONE,
-                        name[1] = "Base",
-                        name[2] = "Number",
-                    }
-                },
-                BuiltInKeytype::TwoLevel => ty_cached! {
-                    TwoLevel {
-                        modifiers = SHIFT,
-                        map[SHIFT] = 2 preserve NONE,
-                        name[1] = "Base",
-                        name[2] = "Shift",
-                    }
-                },
-                BuiltInKeytype::FourLevelAlphabetic => ty! {
-                    FourLevelAlphabetic {
-                        modifiers = SHIFT|LOCK + level_three,
-                        map[NONE] = 1 preserve NONE,
-                        map[SHIFT] = 2 preserve NONE,
-                        map[LOCK] = 2 preserve NONE,
-                        map[SHIFT|LOCK] = 1 preserve NONE,
-                        map[NONE + level_three] = 3 preserve NONE,
-                        map[SHIFT + level_three] = 4 preserve NONE,
-                        map[LOCK + level_three] = 4 preserve NONE,
-                        map[SHIFT|LOCK + level_three] = 3 preserve NONE,
-                        name[1] = "Base",
-                        name[2] = "Shift",
-                        name[3] = "AltGr",
-                        name[4] = "Shift AltGr",
-                    }
-                },
-                BuiltInKeytype::FourLevelSemialphabetic => ty! {
-                    FourLevelSemialphabetic {
-                        modifiers = SHIFT|LOCK + level_three,
-                        map[NONE] = 1 preserve NONE,
-                        map[SHIFT] = 2 preserve NONE,
-                        map[LOCK] = 2 preserve NONE,
-                        map[SHIFT|LOCK] = 1 preserve NONE,
-                        map[NONE + level_three] = 3 preserve NONE,
-                        map[SHIFT + level_three] = 4 preserve NONE,
-                        map[LOCK + level_three] = 3 preserve LOCK,
-                        map[SHIFT|LOCK + level_three] = 4 preserve LOCK,
-                        name[1] = "Base",
-                        name[2] = "Shift",
-                        name[3] = "AltGr",
-                        name[4] = "Shift AltGr",
-                    }
-                },
-                BuiltInKeytype::FourLevelKeypad => ty! {
-                    FourLevelKeypad {
-                        modifiers = SHIFT + num_lock|level_three,
-                        map[NONE] = 1 preserve NONE,
-                        map[SHIFT] = 2 preserve NONE,
-                        map[NONE + num_lock] = 2 preserve NONE,
-                        map[SHIFT + num_lock] = 1 preserve NONE,
-                        map[NONE + level_three] = 3 preserve NONE,
-                        map[SHIFT + level_three] = 4 preserve NONE,
-                        map[NONE + num_lock|level_three] = 4 preserve NONE,
-                        map[SHIFT + num_lock|level_three] = 3 preserve NONE,
-                        name[1] = "Base",
-                        name[2] = "Shift/Numlock",
-                        name[3] = "AltGr",
-                        name[4] = "Shift/Numlock AltGr",
-                    }
-                },
-                BuiltInKeytype::FourLevel => ty! {
-                    FourLevel {
-                        modifiers = SHIFT + level_three,
-                        map[NONE] = 1 preserve NONE,
-                        map[SHIFT] = 2 preserve NONE,
-                        map[NONE + level_three] = 3 preserve NONE,
-                        map[SHIFT + level_three] = 4 preserve NONE,
-                        name[1] = "Base",
-                        name[2] = "Shift",
-                        name[3] = "AltGr",
-                        name[4] = "Shift AltGr",
-                    }
-                },
-            };
-            types.push(kt.clone());
-            res[bi] = Some(kt);
+    /// Returns an iterator over the keys of this map.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> { [ a, A ] };
+    ///     key <leftshift> { [ SetMods(mods = Shift) ] };
+    /// };
+    /// ```
+    ///
+    /// The iterator returns 2 elements, one for `<a>` and one for `<leftshift>`.
+    pub fn keys(&self) -> Keys<'_> {
+        Keys {
+            keys: self.keys.values(),
         }
     }
 }
@@ -730,5 +476,652 @@ impl VirtualModifier {
             name: Arc::new("Dummy".to_string()),
             values: Default::default(),
         }
+    }
+
+    /// Returns the name of the modifier.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_compat {
+    ///     virtual_modifiers V1 = 0x100;
+    /// };
+    /// ```
+    ///
+    /// The function returns `"V1"`.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Returns the modifier mask that the modifier maps to.
+    ///
+    /// # Example 1
+    ///
+    /// ```xkb
+    /// xkb_compat {
+    ///     virtual_modifiers V1 = 0x100;
+    /// };
+    /// ```
+    ///
+    /// The function returns `0x100`.
+    ///
+    /// # Example 2
+    ///
+    /// ```xkb
+    /// xkb_compat {
+    ///     virtual_modifiers Alt;
+    ///
+    ///     interpret Alt_L {
+    ///         virtualmodifier = Alt;
+    ///     };
+    /// };
+    ///
+    /// xkb_symbols {
+    ///     key <leftalt> { [ Alt_L ] };
+    ///     modmap Mod1 { <leftalt> };
+    /// };
+    /// ```
+    ///
+    /// The function returns [`ModifierMask::MOD1`].
+    pub fn mask(&self) -> ModifierMask {
+        self.values
+    }
+}
+
+impl Key {
+    /// Returns the name of the key.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <abcd> { [ a, A ] };
+    /// };
+    /// ```
+    ///
+    /// The function returns `abcd`.
+    pub fn name(&self) -> &str {
+        &self.key_name
+    }
+
+    /// Returns the keycode of the key.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_keycodes {
+    ///     <a> = 38;
+    /// };
+    /// xkb_symbols {
+    ///     key <a> { [ a, A ] };
+    /// };
+    /// ```
+    ///
+    /// The function returns `38`.
+    pub fn keycode(&self) -> state_machine::Keycode {
+        self.key_code
+    }
+
+    /// Returns whether the key repeats.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         repeats = false,
+    ///         [ a, A ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `false`.
+    pub fn repeats(&self) -> bool {
+        self.repeat
+    }
+
+    /// Returns the group-redirect setting of this key.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         groupsClamp,
+    ///         [ a, A ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns [`Redirect::Clamp`].
+    pub fn redirect(&self) -> Redirect {
+        self.redirect.to_redirect()
+    }
+
+    /// Returns an iterator over the groups of this key.
+    ///
+    /// # Example 1
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ a, A ],
+    ///         [ b, B ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The iterator returns two elements, one for `[ a, A ]` and one for `[ b, B ]`.
+    ///
+    /// # Example 1
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         symbols[Group1] = [ a, A ],
+    ///         symbols[Group3] = [ b, B ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The iterator returns three elements:
+    ///
+    /// - `Some([ a, A ])`
+    /// - `None`
+    /// - `Some([ b, B ])`
+    pub fn groups(&self) -> Groups<'_> {
+        Groups {
+            groups: self.groups.iter(),
+        }
+    }
+}
+
+impl KeyGroup {
+    /// Returns the type of this group.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_types {
+    ///     type "X" {
+    ///         modifiers = Shift;
+    ///         map[Shift] = Level2;
+    ///     };
+    /// };
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         type[Group1] = "X";
+    ///         symbols[Group1] = [ a, A ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns the `X` type.
+    pub fn ty(&self) -> &KeyType {
+        &self.key_type
+    }
+
+    /// Returns an iterator over the levels of this group.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ a, A ],
+    ///     };
+    /// };
+    ///
+    /// The iterator returns two elements, one for `a` and one for `A`.
+    pub fn levels(&self) -> Levels<'_> {
+        Levels {
+            levels: self.levels.iter(),
+        }
+    }
+}
+
+impl KeyType {
+    /// Returns the modifier mask of this key type.
+    ///
+    /// Modifiers outside of this mask are completely ignored by this key type. That is,
+    /// they are masked out before considering which level to map to and are never
+    /// consumed.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_types {
+    ///     type "X" {
+    ///         modifiers = Shift+Mod1;
+    ///         map[Shift] = Level2;
+    ///         map[Mod1] = Level2;
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns [`ModifierMask::SHIFT | ModifierMask::MOD1`](ModifierMask).
+    pub fn mask(&self) -> ModifierMask {
+        self.modifiers
+    }
+
+    /// Returns an iterator over the mappings of this key type.
+    ///
+    /// Mappings that are not explicitly defined are not returned. Such mappings map to
+    /// level 1 and consume all input modifiers.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_types {
+    ///     type "X" {
+    ///         modifiers = Shift+Mod1;
+    ///         map[Shift] = Level2;
+    ///         map[Mod1] = Level2;
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The iterator returns one mapping for `map[Shift]` and one mapping for
+    /// `map[Shift]`.
+    ///
+    /// Note that no mappings are returned for `map[None]` and `map[Shift+Mod1]`.
+    pub fn mappings(&self) -> Mappings<'_> {
+        Mappings {
+            mappings: self.mappings.iter(),
+        }
+    }
+}
+
+impl KeyTypeMapping {
+    /// Returns the modifier mask of this mapping.
+    ///
+    /// After masking with the [type mask](KeyType::mask), the effective modifiers must
+    /// match this mask exactly for the mapping to be applicable.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_types {
+    ///     type "X" {
+    ///         modifiers = Shift+Mod1;
+    ///         map[Shift] = Level2;
+    ///         map[Mod1] = Level2;
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// If this mapping is `map[Shift]`, then this function returns
+    /// [`ModifierMask::SHIFT`].
+    pub fn mask(&self) -> ModifierMask {
+        self.modifiers
+    }
+
+    /// Returns the preserved modifiers of this mapping.
+    ///
+    /// If this mapping is applicable, then the preserved modifiers are not consumed by
+    /// the mapping and might be used for keyboard shortcuts or keysym transformations.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_types {
+    ///     type "X" {
+    ///         modifiers = Control+Shift;
+    ///         map[Control+Shift] = Level2;
+    ///         preserve[Control+Shift] = Control;
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// If this mapping is `map[Control+Shift]`, then function returns
+    /// [`ModifierMask::CONTROL`].
+    pub fn preserved(&self) -> ModifierMask {
+        self.modifiers & self.preserved
+    }
+
+    /// Returns the consumed modifiers of this mapping.
+    ///
+    /// If this mapping is applicable, then the consumed modifiers should no longer be
+    /// considered for keyboard shortcuts and keysym transformations.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_types {
+    ///     type "X" {
+    ///         modifiers = Control+Shift;
+    ///         map[Control+Shift] = Level2;
+    ///         preserve[Control+Shift] = Control;
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// If this mapping is `map[Control+Shift]`, then function returns
+    /// [`ModifierMask::SHIFT`].
+    pub fn consumed(&self) -> ModifierMask {
+        self.modifiers & !self.preserved
+    }
+
+    /// Returns the 0-based level that this mapping maps to.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_types {
+    ///     type "X" {
+    ///         modifiers = Shift;
+    ///         map[Shift] = Level2;
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// If this mapping is `map[Shift]`, then function returns `1`.
+    pub fn level(&self) -> usize {
+        self.level.to_offset()
+    }
+}
+
+impl KeyLevel {
+    /// Returns the symbols of this level.
+    ///
+    /// Note that returning more than 1 keysym is an extension that does not work for X
+    /// applications.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [
+    ///             a,
+    ///             { A, B },
+    ///         ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// If this object refers to the first level, then this function returns `&[KEY_a]`.
+    ///
+    /// If this object refers to the second level, then this function returns
+    /// `&[KEY_A, KEY_B]`.
+    pub fn symbols(&self) -> &[Keysym] {
+        &self.symbols
+    }
+
+    /// Returns the actions of this level.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [
+    ///             SetMods(mods = Mod1),
+    ///             {
+    ///                 SetMods(mods = Mod2),
+    ///                 LockGroup(group = 2),
+    ///             },
+    ///         ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// If this object refers to the first level, then this function returns
+    /// `&[SetMods(mods = Mod1)]`.
+    ///
+    /// If this object refers to the second level, then this function returns
+    /// `&[SetMods(mods = Mod2), LockGroup(group = 2)]`.
+    pub fn actions(&self) -> &[Action] {
+        &self.actions
+    }
+}
+
+impl ModsSetAction {
+    /// Returns whether this action has the `clearLocks` flag set.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ SetMods(mods = Shift, clearLocks) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `true`.
+    pub fn clear_locks(&self) -> bool {
+        self.clear_locks
+    }
+
+    /// Returns the modifier mask of this action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ SetMods(mods = Shift) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `Shift`.
+    pub fn mask(&self) -> ModifierMask {
+        self.modifiers
+    }
+}
+
+impl ModsLatchAction {
+    /// Returns whether this action has the `clearLocks` flag set.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ LatchMods(mods = Shift, clearLocks) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `true`.
+    pub fn clear_locks(&self) -> bool {
+        self.clear_locks
+    }
+
+    /// Returns whether this action has the `latchToLock` flag set.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ LatchMods(mods = Shift, latchToLock) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `true`.
+    pub fn latch_to_lock(&self) -> bool {
+        self.latch_to_lock
+    }
+
+    /// Returns the modifier mask of this action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ LatchMods(mods = Shift) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `Shift`.
+    pub fn mask(&self) -> ModifierMask {
+        self.modifiers
+    }
+}
+
+impl ModsLockAction {
+    /// Returns whether this action will lock the modifiers.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ LockMods(mods = Shift, affect = unlock) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `false`.
+    pub fn lock(&self) -> bool {
+        self.lock
+    }
+
+    /// Returns whether this action will unlock previously-locked modifiers.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ LockMods(mods = Shift, affect = lock) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `false`.
+    pub fn unlock(&self) -> bool {
+        self.unlock
+    }
+
+    /// Returns the modifier mask of this action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ LockMods(mods = Shift) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `Shift`.
+    pub fn mask(&self) -> ModifierMask {
+        self.modifiers
+    }
+}
+
+impl GroupSetAction {
+    /// Returns whether this action has the `clearLocks` flag set.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <compose> {
+    ///         [ SetGroup(group = +1, clearLocks) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `true`.
+    pub fn clear_locks(&self) -> bool {
+        self.clear_locks
+    }
+
+    /// Returns the group change of this action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <compose> {
+    ///         [ SetGroup(group = -1) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `GroupChange::Relative(-1)`.
+    pub fn group(&self) -> GroupChange {
+        self.group.to_group_change()
+    }
+}
+
+impl GroupLatchAction {
+    /// Returns whether this action has the `clearLocks` flag set.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <compose> {
+    ///         [ LatchGroup(group = +1, clearLocks) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `true`.
+    pub fn clear_locks(&self) -> bool {
+        self.clear_locks
+    }
+
+    /// Returns whether this action has the `latchToLock` flag set.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <compose> {
+    ///         [ LatchGroup(group = +1, latchToLock) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `true`.
+    pub fn latch_to_lock(&self) -> bool {
+        self.latch_to_lock
+    }
+
+    /// Returns the group change of this action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <compose> {
+    ///         [ LatchGroup(group = -1) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `GroupChange::Relative(-1)`.
+    pub fn group(&self) -> GroupChange {
+        self.group.to_group_change()
+    }
+}
+
+impl GroupLockAction {
+    /// Returns the group change of this action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <compose> {
+    ///         [ LockGroup(group = -1) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `GroupChange::Relative(-1)`.
+    pub fn group(&self) -> GroupChange {
+        self.group.to_group_change()
     }
 }

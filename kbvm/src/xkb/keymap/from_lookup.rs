@@ -11,8 +11,8 @@ use {
         xkb::{
             group::GroupIdx,
             keymap::{
-                Indicator, KeyType, KeyTypeMapping, Keycode, ModMapValue, Symbol, SymbolGroup,
-                SymbolLevel, VirtualModifier,
+                Indicator, Key, KeyGroup, KeyLevel, KeyType, KeyTypeMapping, Keycode, ModMapValue,
+                VirtualModifier,
             },
             level::Level,
             resolved::GroupsRedirect,
@@ -43,8 +43,8 @@ impl LookupTable {
     /// # use kbvm::state_machine::Keycode;
     /// let mut builder = Builder::default();
     /// {
-    ///     let gt = GroupType::builder(ModifierMask(1))
-    ///         .map(ModifierMask(1), 1)
+    ///     let gt = GroupType::builder(ModifierMask::SHIFT)
+    ///         .map(ModifierMask::SHIFT, 1)
     ///         .build();
     ///     let mut key = builder.add_key(Keycode::from_raw(9));
     ///     key.repeats(true);
@@ -53,7 +53,7 @@ impl LookupTable {
     ///     gb.add_layer(1).keysyms(&[KEY_A]);
     /// }
     /// {
-    ///     let gt = GroupType::builder(ModifierMask(0)).build();
+    ///     let gt = GroupType::builder(ModifierMask::NONE).build();
     ///     let mut key = builder.add_key(Keycode::from_raw(10));
     ///     let mut gb = key.add_group(0, &gt);
     ///     gb.add_layer(0).keysyms(&[KEY_Alt_L]);
@@ -126,7 +126,7 @@ impl LookupTable {
                 keycode: *kc,
             });
             let mut groups = Vec::with_capacity(kg.groups.len());
-            for group in &kg.groups {
+            for group in kg.groups.iter() {
                 let Some(group) = group else {
                     groups.push(None);
                     continue;
@@ -163,7 +163,7 @@ impl LookupTable {
                     KEY_Super_L | KEY_Super_R => MOD4,
                 }
                 for layer in &group.layers {
-                    levels.push(SymbolLevel {
+                    levels.push(KeyLevel {
                         symbols: layer.symbols.clone(),
                         actions: Default::default(),
                     });
@@ -193,7 +193,10 @@ impl LookupTable {
                         kt
                     }
                 };
-                groups.push(Some(SymbolGroup { key_type, levels }));
+                groups.push(Some(KeyGroup { key_type, levels }));
+            }
+            if groups.last() == Some(&None) {
+                groups.pop();
             }
             let redirect = match kg.redirect {
                 Redirect::Wrap => GroupsRedirect::Wrap,
@@ -208,7 +211,7 @@ impl LookupTable {
                     }
                 }
             };
-            let symbol = Symbol {
+            let symbol = Key {
                 key_name: name.clone(),
                 key_code: *kc,
                 groups,

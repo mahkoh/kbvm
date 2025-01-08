@@ -1,5 +1,6 @@
 use {
     crate::{
+        builder::Redirect,
         keysym::Keysym,
         modifier::{ModifierIndex, ModifierMask},
         state_machine::Keycode,
@@ -307,4 +308,14 @@ pub(crate) struct ResolvedGroupLatch {
 #[derive(Copy, Clone, Default, Debug)]
 pub(crate) struct ResolvedGroupLock {
     pub(crate) group: Option<Spanned<GroupChange>>,
+}
+
+impl GroupsRedirect {
+    pub fn to_redirect(self) -> Redirect {
+        match self {
+            GroupsRedirect::Wrap => Redirect::Wrap,
+            GroupsRedirect::Clamp => Redirect::Clamp,
+            GroupsRedirect::Redirect(r) => Redirect::Fixed(r.to_offset()),
+        }
+    }
 }

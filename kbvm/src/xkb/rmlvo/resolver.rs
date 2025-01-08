@@ -37,9 +37,9 @@ use {
     std::{collections::VecDeque, io::Write, path::PathBuf, sync::Arc},
 };
 
-pub struct Group {
-    pub layout: Option<Interned>,
-    pub variant: Option<Interned>,
+pub(crate) struct Group {
+    pub(crate) layout: Option<Interned>,
+    pub(crate) variant: Option<Interned>,
 }
 
 #[expect(clippy::too_many_arguments)]

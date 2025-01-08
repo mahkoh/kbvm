@@ -18,7 +18,7 @@ use {
             },
             keymap::Keymap,
             meaning::MeaningCache,
-            rmlvo::{self, parser::MappingValue, resolver::Group},
+            rmlvo::{self, parser::MappingValue, resolver::Group, Element},
             span::{SpanExt, Spanned},
             string_cooker::StringCooker,
         },
@@ -30,25 +30,6 @@ use {
         sync::Arc,
     },
 };
-
-pub enum MergeMode {
-    Augment,
-    Override,
-}
-
-pub struct Element {
-    pub merge_mode: MergeMode,
-    pub include: String,
-}
-
-#[derive(Default)]
-pub struct Kccgst {
-    pub keycodes: Vec<Element>,
-    pub types: Vec<Element>,
-    pub compat: Vec<Element>,
-    pub symbols: Vec<Element>,
-    pub geometry: Vec<Element>,
-}
 
 #[derive(Debug)]
 pub struct Context {
@@ -188,7 +169,7 @@ impl Context {
         model: &str,
         groups: &[RmlvoGroup<'_>],
         options: &[&str],
-    ) -> Kccgst {
+    ) -> rmlvo::Expanded {
         let mut map = CodeMap::default();
         let mut interner = Interner::default();
         let mut loader = CodeLoader::new(&self.paths);
@@ -210,14 +191,14 @@ impl Context {
                 .iter()
                 .map(|i| Element {
                     merge_mode: match i.val.mm.val {
-                        kccgst::MergeMode::Augment => MergeMode::Augment,
-                        _ => MergeMode::Override,
+                        kccgst::MergeMode::Augment => rmlvo::MergeMode::Augment,
+                        _ => rmlvo::MergeMode::Override,
                     },
                     include: interner.get(i.val.path.val).as_bstr().to_string(),
                 })
                 .collect()
         };
-        Kccgst {
+        rmlvo::Expanded {
             keycodes: map(&includes[MappingValue::Keycodes]),
             types: map(&includes[MappingValue::Types]),
             compat: map(&includes[MappingValue::Compat]),

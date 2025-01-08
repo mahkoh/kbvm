@@ -1,10 +1,27 @@
 use {
-    super::*,
+    crate::{
+        keysym::Keysym,
+        modifier::ModifierMask,
+        xkb::{
+            controls::ControlMask,
+            group::GroupChange,
+            group_component::GroupComponent,
+            keymap::{
+                Action, GroupLatchAction, GroupLockAction, GroupSetAction, Indicator, KeyGroup,
+                KeyLevel, KeyType, ModsLatchAction, ModsLockAction, ModsSetAction,
+            },
+            mod_component::ModComponentMask,
+            resolved::GroupsRedirect,
+            rmlvo::{self, MergeMode},
+            Keymap,
+        },
+    },
     debug_fn::debug_fn,
     isnt::std_1::vec::IsntVecExt,
+    smallvec::SmallVec,
     std::{
         fmt,
-        fmt::{Display, Formatter},
+        fmt::{Display, Formatter, Write},
     },
 };
 
@@ -366,7 +383,7 @@ impl Format for Action {
     }
 }
 
-impl Format for ModsSet {
+impl Format for ModsSetAction {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
         f.write("SetMods(")?;
         write!(f.f, "modifiers = {}", modifier_mask(self.modifiers))?;
@@ -378,7 +395,7 @@ impl Format for ModsSet {
     }
 }
 
-impl Format for ModsLatch {
+impl Format for ModsLatchAction {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
         f.write("LatchMods(")?;
         write!(f.f, "modifiers = {}", modifier_mask(self.modifiers))?;
@@ -393,7 +410,7 @@ impl Format for ModsLatch {
     }
 }
 
-impl Format for ModsLock {
+impl Format for ModsLockAction {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
         f.write("LockMods(")?;
         write!(f.f, "modifiers = {}", modifier_mask(self.modifiers))?;
@@ -411,7 +428,7 @@ impl Format for ModsLock {
     }
 }
 
-impl Format for GroupSet {
+impl Format for GroupSetAction {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
         f.write("SetGroup(")?;
         write!(f.f, "group = {}", group_change(self.group))?;
@@ -423,7 +440,7 @@ impl Format for GroupSet {
     }
 }
 
-impl Format for GroupLatch {
+impl Format for GroupLatchAction {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
         f.write("LatchGroup(")?;
         write!(f.f, "group = {}", group_change(self.group))?;
@@ -438,7 +455,7 @@ impl Format for GroupLatch {
     }
 }
 
-impl Format for GroupLock {
+impl Format for GroupLockAction {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
         f.write("LockGroup(")?;
         write!(f.f, "group = {}", group_change(self.group))?;
@@ -543,11 +560,11 @@ impl Format for Keys<'_> {
                         fn write_levels<T: Format>(
                             needs_newline: &mut bool,
                             idx: usize,
-                            group: &SymbolGroup,
+                            group: &KeyGroup,
                             f: &mut Writer<'_, '_>,
                             name: &str,
                             absent: &str,
-                            field: impl Fn(&SymbolLevel) -> &SmallVec<[T; 1]>,
+                            field: impl Fn(&KeyLevel) -> &SmallVec<[T; 1]>,
                         ) -> fmt::Result {
                             if group.levels.iter().all(|l| field(l).is_empty()) {
                                 return Ok(());
@@ -702,4 +719,65 @@ fn modifier_mask(mm: ModifierMask) -> impl Display {
             Ok(())
         }
     })
+}
+
+impl Display for rmlvo::Expanded {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        let mut writer = Writer {
+            nesting: 0,
+            alternate: f.alternate(),
+            newline: match f.alternate() {
+                true => "\n",
+                false => " ",
+            },
+            f,
+        };
+        self.format(&mut writer)
+    }
+}
+
+impl Format for rmlvo::Expanded {
+    fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
+        f.write_nesting()?;
+        f.write("xkb_keymap {")?;
+        f.write_nested(|f| {
+            let elements = [
+                ("xkb_keycodes", &self.keycodes),
+                ("xkb_types", &self.types),
+                ("xkb_compat", &self.compat),
+                ("xkb_symbols", &self.symbols),
+                ("xkb_geometry", &self.geometry),
+            ];
+            for (name, elements) in elements {
+                f.write_nesting()?;
+                f.write(name)?;
+                f.write(" {")?;
+                f.write_nested(|f| RmlvoIncludes(elements).format(f))?;
+                f.write_nesting()?;
+                f.write("};")?;
+                f.write_newline()?;
+            }
+            Ok(())
+        })?;
+        f.write_nesting()?;
+        f.write("};")?;
+        Ok(())
+    }
+}
+
+struct RmlvoIncludes<'a>(&'a [rmlvo::Element]);
+
+impl Format for RmlvoIncludes<'_> {
+    fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
+        for e in self.0 {
+            f.write_nesting()?;
+            match e.merge_mode {
+                MergeMode::Augment => f.write("augment ")?,
+                MergeMode::Override => f.write("override ")?,
+            }
+            f.write_string(&e.include)?;
+            f.write_newline()?;
+        }
+        Ok(())
+    }
 }

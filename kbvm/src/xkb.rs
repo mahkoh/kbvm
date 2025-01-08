@@ -1,5 +1,5 @@
 pub use {
-    context::{Context, Element, Kccgst, MergeMode, RmlvoGroup},
+    context::{Context, ContextBuilder, RmlvoGroup},
     keymap::Keymap,
 };
 
@@ -19,13 +19,12 @@ mod include;
 mod indicator;
 mod interner;
 mod kccgst;
-mod keymap;
+pub mod keymap;
 mod level;
 mod meaning;
 mod mod_component;
 mod modmap;
 mod resolved;
-mod rmlvo;
+pub mod rmlvo;
 mod span;
 mod string_cooker;
-mod to_builder;

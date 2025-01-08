@@ -1,6 +1,6 @@
 use {
     crate::{
-        builder::{Builder, Redirect},
+        builder::Builder,
         group_type::GroupType,
         modifier::ModifierIndex,
         routine::{Routine, RoutineBuilder, SkipAnchor, Var},
@@ -8,7 +8,6 @@ use {
         xkb::{
             group::GroupChange,
             keymap::{Action, KeyType},
-            resolved::GroupsRedirect,
             Keymap,
         },
     },
@@ -37,11 +36,7 @@ impl Keymap {
         for key in self.keys.values() {
             let mut builder = builder.add_key(key.key_code);
             builder.repeats(key.repeat);
-            builder.redirect(match key.redirect {
-                GroupsRedirect::Wrap => Redirect::Wrap,
-                GroupsRedirect::Clamp => Redirect::Clamp,
-                GroupsRedirect::Redirect(r) => Redirect::Fixed(r.to_offset()),
-            });
+            builder.redirect(key.redirect.to_redirect());
             for (idx, group) in key.groups.iter().enumerate() {
                 let Some(group) = group else {
                     continue;

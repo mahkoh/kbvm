@@ -43,7 +43,7 @@ impl ModifierIndex {
 }
 
 impl ModifierMask {
-    pub(crate) const NONE: Self = Self(0);
+    pub const NONE: Self = Self(0);
     pub const SHIFT: Self = ModifierIndex::SHIFT.to_mask();
     pub const LOCK: Self = ModifierIndex::LOCK.to_mask();
     pub const CONTROL: Self = ModifierIndex::CONTROL.to_mask();

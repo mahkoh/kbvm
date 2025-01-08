@@ -1,4 +1,10 @@
-use kbvm_proc::CloneWithDelta;
+use {
+    crate::{
+        group::{GroupDelta, GroupIndex},
+        xkb::keymap,
+    },
+    kbvm_proc::CloneWithDelta,
+};
 
 #[derive(Copy, Clone, Debug, CloneWithDelta, PartialEq)]
 pub(crate) struct GroupIdx(u32);
@@ -10,6 +16,15 @@ pub(crate) struct GroupMask(pub(crate) u32);
 pub(crate) enum GroupChange {
     Absolute(GroupIdx),
     Rel(i32),
+}
+
+impl GroupChange {
+    pub(crate) fn to_group_change(self) -> keymap::GroupChange {
+        match self {
+            GroupChange::Absolute(idx) => keymap::GroupChange::Absolute(GroupIndex(idx.raw() - 1)),
+            GroupChange::Rel(delta) => keymap::GroupChange::Relative(GroupDelta(delta as u32)),
+        }
+    }
 }
 
 impl Default for GroupChange {
