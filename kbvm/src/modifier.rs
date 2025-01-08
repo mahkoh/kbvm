@@ -16,14 +16,14 @@ pub struct ModifierIndex(u32);
 pub struct ModifierMaskIter(u32);
 
 impl ModifierIndex {
-    pub(crate) const SHIFT: Self = Self::new(0).unwrap();
-    pub(crate) const LOCK: Self = Self::new(1).unwrap();
-    pub(crate) const CONTROL: Self = Self::new(2).unwrap();
-    pub(crate) const MOD1: Self = Self::new(3).unwrap();
-    pub(crate) const MOD2: Self = Self::new(4).unwrap();
-    pub(crate) const MOD3: Self = Self::new(5).unwrap();
-    pub(crate) const MOD4: Self = Self::new(6).unwrap();
-    pub(crate) const MOD5: Self = Self::new(7).unwrap();
+    pub const SHIFT: Self = Self::new(0).unwrap();
+    pub const LOCK: Self = Self::new(1).unwrap();
+    pub const CONTROL: Self = Self::new(2).unwrap();
+    pub const MOD1: Self = Self::new(3).unwrap();
+    pub const MOD2: Self = Self::new(4).unwrap();
+    pub const MOD3: Self = Self::new(5).unwrap();
+    pub const MOD4: Self = Self::new(6).unwrap();
+    pub const MOD5: Self = Self::new(7).unwrap();
 
     pub const fn new(index: u32) -> Option<Self> {
         if index >= u32::BITS {
