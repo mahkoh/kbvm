@@ -32,6 +32,7 @@ use {
     },
     thiserror::Error,
 };
+use kbvm::group::GroupIndex;
 
 // const SINGLE: Option<&str> = Some("t0064");
 const SINGLE: Option<&str> = None;
@@ -220,7 +221,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let input_path = case.join("input.txt");
     let input = std::fs::read_to_string(&input_path).map_err(ResultError::ReadInputFailed)?;
     let mut mods = ModifierMask(0);
-    let mut group = 0;
+    let mut group = GroupIndex(0);
     let mut events = vec![];
     let mut repeating_key = None;
     let key_name = |code: Keycode| {
@@ -233,7 +234,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let handle_down = |actual: &mut String,
                        kc: Keycode,
                        repeating_key: &mut Option<Keycode>,
-                       group: u32,
+                       group: GroupIndex,
                        mods: ModifierMask,
                        is_repeat: bool| {
         writeln!(
@@ -327,17 +328,17 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
                     writeln!(actual, "    key_up({})", key_name(kc)).unwrap();
                 }
                 LogicalEvent::GroupPressed(g) => {
-                    writeln!(actual, "    group_pressed = 0x{g:x}").unwrap();
+                    writeln!(actual, "    group_pressed = {g:?}").unwrap();
                 }
                 LogicalEvent::GroupLatched(g) => {
-                    writeln!(actual, "    group_latched = 0x{g:x}").unwrap();
+                    writeln!(actual, "    group_latched = {g:?}").unwrap();
                 }
                 LogicalEvent::GroupLocked(g) => {
-                    writeln!(actual, "    group_locked = 0x{g:x}").unwrap();
+                    writeln!(actual, "    group_locked = {g:?}").unwrap();
                 }
                 LogicalEvent::GroupEffective(g) => {
                     group = g;
-                    writeln!(actual, "    group_effective = 0x{g:x}").unwrap();
+                    writeln!(actual, "    group_effective = {g:?}").unwrap();
                 }
             };
         }

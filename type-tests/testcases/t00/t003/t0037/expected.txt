@@ -5,21 +5,21 @@ both h
 both compose
     key_down(compose)
     sym = ISO_Group_Latch
-    group_pressed = 0x1
-    group_effective = 0x1
+    group_pressed = 1
+    group_effective = 1
     key_up(compose)
-    group_pressed = 0x0
-    group_latched = 0x1
+    group_pressed = 0
+    group_latched = 1
 both compose
     key_down(compose)
     sym = ISO_Group_Latch
-    group_pressed = 0x1
-    group_effective = 0x2
+    group_pressed = 1
+    group_effective = 2
     key_up(compose)
-    group_pressed = 0x0
-    group_latched = 0x0
-    group_locked = 0x1
-    group_effective = 0x1
+    group_pressed = 0
+    group_latched = 0
+    group_locked = 1
+    group_effective = 1
 both h
     key_down(h)
     sym = hebrew_yod, char = 'י'
@@ -31,8 +31,8 @@ both e
 both scrolllock
     key_down(scrolllock)
     sym = ISO_Next_Group
-    group_locked = 0x2
-    group_effective = 0x2
+    group_locked = 2
+    group_effective = 2
     key_up(scrolllock)
 both h
     key_down(h)
@@ -45,21 +45,21 @@ both e
 both compose
     key_down(compose)
     sym = ISO_Group_Latch
-    group_pressed = 0x1
-    group_effective = 0x3
+    group_pressed = 1
+    group_effective = 3
     key_up(compose)
-    group_pressed = 0x0
-    group_latched = 0x1
+    group_pressed = 0
+    group_latched = 1
 both compose
     key_down(compose)
     sym = ISO_Group_Latch
-    group_pressed = 0x1
-    group_effective = 0x0
+    group_pressed = 1
+    group_effective = 0
     key_up(compose)
-    group_pressed = 0x0
-    group_latched = 0x0
-    group_locked = 0x3
-    group_effective = 0x3
+    group_pressed = 0
+    group_latched = 0
+    group_locked = 3
+    group_effective = 3
 both h
     key_down(h)
     sym = s, char = 's'

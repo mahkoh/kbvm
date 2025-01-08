@@ -1,4 +1,8 @@
-use crate::{modifier::ModifierMask, state_machine::LogicalEvent};
+use crate::{
+    group::{GroupDelta, GroupIndex},
+    modifier::ModifierMask,
+    state_machine::LogicalEvent,
+};
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Default)]
 #[non_exhaustive]
@@ -7,10 +11,10 @@ pub struct Components {
     pub mods_latched: ModifierMask,
     pub mods_locked: ModifierMask,
     pub mods_effective: ModifierMask,
-    pub group_pressed: u32,
-    pub group_latched: u32,
-    pub group_locked: u32,
-    pub group_effective: u32,
+    pub group_pressed: GroupDelta,
+    pub group_latched: GroupDelta,
+    pub group_locked: GroupIndex,
+    pub group_effective: GroupIndex,
 }
 
 impl Components {

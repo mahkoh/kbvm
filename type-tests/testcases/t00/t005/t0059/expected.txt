@@ -5,16 +5,16 @@ both h
 down rightalt
     key_down(rightalt)
     sym = Mode_switch
-    group_pressed = 0x1
-    group_effective = 0x1
+    group_pressed = 1
+    group_effective = 1
 both h
     key_down(h)
     sym = hebrew_yod, char = 'י'
     key_up(h)
 up rightalt
     key_up(rightalt)
-    group_pressed = 0x0
-    group_effective = 0x0
+    group_pressed = 0
+    group_effective = 0
 both h
     key_down(h)
     sym = h, char = 'h'
@@ -22,16 +22,16 @@ both h
 down rightalt
     key_down(rightalt)
     sym = Mode_switch
-    group_pressed = 0x1
-    group_effective = 0x1
+    group_pressed = 1
+    group_effective = 1
 both h
     key_down(h)
     sym = hebrew_yod, char = 'י'
     key_up(h)
 up rightalt
     key_up(rightalt)
-    group_pressed = 0x0
-    group_effective = 0x0
+    group_pressed = 0
+    group_effective = 0
 both h
     key_down(h)
     sym = h, char = 'h'

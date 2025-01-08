@@ -16,13 +16,13 @@ both d
     key_up(d)
 both compose
     key_down(compose)
-    group_locked = 0x1
-    group_effective = 0x1
+    group_locked = 1
+    group_effective = 1
     key_up(compose)
 both compose
     key_down(compose)
-    group_locked = 0x2
-    group_effective = 0x2
+    group_locked = 2
+    group_effective = 2
     key_up(compose)
 both a
     key_down(a)
@@ -42,8 +42,8 @@ both d
     key_up(d)
 both compose
     key_down(compose)
-    group_locked = 0x3
-    group_effective = 0x3
+    group_locked = 3
+    group_effective = 3
     key_up(compose)
 both a
     key_down(a)
@@ -63,8 +63,8 @@ both d
     key_up(d)
 both compose
     key_down(compose)
-    group_locked = 0x4
-    group_effective = 0x4
+    group_locked = 4
+    group_effective = 4
     key_up(compose)
 both a
     key_down(a)
@@ -84,8 +84,8 @@ both d
     key_up(d)
 both compose
     key_down(compose)
-    group_locked = 0x5
-    group_effective = 0x5
+    group_locked = 5
+    group_effective = 5
     key_up(compose)
 both a
     key_down(a)

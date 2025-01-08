@@ -4,8 +4,8 @@ down leftalt
     mods_effective = 0x00000008
 both leftshift
     key_down(leftshift)
-    group_locked = 0x1
-    group_effective = 0x1
+    group_locked = 1
+    group_effective = 1
     key_up(leftshift)
 up leftalt
     key_up(leftalt)

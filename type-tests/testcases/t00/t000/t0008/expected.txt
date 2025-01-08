@@ -4,16 +4,16 @@ both i
     key_up(i)
 down rightalt
     key_down(rightalt)
-    group_pressed = 0x1
-    group_effective = 0x1
+    group_pressed = -1
+    group_effective = 1
 both i
     key_down(i)
     sym = '語', char = '語'
     key_up(i)
 up rightalt
     key_up(rightalt)
-    group_pressed = 0x0
-    group_effective = 0x0
+    group_pressed = 0
+    group_effective = 0
 both i
     key_down(i)
     sym = i, char = 'i'

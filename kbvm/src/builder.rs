@@ -11,6 +11,7 @@ use {
     isnt::std_1::primitive::IsntSliceExt,
     smallvec::SmallVec,
 };
+use crate::group::GroupIndex;
 
 #[derive(Default, Debug)]
 pub struct Builder {
@@ -39,8 +40,8 @@ impl Redirect {
     }
 
     #[inline]
-    pub(crate) fn apply(self, group: u32, len: usize) -> usize {
-        let n = group as usize;
+    pub(crate) fn apply(self, group: GroupIndex, len: usize) -> usize {
+        let n = group.0 as usize;
         if n >= len {
             match self {
                 Redirect::Wrap => n % len,

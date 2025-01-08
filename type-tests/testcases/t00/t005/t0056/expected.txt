@@ -6,8 +6,8 @@ down leftshift
 down leftalt
     key_down(leftalt)
     sym = ISO_Prev_Group
-    group_locked = 0x2
-    group_effective = 0x2
+    group_locked = 2
+    group_effective = 2
 up leftalt
     key_up(leftalt)
 up leftshift

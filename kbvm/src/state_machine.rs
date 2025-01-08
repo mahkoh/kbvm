@@ -5,6 +5,7 @@ use {
     crate::{
         builder::Redirect,
         components::Components,
+        group::{GroupDelta, GroupIndex},
         group_type::GroupType,
         modifier::{ModifierMask, NUM_MODS, NUM_MODS_MASK},
         routine::{run, Component, Flag, Global, Lo, Register, Routine, StateEventHandler},
@@ -58,10 +59,10 @@ pub enum LogicalEvent {
     ModsLatched(ModifierMask),
     ModsLocked(ModifierMask),
     ModsEffective(ModifierMask),
-    GroupPressed(u32),
-    GroupLatched(u32),
-    GroupLocked(u32),
-    GroupEffective(u32),
+    GroupPressed(GroupDelta),
+    GroupLatched(GroupDelta),
+    GroupLocked(GroupIndex),
+    GroupEffective(GroupIndex),
     KeyDown(Keycode),
     KeyUp(Keycode),
 }
@@ -73,10 +74,10 @@ impl Debug for LogicalEvent {
             LogicalEvent::ModsLatched(m) => write!(f, "mods_latched = {m:?}"),
             LogicalEvent::ModsLocked(m) => write!(f, "mods_locked = {m:?}"),
             LogicalEvent::ModsEffective(m) => write!(f, "mods_effective = {m:?}"),
-            LogicalEvent::GroupPressed(g) => write!(f, "group_pressed = {g}"),
-            LogicalEvent::GroupLatched(g) => write!(f, "group_latched = {g}"),
-            LogicalEvent::GroupLocked(g) => write!(f, "group_locked = {g}"),
-            LogicalEvent::GroupEffective(g) => write!(f, "group_effective = {g}"),
+            LogicalEvent::GroupPressed(g) => write!(f, "group_pressed = {g:?}"),
+            LogicalEvent::GroupLatched(g) => write!(f, "group_latched = {g:?}"),
+            LogicalEvent::GroupLocked(g) => write!(f, "group_locked = {g:?}"),
+            LogicalEvent::GroupEffective(g) => write!(f, "group_effective = {g:?}"),
             LogicalEvent::KeyDown(k) => write!(f, "key_down({})", k.0),
             LogicalEvent::KeyUp(k) => write!(f, "key_up({})", k.0),
         }
@@ -100,26 +101,21 @@ impl LogHandler<'_> {
         self.any_state_changed = false;
         let acs = &mut self.acc_state;
         acs.mods_effective = acs.mods_pressed | acs.mods_latched | acs.mods_locked;
-        acs.group_effective = acs
-            .group_locked
-            .wrapping_add(acs.group_pressed)
-            .wrapping_add(acs.group_latched);
-        macro_rules! wrap_value {
+        acs.group_effective = acs.group_locked + acs.group_pressed + acs.group_latched;
+        macro_rules! wrap_group {
             ($value:expr) => {
-                if $value >= self.num_groups {
-                    let tmp = $value as i32 as i64;
-                    if tmp < 0 {
+                if $value.0 >= self.num_groups {
+                    let tmp = $value.0 as i32 as i64;
+                    $value.0 = if tmp < 0 {
                         (tmp % self.num_groups as i64 + self.num_groups as i64) as u32
                     } else {
                         (tmp % self.num_groups as i64) as u32
-                    }
-                } else {
-                    $value
+                    };
                 }
             };
         }
-        acs.group_locked = wrap_value!(acs.group_locked);
-        acs.group_effective = wrap_value!(acs.group_effective);
+        wrap_group!(acs.group_locked);
+        wrap_group!(acs.group_effective);
         macro_rules! flush {
             ($($camel:ident, $field:ident;)*) => {
                 $(
@@ -130,27 +126,13 @@ impl LogHandler<'_> {
                 )*
             };
         }
-        macro_rules! flush_rel_group {
-            ($($camel:ident, $field:ident;)*) => {
-                $(
-                    if acs.$field != self.pub_state.$field {
-                        self.pub_state.$field = acs.$field;
-                        self.events.push(LogicalEvent::$camel(wrap_value!(acs.$field)));
-                    }
-                )*
-            };
-        }
         flush! {
             ModsPressed, mods_pressed;
             ModsLatched, mods_latched;
             ModsLocked, mods_locked;
             ModsEffective, mods_effective;
-        }
-        flush_rel_group! {
             GroupPressed, group_pressed;
             GroupLatched, group_latched;
-        };
-        flush! {
             GroupLocked, group_locked;
             GroupEffective, group_effective;
         }
@@ -200,9 +182,9 @@ impl StateEventHandler for LogHandler<'_> {
             Component::ModsPressed => self.acc_state.mods_pressed.0,
             Component::ModsLatched => self.acc_state.mods_latched.0,
             Component::ModsLocked => self.acc_state.mods_locked.0,
-            Component::GroupPressed => self.acc_state.group_pressed,
-            Component::GroupLatched => self.acc_state.group_latched,
-            Component::GroupLocked => self.acc_state.group_locked,
+            Component::GroupPressed => self.acc_state.group_pressed.0,
+            Component::GroupLatched => self.acc_state.group_latched.0,
+            Component::GroupLocked => self.acc_state.group_locked.0,
         }
     }
 
@@ -213,9 +195,9 @@ impl StateEventHandler for LogHandler<'_> {
             Component::ModsPressed => self.acc_state.mods_pressed.0 = val,
             Component::ModsLatched => self.acc_state.mods_latched.0 = val,
             Component::ModsLocked => self.acc_state.mods_locked.0 = val,
-            Component::GroupPressed => self.acc_state.group_pressed = val,
-            Component::GroupLatched => self.acc_state.group_latched = val,
-            Component::GroupLocked => self.acc_state.group_locked = val,
+            Component::GroupPressed => self.acc_state.group_pressed.0 = val,
+            Component::GroupLatched => self.acc_state.group_latched.0 = val,
+            Component::GroupLocked => self.acc_state.group_locked.0 = val,
         }
     }
 

@@ -8,8 +8,8 @@ both e
     key_up(e)
 both compose
     key_down(compose)
-    group_locked = 0x1
-    group_effective = 0x1
+    group_locked = 1
+    group_effective = 1
     key_up(compose)
 both k
     key_down(k)
@@ -21,18 +21,18 @@ both f
     key_up(f)
 both compose
     key_down(compose)
-    group_locked = 0x2
-    group_effective = 0x2
+    group_locked = 2
+    group_effective = 2
     key_up(compose)
 both compose
     key_down(compose)
-    group_locked = 0x3
-    group_effective = 0x3
+    group_locked = 3
+    group_effective = 3
     key_up(compose)
 both compose
     key_down(compose)
-    group_locked = 0x0
-    group_effective = 0x0
+    group_locked = 0
+    group_effective = 0
     key_up(compose)
 both o
     key_down(o)

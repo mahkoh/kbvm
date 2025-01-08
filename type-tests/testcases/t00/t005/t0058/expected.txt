@@ -5,8 +5,8 @@ both h
 both compose
     key_down(compose)
     sym = ISO_Next_Group
-    group_locked = 0x1
-    group_effective = 0x1
+    group_locked = 1
+    group_effective = 1
     key_up(compose)
 both h
     key_down(h)
@@ -15,8 +15,8 @@ both h
 both compose
     key_down(compose)
     sym = ISO_Next_Group
-    group_locked = 0x2
-    group_effective = 0x2
+    group_locked = 2
+    group_effective = 2
     key_up(compose)
 both h
     key_down(h)
@@ -30,8 +30,8 @@ down leftshift
 both leftalt
     key_down(leftalt)
     sym = ISO_Prev_Group
-    group_locked = 0x1
-    group_effective = 0x1
+    group_locked = 1
+    group_effective = 1
     key_up(leftalt)
 up leftshift
     key_up(leftshift)
@@ -49,8 +49,8 @@ down leftshift
 both leftalt
     key_down(leftalt)
     sym = ISO_Prev_Group
-    group_locked = 0x0
-    group_effective = 0x0
+    group_locked = 0
+    group_effective = 0
     key_up(leftalt)
 up leftshift
     key_up(leftshift)
@@ -68,8 +68,8 @@ down leftshift
 both leftalt
     key_down(leftalt)
     sym = ISO_Prev_Group
-    group_locked = 0x2
-    group_effective = 0x2
+    group_locked = 2
+    group_effective = 2
     key_up(leftalt)
 up leftshift
     key_up(leftshift)
@@ -82,8 +82,8 @@ both h
 both compose
     key_down(compose)
     sym = ISO_Next_Group
-    group_locked = 0x0
-    group_effective = 0x0
+    group_locked = 0
+    group_effective = 0
     key_up(compose)
 both h
     key_down(h)

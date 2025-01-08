@@ -12,6 +12,7 @@ pub mod builder;
 pub mod components;
 mod config;
 mod from_bytes;
+pub mod group;
 pub mod group_type;
 pub mod keysym;
 pub mod keysyms;

@@ -9,8 +9,8 @@ both e
 down compose
     key_down(compose)
     sym = ISO_Group_Latch
-    group_pressed = 0x1
-    group_effective = 0x1
+    group_pressed = 1
+    group_effective = 1
 both h
     key_down(h)
     sym = hebrew_yod, char = 'י'
@@ -21,13 +21,13 @@ both e
     key_up(e)
 up compose
     key_up(compose)
-    group_pressed = 0x0
-    group_effective = 0x0
+    group_pressed = 0
+    group_effective = 0
 both scrolllock
     key_down(scrolllock)
     sym = ISO_Next_Group
-    group_locked = 0x1
-    group_effective = 0x1
+    group_locked = 1
+    group_effective = 1
     key_up(scrolllock)
 both h
     key_down(h)
@@ -40,8 +40,8 @@ both e
 down compose
     key_down(compose)
     sym = ISO_Group_Latch
-    group_pressed = 0x1
-    group_effective = 0x2
+    group_pressed = 1
+    group_effective = 2
 both h
     key_down(h)
     sym = Cyrillic_ha, char = 'х'
@@ -52,8 +52,8 @@ both e
     key_up(e)
 up compose
     key_up(compose)
-    group_pressed = 0x0
-    group_effective = 0x1
+    group_pressed = 0
+    group_effective = 1
 both h
     key_down(h)
     sym = hebrew_yod, char = 'י'
