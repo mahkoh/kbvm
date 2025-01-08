@@ -3,6 +3,7 @@ use {
     isnt::std_1::{primitive::IsntStrExt, vec::IsntVecExt},
     kbvm::xkb::{
         diagnostic::{Diagnostic, DiagnosticSink},
+        rmlvo::{Element, Expanded, MergeMode},
         Context, Keymap, RmlvoGroup,
     },
     parking_lot::Mutex,
@@ -19,12 +20,11 @@ use {
     },
     thiserror::Error,
 };
-use kbvm::xkb::rmlvo::{Element, Expanded, MergeMode};
 
 // const SINGLE: Option<&str> = Some("t0359");
 const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
-const WRITE_FAILED: bool = true;
+const WRITE_FAILED: bool = false;
 const SHOW_ALL_DIAGNOSTICS_IF_SINGLE: bool = true;
 const SHOW_ALL_DIAGNOSTICS: bool = false;
 
@@ -340,10 +340,10 @@ fn test_rmlvo(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let context = context.build();
     let kccgst = context.rmlvo_to_kccgst(
         &mut diagnostics,
-        &input.rules,
-        &input.model,
-        &groups,
-        &options,
+        Some(&input.rules),
+        Some(&input.model),
+        Some(&groups),
+        Some(&options),
     );
     let output = RmlvoOutput::from(kccgst);
 

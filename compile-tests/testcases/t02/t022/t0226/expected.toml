@@ -1,4 +1,4 @@
-keycodes = "x+pc105U"
+keycodes = "x"
 types = ""
 compat = ""
 symbols = ""

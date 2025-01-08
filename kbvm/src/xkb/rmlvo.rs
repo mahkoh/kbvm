@@ -39,13 +39,7 @@ mod tests {
     fn test() {
         let context = Context::builder().build();
         let mut diag = vec![];
-        let out = context.rmlvo_to_kccgst(
-            &mut DiagnosticSink::new(&mut diag),
-            "",
-            "",
-            &[],
-            &[],
-        );
+        let out = context.rmlvo_to_kccgst(&mut DiagnosticSink::new(&mut diag), "", "", &[], &[]);
         println!("{:#}", out);
     }
 }

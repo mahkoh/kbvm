@@ -199,10 +199,10 @@ impl Context {
     pub fn create_keymap_from_rmlvo(
         &self,
         diagnostics: &mut DiagnosticSink,
-        rules: &str,
-        model: &str,
-        groups: &[RmlvoGroup<'_>],
-        options: &[&str],
+        rules: Option<&str>,
+        model: Option<&str>,
+        groups: Option<&[RmlvoGroup<'_>]>,
+        options: Option<&[&str]>,
     ) -> Keymap {
         let mut map = CodeMap::default();
         let mut interner = Interner::default();
@@ -237,10 +237,10 @@ impl Context {
     pub fn rmlvo_to_kccgst(
         &self,
         diagnostics: &mut DiagnosticSink,
-        rules: &str,
-        model: &str,
-        groups: &[RmlvoGroup<'_>],
-        options: &[&str],
+        rules: Option<&str>,
+        model: Option<&str>,
+        groups: Option<&[RmlvoGroup<'_>]>,
+        options: Option<&[&str]>,
     ) -> rmlvo::Expanded {
         let mut map = CodeMap::default();
         let mut interner = Interner::default();
@@ -287,10 +287,10 @@ impl Context {
         interner: &mut Interner,
         loader: &mut CodeLoader,
         meaning_cache: &mut MeaningCache,
-        rules: &str,
-        model: &str,
-        groups: &[RmlvoGroup<'_>],
-        options: &[&str],
+        rules: Option<&str>,
+        model: Option<&str>,
+        groups: Option<&[RmlvoGroup<'_>]>,
+        options: Option<&[&str]>,
         f: impl FnOnce(
             &mut CodeMap,
             &mut Interner,
@@ -305,23 +305,15 @@ impl Context {
             &Environment,
         ) -> T,
     ) -> T {
-        let mut rules = rules;
-        if rules.is_empty() {
-            rules = &self.env.xkb_default_rules;
-        }
-        let mut model = model;
-        if model.is_empty() {
-            model = &self.env.xkb_default_model;
-        }
+        let rules = rules.unwrap_or(&self.env.xkb_default_rules);
+        let model = model.unwrap_or(&self.env.xkb_default_model);
         let mut default_options = vec![];
-        let mut options = options;
-        if options.is_empty() {
+        let options = options.unwrap_or_else(|| {
             default_options.extend(self.env.xkb_default_options.split(','));
-            options = &default_options;
-        }
+            &default_options
+        });
         let mut default_groups = vec![];
-        let mut groups = groups;
-        if groups.is_empty() {
+        let groups = groups.unwrap_or_else(|| {
             let mut layouts = self.env.xkb_default_layout.split(',');
             let mut variants = self.env.xkb_default_variant.split(',');
             loop {
@@ -335,8 +327,8 @@ impl Context {
                     variant: variant.unwrap_or_default(),
                 });
             }
-            groups = &default_groups;
-        }
+            &default_groups
+        });
         let mut intern = |s: &str| {
             let code = Arc::new(s.as_bytes().to_vec());
             let code = Code::new(&code);
