@@ -3,7 +3,7 @@ use {
     isnt::std_1::{primitive::IsntStrExt, vec::IsntVecExt},
     kbvm::xkb::{
         diagnostic::{Diagnostic, DiagnosticSink},
-        Context, Element, Kccgst, Keymap, MergeMode, RmlvoGroup,
+        Context, Keymap, RmlvoGroup,
     },
     parking_lot::Mutex,
     serde::{Deserialize, Serialize},
@@ -19,6 +19,7 @@ use {
     },
     thiserror::Error,
 };
+use kbvm::xkb::rmlvo::{Element, Expanded, MergeMode};
 
 // const SINGLE: Option<&str> = Some("t0359");
 const SINGLE: Option<&str> = None;
@@ -198,6 +199,7 @@ fn test_kccgst(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Res
 
     let mut diagnostics = DiagnosticSink::new(diagnostics);
     let mut context = Context::builder();
+    context.enable_system_dirs(false);
     context.append_path(case);
     context.append_path(&case.join("extra-includes"));
     context.append_path("./include");
@@ -281,8 +283,8 @@ struct RmlvoOutput {
     geometry: String,
 }
 
-impl From<Kccgst> for RmlvoOutput {
-    fn from(value: Kccgst) -> Self {
+impl From<Expanded> for RmlvoOutput {
+    fn from(value: Expanded) -> Self {
         let convert = |elements: &[Element]| {
             let mut res = String::new();
             for e in elements {
@@ -290,6 +292,7 @@ impl From<Kccgst> for RmlvoOutput {
                     let mm = match e.merge_mode {
                         MergeMode::Augment => "|",
                         MergeMode::Override => "+",
+                        _ => unreachable!(),
                     };
                     res.push_str(mm);
                 }
@@ -331,6 +334,7 @@ fn test_rmlvo(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
 
     let mut diagnostics = DiagnosticSink::new(diagnostics);
     let mut context = Context::builder();
+    context.enable_system_dirs(false);
     context.append_path(case);
     context.append_path("./include");
     let context = context.build();

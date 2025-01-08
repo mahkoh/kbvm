@@ -31,6 +31,7 @@ pub struct Expanded {
     pub geometry: Vec<Element>,
 }
 
+#[cfg(test)]
 mod tests {
     use crate::xkb::{diagnostic::DiagnosticSink, Context, RmlvoGroup};
 
@@ -40,12 +41,9 @@ mod tests {
         let mut diag = vec![];
         let out = context.rmlvo_to_kccgst(
             &mut DiagnosticSink::new(&mut diag),
-            "evdev",
             "",
-            &[RmlvoGroup {
-                layout: "de",
-                variant: "neo",
-            }],
+            "",
+            &[],
             &[],
         );
         println!("{:#}", out);

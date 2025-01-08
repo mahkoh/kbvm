@@ -62,13 +62,26 @@ pub struct ContextBuilder {
     suffix: Vec<PathBuf>,
 }
 
+impl Default for ContextBuilder {
+    fn default() -> Self {
+        Self {
+            enable_system_dirs: true,
+            enable_environment: false,
+            max_includes: 1024,
+            max_include_depth: 128,
+            prefix: vec![],
+            suffix: vec![],
+        }
+    }
+}
+
 impl ContextBuilder {
-    pub fn set_enable_system_dirs(&mut self, val: bool) {
+    pub fn enable_system_dirs(&mut self, val: bool) {
         self.enable_system_dirs = val;
     }
 
-    pub fn set_enable_environment(&mut self, val: bool) {
-        self.enable_system_dirs = val;
+    pub fn enable_environment(&mut self, val: bool) {
+        self.enable_environment = val;
     }
 
     pub fn prepend_path(&mut self, path: &(impl AsRef<Path> + ?Sized)) {
@@ -77,6 +90,14 @@ impl ContextBuilder {
 
     pub fn append_path(&mut self, path: &(impl AsRef<Path> + ?Sized)) {
         self.prefix.push(path.as_ref().to_path_buf());
+    }
+
+    pub fn max_includes(&mut self, val: u64) {
+        self.max_includes = val;
+    }
+
+    pub fn max_include_depth(&mut self, val: u64) {
+        self.max_include_depth = val;
     }
 
     pub fn build(mut self) -> Context {
@@ -172,14 +193,7 @@ pub struct RmlvoGroup<'a> {
 
 impl Context {
     pub fn builder() -> ContextBuilder {
-        ContextBuilder {
-            enable_system_dirs: true,
-            enable_environment: false,
-            max_includes: 1024,
-            max_include_depth: 128,
-            prefix: vec![],
-            suffix: vec![],
-        }
+        ContextBuilder::default()
     }
 
     pub fn create_keymap_from_rmlvo(
@@ -291,6 +305,38 @@ impl Context {
             &Environment,
         ) -> T,
     ) -> T {
+        let mut rules = rules;
+        if rules.is_empty() {
+            rules = &self.env.xkb_default_rules;
+        }
+        let mut model = model;
+        if model.is_empty() {
+            model = &self.env.xkb_default_model;
+        }
+        let mut default_options = vec![];
+        let mut options = options;
+        if options.is_empty() {
+            default_options.extend(self.env.xkb_default_options.split(','));
+            options = &default_options;
+        }
+        let mut default_groups = vec![];
+        let mut groups = groups;
+        if groups.is_empty() {
+            let mut layouts = self.env.xkb_default_layout.split(',');
+            let mut variants = self.env.xkb_default_variant.split(',');
+            loop {
+                let layout = layouts.next();
+                let variant = variants.next();
+                if layout.is_none() && variant.is_none() {
+                    break;
+                }
+                default_groups.push(RmlvoGroup {
+                    layout: layout.unwrap_or_default(),
+                    variant: variant.unwrap_or_default(),
+                });
+            }
+            groups = &default_groups;
+        }
         let mut intern = |s: &str| {
             let code = Arc::new(s.as_bytes().to_vec());
             let code = Code::new(&code);
