@@ -364,6 +364,16 @@ impl LookupTable {
             syms,
         }
     }
+
+    pub fn effective_layout(&self, group: GroupIndex, keycode: Keycode) -> Option<GroupIndex> {
+        if let Some(key) = self.keys.get(&keycode) {
+            if key.groups.len() > 0 {
+                let group = key.redirect.apply(group, key.groups.len());
+                return Some(GroupIndex(group as u32));
+            }
+        }
+        None
+    }
 }
 
 impl<'a> IntoIterator for Lookup<'a> {

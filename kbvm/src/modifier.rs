@@ -42,14 +42,14 @@ impl ModifierIndex {
 
 impl ModifierMask {
     pub(crate) const NONE: Self = Self(0);
-    pub(crate) const SHIFT: Self = Self(1 << 0);
-    pub(crate) const LOCK: Self = Self(1 << 1);
-    // pub(crate) const CONTROL: Self = Self(1 << 2);
-    // pub(crate) const MOD1: Self = Self(1 << 3);
-    // pub(crate) const MOD2: Self = Self(1 << 4);
-    // pub(crate) const MOD3: Self = Self(1 << 5);
-    // pub(crate) const MOD4: Self = Self(1 << 6);
-    // pub(crate) const MOD5: Self = Self(1 << 7);
+    pub const SHIFT: Self = Self(1 << 0);
+    pub const LOCK: Self = Self(1 << 1);
+    pub const CONTROL: Self = Self(1 << 2);
+    pub const MOD1: Self = Self(1 << 3);
+    pub const MOD2: Self = Self(1 << 4);
+    pub const MOD3: Self = Self(1 << 5);
+    pub const MOD4: Self = Self(1 << 6);
+    pub const MOD5: Self = Self(1 << 7);
 
     pub const fn contains(self, other: ModifierMask) -> bool {
         self.0 & other.0 == other.0

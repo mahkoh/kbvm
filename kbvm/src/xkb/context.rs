@@ -50,6 +50,7 @@ pub struct Kccgst {
     pub geometry: Vec<Element>,
 }
 
+#[derive(Debug)]
 pub struct Context {
     paths: Vec<Arc<PathBuf>>,
     max_includes: u64,
