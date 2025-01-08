@@ -1,4 +1,4 @@
-keycodes = "-U_U"
+keycodes = "-pc105-U_U"
 types = ""
 compat = ""
 symbols = ""

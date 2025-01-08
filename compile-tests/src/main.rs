@@ -24,7 +24,7 @@ use kbvm::xkb::rmlvo::{Element, Expanded, MergeMode};
 // const SINGLE: Option<&str> = Some("t0359");
 const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
-const WRITE_FAILED: bool = false;
+const WRITE_FAILED: bool = true;
 const SHOW_ALL_DIAGNOSTICS_IF_SINGLE: bool = true;
 const SHOW_ALL_DIAGNOSTICS: bool = false;
 
