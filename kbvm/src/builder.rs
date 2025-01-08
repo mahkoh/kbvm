@@ -1,5 +1,6 @@
 use {
     crate::{
+        group::GroupIndex,
         group_type::GroupType,
         keysym::Keysym,
         lookup::{self, LookupTable},
@@ -11,7 +12,6 @@ use {
     isnt::std_1::primitive::IsntSliceExt,
     smallvec::SmallVec,
 };
-use crate::group::GroupIndex;
 
 #[derive(Default, Debug)]
 pub struct Builder {

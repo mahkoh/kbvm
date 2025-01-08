@@ -2,20 +2,20 @@ use {crate::modifier::ModifierMask, hashbrown::HashMap, std::sync::Arc};
 
 #[derive(Clone, Debug)]
 pub struct GroupType {
-    data: Arc<Data>,
+    pub(crate) data: Arc<Data>,
 }
 
 #[derive(Debug)]
-struct Data {
-    mask: ModifierMask,
-    cases: Vec<Case>,
+pub(crate) struct Data {
+    pub(crate) mask: ModifierMask,
+    pub(crate) cases: Vec<Case>,
 }
 
 #[derive(Copy, Clone, Debug)]
-struct Case {
-    mods: ModifierMask,
-    layer: usize,
-    consumed: ModifierMask,
+pub(crate) struct Case {
+    pub(crate) mods: ModifierMask,
+    pub(crate) layer: usize,
+    pub(crate) consumed: ModifierMask,
 }
 
 #[derive(Debug)]

@@ -2,14 +2,13 @@
 use crate::builder::Builder;
 use {
     crate::{
-        builder::Redirect, group_type::GroupType, keysym::Keysym, modifier::ModifierMask,
-        state_machine::Keycode,
+        builder::Redirect, group::GroupIndex, group_type::GroupType, keysym::Keysym,
+        modifier::ModifierMask, state_machine::Keycode,
     },
     hashbrown::HashMap,
     smallvec::SmallVec,
     std::fmt::{Debug, Formatter},
 };
-use crate::group::GroupIndex;
 
 /// A keysym lookup table.
 ///

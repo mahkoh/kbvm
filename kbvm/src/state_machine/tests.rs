@@ -1,4 +1,5 @@
 use crate::{
+    group::GroupIndex,
     modifier::ModifierMask,
     state_machine::{Keycode, LogicalEvent, State},
     xkb::{diagnostic::DiagnosticSink, Context},
@@ -14,7 +15,8 @@ const KEY_Q: Keycode = Keycode(24);
 fn test() {
     let mut sink = vec![];
     let mut sink = DiagnosticSink::new(&mut sink);
-    let context = Context::default()
+    let context = Context::builder()
+        .build()
         .parse_keymap(&mut sink, None, MAP.as_bytes())
         .unwrap();
     let builder = context.to_builder();
@@ -29,7 +31,7 @@ fn test() {
             println!("{:#?}", event);
             match event {
                 LogicalEvent::KeyDown(kc) => {
-                    let lookup = lookup.lookup(0, effective_mods, kc);
+                    let lookup = lookup.lookup(GroupIndex(0), effective_mods, kc);
                     println!("  {:?}", lookup);
                     for sym in lookup {
                         println!("  {:?}", sym);

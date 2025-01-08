@@ -1,4 +1,5 @@
 mod format;
+mod from_lookup;
 
 use {
     crate::{
@@ -177,10 +178,7 @@ impl Keymap {
         virtual_modifiers.sort_unstable_by(|l, r| l.name.cmp(&r.name));
         if virtual_modifiers.is_empty() {
             // https://gitlab.freedesktop.org/xorg/xserver/-/issues/1774
-            virtual_modifiers.push(VirtualModifier {
-                name: Arc::new("Dummy".to_string()),
-                values: Default::default(),
-            });
+            virtual_modifiers.push(VirtualModifier::dummy());
         }
         let mut types_by_ident = HashMap::new();
         let mut types = Vec::with_capacity(resolved.types.key_types.len() + 8);
@@ -264,16 +262,7 @@ impl Keymap {
         indicators.sort_unstable_by_key(|i| i.index.raw());
         if indicators.is_empty() {
             // https://gitlab.freedesktop.org/xorg/xserver/-/issues/1775
-            indicators.push(Indicator {
-                virt: false,
-                index: IndicatorIdx::ONE,
-                name: Arc::new("DUMMY".to_string()),
-                modifier_mask: Default::default(),
-                group_mask: Default::default(),
-                controls: Default::default(),
-                mod_components: Default::default(),
-                group_components: Default::default(),
-            });
+            indicators.push(Indicator::dummy());
         }
         let mut mod_maps = HashSet::with_capacity(resolved.symbols.mod_map_entries.len());
         for m in resolved.symbols.mod_map_entries.values() {
@@ -716,6 +705,30 @@ fn create_used_default_key_types_(
             };
             types.push(kt.clone());
             res[bi] = Some(kt);
+        }
+    }
+}
+
+impl Indicator {
+    pub(crate) fn dummy() -> Self {
+        Self {
+            virt: false,
+            index: IndicatorIdx::ONE,
+            name: Arc::new("DUMMY".to_string()),
+            modifier_mask: Default::default(),
+            group_mask: Default::default(),
+            controls: Default::default(),
+            mod_components: Default::default(),
+            group_components: Default::default(),
+        }
+    }
+}
+
+impl VirtualModifier {
+    pub(crate) fn dummy() -> Self {
+        Self {
+            name: Arc::new("Dummy".to_string()),
+            values: Default::default(),
         }
     }
 }

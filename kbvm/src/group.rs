@@ -1,5 +1,7 @@
-use std::fmt::{Debug, Formatter};
-use std::ops::Add;
+use std::{
+    fmt::{Debug, Formatter},
+    ops::Add,
+};
 
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Default)]
 #[repr(transparent)]

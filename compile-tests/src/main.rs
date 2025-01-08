@@ -197,10 +197,11 @@ fn test_kccgst(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Res
     let input = std::fs::read(&input_path).map_err(ResultError::ReadInputFailed)?;
 
     let mut diagnostics = DiagnosticSink::new(diagnostics);
-    let mut context = Context::default();
-    context.add_include_path(case);
-    context.add_include_path(&case.join("extra-includes"));
-    context.add_include_path("./include".as_ref());
+    let mut context = Context::builder();
+    context.append_path(case);
+    context.append_path(&case.join("extra-includes"));
+    context.append_path("./include");
+    let context = context.build();
     let map_actual = context
         .parse_keymap(&mut diagnostics, Some(&input_path), &input)
         .map_err(ResultError::ParsingFailed)?;
@@ -329,9 +330,10 @@ fn test_rmlvo(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let options: Vec<_> = input.options.iter().map(|s| &**s).collect();
 
     let mut diagnostics = DiagnosticSink::new(diagnostics);
-    let mut context = Context::default();
-    context.add_include_path(case);
-    context.add_include_path("./include".as_ref());
+    let mut context = Context::builder();
+    context.append_path(case);
+    context.append_path("./include");
+    let context = context.build();
     let kccgst = context.rmlvo_to_kccgst(
         &mut diagnostics,
         &input.rules,

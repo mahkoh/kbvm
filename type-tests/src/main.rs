@@ -10,6 +10,7 @@ use {
     error_reporter::Report,
     isnt::std_1::vec::IsntVecExt,
     kbvm::{
+        group::GroupIndex,
         modifier::ModifierMask,
         state_machine::{Keycode, LogicalEvent, State},
         xkb::{
@@ -32,7 +33,6 @@ use {
     },
     thiserror::Error,
 };
-use kbvm::group::GroupIndex;
 
 // const SINGLE: Option<&str> = Some("t0064");
 const SINGLE: Option<&str> = None;
