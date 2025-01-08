@@ -21,7 +21,9 @@ impl ModifierIndex {
     pub(crate) const CONTROL: Self = Self::new(2).unwrap();
     pub(crate) const MOD1: Self = Self::new(3).unwrap();
     pub(crate) const MOD2: Self = Self::new(4).unwrap();
+    pub(crate) const MOD3: Self = Self::new(5).unwrap();
     pub(crate) const MOD4: Self = Self::new(6).unwrap();
+    pub(crate) const MOD5: Self = Self::new(7).unwrap();
 
     pub const fn new(index: u32) -> Option<Self> {
         if index >= u32::BITS {
@@ -42,14 +44,14 @@ impl ModifierIndex {
 
 impl ModifierMask {
     pub(crate) const NONE: Self = Self(0);
-    pub const SHIFT: Self = Self(1 << 0);
-    pub const LOCK: Self = Self(1 << 1);
-    pub const CONTROL: Self = Self(1 << 2);
-    pub const MOD1: Self = Self(1 << 3);
-    pub const MOD2: Self = Self(1 << 4);
-    pub const MOD3: Self = Self(1 << 5);
-    pub const MOD4: Self = Self(1 << 6);
-    pub const MOD5: Self = Self(1 << 7);
+    pub const SHIFT: Self = ModifierIndex::SHIFT.to_mask();
+    pub const LOCK: Self = ModifierIndex::LOCK.to_mask();
+    pub const CONTROL: Self = ModifierIndex::CONTROL.to_mask();
+    pub const MOD1: Self = ModifierIndex::MOD1.to_mask();
+    pub const MOD2: Self = ModifierIndex::MOD2.to_mask();
+    pub const MOD3: Self = ModifierIndex::MOD3.to_mask();
+    pub const MOD4: Self = ModifierIndex::MOD4.to_mask();
+    pub const MOD5: Self = ModifierIndex::MOD5.to_mask();
 
     pub const fn contains(self, other: ModifierMask) -> bool {
         self.0 & other.0 == other.0
