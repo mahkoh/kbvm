@@ -10,11 +10,11 @@ pub struct Components {
     pub mods_pressed: ModifierMask,
     pub mods_latched: ModifierMask,
     pub mods_locked: ModifierMask,
-    pub mods_effective: ModifierMask,
+    pub mods: ModifierMask,
     pub group_pressed: GroupDelta,
     pub group_latched: GroupDelta,
     pub group_locked: GroupIndex,
-    pub group_effective: GroupIndex,
+    pub group: GroupIndex,
 }
 
 impl Components {
@@ -30,11 +30,11 @@ impl Components {
             LogicalEvent::ModsPressed(v) => change!(mods_pressed, v),
             LogicalEvent::ModsLatched(v) => change!(mods_latched, v),
             LogicalEvent::ModsLocked(v) => change!(mods_locked, v),
-            LogicalEvent::ModsEffective(v) => change!(mods_effective, v),
+            LogicalEvent::ModsEffective(v) => change!(mods, v),
             LogicalEvent::GroupPressed(v) => change!(group_pressed, v),
             LogicalEvent::GroupLatched(v) => change!(group_latched, v),
             LogicalEvent::GroupLocked(v) => change!(group_locked, v),
-            LogicalEvent::GroupEffective(v) => change!(group_effective, v),
+            LogicalEvent::GroupEffective(v) => change!(group, v),
             _ => false,
         }
     }

@@ -19457,5162 +19457,5162 @@ pub mod syms {
     #![allow(non_upper_case_globals)]
     use super::*;
     /// NoSymbol
-    pub const KEY_NoSymbol: Keysym = Keysym(0x00000000);
+    pub const NoSymbol: Keysym = Keysym(0x00000000);
     /// space
-    pub const KEY_space: Keysym = Keysym(0x00000020);
+    pub const space: Keysym = Keysym(0x00000020);
     /// exclam
-    pub const KEY_exclam: Keysym = Keysym(0x00000021);
+    pub const exclam: Keysym = Keysym(0x00000021);
     /// quotedbl
-    pub const KEY_quotedbl: Keysym = Keysym(0x00000022);
+    pub const quotedbl: Keysym = Keysym(0x00000022);
     /// numbersign
-    pub const KEY_numbersign: Keysym = Keysym(0x00000023);
+    pub const numbersign: Keysym = Keysym(0x00000023);
     /// dollar
-    pub const KEY_dollar: Keysym = Keysym(0x00000024);
+    pub const dollar: Keysym = Keysym(0x00000024);
     /// percent
-    pub const KEY_percent: Keysym = Keysym(0x00000025);
+    pub const percent: Keysym = Keysym(0x00000025);
     /// ampersand
-    pub const KEY_ampersand: Keysym = Keysym(0x00000026);
+    pub const ampersand: Keysym = Keysym(0x00000026);
     /// apostrophe
-    pub const KEY_apostrophe: Keysym = Keysym(0x00000027);
+    pub const apostrophe: Keysym = Keysym(0x00000027);
     /// quoteright
-    pub const KEY_quoteright: Keysym = Keysym(0x00000027);
+    pub const quoteright: Keysym = Keysym(0x00000027);
     /// parenleft
-    pub const KEY_parenleft: Keysym = Keysym(0x00000028);
+    pub const parenleft: Keysym = Keysym(0x00000028);
     /// parenright
-    pub const KEY_parenright: Keysym = Keysym(0x00000029);
+    pub const parenright: Keysym = Keysym(0x00000029);
     /// asterisk
-    pub const KEY_asterisk: Keysym = Keysym(0x0000002a);
+    pub const asterisk: Keysym = Keysym(0x0000002a);
     /// plus
-    pub const KEY_plus: Keysym = Keysym(0x0000002b);
+    pub const plus: Keysym = Keysym(0x0000002b);
     /// comma
-    pub const KEY_comma: Keysym = Keysym(0x0000002c);
+    pub const comma: Keysym = Keysym(0x0000002c);
     /// minus
-    pub const KEY_minus: Keysym = Keysym(0x0000002d);
+    pub const minus: Keysym = Keysym(0x0000002d);
     /// period
-    pub const KEY_period: Keysym = Keysym(0x0000002e);
+    pub const period: Keysym = Keysym(0x0000002e);
     /// slash
-    pub const KEY_slash: Keysym = Keysym(0x0000002f);
+    pub const slash: Keysym = Keysym(0x0000002f);
     /// 0
-    pub const KEY_0: Keysym = Keysym(0x00000030);
+    pub const _0: Keysym = Keysym(0x00000030);
     /// 1
-    pub const KEY_1: Keysym = Keysym(0x00000031);
+    pub const _1: Keysym = Keysym(0x00000031);
     /// 2
-    pub const KEY_2: Keysym = Keysym(0x00000032);
+    pub const _2: Keysym = Keysym(0x00000032);
     /// 3
-    pub const KEY_3: Keysym = Keysym(0x00000033);
+    pub const _3: Keysym = Keysym(0x00000033);
     /// 4
-    pub const KEY_4: Keysym = Keysym(0x00000034);
+    pub const _4: Keysym = Keysym(0x00000034);
     /// 5
-    pub const KEY_5: Keysym = Keysym(0x00000035);
+    pub const _5: Keysym = Keysym(0x00000035);
     /// 6
-    pub const KEY_6: Keysym = Keysym(0x00000036);
+    pub const _6: Keysym = Keysym(0x00000036);
     /// 7
-    pub const KEY_7: Keysym = Keysym(0x00000037);
+    pub const _7: Keysym = Keysym(0x00000037);
     /// 8
-    pub const KEY_8: Keysym = Keysym(0x00000038);
+    pub const _8: Keysym = Keysym(0x00000038);
     /// 9
-    pub const KEY_9: Keysym = Keysym(0x00000039);
+    pub const _9: Keysym = Keysym(0x00000039);
     /// colon
-    pub const KEY_colon: Keysym = Keysym(0x0000003a);
+    pub const colon: Keysym = Keysym(0x0000003a);
     /// semicolon
-    pub const KEY_semicolon: Keysym = Keysym(0x0000003b);
+    pub const semicolon: Keysym = Keysym(0x0000003b);
     /// less
-    pub const KEY_less: Keysym = Keysym(0x0000003c);
+    pub const less: Keysym = Keysym(0x0000003c);
     /// equal
-    pub const KEY_equal: Keysym = Keysym(0x0000003d);
+    pub const equal: Keysym = Keysym(0x0000003d);
     /// greater
-    pub const KEY_greater: Keysym = Keysym(0x0000003e);
+    pub const greater: Keysym = Keysym(0x0000003e);
     /// question
-    pub const KEY_question: Keysym = Keysym(0x0000003f);
+    pub const question: Keysym = Keysym(0x0000003f);
     /// at
-    pub const KEY_at: Keysym = Keysym(0x00000040);
+    pub const at: Keysym = Keysym(0x00000040);
     /// A
-    pub const KEY_A: Keysym = Keysym(0x00000041);
+    pub const A: Keysym = Keysym(0x00000041);
     /// B
-    pub const KEY_B: Keysym = Keysym(0x00000042);
+    pub const B: Keysym = Keysym(0x00000042);
     /// C
-    pub const KEY_C: Keysym = Keysym(0x00000043);
+    pub const C: Keysym = Keysym(0x00000043);
     /// D
-    pub const KEY_D: Keysym = Keysym(0x00000044);
+    pub const D: Keysym = Keysym(0x00000044);
     /// E
-    pub const KEY_E: Keysym = Keysym(0x00000045);
+    pub const E: Keysym = Keysym(0x00000045);
     /// F
-    pub const KEY_F: Keysym = Keysym(0x00000046);
+    pub const F: Keysym = Keysym(0x00000046);
     /// G
-    pub const KEY_G: Keysym = Keysym(0x00000047);
+    pub const G: Keysym = Keysym(0x00000047);
     /// H
-    pub const KEY_H: Keysym = Keysym(0x00000048);
+    pub const H: Keysym = Keysym(0x00000048);
     /// I
-    pub const KEY_I: Keysym = Keysym(0x00000049);
+    pub const I: Keysym = Keysym(0x00000049);
     /// J
-    pub const KEY_J: Keysym = Keysym(0x0000004a);
+    pub const J: Keysym = Keysym(0x0000004a);
     /// K
-    pub const KEY_K: Keysym = Keysym(0x0000004b);
+    pub const K: Keysym = Keysym(0x0000004b);
     /// L
-    pub const KEY_L: Keysym = Keysym(0x0000004c);
+    pub const L: Keysym = Keysym(0x0000004c);
     /// M
-    pub const KEY_M: Keysym = Keysym(0x0000004d);
+    pub const M: Keysym = Keysym(0x0000004d);
     /// N
-    pub const KEY_N: Keysym = Keysym(0x0000004e);
+    pub const N: Keysym = Keysym(0x0000004e);
     /// O
-    pub const KEY_O: Keysym = Keysym(0x0000004f);
+    pub const O: Keysym = Keysym(0x0000004f);
     /// P
-    pub const KEY_P: Keysym = Keysym(0x00000050);
+    pub const P: Keysym = Keysym(0x00000050);
     /// Q
-    pub const KEY_Q: Keysym = Keysym(0x00000051);
+    pub const Q: Keysym = Keysym(0x00000051);
     /// R
-    pub const KEY_R: Keysym = Keysym(0x00000052);
+    pub const R: Keysym = Keysym(0x00000052);
     /// S
-    pub const KEY_S: Keysym = Keysym(0x00000053);
+    pub const S: Keysym = Keysym(0x00000053);
     /// T
-    pub const KEY_T: Keysym = Keysym(0x00000054);
+    pub const T: Keysym = Keysym(0x00000054);
     /// U
-    pub const KEY_U: Keysym = Keysym(0x00000055);
+    pub const U: Keysym = Keysym(0x00000055);
     /// V
-    pub const KEY_V: Keysym = Keysym(0x00000056);
+    pub const V: Keysym = Keysym(0x00000056);
     /// W
-    pub const KEY_W: Keysym = Keysym(0x00000057);
+    pub const W: Keysym = Keysym(0x00000057);
     /// X
-    pub const KEY_X: Keysym = Keysym(0x00000058);
+    pub const X: Keysym = Keysym(0x00000058);
     /// Y
-    pub const KEY_Y: Keysym = Keysym(0x00000059);
+    pub const Y: Keysym = Keysym(0x00000059);
     /// Z
-    pub const KEY_Z: Keysym = Keysym(0x0000005a);
+    pub const Z: Keysym = Keysym(0x0000005a);
     /// bracketleft
-    pub const KEY_bracketleft: Keysym = Keysym(0x0000005b);
+    pub const bracketleft: Keysym = Keysym(0x0000005b);
     /// backslash
-    pub const KEY_backslash: Keysym = Keysym(0x0000005c);
+    pub const backslash: Keysym = Keysym(0x0000005c);
     /// bracketright
-    pub const KEY_bracketright: Keysym = Keysym(0x0000005d);
+    pub const bracketright: Keysym = Keysym(0x0000005d);
     /// asciicircum
-    pub const KEY_asciicircum: Keysym = Keysym(0x0000005e);
+    pub const asciicircum: Keysym = Keysym(0x0000005e);
     /// underscore
-    pub const KEY_underscore: Keysym = Keysym(0x0000005f);
+    pub const underscore: Keysym = Keysym(0x0000005f);
     /// grave
-    pub const KEY_grave: Keysym = Keysym(0x00000060);
+    pub const grave: Keysym = Keysym(0x00000060);
     /// quoteleft
-    pub const KEY_quoteleft: Keysym = Keysym(0x00000060);
+    pub const quoteleft: Keysym = Keysym(0x00000060);
     /// a
-    pub const KEY_a: Keysym = Keysym(0x00000061);
+    pub const a: Keysym = Keysym(0x00000061);
     /// b
-    pub const KEY_b: Keysym = Keysym(0x00000062);
+    pub const b: Keysym = Keysym(0x00000062);
     /// c
-    pub const KEY_c: Keysym = Keysym(0x00000063);
+    pub const c: Keysym = Keysym(0x00000063);
     /// d
-    pub const KEY_d: Keysym = Keysym(0x00000064);
+    pub const d: Keysym = Keysym(0x00000064);
     /// e
-    pub const KEY_e: Keysym = Keysym(0x00000065);
+    pub const e: Keysym = Keysym(0x00000065);
     /// f
-    pub const KEY_f: Keysym = Keysym(0x00000066);
+    pub const f: Keysym = Keysym(0x00000066);
     /// g
-    pub const KEY_g: Keysym = Keysym(0x00000067);
+    pub const g: Keysym = Keysym(0x00000067);
     /// h
-    pub const KEY_h: Keysym = Keysym(0x00000068);
+    pub const h: Keysym = Keysym(0x00000068);
     /// i
-    pub const KEY_i: Keysym = Keysym(0x00000069);
+    pub const i: Keysym = Keysym(0x00000069);
     /// j
-    pub const KEY_j: Keysym = Keysym(0x0000006a);
+    pub const j: Keysym = Keysym(0x0000006a);
     /// k
-    pub const KEY_k: Keysym = Keysym(0x0000006b);
+    pub const k: Keysym = Keysym(0x0000006b);
     /// l
-    pub const KEY_l: Keysym = Keysym(0x0000006c);
+    pub const l: Keysym = Keysym(0x0000006c);
     /// m
-    pub const KEY_m: Keysym = Keysym(0x0000006d);
+    pub const m: Keysym = Keysym(0x0000006d);
     /// n
-    pub const KEY_n: Keysym = Keysym(0x0000006e);
+    pub const n: Keysym = Keysym(0x0000006e);
     /// o
-    pub const KEY_o: Keysym = Keysym(0x0000006f);
+    pub const o: Keysym = Keysym(0x0000006f);
     /// p
-    pub const KEY_p: Keysym = Keysym(0x00000070);
+    pub const p: Keysym = Keysym(0x00000070);
     /// q
-    pub const KEY_q: Keysym = Keysym(0x00000071);
+    pub const q: Keysym = Keysym(0x00000071);
     /// r
-    pub const KEY_r: Keysym = Keysym(0x00000072);
+    pub const r: Keysym = Keysym(0x00000072);
     /// s
-    pub const KEY_s: Keysym = Keysym(0x00000073);
+    pub const s: Keysym = Keysym(0x00000073);
     /// t
-    pub const KEY_t: Keysym = Keysym(0x00000074);
+    pub const t: Keysym = Keysym(0x00000074);
     /// u
-    pub const KEY_u: Keysym = Keysym(0x00000075);
+    pub const u: Keysym = Keysym(0x00000075);
     /// v
-    pub const KEY_v: Keysym = Keysym(0x00000076);
+    pub const v: Keysym = Keysym(0x00000076);
     /// w
-    pub const KEY_w: Keysym = Keysym(0x00000077);
+    pub const w: Keysym = Keysym(0x00000077);
     /// x
-    pub const KEY_x: Keysym = Keysym(0x00000078);
+    pub const x: Keysym = Keysym(0x00000078);
     /// y
-    pub const KEY_y: Keysym = Keysym(0x00000079);
+    pub const y: Keysym = Keysym(0x00000079);
     /// z
-    pub const KEY_z: Keysym = Keysym(0x0000007a);
+    pub const z: Keysym = Keysym(0x0000007a);
     /// braceleft
-    pub const KEY_braceleft: Keysym = Keysym(0x0000007b);
+    pub const braceleft: Keysym = Keysym(0x0000007b);
     /// bar
-    pub const KEY_bar: Keysym = Keysym(0x0000007c);
+    pub const bar: Keysym = Keysym(0x0000007c);
     /// braceright
-    pub const KEY_braceright: Keysym = Keysym(0x0000007d);
+    pub const braceright: Keysym = Keysym(0x0000007d);
     /// asciitilde
-    pub const KEY_asciitilde: Keysym = Keysym(0x0000007e);
+    pub const asciitilde: Keysym = Keysym(0x0000007e);
     /// nobreakspace
-    pub const KEY_nobreakspace: Keysym = Keysym(0x000000a0);
+    pub const nobreakspace: Keysym = Keysym(0x000000a0);
     /// exclamdown
-    pub const KEY_exclamdown: Keysym = Keysym(0x000000a1);
+    pub const exclamdown: Keysym = Keysym(0x000000a1);
     /// cent
-    pub const KEY_cent: Keysym = Keysym(0x000000a2);
+    pub const cent: Keysym = Keysym(0x000000a2);
     /// sterling
-    pub const KEY_sterling: Keysym = Keysym(0x000000a3);
+    pub const sterling: Keysym = Keysym(0x000000a3);
     /// currency
-    pub const KEY_currency: Keysym = Keysym(0x000000a4);
+    pub const currency: Keysym = Keysym(0x000000a4);
     /// yen
-    pub const KEY_yen: Keysym = Keysym(0x000000a5);
+    pub const yen: Keysym = Keysym(0x000000a5);
     /// brokenbar
-    pub const KEY_brokenbar: Keysym = Keysym(0x000000a6);
+    pub const brokenbar: Keysym = Keysym(0x000000a6);
     /// section
-    pub const KEY_section: Keysym = Keysym(0x000000a7);
+    pub const section: Keysym = Keysym(0x000000a7);
     /// diaeresis
-    pub const KEY_diaeresis: Keysym = Keysym(0x000000a8);
+    pub const diaeresis: Keysym = Keysym(0x000000a8);
     /// copyright
-    pub const KEY_copyright: Keysym = Keysym(0x000000a9);
+    pub const copyright: Keysym = Keysym(0x000000a9);
     /// ordfeminine
-    pub const KEY_ordfeminine: Keysym = Keysym(0x000000aa);
+    pub const ordfeminine: Keysym = Keysym(0x000000aa);
     /// guillemotleft
-    pub const KEY_guillemotleft: Keysym = Keysym(0x000000ab);
+    pub const guillemotleft: Keysym = Keysym(0x000000ab);
     /// guillemetleft
-    pub const KEY_guillemetleft: Keysym = Keysym(0x000000ab);
+    pub const guillemetleft: Keysym = Keysym(0x000000ab);
     /// notsign
-    pub const KEY_notsign: Keysym = Keysym(0x000000ac);
+    pub const notsign: Keysym = Keysym(0x000000ac);
     /// hyphen
-    pub const KEY_hyphen: Keysym = Keysym(0x000000ad);
+    pub const hyphen: Keysym = Keysym(0x000000ad);
     /// registered
-    pub const KEY_registered: Keysym = Keysym(0x000000ae);
+    pub const registered: Keysym = Keysym(0x000000ae);
     /// macron
-    pub const KEY_macron: Keysym = Keysym(0x000000af);
+    pub const macron: Keysym = Keysym(0x000000af);
     /// degree
-    pub const KEY_degree: Keysym = Keysym(0x000000b0);
+    pub const degree: Keysym = Keysym(0x000000b0);
     /// plusminus
-    pub const KEY_plusminus: Keysym = Keysym(0x000000b1);
+    pub const plusminus: Keysym = Keysym(0x000000b1);
     /// twosuperior
-    pub const KEY_twosuperior: Keysym = Keysym(0x000000b2);
+    pub const twosuperior: Keysym = Keysym(0x000000b2);
     /// threesuperior
-    pub const KEY_threesuperior: Keysym = Keysym(0x000000b3);
+    pub const threesuperior: Keysym = Keysym(0x000000b3);
     /// acute
-    pub const KEY_acute: Keysym = Keysym(0x000000b4);
+    pub const acute: Keysym = Keysym(0x000000b4);
     /// mu
-    pub const KEY_mu: Keysym = Keysym(0x000000b5);
+    pub const mu: Keysym = Keysym(0x000000b5);
     /// paragraph
-    pub const KEY_paragraph: Keysym = Keysym(0x000000b6);
+    pub const paragraph: Keysym = Keysym(0x000000b6);
     /// periodcentered
-    pub const KEY_periodcentered: Keysym = Keysym(0x000000b7);
+    pub const periodcentered: Keysym = Keysym(0x000000b7);
     /// cedilla
-    pub const KEY_cedilla: Keysym = Keysym(0x000000b8);
+    pub const cedilla: Keysym = Keysym(0x000000b8);
     /// onesuperior
-    pub const KEY_onesuperior: Keysym = Keysym(0x000000b9);
+    pub const onesuperior: Keysym = Keysym(0x000000b9);
     /// masculine
-    pub const KEY_masculine: Keysym = Keysym(0x000000ba);
+    pub const masculine: Keysym = Keysym(0x000000ba);
     /// ordmasculine
-    pub const KEY_ordmasculine: Keysym = Keysym(0x000000ba);
+    pub const ordmasculine: Keysym = Keysym(0x000000ba);
     /// guillemotright
-    pub const KEY_guillemotright: Keysym = Keysym(0x000000bb);
+    pub const guillemotright: Keysym = Keysym(0x000000bb);
     /// guillemetright
-    pub const KEY_guillemetright: Keysym = Keysym(0x000000bb);
+    pub const guillemetright: Keysym = Keysym(0x000000bb);
     /// onequarter
-    pub const KEY_onequarter: Keysym = Keysym(0x000000bc);
+    pub const onequarter: Keysym = Keysym(0x000000bc);
     /// onehalf
-    pub const KEY_onehalf: Keysym = Keysym(0x000000bd);
+    pub const onehalf: Keysym = Keysym(0x000000bd);
     /// threequarters
-    pub const KEY_threequarters: Keysym = Keysym(0x000000be);
+    pub const threequarters: Keysym = Keysym(0x000000be);
     /// questiondown
-    pub const KEY_questiondown: Keysym = Keysym(0x000000bf);
+    pub const questiondown: Keysym = Keysym(0x000000bf);
     /// Agrave
-    pub const KEY_Agrave: Keysym = Keysym(0x000000c0);
+    pub const Agrave: Keysym = Keysym(0x000000c0);
     /// Aacute
-    pub const KEY_Aacute: Keysym = Keysym(0x000000c1);
+    pub const Aacute: Keysym = Keysym(0x000000c1);
     /// Acircumflex
-    pub const KEY_Acircumflex: Keysym = Keysym(0x000000c2);
+    pub const Acircumflex: Keysym = Keysym(0x000000c2);
     /// Atilde
-    pub const KEY_Atilde: Keysym = Keysym(0x000000c3);
+    pub const Atilde: Keysym = Keysym(0x000000c3);
     /// Adiaeresis
-    pub const KEY_Adiaeresis: Keysym = Keysym(0x000000c4);
+    pub const Adiaeresis: Keysym = Keysym(0x000000c4);
     /// Aring
-    pub const KEY_Aring: Keysym = Keysym(0x000000c5);
+    pub const Aring: Keysym = Keysym(0x000000c5);
     /// AE
-    pub const KEY_AE: Keysym = Keysym(0x000000c6);
+    pub const AE: Keysym = Keysym(0x000000c6);
     /// Ccedilla
-    pub const KEY_Ccedilla: Keysym = Keysym(0x000000c7);
+    pub const Ccedilla: Keysym = Keysym(0x000000c7);
     /// Egrave
-    pub const KEY_Egrave: Keysym = Keysym(0x000000c8);
+    pub const Egrave: Keysym = Keysym(0x000000c8);
     /// Eacute
-    pub const KEY_Eacute: Keysym = Keysym(0x000000c9);
+    pub const Eacute: Keysym = Keysym(0x000000c9);
     /// Ecircumflex
-    pub const KEY_Ecircumflex: Keysym = Keysym(0x000000ca);
+    pub const Ecircumflex: Keysym = Keysym(0x000000ca);
     /// Ediaeresis
-    pub const KEY_Ediaeresis: Keysym = Keysym(0x000000cb);
+    pub const Ediaeresis: Keysym = Keysym(0x000000cb);
     /// Igrave
-    pub const KEY_Igrave: Keysym = Keysym(0x000000cc);
+    pub const Igrave: Keysym = Keysym(0x000000cc);
     /// Iacute
-    pub const KEY_Iacute: Keysym = Keysym(0x000000cd);
+    pub const Iacute: Keysym = Keysym(0x000000cd);
     /// Icircumflex
-    pub const KEY_Icircumflex: Keysym = Keysym(0x000000ce);
+    pub const Icircumflex: Keysym = Keysym(0x000000ce);
     /// Idiaeresis
-    pub const KEY_Idiaeresis: Keysym = Keysym(0x000000cf);
+    pub const Idiaeresis: Keysym = Keysym(0x000000cf);
     /// ETH
-    pub const KEY_ETH: Keysym = Keysym(0x000000d0);
+    pub const ETH: Keysym = Keysym(0x000000d0);
     /// Eth
-    pub const KEY_Eth: Keysym = Keysym(0x000000d0);
+    pub const Eth: Keysym = Keysym(0x000000d0);
     /// Ntilde
-    pub const KEY_Ntilde: Keysym = Keysym(0x000000d1);
+    pub const Ntilde: Keysym = Keysym(0x000000d1);
     /// Ograve
-    pub const KEY_Ograve: Keysym = Keysym(0x000000d2);
+    pub const Ograve: Keysym = Keysym(0x000000d2);
     /// Oacute
-    pub const KEY_Oacute: Keysym = Keysym(0x000000d3);
+    pub const Oacute: Keysym = Keysym(0x000000d3);
     /// Ocircumflex
-    pub const KEY_Ocircumflex: Keysym = Keysym(0x000000d4);
+    pub const Ocircumflex: Keysym = Keysym(0x000000d4);
     /// Otilde
-    pub const KEY_Otilde: Keysym = Keysym(0x000000d5);
+    pub const Otilde: Keysym = Keysym(0x000000d5);
     /// Odiaeresis
-    pub const KEY_Odiaeresis: Keysym = Keysym(0x000000d6);
+    pub const Odiaeresis: Keysym = Keysym(0x000000d6);
     /// multiply
-    pub const KEY_multiply: Keysym = Keysym(0x000000d7);
+    pub const multiply: Keysym = Keysym(0x000000d7);
     /// Oslash
-    pub const KEY_Oslash: Keysym = Keysym(0x000000d8);
+    pub const Oslash: Keysym = Keysym(0x000000d8);
     /// Ooblique
-    pub const KEY_Ooblique: Keysym = Keysym(0x000000d8);
+    pub const Ooblique: Keysym = Keysym(0x000000d8);
     /// Ugrave
-    pub const KEY_Ugrave: Keysym = Keysym(0x000000d9);
+    pub const Ugrave: Keysym = Keysym(0x000000d9);
     /// Uacute
-    pub const KEY_Uacute: Keysym = Keysym(0x000000da);
+    pub const Uacute: Keysym = Keysym(0x000000da);
     /// Ucircumflex
-    pub const KEY_Ucircumflex: Keysym = Keysym(0x000000db);
+    pub const Ucircumflex: Keysym = Keysym(0x000000db);
     /// Udiaeresis
-    pub const KEY_Udiaeresis: Keysym = Keysym(0x000000dc);
+    pub const Udiaeresis: Keysym = Keysym(0x000000dc);
     /// Yacute
-    pub const KEY_Yacute: Keysym = Keysym(0x000000dd);
+    pub const Yacute: Keysym = Keysym(0x000000dd);
     /// THORN
-    pub const KEY_THORN: Keysym = Keysym(0x000000de);
+    pub const THORN: Keysym = Keysym(0x000000de);
     /// Thorn
-    pub const KEY_Thorn: Keysym = Keysym(0x000000de);
+    pub const Thorn: Keysym = Keysym(0x000000de);
     /// ssharp
-    pub const KEY_ssharp: Keysym = Keysym(0x000000df);
+    pub const ssharp: Keysym = Keysym(0x000000df);
     /// agrave
-    pub const KEY_agrave: Keysym = Keysym(0x000000e0);
+    pub const agrave: Keysym = Keysym(0x000000e0);
     /// aacute
-    pub const KEY_aacute: Keysym = Keysym(0x000000e1);
+    pub const aacute: Keysym = Keysym(0x000000e1);
     /// acircumflex
-    pub const KEY_acircumflex: Keysym = Keysym(0x000000e2);
+    pub const acircumflex: Keysym = Keysym(0x000000e2);
     /// atilde
-    pub const KEY_atilde: Keysym = Keysym(0x000000e3);
+    pub const atilde: Keysym = Keysym(0x000000e3);
     /// adiaeresis
-    pub const KEY_adiaeresis: Keysym = Keysym(0x000000e4);
+    pub const adiaeresis: Keysym = Keysym(0x000000e4);
     /// aring
-    pub const KEY_aring: Keysym = Keysym(0x000000e5);
+    pub const aring: Keysym = Keysym(0x000000e5);
     /// ae
-    pub const KEY_ae: Keysym = Keysym(0x000000e6);
+    pub const ae: Keysym = Keysym(0x000000e6);
     /// ccedilla
-    pub const KEY_ccedilla: Keysym = Keysym(0x000000e7);
+    pub const ccedilla: Keysym = Keysym(0x000000e7);
     /// egrave
-    pub const KEY_egrave: Keysym = Keysym(0x000000e8);
+    pub const egrave: Keysym = Keysym(0x000000e8);
     /// eacute
-    pub const KEY_eacute: Keysym = Keysym(0x000000e9);
+    pub const eacute: Keysym = Keysym(0x000000e9);
     /// ecircumflex
-    pub const KEY_ecircumflex: Keysym = Keysym(0x000000ea);
+    pub const ecircumflex: Keysym = Keysym(0x000000ea);
     /// ediaeresis
-    pub const KEY_ediaeresis: Keysym = Keysym(0x000000eb);
+    pub const ediaeresis: Keysym = Keysym(0x000000eb);
     /// igrave
-    pub const KEY_igrave: Keysym = Keysym(0x000000ec);
+    pub const igrave: Keysym = Keysym(0x000000ec);
     /// iacute
-    pub const KEY_iacute: Keysym = Keysym(0x000000ed);
+    pub const iacute: Keysym = Keysym(0x000000ed);
     /// icircumflex
-    pub const KEY_icircumflex: Keysym = Keysym(0x000000ee);
+    pub const icircumflex: Keysym = Keysym(0x000000ee);
     /// idiaeresis
-    pub const KEY_idiaeresis: Keysym = Keysym(0x000000ef);
+    pub const idiaeresis: Keysym = Keysym(0x000000ef);
     /// eth
-    pub const KEY_eth: Keysym = Keysym(0x000000f0);
+    pub const eth: Keysym = Keysym(0x000000f0);
     /// ntilde
-    pub const KEY_ntilde: Keysym = Keysym(0x000000f1);
+    pub const ntilde: Keysym = Keysym(0x000000f1);
     /// ograve
-    pub const KEY_ograve: Keysym = Keysym(0x000000f2);
+    pub const ograve: Keysym = Keysym(0x000000f2);
     /// oacute
-    pub const KEY_oacute: Keysym = Keysym(0x000000f3);
+    pub const oacute: Keysym = Keysym(0x000000f3);
     /// ocircumflex
-    pub const KEY_ocircumflex: Keysym = Keysym(0x000000f4);
+    pub const ocircumflex: Keysym = Keysym(0x000000f4);
     /// otilde
-    pub const KEY_otilde: Keysym = Keysym(0x000000f5);
+    pub const otilde: Keysym = Keysym(0x000000f5);
     /// odiaeresis
-    pub const KEY_odiaeresis: Keysym = Keysym(0x000000f6);
+    pub const odiaeresis: Keysym = Keysym(0x000000f6);
     /// division
-    pub const KEY_division: Keysym = Keysym(0x000000f7);
+    pub const division: Keysym = Keysym(0x000000f7);
     /// oslash
-    pub const KEY_oslash: Keysym = Keysym(0x000000f8);
+    pub const oslash: Keysym = Keysym(0x000000f8);
     /// ooblique
-    pub const KEY_ooblique: Keysym = Keysym(0x000000f8);
+    pub const ooblique: Keysym = Keysym(0x000000f8);
     /// ugrave
-    pub const KEY_ugrave: Keysym = Keysym(0x000000f9);
+    pub const ugrave: Keysym = Keysym(0x000000f9);
     /// uacute
-    pub const KEY_uacute: Keysym = Keysym(0x000000fa);
+    pub const uacute: Keysym = Keysym(0x000000fa);
     /// ucircumflex
-    pub const KEY_ucircumflex: Keysym = Keysym(0x000000fb);
+    pub const ucircumflex: Keysym = Keysym(0x000000fb);
     /// udiaeresis
-    pub const KEY_udiaeresis: Keysym = Keysym(0x000000fc);
+    pub const udiaeresis: Keysym = Keysym(0x000000fc);
     /// yacute
-    pub const KEY_yacute: Keysym = Keysym(0x000000fd);
+    pub const yacute: Keysym = Keysym(0x000000fd);
     /// thorn
-    pub const KEY_thorn: Keysym = Keysym(0x000000fe);
+    pub const thorn: Keysym = Keysym(0x000000fe);
     /// ydiaeresis
-    pub const KEY_ydiaeresis: Keysym = Keysym(0x000000ff);
+    pub const ydiaeresis: Keysym = Keysym(0x000000ff);
     /// Aogonek
-    pub const KEY_Aogonek: Keysym = Keysym(0x000001a1);
+    pub const Aogonek: Keysym = Keysym(0x000001a1);
     /// breve
-    pub const KEY_breve: Keysym = Keysym(0x000001a2);
+    pub const breve: Keysym = Keysym(0x000001a2);
     /// Lstroke
-    pub const KEY_Lstroke: Keysym = Keysym(0x000001a3);
+    pub const Lstroke: Keysym = Keysym(0x000001a3);
     /// Lcaron
-    pub const KEY_Lcaron: Keysym = Keysym(0x000001a5);
+    pub const Lcaron: Keysym = Keysym(0x000001a5);
     /// Sacute
-    pub const KEY_Sacute: Keysym = Keysym(0x000001a6);
+    pub const Sacute: Keysym = Keysym(0x000001a6);
     /// Scaron
-    pub const KEY_Scaron: Keysym = Keysym(0x000001a9);
+    pub const Scaron: Keysym = Keysym(0x000001a9);
     /// Scedilla
-    pub const KEY_Scedilla: Keysym = Keysym(0x000001aa);
+    pub const Scedilla: Keysym = Keysym(0x000001aa);
     /// Tcaron
-    pub const KEY_Tcaron: Keysym = Keysym(0x000001ab);
+    pub const Tcaron: Keysym = Keysym(0x000001ab);
     /// Zacute
-    pub const KEY_Zacute: Keysym = Keysym(0x000001ac);
+    pub const Zacute: Keysym = Keysym(0x000001ac);
     /// Zcaron
-    pub const KEY_Zcaron: Keysym = Keysym(0x000001ae);
+    pub const Zcaron: Keysym = Keysym(0x000001ae);
     /// Zabovedot
-    pub const KEY_Zabovedot: Keysym = Keysym(0x000001af);
+    pub const Zabovedot: Keysym = Keysym(0x000001af);
     /// aogonek
-    pub const KEY_aogonek: Keysym = Keysym(0x000001b1);
+    pub const aogonek: Keysym = Keysym(0x000001b1);
     /// ogonek
-    pub const KEY_ogonek: Keysym = Keysym(0x000001b2);
+    pub const ogonek: Keysym = Keysym(0x000001b2);
     /// lstroke
-    pub const KEY_lstroke: Keysym = Keysym(0x000001b3);
+    pub const lstroke: Keysym = Keysym(0x000001b3);
     /// lcaron
-    pub const KEY_lcaron: Keysym = Keysym(0x000001b5);
+    pub const lcaron: Keysym = Keysym(0x000001b5);
     /// sacute
-    pub const KEY_sacute: Keysym = Keysym(0x000001b6);
+    pub const sacute: Keysym = Keysym(0x000001b6);
     /// caron
-    pub const KEY_caron: Keysym = Keysym(0x000001b7);
+    pub const caron: Keysym = Keysym(0x000001b7);
     /// scaron
-    pub const KEY_scaron: Keysym = Keysym(0x000001b9);
+    pub const scaron: Keysym = Keysym(0x000001b9);
     /// scedilla
-    pub const KEY_scedilla: Keysym = Keysym(0x000001ba);
+    pub const scedilla: Keysym = Keysym(0x000001ba);
     /// tcaron
-    pub const KEY_tcaron: Keysym = Keysym(0x000001bb);
+    pub const tcaron: Keysym = Keysym(0x000001bb);
     /// zacute
-    pub const KEY_zacute: Keysym = Keysym(0x000001bc);
+    pub const zacute: Keysym = Keysym(0x000001bc);
     /// doubleacute
-    pub const KEY_doubleacute: Keysym = Keysym(0x000001bd);
+    pub const doubleacute: Keysym = Keysym(0x000001bd);
     /// zcaron
-    pub const KEY_zcaron: Keysym = Keysym(0x000001be);
+    pub const zcaron: Keysym = Keysym(0x000001be);
     /// zabovedot
-    pub const KEY_zabovedot: Keysym = Keysym(0x000001bf);
+    pub const zabovedot: Keysym = Keysym(0x000001bf);
     /// Racute
-    pub const KEY_Racute: Keysym = Keysym(0x000001c0);
+    pub const Racute: Keysym = Keysym(0x000001c0);
     /// Abreve
-    pub const KEY_Abreve: Keysym = Keysym(0x000001c3);
+    pub const Abreve: Keysym = Keysym(0x000001c3);
     /// Lacute
-    pub const KEY_Lacute: Keysym = Keysym(0x000001c5);
+    pub const Lacute: Keysym = Keysym(0x000001c5);
     /// Cacute
-    pub const KEY_Cacute: Keysym = Keysym(0x000001c6);
+    pub const Cacute: Keysym = Keysym(0x000001c6);
     /// Ccaron
-    pub const KEY_Ccaron: Keysym = Keysym(0x000001c8);
+    pub const Ccaron: Keysym = Keysym(0x000001c8);
     /// Eogonek
-    pub const KEY_Eogonek: Keysym = Keysym(0x000001ca);
+    pub const Eogonek: Keysym = Keysym(0x000001ca);
     /// Ecaron
-    pub const KEY_Ecaron: Keysym = Keysym(0x000001cc);
+    pub const Ecaron: Keysym = Keysym(0x000001cc);
     /// Dcaron
-    pub const KEY_Dcaron: Keysym = Keysym(0x000001cf);
+    pub const Dcaron: Keysym = Keysym(0x000001cf);
     /// Dstroke
-    pub const KEY_Dstroke: Keysym = Keysym(0x000001d0);
+    pub const Dstroke: Keysym = Keysym(0x000001d0);
     /// Nacute
-    pub const KEY_Nacute: Keysym = Keysym(0x000001d1);
+    pub const Nacute: Keysym = Keysym(0x000001d1);
     /// Ncaron
-    pub const KEY_Ncaron: Keysym = Keysym(0x000001d2);
+    pub const Ncaron: Keysym = Keysym(0x000001d2);
     /// Odoubleacute
-    pub const KEY_Odoubleacute: Keysym = Keysym(0x000001d5);
+    pub const Odoubleacute: Keysym = Keysym(0x000001d5);
     /// Rcaron
-    pub const KEY_Rcaron: Keysym = Keysym(0x000001d8);
+    pub const Rcaron: Keysym = Keysym(0x000001d8);
     /// Uring
-    pub const KEY_Uring: Keysym = Keysym(0x000001d9);
+    pub const Uring: Keysym = Keysym(0x000001d9);
     /// Udoubleacute
-    pub const KEY_Udoubleacute: Keysym = Keysym(0x000001db);
+    pub const Udoubleacute: Keysym = Keysym(0x000001db);
     /// Tcedilla
-    pub const KEY_Tcedilla: Keysym = Keysym(0x000001de);
+    pub const Tcedilla: Keysym = Keysym(0x000001de);
     /// racute
-    pub const KEY_racute: Keysym = Keysym(0x000001e0);
+    pub const racute: Keysym = Keysym(0x000001e0);
     /// abreve
-    pub const KEY_abreve: Keysym = Keysym(0x000001e3);
+    pub const abreve: Keysym = Keysym(0x000001e3);
     /// lacute
-    pub const KEY_lacute: Keysym = Keysym(0x000001e5);
+    pub const lacute: Keysym = Keysym(0x000001e5);
     /// cacute
-    pub const KEY_cacute: Keysym = Keysym(0x000001e6);
+    pub const cacute: Keysym = Keysym(0x000001e6);
     /// ccaron
-    pub const KEY_ccaron: Keysym = Keysym(0x000001e8);
+    pub const ccaron: Keysym = Keysym(0x000001e8);
     /// eogonek
-    pub const KEY_eogonek: Keysym = Keysym(0x000001ea);
+    pub const eogonek: Keysym = Keysym(0x000001ea);
     /// ecaron
-    pub const KEY_ecaron: Keysym = Keysym(0x000001ec);
+    pub const ecaron: Keysym = Keysym(0x000001ec);
     /// dcaron
-    pub const KEY_dcaron: Keysym = Keysym(0x000001ef);
+    pub const dcaron: Keysym = Keysym(0x000001ef);
     /// dstroke
-    pub const KEY_dstroke: Keysym = Keysym(0x000001f0);
+    pub const dstroke: Keysym = Keysym(0x000001f0);
     /// nacute
-    pub const KEY_nacute: Keysym = Keysym(0x000001f1);
+    pub const nacute: Keysym = Keysym(0x000001f1);
     /// ncaron
-    pub const KEY_ncaron: Keysym = Keysym(0x000001f2);
+    pub const ncaron: Keysym = Keysym(0x000001f2);
     /// odoubleacute
-    pub const KEY_odoubleacute: Keysym = Keysym(0x000001f5);
+    pub const odoubleacute: Keysym = Keysym(0x000001f5);
     /// rcaron
-    pub const KEY_rcaron: Keysym = Keysym(0x000001f8);
+    pub const rcaron: Keysym = Keysym(0x000001f8);
     /// uring
-    pub const KEY_uring: Keysym = Keysym(0x000001f9);
+    pub const uring: Keysym = Keysym(0x000001f9);
     /// udoubleacute
-    pub const KEY_udoubleacute: Keysym = Keysym(0x000001fb);
+    pub const udoubleacute: Keysym = Keysym(0x000001fb);
     /// tcedilla
-    pub const KEY_tcedilla: Keysym = Keysym(0x000001fe);
+    pub const tcedilla: Keysym = Keysym(0x000001fe);
     /// abovedot
-    pub const KEY_abovedot: Keysym = Keysym(0x000001ff);
+    pub const abovedot: Keysym = Keysym(0x000001ff);
     /// Hstroke
-    pub const KEY_Hstroke: Keysym = Keysym(0x000002a1);
+    pub const Hstroke: Keysym = Keysym(0x000002a1);
     /// Hcircumflex
-    pub const KEY_Hcircumflex: Keysym = Keysym(0x000002a6);
+    pub const Hcircumflex: Keysym = Keysym(0x000002a6);
     /// Iabovedot
-    pub const KEY_Iabovedot: Keysym = Keysym(0x000002a9);
+    pub const Iabovedot: Keysym = Keysym(0x000002a9);
     /// Gbreve
-    pub const KEY_Gbreve: Keysym = Keysym(0x000002ab);
+    pub const Gbreve: Keysym = Keysym(0x000002ab);
     /// Jcircumflex
-    pub const KEY_Jcircumflex: Keysym = Keysym(0x000002ac);
+    pub const Jcircumflex: Keysym = Keysym(0x000002ac);
     /// hstroke
-    pub const KEY_hstroke: Keysym = Keysym(0x000002b1);
+    pub const hstroke: Keysym = Keysym(0x000002b1);
     /// hcircumflex
-    pub const KEY_hcircumflex: Keysym = Keysym(0x000002b6);
+    pub const hcircumflex: Keysym = Keysym(0x000002b6);
     /// idotless
-    pub const KEY_idotless: Keysym = Keysym(0x000002b9);
+    pub const idotless: Keysym = Keysym(0x000002b9);
     /// gbreve
-    pub const KEY_gbreve: Keysym = Keysym(0x000002bb);
+    pub const gbreve: Keysym = Keysym(0x000002bb);
     /// jcircumflex
-    pub const KEY_jcircumflex: Keysym = Keysym(0x000002bc);
+    pub const jcircumflex: Keysym = Keysym(0x000002bc);
     /// Cabovedot
-    pub const KEY_Cabovedot: Keysym = Keysym(0x000002c5);
+    pub const Cabovedot: Keysym = Keysym(0x000002c5);
     /// Ccircumflex
-    pub const KEY_Ccircumflex: Keysym = Keysym(0x000002c6);
+    pub const Ccircumflex: Keysym = Keysym(0x000002c6);
     /// Gabovedot
-    pub const KEY_Gabovedot: Keysym = Keysym(0x000002d5);
+    pub const Gabovedot: Keysym = Keysym(0x000002d5);
     /// Gcircumflex
-    pub const KEY_Gcircumflex: Keysym = Keysym(0x000002d8);
+    pub const Gcircumflex: Keysym = Keysym(0x000002d8);
     /// Ubreve
-    pub const KEY_Ubreve: Keysym = Keysym(0x000002dd);
+    pub const Ubreve: Keysym = Keysym(0x000002dd);
     /// Scircumflex
-    pub const KEY_Scircumflex: Keysym = Keysym(0x000002de);
+    pub const Scircumflex: Keysym = Keysym(0x000002de);
     /// cabovedot
-    pub const KEY_cabovedot: Keysym = Keysym(0x000002e5);
+    pub const cabovedot: Keysym = Keysym(0x000002e5);
     /// ccircumflex
-    pub const KEY_ccircumflex: Keysym = Keysym(0x000002e6);
+    pub const ccircumflex: Keysym = Keysym(0x000002e6);
     /// gabovedot
-    pub const KEY_gabovedot: Keysym = Keysym(0x000002f5);
+    pub const gabovedot: Keysym = Keysym(0x000002f5);
     /// gcircumflex
-    pub const KEY_gcircumflex: Keysym = Keysym(0x000002f8);
+    pub const gcircumflex: Keysym = Keysym(0x000002f8);
     /// ubreve
-    pub const KEY_ubreve: Keysym = Keysym(0x000002fd);
+    pub const ubreve: Keysym = Keysym(0x000002fd);
     /// scircumflex
-    pub const KEY_scircumflex: Keysym = Keysym(0x000002fe);
+    pub const scircumflex: Keysym = Keysym(0x000002fe);
     /// kra
-    pub const KEY_kra: Keysym = Keysym(0x000003a2);
+    pub const kra: Keysym = Keysym(0x000003a2);
     /// kappa
-    pub const KEY_kappa: Keysym = Keysym(0x000003a2);
+    pub const kappa: Keysym = Keysym(0x000003a2);
     /// Rcedilla
-    pub const KEY_Rcedilla: Keysym = Keysym(0x000003a3);
+    pub const Rcedilla: Keysym = Keysym(0x000003a3);
     /// Itilde
-    pub const KEY_Itilde: Keysym = Keysym(0x000003a5);
+    pub const Itilde: Keysym = Keysym(0x000003a5);
     /// Lcedilla
-    pub const KEY_Lcedilla: Keysym = Keysym(0x000003a6);
+    pub const Lcedilla: Keysym = Keysym(0x000003a6);
     /// Emacron
-    pub const KEY_Emacron: Keysym = Keysym(0x000003aa);
+    pub const Emacron: Keysym = Keysym(0x000003aa);
     /// Gcedilla
-    pub const KEY_Gcedilla: Keysym = Keysym(0x000003ab);
+    pub const Gcedilla: Keysym = Keysym(0x000003ab);
     /// Tslash
-    pub const KEY_Tslash: Keysym = Keysym(0x000003ac);
+    pub const Tslash: Keysym = Keysym(0x000003ac);
     /// rcedilla
-    pub const KEY_rcedilla: Keysym = Keysym(0x000003b3);
+    pub const rcedilla: Keysym = Keysym(0x000003b3);
     /// itilde
-    pub const KEY_itilde: Keysym = Keysym(0x000003b5);
+    pub const itilde: Keysym = Keysym(0x000003b5);
     /// lcedilla
-    pub const KEY_lcedilla: Keysym = Keysym(0x000003b6);
+    pub const lcedilla: Keysym = Keysym(0x000003b6);
     /// emacron
-    pub const KEY_emacron: Keysym = Keysym(0x000003ba);
+    pub const emacron: Keysym = Keysym(0x000003ba);
     /// gcedilla
-    pub const KEY_gcedilla: Keysym = Keysym(0x000003bb);
+    pub const gcedilla: Keysym = Keysym(0x000003bb);
     /// tslash
-    pub const KEY_tslash: Keysym = Keysym(0x000003bc);
+    pub const tslash: Keysym = Keysym(0x000003bc);
     /// ENG
-    pub const KEY_ENG: Keysym = Keysym(0x000003bd);
+    pub const ENG: Keysym = Keysym(0x000003bd);
     /// eng
-    pub const KEY_eng: Keysym = Keysym(0x000003bf);
+    pub const eng: Keysym = Keysym(0x000003bf);
     /// Amacron
-    pub const KEY_Amacron: Keysym = Keysym(0x000003c0);
+    pub const Amacron: Keysym = Keysym(0x000003c0);
     /// Iogonek
-    pub const KEY_Iogonek: Keysym = Keysym(0x000003c7);
+    pub const Iogonek: Keysym = Keysym(0x000003c7);
     /// Eabovedot
-    pub const KEY_Eabovedot: Keysym = Keysym(0x000003cc);
+    pub const Eabovedot: Keysym = Keysym(0x000003cc);
     /// Imacron
-    pub const KEY_Imacron: Keysym = Keysym(0x000003cf);
+    pub const Imacron: Keysym = Keysym(0x000003cf);
     /// Ncedilla
-    pub const KEY_Ncedilla: Keysym = Keysym(0x000003d1);
+    pub const Ncedilla: Keysym = Keysym(0x000003d1);
     /// Omacron
-    pub const KEY_Omacron: Keysym = Keysym(0x000003d2);
+    pub const Omacron: Keysym = Keysym(0x000003d2);
     /// Kcedilla
-    pub const KEY_Kcedilla: Keysym = Keysym(0x000003d3);
+    pub const Kcedilla: Keysym = Keysym(0x000003d3);
     /// Uogonek
-    pub const KEY_Uogonek: Keysym = Keysym(0x000003d9);
+    pub const Uogonek: Keysym = Keysym(0x000003d9);
     /// Utilde
-    pub const KEY_Utilde: Keysym = Keysym(0x000003dd);
+    pub const Utilde: Keysym = Keysym(0x000003dd);
     /// Umacron
-    pub const KEY_Umacron: Keysym = Keysym(0x000003de);
+    pub const Umacron: Keysym = Keysym(0x000003de);
     /// amacron
-    pub const KEY_amacron: Keysym = Keysym(0x000003e0);
+    pub const amacron: Keysym = Keysym(0x000003e0);
     /// iogonek
-    pub const KEY_iogonek: Keysym = Keysym(0x000003e7);
+    pub const iogonek: Keysym = Keysym(0x000003e7);
     /// eabovedot
-    pub const KEY_eabovedot: Keysym = Keysym(0x000003ec);
+    pub const eabovedot: Keysym = Keysym(0x000003ec);
     /// imacron
-    pub const KEY_imacron: Keysym = Keysym(0x000003ef);
+    pub const imacron: Keysym = Keysym(0x000003ef);
     /// ncedilla
-    pub const KEY_ncedilla: Keysym = Keysym(0x000003f1);
+    pub const ncedilla: Keysym = Keysym(0x000003f1);
     /// omacron
-    pub const KEY_omacron: Keysym = Keysym(0x000003f2);
+    pub const omacron: Keysym = Keysym(0x000003f2);
     /// kcedilla
-    pub const KEY_kcedilla: Keysym = Keysym(0x000003f3);
+    pub const kcedilla: Keysym = Keysym(0x000003f3);
     /// uogonek
-    pub const KEY_uogonek: Keysym = Keysym(0x000003f9);
+    pub const uogonek: Keysym = Keysym(0x000003f9);
     /// utilde
-    pub const KEY_utilde: Keysym = Keysym(0x000003fd);
+    pub const utilde: Keysym = Keysym(0x000003fd);
     /// umacron
-    pub const KEY_umacron: Keysym = Keysym(0x000003fe);
+    pub const umacron: Keysym = Keysym(0x000003fe);
     /// overline
-    pub const KEY_overline: Keysym = Keysym(0x0000047e);
+    pub const overline: Keysym = Keysym(0x0000047e);
     /// kana_fullstop
-    pub const KEY_kana_fullstop: Keysym = Keysym(0x000004a1);
+    pub const kana_fullstop: Keysym = Keysym(0x000004a1);
     /// kana_openingbracket
-    pub const KEY_kana_openingbracket: Keysym = Keysym(0x000004a2);
+    pub const kana_openingbracket: Keysym = Keysym(0x000004a2);
     /// kana_closingbracket
-    pub const KEY_kana_closingbracket: Keysym = Keysym(0x000004a3);
+    pub const kana_closingbracket: Keysym = Keysym(0x000004a3);
     /// kana_comma
-    pub const KEY_kana_comma: Keysym = Keysym(0x000004a4);
+    pub const kana_comma: Keysym = Keysym(0x000004a4);
     /// kana_conjunctive
-    pub const KEY_kana_conjunctive: Keysym = Keysym(0x000004a5);
+    pub const kana_conjunctive: Keysym = Keysym(0x000004a5);
     /// kana_middledot
-    pub const KEY_kana_middledot: Keysym = Keysym(0x000004a5);
+    pub const kana_middledot: Keysym = Keysym(0x000004a5);
     /// kana_WO
-    pub const KEY_kana_WO: Keysym = Keysym(0x000004a6);
+    pub const kana_WO: Keysym = Keysym(0x000004a6);
     /// kana_a
-    pub const KEY_kana_a: Keysym = Keysym(0x000004a7);
+    pub const kana_a: Keysym = Keysym(0x000004a7);
     /// kana_i
-    pub const KEY_kana_i: Keysym = Keysym(0x000004a8);
+    pub const kana_i: Keysym = Keysym(0x000004a8);
     /// kana_u
-    pub const KEY_kana_u: Keysym = Keysym(0x000004a9);
+    pub const kana_u: Keysym = Keysym(0x000004a9);
     /// kana_e
-    pub const KEY_kana_e: Keysym = Keysym(0x000004aa);
+    pub const kana_e: Keysym = Keysym(0x000004aa);
     /// kana_o
-    pub const KEY_kana_o: Keysym = Keysym(0x000004ab);
+    pub const kana_o: Keysym = Keysym(0x000004ab);
     /// kana_ya
-    pub const KEY_kana_ya: Keysym = Keysym(0x000004ac);
+    pub const kana_ya: Keysym = Keysym(0x000004ac);
     /// kana_yu
-    pub const KEY_kana_yu: Keysym = Keysym(0x000004ad);
+    pub const kana_yu: Keysym = Keysym(0x000004ad);
     /// kana_yo
-    pub const KEY_kana_yo: Keysym = Keysym(0x000004ae);
+    pub const kana_yo: Keysym = Keysym(0x000004ae);
     /// kana_tsu
-    pub const KEY_kana_tsu: Keysym = Keysym(0x000004af);
+    pub const kana_tsu: Keysym = Keysym(0x000004af);
     /// kana_tu
-    pub const KEY_kana_tu: Keysym = Keysym(0x000004af);
+    pub const kana_tu: Keysym = Keysym(0x000004af);
     /// prolongedsound
-    pub const KEY_prolongedsound: Keysym = Keysym(0x000004b0);
+    pub const prolongedsound: Keysym = Keysym(0x000004b0);
     /// kana_A
-    pub const KEY_kana_A: Keysym = Keysym(0x000004b1);
+    pub const kana_A: Keysym = Keysym(0x000004b1);
     /// kana_I
-    pub const KEY_kana_I: Keysym = Keysym(0x000004b2);
+    pub const kana_I: Keysym = Keysym(0x000004b2);
     /// kana_U
-    pub const KEY_kana_U: Keysym = Keysym(0x000004b3);
+    pub const kana_U: Keysym = Keysym(0x000004b3);
     /// kana_E
-    pub const KEY_kana_E: Keysym = Keysym(0x000004b4);
+    pub const kana_E: Keysym = Keysym(0x000004b4);
     /// kana_O
-    pub const KEY_kana_O: Keysym = Keysym(0x000004b5);
+    pub const kana_O: Keysym = Keysym(0x000004b5);
     /// kana_KA
-    pub const KEY_kana_KA: Keysym = Keysym(0x000004b6);
+    pub const kana_KA: Keysym = Keysym(0x000004b6);
     /// kana_KI
-    pub const KEY_kana_KI: Keysym = Keysym(0x000004b7);
+    pub const kana_KI: Keysym = Keysym(0x000004b7);
     /// kana_KU
-    pub const KEY_kana_KU: Keysym = Keysym(0x000004b8);
+    pub const kana_KU: Keysym = Keysym(0x000004b8);
     /// kana_KE
-    pub const KEY_kana_KE: Keysym = Keysym(0x000004b9);
+    pub const kana_KE: Keysym = Keysym(0x000004b9);
     /// kana_KO
-    pub const KEY_kana_KO: Keysym = Keysym(0x000004ba);
+    pub const kana_KO: Keysym = Keysym(0x000004ba);
     /// kana_SA
-    pub const KEY_kana_SA: Keysym = Keysym(0x000004bb);
+    pub const kana_SA: Keysym = Keysym(0x000004bb);
     /// kana_SHI
-    pub const KEY_kana_SHI: Keysym = Keysym(0x000004bc);
+    pub const kana_SHI: Keysym = Keysym(0x000004bc);
     /// kana_SU
-    pub const KEY_kana_SU: Keysym = Keysym(0x000004bd);
+    pub const kana_SU: Keysym = Keysym(0x000004bd);
     /// kana_SE
-    pub const KEY_kana_SE: Keysym = Keysym(0x000004be);
+    pub const kana_SE: Keysym = Keysym(0x000004be);
     /// kana_SO
-    pub const KEY_kana_SO: Keysym = Keysym(0x000004bf);
+    pub const kana_SO: Keysym = Keysym(0x000004bf);
     /// kana_TA
-    pub const KEY_kana_TA: Keysym = Keysym(0x000004c0);
+    pub const kana_TA: Keysym = Keysym(0x000004c0);
     /// kana_CHI
-    pub const KEY_kana_CHI: Keysym = Keysym(0x000004c1);
+    pub const kana_CHI: Keysym = Keysym(0x000004c1);
     /// kana_TI
-    pub const KEY_kana_TI: Keysym = Keysym(0x000004c1);
+    pub const kana_TI: Keysym = Keysym(0x000004c1);
     /// kana_TSU
-    pub const KEY_kana_TSU: Keysym = Keysym(0x000004c2);
+    pub const kana_TSU: Keysym = Keysym(0x000004c2);
     /// kana_TU
-    pub const KEY_kana_TU: Keysym = Keysym(0x000004c2);
+    pub const kana_TU: Keysym = Keysym(0x000004c2);
     /// kana_TE
-    pub const KEY_kana_TE: Keysym = Keysym(0x000004c3);
+    pub const kana_TE: Keysym = Keysym(0x000004c3);
     /// kana_TO
-    pub const KEY_kana_TO: Keysym = Keysym(0x000004c4);
+    pub const kana_TO: Keysym = Keysym(0x000004c4);
     /// kana_NA
-    pub const KEY_kana_NA: Keysym = Keysym(0x000004c5);
+    pub const kana_NA: Keysym = Keysym(0x000004c5);
     /// kana_NI
-    pub const KEY_kana_NI: Keysym = Keysym(0x000004c6);
+    pub const kana_NI: Keysym = Keysym(0x000004c6);
     /// kana_NU
-    pub const KEY_kana_NU: Keysym = Keysym(0x000004c7);
+    pub const kana_NU: Keysym = Keysym(0x000004c7);
     /// kana_NE
-    pub const KEY_kana_NE: Keysym = Keysym(0x000004c8);
+    pub const kana_NE: Keysym = Keysym(0x000004c8);
     /// kana_NO
-    pub const KEY_kana_NO: Keysym = Keysym(0x000004c9);
+    pub const kana_NO: Keysym = Keysym(0x000004c9);
     /// kana_HA
-    pub const KEY_kana_HA: Keysym = Keysym(0x000004ca);
+    pub const kana_HA: Keysym = Keysym(0x000004ca);
     /// kana_HI
-    pub const KEY_kana_HI: Keysym = Keysym(0x000004cb);
+    pub const kana_HI: Keysym = Keysym(0x000004cb);
     /// kana_FU
-    pub const KEY_kana_FU: Keysym = Keysym(0x000004cc);
+    pub const kana_FU: Keysym = Keysym(0x000004cc);
     /// kana_HU
-    pub const KEY_kana_HU: Keysym = Keysym(0x000004cc);
+    pub const kana_HU: Keysym = Keysym(0x000004cc);
     /// kana_HE
-    pub const KEY_kana_HE: Keysym = Keysym(0x000004cd);
+    pub const kana_HE: Keysym = Keysym(0x000004cd);
     /// kana_HO
-    pub const KEY_kana_HO: Keysym = Keysym(0x000004ce);
+    pub const kana_HO: Keysym = Keysym(0x000004ce);
     /// kana_MA
-    pub const KEY_kana_MA: Keysym = Keysym(0x000004cf);
+    pub const kana_MA: Keysym = Keysym(0x000004cf);
     /// kana_MI
-    pub const KEY_kana_MI: Keysym = Keysym(0x000004d0);
+    pub const kana_MI: Keysym = Keysym(0x000004d0);
     /// kana_MU
-    pub const KEY_kana_MU: Keysym = Keysym(0x000004d1);
+    pub const kana_MU: Keysym = Keysym(0x000004d1);
     /// kana_ME
-    pub const KEY_kana_ME: Keysym = Keysym(0x000004d2);
+    pub const kana_ME: Keysym = Keysym(0x000004d2);
     /// kana_MO
-    pub const KEY_kana_MO: Keysym = Keysym(0x000004d3);
+    pub const kana_MO: Keysym = Keysym(0x000004d3);
     /// kana_YA
-    pub const KEY_kana_YA: Keysym = Keysym(0x000004d4);
+    pub const kana_YA: Keysym = Keysym(0x000004d4);
     /// kana_YU
-    pub const KEY_kana_YU: Keysym = Keysym(0x000004d5);
+    pub const kana_YU: Keysym = Keysym(0x000004d5);
     /// kana_YO
-    pub const KEY_kana_YO: Keysym = Keysym(0x000004d6);
+    pub const kana_YO: Keysym = Keysym(0x000004d6);
     /// kana_RA
-    pub const KEY_kana_RA: Keysym = Keysym(0x000004d7);
+    pub const kana_RA: Keysym = Keysym(0x000004d7);
     /// kana_RI
-    pub const KEY_kana_RI: Keysym = Keysym(0x000004d8);
+    pub const kana_RI: Keysym = Keysym(0x000004d8);
     /// kana_RU
-    pub const KEY_kana_RU: Keysym = Keysym(0x000004d9);
+    pub const kana_RU: Keysym = Keysym(0x000004d9);
     /// kana_RE
-    pub const KEY_kana_RE: Keysym = Keysym(0x000004da);
+    pub const kana_RE: Keysym = Keysym(0x000004da);
     /// kana_RO
-    pub const KEY_kana_RO: Keysym = Keysym(0x000004db);
+    pub const kana_RO: Keysym = Keysym(0x000004db);
     /// kana_WA
-    pub const KEY_kana_WA: Keysym = Keysym(0x000004dc);
+    pub const kana_WA: Keysym = Keysym(0x000004dc);
     /// kana_N
-    pub const KEY_kana_N: Keysym = Keysym(0x000004dd);
+    pub const kana_N: Keysym = Keysym(0x000004dd);
     /// voicedsound
-    pub const KEY_voicedsound: Keysym = Keysym(0x000004de);
+    pub const voicedsound: Keysym = Keysym(0x000004de);
     /// semivoicedsound
-    pub const KEY_semivoicedsound: Keysym = Keysym(0x000004df);
+    pub const semivoicedsound: Keysym = Keysym(0x000004df);
     /// Arabic_comma
-    pub const KEY_Arabic_comma: Keysym = Keysym(0x000005ac);
+    pub const Arabic_comma: Keysym = Keysym(0x000005ac);
     /// Arabic_semicolon
-    pub const KEY_Arabic_semicolon: Keysym = Keysym(0x000005bb);
+    pub const Arabic_semicolon: Keysym = Keysym(0x000005bb);
     /// Arabic_question_mark
-    pub const KEY_Arabic_question_mark: Keysym = Keysym(0x000005bf);
+    pub const Arabic_question_mark: Keysym = Keysym(0x000005bf);
     /// Arabic_hamza
-    pub const KEY_Arabic_hamza: Keysym = Keysym(0x000005c1);
+    pub const Arabic_hamza: Keysym = Keysym(0x000005c1);
     /// Arabic_maddaonalef
-    pub const KEY_Arabic_maddaonalef: Keysym = Keysym(0x000005c2);
+    pub const Arabic_maddaonalef: Keysym = Keysym(0x000005c2);
     /// Arabic_hamzaonalef
-    pub const KEY_Arabic_hamzaonalef: Keysym = Keysym(0x000005c3);
+    pub const Arabic_hamzaonalef: Keysym = Keysym(0x000005c3);
     /// Arabic_hamzaonwaw
-    pub const KEY_Arabic_hamzaonwaw: Keysym = Keysym(0x000005c4);
+    pub const Arabic_hamzaonwaw: Keysym = Keysym(0x000005c4);
     /// Arabic_hamzaunderalef
-    pub const KEY_Arabic_hamzaunderalef: Keysym = Keysym(0x000005c5);
+    pub const Arabic_hamzaunderalef: Keysym = Keysym(0x000005c5);
     /// Arabic_hamzaonyeh
-    pub const KEY_Arabic_hamzaonyeh: Keysym = Keysym(0x000005c6);
+    pub const Arabic_hamzaonyeh: Keysym = Keysym(0x000005c6);
     /// Arabic_alef
-    pub const KEY_Arabic_alef: Keysym = Keysym(0x000005c7);
+    pub const Arabic_alef: Keysym = Keysym(0x000005c7);
     /// Arabic_beh
-    pub const KEY_Arabic_beh: Keysym = Keysym(0x000005c8);
+    pub const Arabic_beh: Keysym = Keysym(0x000005c8);
     /// Arabic_tehmarbuta
-    pub const KEY_Arabic_tehmarbuta: Keysym = Keysym(0x000005c9);
+    pub const Arabic_tehmarbuta: Keysym = Keysym(0x000005c9);
     /// Arabic_teh
-    pub const KEY_Arabic_teh: Keysym = Keysym(0x000005ca);
+    pub const Arabic_teh: Keysym = Keysym(0x000005ca);
     /// Arabic_theh
-    pub const KEY_Arabic_theh: Keysym = Keysym(0x000005cb);
+    pub const Arabic_theh: Keysym = Keysym(0x000005cb);
     /// Arabic_jeem
-    pub const KEY_Arabic_jeem: Keysym = Keysym(0x000005cc);
+    pub const Arabic_jeem: Keysym = Keysym(0x000005cc);
     /// Arabic_hah
-    pub const KEY_Arabic_hah: Keysym = Keysym(0x000005cd);
+    pub const Arabic_hah: Keysym = Keysym(0x000005cd);
     /// Arabic_khah
-    pub const KEY_Arabic_khah: Keysym = Keysym(0x000005ce);
+    pub const Arabic_khah: Keysym = Keysym(0x000005ce);
     /// Arabic_dal
-    pub const KEY_Arabic_dal: Keysym = Keysym(0x000005cf);
+    pub const Arabic_dal: Keysym = Keysym(0x000005cf);
     /// Arabic_thal
-    pub const KEY_Arabic_thal: Keysym = Keysym(0x000005d0);
+    pub const Arabic_thal: Keysym = Keysym(0x000005d0);
     /// Arabic_ra
-    pub const KEY_Arabic_ra: Keysym = Keysym(0x000005d1);
+    pub const Arabic_ra: Keysym = Keysym(0x000005d1);
     /// Arabic_zain
-    pub const KEY_Arabic_zain: Keysym = Keysym(0x000005d2);
+    pub const Arabic_zain: Keysym = Keysym(0x000005d2);
     /// Arabic_seen
-    pub const KEY_Arabic_seen: Keysym = Keysym(0x000005d3);
+    pub const Arabic_seen: Keysym = Keysym(0x000005d3);
     /// Arabic_sheen
-    pub const KEY_Arabic_sheen: Keysym = Keysym(0x000005d4);
+    pub const Arabic_sheen: Keysym = Keysym(0x000005d4);
     /// Arabic_sad
-    pub const KEY_Arabic_sad: Keysym = Keysym(0x000005d5);
+    pub const Arabic_sad: Keysym = Keysym(0x000005d5);
     /// Arabic_dad
-    pub const KEY_Arabic_dad: Keysym = Keysym(0x000005d6);
+    pub const Arabic_dad: Keysym = Keysym(0x000005d6);
     /// Arabic_tah
-    pub const KEY_Arabic_tah: Keysym = Keysym(0x000005d7);
+    pub const Arabic_tah: Keysym = Keysym(0x000005d7);
     /// Arabic_zah
-    pub const KEY_Arabic_zah: Keysym = Keysym(0x000005d8);
+    pub const Arabic_zah: Keysym = Keysym(0x000005d8);
     /// Arabic_ain
-    pub const KEY_Arabic_ain: Keysym = Keysym(0x000005d9);
+    pub const Arabic_ain: Keysym = Keysym(0x000005d9);
     /// Arabic_ghain
-    pub const KEY_Arabic_ghain: Keysym = Keysym(0x000005da);
+    pub const Arabic_ghain: Keysym = Keysym(0x000005da);
     /// Arabic_tatweel
-    pub const KEY_Arabic_tatweel: Keysym = Keysym(0x000005e0);
+    pub const Arabic_tatweel: Keysym = Keysym(0x000005e0);
     /// Arabic_feh
-    pub const KEY_Arabic_feh: Keysym = Keysym(0x000005e1);
+    pub const Arabic_feh: Keysym = Keysym(0x000005e1);
     /// Arabic_qaf
-    pub const KEY_Arabic_qaf: Keysym = Keysym(0x000005e2);
+    pub const Arabic_qaf: Keysym = Keysym(0x000005e2);
     /// Arabic_kaf
-    pub const KEY_Arabic_kaf: Keysym = Keysym(0x000005e3);
+    pub const Arabic_kaf: Keysym = Keysym(0x000005e3);
     /// Arabic_lam
-    pub const KEY_Arabic_lam: Keysym = Keysym(0x000005e4);
+    pub const Arabic_lam: Keysym = Keysym(0x000005e4);
     /// Arabic_meem
-    pub const KEY_Arabic_meem: Keysym = Keysym(0x000005e5);
+    pub const Arabic_meem: Keysym = Keysym(0x000005e5);
     /// Arabic_noon
-    pub const KEY_Arabic_noon: Keysym = Keysym(0x000005e6);
+    pub const Arabic_noon: Keysym = Keysym(0x000005e6);
     /// Arabic_ha
-    pub const KEY_Arabic_ha: Keysym = Keysym(0x000005e7);
+    pub const Arabic_ha: Keysym = Keysym(0x000005e7);
     /// Arabic_heh
-    pub const KEY_Arabic_heh: Keysym = Keysym(0x000005e7);
+    pub const Arabic_heh: Keysym = Keysym(0x000005e7);
     /// Arabic_waw
-    pub const KEY_Arabic_waw: Keysym = Keysym(0x000005e8);
+    pub const Arabic_waw: Keysym = Keysym(0x000005e8);
     /// Arabic_alefmaksura
-    pub const KEY_Arabic_alefmaksura: Keysym = Keysym(0x000005e9);
+    pub const Arabic_alefmaksura: Keysym = Keysym(0x000005e9);
     /// Arabic_yeh
-    pub const KEY_Arabic_yeh: Keysym = Keysym(0x000005ea);
+    pub const Arabic_yeh: Keysym = Keysym(0x000005ea);
     /// Arabic_fathatan
-    pub const KEY_Arabic_fathatan: Keysym = Keysym(0x000005eb);
+    pub const Arabic_fathatan: Keysym = Keysym(0x000005eb);
     /// Arabic_dammatan
-    pub const KEY_Arabic_dammatan: Keysym = Keysym(0x000005ec);
+    pub const Arabic_dammatan: Keysym = Keysym(0x000005ec);
     /// Arabic_kasratan
-    pub const KEY_Arabic_kasratan: Keysym = Keysym(0x000005ed);
+    pub const Arabic_kasratan: Keysym = Keysym(0x000005ed);
     /// Arabic_fatha
-    pub const KEY_Arabic_fatha: Keysym = Keysym(0x000005ee);
+    pub const Arabic_fatha: Keysym = Keysym(0x000005ee);
     /// Arabic_damma
-    pub const KEY_Arabic_damma: Keysym = Keysym(0x000005ef);
+    pub const Arabic_damma: Keysym = Keysym(0x000005ef);
     /// Arabic_kasra
-    pub const KEY_Arabic_kasra: Keysym = Keysym(0x000005f0);
+    pub const Arabic_kasra: Keysym = Keysym(0x000005f0);
     /// Arabic_shadda
-    pub const KEY_Arabic_shadda: Keysym = Keysym(0x000005f1);
+    pub const Arabic_shadda: Keysym = Keysym(0x000005f1);
     /// Arabic_sukun
-    pub const KEY_Arabic_sukun: Keysym = Keysym(0x000005f2);
+    pub const Arabic_sukun: Keysym = Keysym(0x000005f2);
     /// Serbian_dje
-    pub const KEY_Serbian_dje: Keysym = Keysym(0x000006a1);
+    pub const Serbian_dje: Keysym = Keysym(0x000006a1);
     /// Macedonia_gje
-    pub const KEY_Macedonia_gje: Keysym = Keysym(0x000006a2);
+    pub const Macedonia_gje: Keysym = Keysym(0x000006a2);
     /// Cyrillic_io
-    pub const KEY_Cyrillic_io: Keysym = Keysym(0x000006a3);
+    pub const Cyrillic_io: Keysym = Keysym(0x000006a3);
     /// Ukrainian_ie
-    pub const KEY_Ukrainian_ie: Keysym = Keysym(0x000006a4);
+    pub const Ukrainian_ie: Keysym = Keysym(0x000006a4);
     /// Ukranian_je
-    pub const KEY_Ukranian_je: Keysym = Keysym(0x000006a4);
+    pub const Ukranian_je: Keysym = Keysym(0x000006a4);
     /// Macedonia_dse
-    pub const KEY_Macedonia_dse: Keysym = Keysym(0x000006a5);
+    pub const Macedonia_dse: Keysym = Keysym(0x000006a5);
     /// Ukrainian_i
-    pub const KEY_Ukrainian_i: Keysym = Keysym(0x000006a6);
+    pub const Ukrainian_i: Keysym = Keysym(0x000006a6);
     /// Ukranian_i
-    pub const KEY_Ukranian_i: Keysym = Keysym(0x000006a6);
+    pub const Ukranian_i: Keysym = Keysym(0x000006a6);
     /// Ukrainian_yi
-    pub const KEY_Ukrainian_yi: Keysym = Keysym(0x000006a7);
+    pub const Ukrainian_yi: Keysym = Keysym(0x000006a7);
     /// Ukranian_yi
-    pub const KEY_Ukranian_yi: Keysym = Keysym(0x000006a7);
+    pub const Ukranian_yi: Keysym = Keysym(0x000006a7);
     /// Cyrillic_je
-    pub const KEY_Cyrillic_je: Keysym = Keysym(0x000006a8);
+    pub const Cyrillic_je: Keysym = Keysym(0x000006a8);
     /// Serbian_je
-    pub const KEY_Serbian_je: Keysym = Keysym(0x000006a8);
+    pub const Serbian_je: Keysym = Keysym(0x000006a8);
     /// Cyrillic_lje
-    pub const KEY_Cyrillic_lje: Keysym = Keysym(0x000006a9);
+    pub const Cyrillic_lje: Keysym = Keysym(0x000006a9);
     /// Serbian_lje
-    pub const KEY_Serbian_lje: Keysym = Keysym(0x000006a9);
+    pub const Serbian_lje: Keysym = Keysym(0x000006a9);
     /// Cyrillic_nje
-    pub const KEY_Cyrillic_nje: Keysym = Keysym(0x000006aa);
+    pub const Cyrillic_nje: Keysym = Keysym(0x000006aa);
     /// Serbian_nje
-    pub const KEY_Serbian_nje: Keysym = Keysym(0x000006aa);
+    pub const Serbian_nje: Keysym = Keysym(0x000006aa);
     /// Serbian_tshe
-    pub const KEY_Serbian_tshe: Keysym = Keysym(0x000006ab);
+    pub const Serbian_tshe: Keysym = Keysym(0x000006ab);
     /// Macedonia_kje
-    pub const KEY_Macedonia_kje: Keysym = Keysym(0x000006ac);
+    pub const Macedonia_kje: Keysym = Keysym(0x000006ac);
     /// Ukrainian_ghe_with_upturn
-    pub const KEY_Ukrainian_ghe_with_upturn: Keysym = Keysym(0x000006ad);
+    pub const Ukrainian_ghe_with_upturn: Keysym = Keysym(0x000006ad);
     /// Byelorussian_shortu
-    pub const KEY_Byelorussian_shortu: Keysym = Keysym(0x000006ae);
+    pub const Byelorussian_shortu: Keysym = Keysym(0x000006ae);
     /// Cyrillic_dzhe
-    pub const KEY_Cyrillic_dzhe: Keysym = Keysym(0x000006af);
+    pub const Cyrillic_dzhe: Keysym = Keysym(0x000006af);
     /// Serbian_dze
-    pub const KEY_Serbian_dze: Keysym = Keysym(0x000006af);
+    pub const Serbian_dze: Keysym = Keysym(0x000006af);
     /// numerosign
-    pub const KEY_numerosign: Keysym = Keysym(0x000006b0);
+    pub const numerosign: Keysym = Keysym(0x000006b0);
     /// Serbian_DJE
-    pub const KEY_Serbian_DJE: Keysym = Keysym(0x000006b1);
+    pub const Serbian_DJE: Keysym = Keysym(0x000006b1);
     /// Macedonia_GJE
-    pub const KEY_Macedonia_GJE: Keysym = Keysym(0x000006b2);
+    pub const Macedonia_GJE: Keysym = Keysym(0x000006b2);
     /// Cyrillic_IO
-    pub const KEY_Cyrillic_IO: Keysym = Keysym(0x000006b3);
+    pub const Cyrillic_IO: Keysym = Keysym(0x000006b3);
     /// Ukrainian_IE
-    pub const KEY_Ukrainian_IE: Keysym = Keysym(0x000006b4);
+    pub const Ukrainian_IE: Keysym = Keysym(0x000006b4);
     /// Ukranian_JE
-    pub const KEY_Ukranian_JE: Keysym = Keysym(0x000006b4);
+    pub const Ukranian_JE: Keysym = Keysym(0x000006b4);
     /// Macedonia_DSE
-    pub const KEY_Macedonia_DSE: Keysym = Keysym(0x000006b5);
+    pub const Macedonia_DSE: Keysym = Keysym(0x000006b5);
     /// Ukrainian_I
-    pub const KEY_Ukrainian_I: Keysym = Keysym(0x000006b6);
+    pub const Ukrainian_I: Keysym = Keysym(0x000006b6);
     /// Ukranian_I
-    pub const KEY_Ukranian_I: Keysym = Keysym(0x000006b6);
+    pub const Ukranian_I: Keysym = Keysym(0x000006b6);
     /// Ukrainian_YI
-    pub const KEY_Ukrainian_YI: Keysym = Keysym(0x000006b7);
+    pub const Ukrainian_YI: Keysym = Keysym(0x000006b7);
     /// Ukranian_YI
-    pub const KEY_Ukranian_YI: Keysym = Keysym(0x000006b7);
+    pub const Ukranian_YI: Keysym = Keysym(0x000006b7);
     /// Cyrillic_JE
-    pub const KEY_Cyrillic_JE: Keysym = Keysym(0x000006b8);
+    pub const Cyrillic_JE: Keysym = Keysym(0x000006b8);
     /// Serbian_JE
-    pub const KEY_Serbian_JE: Keysym = Keysym(0x000006b8);
+    pub const Serbian_JE: Keysym = Keysym(0x000006b8);
     /// Cyrillic_LJE
-    pub const KEY_Cyrillic_LJE: Keysym = Keysym(0x000006b9);
+    pub const Cyrillic_LJE: Keysym = Keysym(0x000006b9);
     /// Serbian_LJE
-    pub const KEY_Serbian_LJE: Keysym = Keysym(0x000006b9);
+    pub const Serbian_LJE: Keysym = Keysym(0x000006b9);
     /// Cyrillic_NJE
-    pub const KEY_Cyrillic_NJE: Keysym = Keysym(0x000006ba);
+    pub const Cyrillic_NJE: Keysym = Keysym(0x000006ba);
     /// Serbian_NJE
-    pub const KEY_Serbian_NJE: Keysym = Keysym(0x000006ba);
+    pub const Serbian_NJE: Keysym = Keysym(0x000006ba);
     /// Serbian_TSHE
-    pub const KEY_Serbian_TSHE: Keysym = Keysym(0x000006bb);
+    pub const Serbian_TSHE: Keysym = Keysym(0x000006bb);
     /// Macedonia_KJE
-    pub const KEY_Macedonia_KJE: Keysym = Keysym(0x000006bc);
+    pub const Macedonia_KJE: Keysym = Keysym(0x000006bc);
     /// Ukrainian_GHE_WITH_UPTURN
-    pub const KEY_Ukrainian_GHE_WITH_UPTURN: Keysym = Keysym(0x000006bd);
+    pub const Ukrainian_GHE_WITH_UPTURN: Keysym = Keysym(0x000006bd);
     /// Byelorussian_SHORTU
-    pub const KEY_Byelorussian_SHORTU: Keysym = Keysym(0x000006be);
+    pub const Byelorussian_SHORTU: Keysym = Keysym(0x000006be);
     /// Cyrillic_DZHE
-    pub const KEY_Cyrillic_DZHE: Keysym = Keysym(0x000006bf);
+    pub const Cyrillic_DZHE: Keysym = Keysym(0x000006bf);
     /// Serbian_DZE
-    pub const KEY_Serbian_DZE: Keysym = Keysym(0x000006bf);
+    pub const Serbian_DZE: Keysym = Keysym(0x000006bf);
     /// Cyrillic_yu
-    pub const KEY_Cyrillic_yu: Keysym = Keysym(0x000006c0);
+    pub const Cyrillic_yu: Keysym = Keysym(0x000006c0);
     /// Cyrillic_a
-    pub const KEY_Cyrillic_a: Keysym = Keysym(0x000006c1);
+    pub const Cyrillic_a: Keysym = Keysym(0x000006c1);
     /// Cyrillic_be
-    pub const KEY_Cyrillic_be: Keysym = Keysym(0x000006c2);
+    pub const Cyrillic_be: Keysym = Keysym(0x000006c2);
     /// Cyrillic_tse
-    pub const KEY_Cyrillic_tse: Keysym = Keysym(0x000006c3);
+    pub const Cyrillic_tse: Keysym = Keysym(0x000006c3);
     /// Cyrillic_de
-    pub const KEY_Cyrillic_de: Keysym = Keysym(0x000006c4);
+    pub const Cyrillic_de: Keysym = Keysym(0x000006c4);
     /// Cyrillic_ie
-    pub const KEY_Cyrillic_ie: Keysym = Keysym(0x000006c5);
+    pub const Cyrillic_ie: Keysym = Keysym(0x000006c5);
     /// Cyrillic_ef
-    pub const KEY_Cyrillic_ef: Keysym = Keysym(0x000006c6);
+    pub const Cyrillic_ef: Keysym = Keysym(0x000006c6);
     /// Cyrillic_ghe
-    pub const KEY_Cyrillic_ghe: Keysym = Keysym(0x000006c7);
+    pub const Cyrillic_ghe: Keysym = Keysym(0x000006c7);
     /// Cyrillic_ha
-    pub const KEY_Cyrillic_ha: Keysym = Keysym(0x000006c8);
+    pub const Cyrillic_ha: Keysym = Keysym(0x000006c8);
     /// Cyrillic_i
-    pub const KEY_Cyrillic_i: Keysym = Keysym(0x000006c9);
+    pub const Cyrillic_i: Keysym = Keysym(0x000006c9);
     /// Cyrillic_shorti
-    pub const KEY_Cyrillic_shorti: Keysym = Keysym(0x000006ca);
+    pub const Cyrillic_shorti: Keysym = Keysym(0x000006ca);
     /// Cyrillic_ka
-    pub const KEY_Cyrillic_ka: Keysym = Keysym(0x000006cb);
+    pub const Cyrillic_ka: Keysym = Keysym(0x000006cb);
     /// Cyrillic_el
-    pub const KEY_Cyrillic_el: Keysym = Keysym(0x000006cc);
+    pub const Cyrillic_el: Keysym = Keysym(0x000006cc);
     /// Cyrillic_em
-    pub const KEY_Cyrillic_em: Keysym = Keysym(0x000006cd);
+    pub const Cyrillic_em: Keysym = Keysym(0x000006cd);
     /// Cyrillic_en
-    pub const KEY_Cyrillic_en: Keysym = Keysym(0x000006ce);
+    pub const Cyrillic_en: Keysym = Keysym(0x000006ce);
     /// Cyrillic_o
-    pub const KEY_Cyrillic_o: Keysym = Keysym(0x000006cf);
+    pub const Cyrillic_o: Keysym = Keysym(0x000006cf);
     /// Cyrillic_pe
-    pub const KEY_Cyrillic_pe: Keysym = Keysym(0x000006d0);
+    pub const Cyrillic_pe: Keysym = Keysym(0x000006d0);
     /// Cyrillic_ya
-    pub const KEY_Cyrillic_ya: Keysym = Keysym(0x000006d1);
+    pub const Cyrillic_ya: Keysym = Keysym(0x000006d1);
     /// Cyrillic_er
-    pub const KEY_Cyrillic_er: Keysym = Keysym(0x000006d2);
+    pub const Cyrillic_er: Keysym = Keysym(0x000006d2);
     /// Cyrillic_es
-    pub const KEY_Cyrillic_es: Keysym = Keysym(0x000006d3);
+    pub const Cyrillic_es: Keysym = Keysym(0x000006d3);
     /// Cyrillic_te
-    pub const KEY_Cyrillic_te: Keysym = Keysym(0x000006d4);
+    pub const Cyrillic_te: Keysym = Keysym(0x000006d4);
     /// Cyrillic_u
-    pub const KEY_Cyrillic_u: Keysym = Keysym(0x000006d5);
+    pub const Cyrillic_u: Keysym = Keysym(0x000006d5);
     /// Cyrillic_zhe
-    pub const KEY_Cyrillic_zhe: Keysym = Keysym(0x000006d6);
+    pub const Cyrillic_zhe: Keysym = Keysym(0x000006d6);
     /// Cyrillic_ve
-    pub const KEY_Cyrillic_ve: Keysym = Keysym(0x000006d7);
+    pub const Cyrillic_ve: Keysym = Keysym(0x000006d7);
     /// Cyrillic_softsign
-    pub const KEY_Cyrillic_softsign: Keysym = Keysym(0x000006d8);
+    pub const Cyrillic_softsign: Keysym = Keysym(0x000006d8);
     /// Cyrillic_yeru
-    pub const KEY_Cyrillic_yeru: Keysym = Keysym(0x000006d9);
+    pub const Cyrillic_yeru: Keysym = Keysym(0x000006d9);
     /// Cyrillic_ze
-    pub const KEY_Cyrillic_ze: Keysym = Keysym(0x000006da);
+    pub const Cyrillic_ze: Keysym = Keysym(0x000006da);
     /// Cyrillic_sha
-    pub const KEY_Cyrillic_sha: Keysym = Keysym(0x000006db);
+    pub const Cyrillic_sha: Keysym = Keysym(0x000006db);
     /// Cyrillic_e
-    pub const KEY_Cyrillic_e: Keysym = Keysym(0x000006dc);
+    pub const Cyrillic_e: Keysym = Keysym(0x000006dc);
     /// Cyrillic_shcha
-    pub const KEY_Cyrillic_shcha: Keysym = Keysym(0x000006dd);
+    pub const Cyrillic_shcha: Keysym = Keysym(0x000006dd);
     /// Cyrillic_che
-    pub const KEY_Cyrillic_che: Keysym = Keysym(0x000006de);
+    pub const Cyrillic_che: Keysym = Keysym(0x000006de);
     /// Cyrillic_hardsign
-    pub const KEY_Cyrillic_hardsign: Keysym = Keysym(0x000006df);
+    pub const Cyrillic_hardsign: Keysym = Keysym(0x000006df);
     /// Cyrillic_YU
-    pub const KEY_Cyrillic_YU: Keysym = Keysym(0x000006e0);
+    pub const Cyrillic_YU: Keysym = Keysym(0x000006e0);
     /// Cyrillic_A
-    pub const KEY_Cyrillic_A: Keysym = Keysym(0x000006e1);
+    pub const Cyrillic_A: Keysym = Keysym(0x000006e1);
     /// Cyrillic_BE
-    pub const KEY_Cyrillic_BE: Keysym = Keysym(0x000006e2);
+    pub const Cyrillic_BE: Keysym = Keysym(0x000006e2);
     /// Cyrillic_TSE
-    pub const KEY_Cyrillic_TSE: Keysym = Keysym(0x000006e3);
+    pub const Cyrillic_TSE: Keysym = Keysym(0x000006e3);
     /// Cyrillic_DE
-    pub const KEY_Cyrillic_DE: Keysym = Keysym(0x000006e4);
+    pub const Cyrillic_DE: Keysym = Keysym(0x000006e4);
     /// Cyrillic_IE
-    pub const KEY_Cyrillic_IE: Keysym = Keysym(0x000006e5);
+    pub const Cyrillic_IE: Keysym = Keysym(0x000006e5);
     /// Cyrillic_EF
-    pub const KEY_Cyrillic_EF: Keysym = Keysym(0x000006e6);
+    pub const Cyrillic_EF: Keysym = Keysym(0x000006e6);
     /// Cyrillic_GHE
-    pub const KEY_Cyrillic_GHE: Keysym = Keysym(0x000006e7);
+    pub const Cyrillic_GHE: Keysym = Keysym(0x000006e7);
     /// Cyrillic_HA
-    pub const KEY_Cyrillic_HA: Keysym = Keysym(0x000006e8);
+    pub const Cyrillic_HA: Keysym = Keysym(0x000006e8);
     /// Cyrillic_I
-    pub const KEY_Cyrillic_I: Keysym = Keysym(0x000006e9);
+    pub const Cyrillic_I: Keysym = Keysym(0x000006e9);
     /// Cyrillic_SHORTI
-    pub const KEY_Cyrillic_SHORTI: Keysym = Keysym(0x000006ea);
+    pub const Cyrillic_SHORTI: Keysym = Keysym(0x000006ea);
     /// Cyrillic_KA
-    pub const KEY_Cyrillic_KA: Keysym = Keysym(0x000006eb);
+    pub const Cyrillic_KA: Keysym = Keysym(0x000006eb);
     /// Cyrillic_EL
-    pub const KEY_Cyrillic_EL: Keysym = Keysym(0x000006ec);
+    pub const Cyrillic_EL: Keysym = Keysym(0x000006ec);
     /// Cyrillic_EM
-    pub const KEY_Cyrillic_EM: Keysym = Keysym(0x000006ed);
+    pub const Cyrillic_EM: Keysym = Keysym(0x000006ed);
     /// Cyrillic_EN
-    pub const KEY_Cyrillic_EN: Keysym = Keysym(0x000006ee);
+    pub const Cyrillic_EN: Keysym = Keysym(0x000006ee);
     /// Cyrillic_O
-    pub const KEY_Cyrillic_O: Keysym = Keysym(0x000006ef);
+    pub const Cyrillic_O: Keysym = Keysym(0x000006ef);
     /// Cyrillic_PE
-    pub const KEY_Cyrillic_PE: Keysym = Keysym(0x000006f0);
+    pub const Cyrillic_PE: Keysym = Keysym(0x000006f0);
     /// Cyrillic_YA
-    pub const KEY_Cyrillic_YA: Keysym = Keysym(0x000006f1);
+    pub const Cyrillic_YA: Keysym = Keysym(0x000006f1);
     /// Cyrillic_ER
-    pub const KEY_Cyrillic_ER: Keysym = Keysym(0x000006f2);
+    pub const Cyrillic_ER: Keysym = Keysym(0x000006f2);
     /// Cyrillic_ES
-    pub const KEY_Cyrillic_ES: Keysym = Keysym(0x000006f3);
+    pub const Cyrillic_ES: Keysym = Keysym(0x000006f3);
     /// Cyrillic_TE
-    pub const KEY_Cyrillic_TE: Keysym = Keysym(0x000006f4);
+    pub const Cyrillic_TE: Keysym = Keysym(0x000006f4);
     /// Cyrillic_U
-    pub const KEY_Cyrillic_U: Keysym = Keysym(0x000006f5);
+    pub const Cyrillic_U: Keysym = Keysym(0x000006f5);
     /// Cyrillic_ZHE
-    pub const KEY_Cyrillic_ZHE: Keysym = Keysym(0x000006f6);
+    pub const Cyrillic_ZHE: Keysym = Keysym(0x000006f6);
     /// Cyrillic_VE
-    pub const KEY_Cyrillic_VE: Keysym = Keysym(0x000006f7);
+    pub const Cyrillic_VE: Keysym = Keysym(0x000006f7);
     /// Cyrillic_SOFTSIGN
-    pub const KEY_Cyrillic_SOFTSIGN: Keysym = Keysym(0x000006f8);
+    pub const Cyrillic_SOFTSIGN: Keysym = Keysym(0x000006f8);
     /// Cyrillic_YERU
-    pub const KEY_Cyrillic_YERU: Keysym = Keysym(0x000006f9);
+    pub const Cyrillic_YERU: Keysym = Keysym(0x000006f9);
     /// Cyrillic_ZE
-    pub const KEY_Cyrillic_ZE: Keysym = Keysym(0x000006fa);
+    pub const Cyrillic_ZE: Keysym = Keysym(0x000006fa);
     /// Cyrillic_SHA
-    pub const KEY_Cyrillic_SHA: Keysym = Keysym(0x000006fb);
+    pub const Cyrillic_SHA: Keysym = Keysym(0x000006fb);
     /// Cyrillic_E
-    pub const KEY_Cyrillic_E: Keysym = Keysym(0x000006fc);
+    pub const Cyrillic_E: Keysym = Keysym(0x000006fc);
     /// Cyrillic_SHCHA
-    pub const KEY_Cyrillic_SHCHA: Keysym = Keysym(0x000006fd);
+    pub const Cyrillic_SHCHA: Keysym = Keysym(0x000006fd);
     /// Cyrillic_CHE
-    pub const KEY_Cyrillic_CHE: Keysym = Keysym(0x000006fe);
+    pub const Cyrillic_CHE: Keysym = Keysym(0x000006fe);
     /// Cyrillic_HARDSIGN
-    pub const KEY_Cyrillic_HARDSIGN: Keysym = Keysym(0x000006ff);
+    pub const Cyrillic_HARDSIGN: Keysym = Keysym(0x000006ff);
     /// Greek_ALPHAaccent
-    pub const KEY_Greek_ALPHAaccent: Keysym = Keysym(0x000007a1);
+    pub const Greek_ALPHAaccent: Keysym = Keysym(0x000007a1);
     /// Greek_EPSILONaccent
-    pub const KEY_Greek_EPSILONaccent: Keysym = Keysym(0x000007a2);
+    pub const Greek_EPSILONaccent: Keysym = Keysym(0x000007a2);
     /// Greek_ETAaccent
-    pub const KEY_Greek_ETAaccent: Keysym = Keysym(0x000007a3);
+    pub const Greek_ETAaccent: Keysym = Keysym(0x000007a3);
     /// Greek_IOTAaccent
-    pub const KEY_Greek_IOTAaccent: Keysym = Keysym(0x000007a4);
+    pub const Greek_IOTAaccent: Keysym = Keysym(0x000007a4);
     /// Greek_IOTAdieresis
-    pub const KEY_Greek_IOTAdieresis: Keysym = Keysym(0x000007a5);
+    pub const Greek_IOTAdieresis: Keysym = Keysym(0x000007a5);
     /// Greek_IOTAdiaeresis
-    pub const KEY_Greek_IOTAdiaeresis: Keysym = Keysym(0x000007a5);
+    pub const Greek_IOTAdiaeresis: Keysym = Keysym(0x000007a5);
     /// Greek_OMICRONaccent
-    pub const KEY_Greek_OMICRONaccent: Keysym = Keysym(0x000007a7);
+    pub const Greek_OMICRONaccent: Keysym = Keysym(0x000007a7);
     /// Greek_UPSILONaccent
-    pub const KEY_Greek_UPSILONaccent: Keysym = Keysym(0x000007a8);
+    pub const Greek_UPSILONaccent: Keysym = Keysym(0x000007a8);
     /// Greek_UPSILONdieresis
-    pub const KEY_Greek_UPSILONdieresis: Keysym = Keysym(0x000007a9);
+    pub const Greek_UPSILONdieresis: Keysym = Keysym(0x000007a9);
     /// Greek_OMEGAaccent
-    pub const KEY_Greek_OMEGAaccent: Keysym = Keysym(0x000007ab);
+    pub const Greek_OMEGAaccent: Keysym = Keysym(0x000007ab);
     /// Greek_accentdieresis
-    pub const KEY_Greek_accentdieresis: Keysym = Keysym(0x000007ae);
+    pub const Greek_accentdieresis: Keysym = Keysym(0x000007ae);
     /// Greek_horizbar
-    pub const KEY_Greek_horizbar: Keysym = Keysym(0x000007af);
+    pub const Greek_horizbar: Keysym = Keysym(0x000007af);
     /// Greek_alphaaccent
-    pub const KEY_Greek_alphaaccent: Keysym = Keysym(0x000007b1);
+    pub const Greek_alphaaccent: Keysym = Keysym(0x000007b1);
     /// Greek_epsilonaccent
-    pub const KEY_Greek_epsilonaccent: Keysym = Keysym(0x000007b2);
+    pub const Greek_epsilonaccent: Keysym = Keysym(0x000007b2);
     /// Greek_etaaccent
-    pub const KEY_Greek_etaaccent: Keysym = Keysym(0x000007b3);
+    pub const Greek_etaaccent: Keysym = Keysym(0x000007b3);
     /// Greek_iotaaccent
-    pub const KEY_Greek_iotaaccent: Keysym = Keysym(0x000007b4);
+    pub const Greek_iotaaccent: Keysym = Keysym(0x000007b4);
     /// Greek_iotadieresis
-    pub const KEY_Greek_iotadieresis: Keysym = Keysym(0x000007b5);
+    pub const Greek_iotadieresis: Keysym = Keysym(0x000007b5);
     /// Greek_iotaaccentdieresis
-    pub const KEY_Greek_iotaaccentdieresis: Keysym = Keysym(0x000007b6);
+    pub const Greek_iotaaccentdieresis: Keysym = Keysym(0x000007b6);
     /// Greek_omicronaccent
-    pub const KEY_Greek_omicronaccent: Keysym = Keysym(0x000007b7);
+    pub const Greek_omicronaccent: Keysym = Keysym(0x000007b7);
     /// Greek_upsilonaccent
-    pub const KEY_Greek_upsilonaccent: Keysym = Keysym(0x000007b8);
+    pub const Greek_upsilonaccent: Keysym = Keysym(0x000007b8);
     /// Greek_upsilondieresis
-    pub const KEY_Greek_upsilondieresis: Keysym = Keysym(0x000007b9);
+    pub const Greek_upsilondieresis: Keysym = Keysym(0x000007b9);
     /// Greek_upsilonaccentdieresis
-    pub const KEY_Greek_upsilonaccentdieresis: Keysym = Keysym(0x000007ba);
+    pub const Greek_upsilonaccentdieresis: Keysym = Keysym(0x000007ba);
     /// Greek_omegaaccent
-    pub const KEY_Greek_omegaaccent: Keysym = Keysym(0x000007bb);
+    pub const Greek_omegaaccent: Keysym = Keysym(0x000007bb);
     /// Greek_ALPHA
-    pub const KEY_Greek_ALPHA: Keysym = Keysym(0x000007c1);
+    pub const Greek_ALPHA: Keysym = Keysym(0x000007c1);
     /// Greek_BETA
-    pub const KEY_Greek_BETA: Keysym = Keysym(0x000007c2);
+    pub const Greek_BETA: Keysym = Keysym(0x000007c2);
     /// Greek_GAMMA
-    pub const KEY_Greek_GAMMA: Keysym = Keysym(0x000007c3);
+    pub const Greek_GAMMA: Keysym = Keysym(0x000007c3);
     /// Greek_DELTA
-    pub const KEY_Greek_DELTA: Keysym = Keysym(0x000007c4);
+    pub const Greek_DELTA: Keysym = Keysym(0x000007c4);
     /// Greek_EPSILON
-    pub const KEY_Greek_EPSILON: Keysym = Keysym(0x000007c5);
+    pub const Greek_EPSILON: Keysym = Keysym(0x000007c5);
     /// Greek_ZETA
-    pub const KEY_Greek_ZETA: Keysym = Keysym(0x000007c6);
+    pub const Greek_ZETA: Keysym = Keysym(0x000007c6);
     /// Greek_ETA
-    pub const KEY_Greek_ETA: Keysym = Keysym(0x000007c7);
+    pub const Greek_ETA: Keysym = Keysym(0x000007c7);
     /// Greek_THETA
-    pub const KEY_Greek_THETA: Keysym = Keysym(0x000007c8);
+    pub const Greek_THETA: Keysym = Keysym(0x000007c8);
     /// Greek_IOTA
-    pub const KEY_Greek_IOTA: Keysym = Keysym(0x000007c9);
+    pub const Greek_IOTA: Keysym = Keysym(0x000007c9);
     /// Greek_KAPPA
-    pub const KEY_Greek_KAPPA: Keysym = Keysym(0x000007ca);
+    pub const Greek_KAPPA: Keysym = Keysym(0x000007ca);
     /// Greek_LAMDA
-    pub const KEY_Greek_LAMDA: Keysym = Keysym(0x000007cb);
+    pub const Greek_LAMDA: Keysym = Keysym(0x000007cb);
     /// Greek_LAMBDA
-    pub const KEY_Greek_LAMBDA: Keysym = Keysym(0x000007cb);
+    pub const Greek_LAMBDA: Keysym = Keysym(0x000007cb);
     /// Greek_MU
-    pub const KEY_Greek_MU: Keysym = Keysym(0x000007cc);
+    pub const Greek_MU: Keysym = Keysym(0x000007cc);
     /// Greek_NU
-    pub const KEY_Greek_NU: Keysym = Keysym(0x000007cd);
+    pub const Greek_NU: Keysym = Keysym(0x000007cd);
     /// Greek_XI
-    pub const KEY_Greek_XI: Keysym = Keysym(0x000007ce);
+    pub const Greek_XI: Keysym = Keysym(0x000007ce);
     /// Greek_OMICRON
-    pub const KEY_Greek_OMICRON: Keysym = Keysym(0x000007cf);
+    pub const Greek_OMICRON: Keysym = Keysym(0x000007cf);
     /// Greek_PI
-    pub const KEY_Greek_PI: Keysym = Keysym(0x000007d0);
+    pub const Greek_PI: Keysym = Keysym(0x000007d0);
     /// Greek_RHO
-    pub const KEY_Greek_RHO: Keysym = Keysym(0x000007d1);
+    pub const Greek_RHO: Keysym = Keysym(0x000007d1);
     /// Greek_SIGMA
-    pub const KEY_Greek_SIGMA: Keysym = Keysym(0x000007d2);
+    pub const Greek_SIGMA: Keysym = Keysym(0x000007d2);
     /// Greek_TAU
-    pub const KEY_Greek_TAU: Keysym = Keysym(0x000007d4);
+    pub const Greek_TAU: Keysym = Keysym(0x000007d4);
     /// Greek_UPSILON
-    pub const KEY_Greek_UPSILON: Keysym = Keysym(0x000007d5);
+    pub const Greek_UPSILON: Keysym = Keysym(0x000007d5);
     /// Greek_PHI
-    pub const KEY_Greek_PHI: Keysym = Keysym(0x000007d6);
+    pub const Greek_PHI: Keysym = Keysym(0x000007d6);
     /// Greek_CHI
-    pub const KEY_Greek_CHI: Keysym = Keysym(0x000007d7);
+    pub const Greek_CHI: Keysym = Keysym(0x000007d7);
     /// Greek_PSI
-    pub const KEY_Greek_PSI: Keysym = Keysym(0x000007d8);
+    pub const Greek_PSI: Keysym = Keysym(0x000007d8);
     /// Greek_OMEGA
-    pub const KEY_Greek_OMEGA: Keysym = Keysym(0x000007d9);
+    pub const Greek_OMEGA: Keysym = Keysym(0x000007d9);
     /// Greek_alpha
-    pub const KEY_Greek_alpha: Keysym = Keysym(0x000007e1);
+    pub const Greek_alpha: Keysym = Keysym(0x000007e1);
     /// Greek_beta
-    pub const KEY_Greek_beta: Keysym = Keysym(0x000007e2);
+    pub const Greek_beta: Keysym = Keysym(0x000007e2);
     /// Greek_gamma
-    pub const KEY_Greek_gamma: Keysym = Keysym(0x000007e3);
+    pub const Greek_gamma: Keysym = Keysym(0x000007e3);
     /// Greek_delta
-    pub const KEY_Greek_delta: Keysym = Keysym(0x000007e4);
+    pub const Greek_delta: Keysym = Keysym(0x000007e4);
     /// Greek_epsilon
-    pub const KEY_Greek_epsilon: Keysym = Keysym(0x000007e5);
+    pub const Greek_epsilon: Keysym = Keysym(0x000007e5);
     /// Greek_zeta
-    pub const KEY_Greek_zeta: Keysym = Keysym(0x000007e6);
+    pub const Greek_zeta: Keysym = Keysym(0x000007e6);
     /// Greek_eta
-    pub const KEY_Greek_eta: Keysym = Keysym(0x000007e7);
+    pub const Greek_eta: Keysym = Keysym(0x000007e7);
     /// Greek_theta
-    pub const KEY_Greek_theta: Keysym = Keysym(0x000007e8);
+    pub const Greek_theta: Keysym = Keysym(0x000007e8);
     /// Greek_iota
-    pub const KEY_Greek_iota: Keysym = Keysym(0x000007e9);
+    pub const Greek_iota: Keysym = Keysym(0x000007e9);
     /// Greek_kappa
-    pub const KEY_Greek_kappa: Keysym = Keysym(0x000007ea);
+    pub const Greek_kappa: Keysym = Keysym(0x000007ea);
     /// Greek_lamda
-    pub const KEY_Greek_lamda: Keysym = Keysym(0x000007eb);
+    pub const Greek_lamda: Keysym = Keysym(0x000007eb);
     /// Greek_lambda
-    pub const KEY_Greek_lambda: Keysym = Keysym(0x000007eb);
+    pub const Greek_lambda: Keysym = Keysym(0x000007eb);
     /// Greek_mu
-    pub const KEY_Greek_mu: Keysym = Keysym(0x000007ec);
+    pub const Greek_mu: Keysym = Keysym(0x000007ec);
     /// Greek_nu
-    pub const KEY_Greek_nu: Keysym = Keysym(0x000007ed);
+    pub const Greek_nu: Keysym = Keysym(0x000007ed);
     /// Greek_xi
-    pub const KEY_Greek_xi: Keysym = Keysym(0x000007ee);
+    pub const Greek_xi: Keysym = Keysym(0x000007ee);
     /// Greek_omicron
-    pub const KEY_Greek_omicron: Keysym = Keysym(0x000007ef);
+    pub const Greek_omicron: Keysym = Keysym(0x000007ef);
     /// Greek_pi
-    pub const KEY_Greek_pi: Keysym = Keysym(0x000007f0);
+    pub const Greek_pi: Keysym = Keysym(0x000007f0);
     /// Greek_rho
-    pub const KEY_Greek_rho: Keysym = Keysym(0x000007f1);
+    pub const Greek_rho: Keysym = Keysym(0x000007f1);
     /// Greek_sigma
-    pub const KEY_Greek_sigma: Keysym = Keysym(0x000007f2);
+    pub const Greek_sigma: Keysym = Keysym(0x000007f2);
     /// Greek_finalsmallsigma
-    pub const KEY_Greek_finalsmallsigma: Keysym = Keysym(0x000007f3);
+    pub const Greek_finalsmallsigma: Keysym = Keysym(0x000007f3);
     /// Greek_tau
-    pub const KEY_Greek_tau: Keysym = Keysym(0x000007f4);
+    pub const Greek_tau: Keysym = Keysym(0x000007f4);
     /// Greek_upsilon
-    pub const KEY_Greek_upsilon: Keysym = Keysym(0x000007f5);
+    pub const Greek_upsilon: Keysym = Keysym(0x000007f5);
     /// Greek_phi
-    pub const KEY_Greek_phi: Keysym = Keysym(0x000007f6);
+    pub const Greek_phi: Keysym = Keysym(0x000007f6);
     /// Greek_chi
-    pub const KEY_Greek_chi: Keysym = Keysym(0x000007f7);
+    pub const Greek_chi: Keysym = Keysym(0x000007f7);
     /// Greek_psi
-    pub const KEY_Greek_psi: Keysym = Keysym(0x000007f8);
+    pub const Greek_psi: Keysym = Keysym(0x000007f8);
     /// Greek_omega
-    pub const KEY_Greek_omega: Keysym = Keysym(0x000007f9);
+    pub const Greek_omega: Keysym = Keysym(0x000007f9);
     /// leftradical
-    pub const KEY_leftradical: Keysym = Keysym(0x000008a1);
+    pub const leftradical: Keysym = Keysym(0x000008a1);
     /// topleftradical
-    pub const KEY_topleftradical: Keysym = Keysym(0x000008a2);
+    pub const topleftradical: Keysym = Keysym(0x000008a2);
     /// horizconnector
-    pub const KEY_horizconnector: Keysym = Keysym(0x000008a3);
+    pub const horizconnector: Keysym = Keysym(0x000008a3);
     /// topintegral
-    pub const KEY_topintegral: Keysym = Keysym(0x000008a4);
+    pub const topintegral: Keysym = Keysym(0x000008a4);
     /// botintegral
-    pub const KEY_botintegral: Keysym = Keysym(0x000008a5);
+    pub const botintegral: Keysym = Keysym(0x000008a5);
     /// vertconnector
-    pub const KEY_vertconnector: Keysym = Keysym(0x000008a6);
+    pub const vertconnector: Keysym = Keysym(0x000008a6);
     /// topleftsqbracket
-    pub const KEY_topleftsqbracket: Keysym = Keysym(0x000008a7);
+    pub const topleftsqbracket: Keysym = Keysym(0x000008a7);
     /// botleftsqbracket
-    pub const KEY_botleftsqbracket: Keysym = Keysym(0x000008a8);
+    pub const botleftsqbracket: Keysym = Keysym(0x000008a8);
     /// toprightsqbracket
-    pub const KEY_toprightsqbracket: Keysym = Keysym(0x000008a9);
+    pub const toprightsqbracket: Keysym = Keysym(0x000008a9);
     /// botrightsqbracket
-    pub const KEY_botrightsqbracket: Keysym = Keysym(0x000008aa);
+    pub const botrightsqbracket: Keysym = Keysym(0x000008aa);
     /// topleftparens
-    pub const KEY_topleftparens: Keysym = Keysym(0x000008ab);
+    pub const topleftparens: Keysym = Keysym(0x000008ab);
     /// botleftparens
-    pub const KEY_botleftparens: Keysym = Keysym(0x000008ac);
+    pub const botleftparens: Keysym = Keysym(0x000008ac);
     /// toprightparens
-    pub const KEY_toprightparens: Keysym = Keysym(0x000008ad);
+    pub const toprightparens: Keysym = Keysym(0x000008ad);
     /// botrightparens
-    pub const KEY_botrightparens: Keysym = Keysym(0x000008ae);
+    pub const botrightparens: Keysym = Keysym(0x000008ae);
     /// leftmiddlecurlybrace
-    pub const KEY_leftmiddlecurlybrace: Keysym = Keysym(0x000008af);
+    pub const leftmiddlecurlybrace: Keysym = Keysym(0x000008af);
     /// rightmiddlecurlybrace
-    pub const KEY_rightmiddlecurlybrace: Keysym = Keysym(0x000008b0);
+    pub const rightmiddlecurlybrace: Keysym = Keysym(0x000008b0);
     /// topleftsummation
-    pub const KEY_topleftsummation: Keysym = Keysym(0x000008b1);
+    pub const topleftsummation: Keysym = Keysym(0x000008b1);
     /// botleftsummation
-    pub const KEY_botleftsummation: Keysym = Keysym(0x000008b2);
+    pub const botleftsummation: Keysym = Keysym(0x000008b2);
     /// topvertsummationconnector
-    pub const KEY_topvertsummationconnector: Keysym = Keysym(0x000008b3);
+    pub const topvertsummationconnector: Keysym = Keysym(0x000008b3);
     /// botvertsummationconnector
-    pub const KEY_botvertsummationconnector: Keysym = Keysym(0x000008b4);
+    pub const botvertsummationconnector: Keysym = Keysym(0x000008b4);
     /// toprightsummation
-    pub const KEY_toprightsummation: Keysym = Keysym(0x000008b5);
+    pub const toprightsummation: Keysym = Keysym(0x000008b5);
     /// botrightsummation
-    pub const KEY_botrightsummation: Keysym = Keysym(0x000008b6);
+    pub const botrightsummation: Keysym = Keysym(0x000008b6);
     /// rightmiddlesummation
-    pub const KEY_rightmiddlesummation: Keysym = Keysym(0x000008b7);
+    pub const rightmiddlesummation: Keysym = Keysym(0x000008b7);
     /// lessthanequal
-    pub const KEY_lessthanequal: Keysym = Keysym(0x000008bc);
+    pub const lessthanequal: Keysym = Keysym(0x000008bc);
     /// notequal
-    pub const KEY_notequal: Keysym = Keysym(0x000008bd);
+    pub const notequal: Keysym = Keysym(0x000008bd);
     /// greaterthanequal
-    pub const KEY_greaterthanequal: Keysym = Keysym(0x000008be);
+    pub const greaterthanequal: Keysym = Keysym(0x000008be);
     /// integral
-    pub const KEY_integral: Keysym = Keysym(0x000008bf);
+    pub const integral: Keysym = Keysym(0x000008bf);
     /// therefore
-    pub const KEY_therefore: Keysym = Keysym(0x000008c0);
+    pub const therefore: Keysym = Keysym(0x000008c0);
     /// variation
-    pub const KEY_variation: Keysym = Keysym(0x000008c1);
+    pub const variation: Keysym = Keysym(0x000008c1);
     /// infinity
-    pub const KEY_infinity: Keysym = Keysym(0x000008c2);
+    pub const infinity: Keysym = Keysym(0x000008c2);
     /// nabla
-    pub const KEY_nabla: Keysym = Keysym(0x000008c5);
+    pub const nabla: Keysym = Keysym(0x000008c5);
     /// approximate
-    pub const KEY_approximate: Keysym = Keysym(0x000008c8);
+    pub const approximate: Keysym = Keysym(0x000008c8);
     /// similarequal
-    pub const KEY_similarequal: Keysym = Keysym(0x000008c9);
+    pub const similarequal: Keysym = Keysym(0x000008c9);
     /// ifonlyif
-    pub const KEY_ifonlyif: Keysym = Keysym(0x000008cd);
+    pub const ifonlyif: Keysym = Keysym(0x000008cd);
     /// implies
-    pub const KEY_implies: Keysym = Keysym(0x000008ce);
+    pub const implies: Keysym = Keysym(0x000008ce);
     /// identical
-    pub const KEY_identical: Keysym = Keysym(0x000008cf);
+    pub const identical: Keysym = Keysym(0x000008cf);
     /// radical
-    pub const KEY_radical: Keysym = Keysym(0x000008d6);
+    pub const radical: Keysym = Keysym(0x000008d6);
     /// includedin
-    pub const KEY_includedin: Keysym = Keysym(0x000008da);
+    pub const includedin: Keysym = Keysym(0x000008da);
     /// includes
-    pub const KEY_includes: Keysym = Keysym(0x000008db);
+    pub const includes: Keysym = Keysym(0x000008db);
     /// intersection
-    pub const KEY_intersection: Keysym = Keysym(0x000008dc);
+    pub const intersection: Keysym = Keysym(0x000008dc);
     /// union
-    pub const KEY_union: Keysym = Keysym(0x000008dd);
+    pub const union: Keysym = Keysym(0x000008dd);
     /// logicaland
-    pub const KEY_logicaland: Keysym = Keysym(0x000008de);
+    pub const logicaland: Keysym = Keysym(0x000008de);
     /// logicalor
-    pub const KEY_logicalor: Keysym = Keysym(0x000008df);
+    pub const logicalor: Keysym = Keysym(0x000008df);
     /// partialderivative
-    pub const KEY_partialderivative: Keysym = Keysym(0x000008ef);
+    pub const partialderivative: Keysym = Keysym(0x000008ef);
     /// function
-    pub const KEY_function: Keysym = Keysym(0x000008f6);
+    pub const function: Keysym = Keysym(0x000008f6);
     /// leftarrow
-    pub const KEY_leftarrow: Keysym = Keysym(0x000008fb);
+    pub const leftarrow: Keysym = Keysym(0x000008fb);
     /// uparrow
-    pub const KEY_uparrow: Keysym = Keysym(0x000008fc);
+    pub const uparrow: Keysym = Keysym(0x000008fc);
     /// rightarrow
-    pub const KEY_rightarrow: Keysym = Keysym(0x000008fd);
+    pub const rightarrow: Keysym = Keysym(0x000008fd);
     /// downarrow
-    pub const KEY_downarrow: Keysym = Keysym(0x000008fe);
+    pub const downarrow: Keysym = Keysym(0x000008fe);
     /// blank
-    pub const KEY_blank: Keysym = Keysym(0x000009df);
+    pub const blank: Keysym = Keysym(0x000009df);
     /// soliddiamond
-    pub const KEY_soliddiamond: Keysym = Keysym(0x000009e0);
+    pub const soliddiamond: Keysym = Keysym(0x000009e0);
     /// checkerboard
-    pub const KEY_checkerboard: Keysym = Keysym(0x000009e1);
+    pub const checkerboard: Keysym = Keysym(0x000009e1);
     /// ht
-    pub const KEY_ht: Keysym = Keysym(0x000009e2);
+    pub const ht: Keysym = Keysym(0x000009e2);
     /// ff
-    pub const KEY_ff: Keysym = Keysym(0x000009e3);
+    pub const ff: Keysym = Keysym(0x000009e3);
     /// cr
-    pub const KEY_cr: Keysym = Keysym(0x000009e4);
+    pub const cr: Keysym = Keysym(0x000009e4);
     /// lf
-    pub const KEY_lf: Keysym = Keysym(0x000009e5);
+    pub const lf: Keysym = Keysym(0x000009e5);
     /// nl
-    pub const KEY_nl: Keysym = Keysym(0x000009e8);
+    pub const nl: Keysym = Keysym(0x000009e8);
     /// vt
-    pub const KEY_vt: Keysym = Keysym(0x000009e9);
+    pub const vt: Keysym = Keysym(0x000009e9);
     /// lowrightcorner
-    pub const KEY_lowrightcorner: Keysym = Keysym(0x000009ea);
+    pub const lowrightcorner: Keysym = Keysym(0x000009ea);
     /// uprightcorner
-    pub const KEY_uprightcorner: Keysym = Keysym(0x000009eb);
+    pub const uprightcorner: Keysym = Keysym(0x000009eb);
     /// upleftcorner
-    pub const KEY_upleftcorner: Keysym = Keysym(0x000009ec);
+    pub const upleftcorner: Keysym = Keysym(0x000009ec);
     /// lowleftcorner
-    pub const KEY_lowleftcorner: Keysym = Keysym(0x000009ed);
+    pub const lowleftcorner: Keysym = Keysym(0x000009ed);
     /// crossinglines
-    pub const KEY_crossinglines: Keysym = Keysym(0x000009ee);
+    pub const crossinglines: Keysym = Keysym(0x000009ee);
     /// horizlinescan1
-    pub const KEY_horizlinescan1: Keysym = Keysym(0x000009ef);
+    pub const horizlinescan1: Keysym = Keysym(0x000009ef);
     /// horizlinescan3
-    pub const KEY_horizlinescan3: Keysym = Keysym(0x000009f0);
+    pub const horizlinescan3: Keysym = Keysym(0x000009f0);
     /// horizlinescan5
-    pub const KEY_horizlinescan5: Keysym = Keysym(0x000009f1);
+    pub const horizlinescan5: Keysym = Keysym(0x000009f1);
     /// horizlinescan7
-    pub const KEY_horizlinescan7: Keysym = Keysym(0x000009f2);
+    pub const horizlinescan7: Keysym = Keysym(0x000009f2);
     /// horizlinescan9
-    pub const KEY_horizlinescan9: Keysym = Keysym(0x000009f3);
+    pub const horizlinescan9: Keysym = Keysym(0x000009f3);
     /// leftt
-    pub const KEY_leftt: Keysym = Keysym(0x000009f4);
+    pub const leftt: Keysym = Keysym(0x000009f4);
     /// rightt
-    pub const KEY_rightt: Keysym = Keysym(0x000009f5);
+    pub const rightt: Keysym = Keysym(0x000009f5);
     /// bott
-    pub const KEY_bott: Keysym = Keysym(0x000009f6);
+    pub const bott: Keysym = Keysym(0x000009f6);
     /// topt
-    pub const KEY_topt: Keysym = Keysym(0x000009f7);
+    pub const topt: Keysym = Keysym(0x000009f7);
     /// vertbar
-    pub const KEY_vertbar: Keysym = Keysym(0x000009f8);
+    pub const vertbar: Keysym = Keysym(0x000009f8);
     /// emspace
-    pub const KEY_emspace: Keysym = Keysym(0x00000aa1);
+    pub const emspace: Keysym = Keysym(0x00000aa1);
     /// enspace
-    pub const KEY_enspace: Keysym = Keysym(0x00000aa2);
+    pub const enspace: Keysym = Keysym(0x00000aa2);
     /// em3space
-    pub const KEY_em3space: Keysym = Keysym(0x00000aa3);
+    pub const em3space: Keysym = Keysym(0x00000aa3);
     /// em4space
-    pub const KEY_em4space: Keysym = Keysym(0x00000aa4);
+    pub const em4space: Keysym = Keysym(0x00000aa4);
     /// digitspace
-    pub const KEY_digitspace: Keysym = Keysym(0x00000aa5);
+    pub const digitspace: Keysym = Keysym(0x00000aa5);
     /// punctspace
-    pub const KEY_punctspace: Keysym = Keysym(0x00000aa6);
+    pub const punctspace: Keysym = Keysym(0x00000aa6);
     /// thinspace
-    pub const KEY_thinspace: Keysym = Keysym(0x00000aa7);
+    pub const thinspace: Keysym = Keysym(0x00000aa7);
     /// hairspace
-    pub const KEY_hairspace: Keysym = Keysym(0x00000aa8);
+    pub const hairspace: Keysym = Keysym(0x00000aa8);
     /// emdash
-    pub const KEY_emdash: Keysym = Keysym(0x00000aa9);
+    pub const emdash: Keysym = Keysym(0x00000aa9);
     /// endash
-    pub const KEY_endash: Keysym = Keysym(0x00000aaa);
+    pub const endash: Keysym = Keysym(0x00000aaa);
     /// signifblank
-    pub const KEY_signifblank: Keysym = Keysym(0x00000aac);
+    pub const signifblank: Keysym = Keysym(0x00000aac);
     /// ellipsis
-    pub const KEY_ellipsis: Keysym = Keysym(0x00000aae);
+    pub const ellipsis: Keysym = Keysym(0x00000aae);
     /// doubbaselinedot
-    pub const KEY_doubbaselinedot: Keysym = Keysym(0x00000aaf);
+    pub const doubbaselinedot: Keysym = Keysym(0x00000aaf);
     /// onethird
-    pub const KEY_onethird: Keysym = Keysym(0x00000ab0);
+    pub const onethird: Keysym = Keysym(0x00000ab0);
     /// twothirds
-    pub const KEY_twothirds: Keysym = Keysym(0x00000ab1);
+    pub const twothirds: Keysym = Keysym(0x00000ab1);
     /// onefifth
-    pub const KEY_onefifth: Keysym = Keysym(0x00000ab2);
+    pub const onefifth: Keysym = Keysym(0x00000ab2);
     /// twofifths
-    pub const KEY_twofifths: Keysym = Keysym(0x00000ab3);
+    pub const twofifths: Keysym = Keysym(0x00000ab3);
     /// threefifths
-    pub const KEY_threefifths: Keysym = Keysym(0x00000ab4);
+    pub const threefifths: Keysym = Keysym(0x00000ab4);
     /// fourfifths
-    pub const KEY_fourfifths: Keysym = Keysym(0x00000ab5);
+    pub const fourfifths: Keysym = Keysym(0x00000ab5);
     /// onesixth
-    pub const KEY_onesixth: Keysym = Keysym(0x00000ab6);
+    pub const onesixth: Keysym = Keysym(0x00000ab6);
     /// fivesixths
-    pub const KEY_fivesixths: Keysym = Keysym(0x00000ab7);
+    pub const fivesixths: Keysym = Keysym(0x00000ab7);
     /// careof
-    pub const KEY_careof: Keysym = Keysym(0x00000ab8);
+    pub const careof: Keysym = Keysym(0x00000ab8);
     /// figdash
-    pub const KEY_figdash: Keysym = Keysym(0x00000abb);
+    pub const figdash: Keysym = Keysym(0x00000abb);
     /// leftanglebracket
-    pub const KEY_leftanglebracket: Keysym = Keysym(0x00000abc);
+    pub const leftanglebracket: Keysym = Keysym(0x00000abc);
     /// decimalpoint
-    pub const KEY_decimalpoint: Keysym = Keysym(0x00000abd);
+    pub const decimalpoint: Keysym = Keysym(0x00000abd);
     /// rightanglebracket
-    pub const KEY_rightanglebracket: Keysym = Keysym(0x00000abe);
+    pub const rightanglebracket: Keysym = Keysym(0x00000abe);
     /// marker
-    pub const KEY_marker: Keysym = Keysym(0x00000abf);
+    pub const marker: Keysym = Keysym(0x00000abf);
     /// oneeighth
-    pub const KEY_oneeighth: Keysym = Keysym(0x00000ac3);
+    pub const oneeighth: Keysym = Keysym(0x00000ac3);
     /// threeeighths
-    pub const KEY_threeeighths: Keysym = Keysym(0x00000ac4);
+    pub const threeeighths: Keysym = Keysym(0x00000ac4);
     /// fiveeighths
-    pub const KEY_fiveeighths: Keysym = Keysym(0x00000ac5);
+    pub const fiveeighths: Keysym = Keysym(0x00000ac5);
     /// seveneighths
-    pub const KEY_seveneighths: Keysym = Keysym(0x00000ac6);
+    pub const seveneighths: Keysym = Keysym(0x00000ac6);
     /// trademark
-    pub const KEY_trademark: Keysym = Keysym(0x00000ac9);
+    pub const trademark: Keysym = Keysym(0x00000ac9);
     /// signaturemark
-    pub const KEY_signaturemark: Keysym = Keysym(0x00000aca);
+    pub const signaturemark: Keysym = Keysym(0x00000aca);
     /// trademarkincircle
-    pub const KEY_trademarkincircle: Keysym = Keysym(0x00000acb);
+    pub const trademarkincircle: Keysym = Keysym(0x00000acb);
     /// leftopentriangle
-    pub const KEY_leftopentriangle: Keysym = Keysym(0x00000acc);
+    pub const leftopentriangle: Keysym = Keysym(0x00000acc);
     /// rightopentriangle
-    pub const KEY_rightopentriangle: Keysym = Keysym(0x00000acd);
+    pub const rightopentriangle: Keysym = Keysym(0x00000acd);
     /// emopencircle
-    pub const KEY_emopencircle: Keysym = Keysym(0x00000ace);
+    pub const emopencircle: Keysym = Keysym(0x00000ace);
     /// emopenrectangle
-    pub const KEY_emopenrectangle: Keysym = Keysym(0x00000acf);
+    pub const emopenrectangle: Keysym = Keysym(0x00000acf);
     /// leftsinglequotemark
-    pub const KEY_leftsinglequotemark: Keysym = Keysym(0x00000ad0);
+    pub const leftsinglequotemark: Keysym = Keysym(0x00000ad0);
     /// rightsinglequotemark
-    pub const KEY_rightsinglequotemark: Keysym = Keysym(0x00000ad1);
+    pub const rightsinglequotemark: Keysym = Keysym(0x00000ad1);
     /// leftdoublequotemark
-    pub const KEY_leftdoublequotemark: Keysym = Keysym(0x00000ad2);
+    pub const leftdoublequotemark: Keysym = Keysym(0x00000ad2);
     /// rightdoublequotemark
-    pub const KEY_rightdoublequotemark: Keysym = Keysym(0x00000ad3);
+    pub const rightdoublequotemark: Keysym = Keysym(0x00000ad3);
     /// prescription
-    pub const KEY_prescription: Keysym = Keysym(0x00000ad4);
+    pub const prescription: Keysym = Keysym(0x00000ad4);
     /// permille
-    pub const KEY_permille: Keysym = Keysym(0x00000ad5);
+    pub const permille: Keysym = Keysym(0x00000ad5);
     /// minutes
-    pub const KEY_minutes: Keysym = Keysym(0x00000ad6);
+    pub const minutes: Keysym = Keysym(0x00000ad6);
     /// seconds
-    pub const KEY_seconds: Keysym = Keysym(0x00000ad7);
+    pub const seconds: Keysym = Keysym(0x00000ad7);
     /// latincross
-    pub const KEY_latincross: Keysym = Keysym(0x00000ad9);
+    pub const latincross: Keysym = Keysym(0x00000ad9);
     /// hexagram
-    pub const KEY_hexagram: Keysym = Keysym(0x00000ada);
+    pub const hexagram: Keysym = Keysym(0x00000ada);
     /// filledrectbullet
-    pub const KEY_filledrectbullet: Keysym = Keysym(0x00000adb);
+    pub const filledrectbullet: Keysym = Keysym(0x00000adb);
     /// filledlefttribullet
-    pub const KEY_filledlefttribullet: Keysym = Keysym(0x00000adc);
+    pub const filledlefttribullet: Keysym = Keysym(0x00000adc);
     /// filledrighttribullet
-    pub const KEY_filledrighttribullet: Keysym = Keysym(0x00000add);
+    pub const filledrighttribullet: Keysym = Keysym(0x00000add);
     /// emfilledcircle
-    pub const KEY_emfilledcircle: Keysym = Keysym(0x00000ade);
+    pub const emfilledcircle: Keysym = Keysym(0x00000ade);
     /// emfilledrect
-    pub const KEY_emfilledrect: Keysym = Keysym(0x00000adf);
+    pub const emfilledrect: Keysym = Keysym(0x00000adf);
     /// enopencircbullet
-    pub const KEY_enopencircbullet: Keysym = Keysym(0x00000ae0);
+    pub const enopencircbullet: Keysym = Keysym(0x00000ae0);
     /// enopensquarebullet
-    pub const KEY_enopensquarebullet: Keysym = Keysym(0x00000ae1);
+    pub const enopensquarebullet: Keysym = Keysym(0x00000ae1);
     /// openrectbullet
-    pub const KEY_openrectbullet: Keysym = Keysym(0x00000ae2);
+    pub const openrectbullet: Keysym = Keysym(0x00000ae2);
     /// opentribulletup
-    pub const KEY_opentribulletup: Keysym = Keysym(0x00000ae3);
+    pub const opentribulletup: Keysym = Keysym(0x00000ae3);
     /// opentribulletdown
-    pub const KEY_opentribulletdown: Keysym = Keysym(0x00000ae4);
+    pub const opentribulletdown: Keysym = Keysym(0x00000ae4);
     /// openstar
-    pub const KEY_openstar: Keysym = Keysym(0x00000ae5);
+    pub const openstar: Keysym = Keysym(0x00000ae5);
     /// enfilledcircbullet
-    pub const KEY_enfilledcircbullet: Keysym = Keysym(0x00000ae6);
+    pub const enfilledcircbullet: Keysym = Keysym(0x00000ae6);
     /// enfilledsqbullet
-    pub const KEY_enfilledsqbullet: Keysym = Keysym(0x00000ae7);
+    pub const enfilledsqbullet: Keysym = Keysym(0x00000ae7);
     /// filledtribulletup
-    pub const KEY_filledtribulletup: Keysym = Keysym(0x00000ae8);
+    pub const filledtribulletup: Keysym = Keysym(0x00000ae8);
     /// filledtribulletdown
-    pub const KEY_filledtribulletdown: Keysym = Keysym(0x00000ae9);
+    pub const filledtribulletdown: Keysym = Keysym(0x00000ae9);
     /// leftpointer
-    pub const KEY_leftpointer: Keysym = Keysym(0x00000aea);
+    pub const leftpointer: Keysym = Keysym(0x00000aea);
     /// rightpointer
-    pub const KEY_rightpointer: Keysym = Keysym(0x00000aeb);
+    pub const rightpointer: Keysym = Keysym(0x00000aeb);
     /// club
-    pub const KEY_club: Keysym = Keysym(0x00000aec);
+    pub const club: Keysym = Keysym(0x00000aec);
     /// diamond
-    pub const KEY_diamond: Keysym = Keysym(0x00000aed);
+    pub const diamond: Keysym = Keysym(0x00000aed);
     /// heart
-    pub const KEY_heart: Keysym = Keysym(0x00000aee);
+    pub const heart: Keysym = Keysym(0x00000aee);
     /// maltesecross
-    pub const KEY_maltesecross: Keysym = Keysym(0x00000af0);
+    pub const maltesecross: Keysym = Keysym(0x00000af0);
     /// dagger
-    pub const KEY_dagger: Keysym = Keysym(0x00000af1);
+    pub const dagger: Keysym = Keysym(0x00000af1);
     /// doubledagger
-    pub const KEY_doubledagger: Keysym = Keysym(0x00000af2);
+    pub const doubledagger: Keysym = Keysym(0x00000af2);
     /// checkmark
-    pub const KEY_checkmark: Keysym = Keysym(0x00000af3);
+    pub const checkmark: Keysym = Keysym(0x00000af3);
     /// ballotcross
-    pub const KEY_ballotcross: Keysym = Keysym(0x00000af4);
+    pub const ballotcross: Keysym = Keysym(0x00000af4);
     /// musicalsharp
-    pub const KEY_musicalsharp: Keysym = Keysym(0x00000af5);
+    pub const musicalsharp: Keysym = Keysym(0x00000af5);
     /// musicalflat
-    pub const KEY_musicalflat: Keysym = Keysym(0x00000af6);
+    pub const musicalflat: Keysym = Keysym(0x00000af6);
     /// malesymbol
-    pub const KEY_malesymbol: Keysym = Keysym(0x00000af7);
+    pub const malesymbol: Keysym = Keysym(0x00000af7);
     /// femalesymbol
-    pub const KEY_femalesymbol: Keysym = Keysym(0x00000af8);
+    pub const femalesymbol: Keysym = Keysym(0x00000af8);
     /// telephone
-    pub const KEY_telephone: Keysym = Keysym(0x00000af9);
+    pub const telephone: Keysym = Keysym(0x00000af9);
     /// telephonerecorder
-    pub const KEY_telephonerecorder: Keysym = Keysym(0x00000afa);
+    pub const telephonerecorder: Keysym = Keysym(0x00000afa);
     /// phonographcopyright
-    pub const KEY_phonographcopyright: Keysym = Keysym(0x00000afb);
+    pub const phonographcopyright: Keysym = Keysym(0x00000afb);
     /// caret
-    pub const KEY_caret: Keysym = Keysym(0x00000afc);
+    pub const caret: Keysym = Keysym(0x00000afc);
     /// singlelowquotemark
-    pub const KEY_singlelowquotemark: Keysym = Keysym(0x00000afd);
+    pub const singlelowquotemark: Keysym = Keysym(0x00000afd);
     /// doublelowquotemark
-    pub const KEY_doublelowquotemark: Keysym = Keysym(0x00000afe);
+    pub const doublelowquotemark: Keysym = Keysym(0x00000afe);
     /// cursor
-    pub const KEY_cursor: Keysym = Keysym(0x00000aff);
+    pub const cursor: Keysym = Keysym(0x00000aff);
     /// leftcaret
-    pub const KEY_leftcaret: Keysym = Keysym(0x00000ba3);
+    pub const leftcaret: Keysym = Keysym(0x00000ba3);
     /// rightcaret
-    pub const KEY_rightcaret: Keysym = Keysym(0x00000ba6);
+    pub const rightcaret: Keysym = Keysym(0x00000ba6);
     /// downcaret
-    pub const KEY_downcaret: Keysym = Keysym(0x00000ba8);
+    pub const downcaret: Keysym = Keysym(0x00000ba8);
     /// upcaret
-    pub const KEY_upcaret: Keysym = Keysym(0x00000ba9);
+    pub const upcaret: Keysym = Keysym(0x00000ba9);
     /// overbar
-    pub const KEY_overbar: Keysym = Keysym(0x00000bc0);
+    pub const overbar: Keysym = Keysym(0x00000bc0);
     /// downtack
-    pub const KEY_downtack: Keysym = Keysym(0x00000bc2);
+    pub const downtack: Keysym = Keysym(0x00000bc2);
     /// upshoe
-    pub const KEY_upshoe: Keysym = Keysym(0x00000bc3);
+    pub const upshoe: Keysym = Keysym(0x00000bc3);
     /// downstile
-    pub const KEY_downstile: Keysym = Keysym(0x00000bc4);
+    pub const downstile: Keysym = Keysym(0x00000bc4);
     /// underbar
-    pub const KEY_underbar: Keysym = Keysym(0x00000bc6);
+    pub const underbar: Keysym = Keysym(0x00000bc6);
     /// jot
-    pub const KEY_jot: Keysym = Keysym(0x00000bca);
+    pub const jot: Keysym = Keysym(0x00000bca);
     /// quad
-    pub const KEY_quad: Keysym = Keysym(0x00000bcc);
+    pub const quad: Keysym = Keysym(0x00000bcc);
     /// uptack
-    pub const KEY_uptack: Keysym = Keysym(0x00000bce);
+    pub const uptack: Keysym = Keysym(0x00000bce);
     /// circle
-    pub const KEY_circle: Keysym = Keysym(0x00000bcf);
+    pub const circle: Keysym = Keysym(0x00000bcf);
     /// upstile
-    pub const KEY_upstile: Keysym = Keysym(0x00000bd3);
+    pub const upstile: Keysym = Keysym(0x00000bd3);
     /// downshoe
-    pub const KEY_downshoe: Keysym = Keysym(0x00000bd6);
+    pub const downshoe: Keysym = Keysym(0x00000bd6);
     /// rightshoe
-    pub const KEY_rightshoe: Keysym = Keysym(0x00000bd8);
+    pub const rightshoe: Keysym = Keysym(0x00000bd8);
     /// leftshoe
-    pub const KEY_leftshoe: Keysym = Keysym(0x00000bda);
+    pub const leftshoe: Keysym = Keysym(0x00000bda);
     /// lefttack
-    pub const KEY_lefttack: Keysym = Keysym(0x00000bdc);
+    pub const lefttack: Keysym = Keysym(0x00000bdc);
     /// righttack
-    pub const KEY_righttack: Keysym = Keysym(0x00000bfc);
+    pub const righttack: Keysym = Keysym(0x00000bfc);
     /// hebrew_doublelowline
-    pub const KEY_hebrew_doublelowline: Keysym = Keysym(0x00000cdf);
+    pub const hebrew_doublelowline: Keysym = Keysym(0x00000cdf);
     /// hebrew_aleph
-    pub const KEY_hebrew_aleph: Keysym = Keysym(0x00000ce0);
+    pub const hebrew_aleph: Keysym = Keysym(0x00000ce0);
     /// hebrew_bet
-    pub const KEY_hebrew_bet: Keysym = Keysym(0x00000ce1);
+    pub const hebrew_bet: Keysym = Keysym(0x00000ce1);
     /// hebrew_beth
-    pub const KEY_hebrew_beth: Keysym = Keysym(0x00000ce1);
+    pub const hebrew_beth: Keysym = Keysym(0x00000ce1);
     /// hebrew_gimel
-    pub const KEY_hebrew_gimel: Keysym = Keysym(0x00000ce2);
+    pub const hebrew_gimel: Keysym = Keysym(0x00000ce2);
     /// hebrew_gimmel
-    pub const KEY_hebrew_gimmel: Keysym = Keysym(0x00000ce2);
+    pub const hebrew_gimmel: Keysym = Keysym(0x00000ce2);
     /// hebrew_dalet
-    pub const KEY_hebrew_dalet: Keysym = Keysym(0x00000ce3);
+    pub const hebrew_dalet: Keysym = Keysym(0x00000ce3);
     /// hebrew_daleth
-    pub const KEY_hebrew_daleth: Keysym = Keysym(0x00000ce3);
+    pub const hebrew_daleth: Keysym = Keysym(0x00000ce3);
     /// hebrew_he
-    pub const KEY_hebrew_he: Keysym = Keysym(0x00000ce4);
+    pub const hebrew_he: Keysym = Keysym(0x00000ce4);
     /// hebrew_waw
-    pub const KEY_hebrew_waw: Keysym = Keysym(0x00000ce5);
+    pub const hebrew_waw: Keysym = Keysym(0x00000ce5);
     /// hebrew_zain
-    pub const KEY_hebrew_zain: Keysym = Keysym(0x00000ce6);
+    pub const hebrew_zain: Keysym = Keysym(0x00000ce6);
     /// hebrew_zayin
-    pub const KEY_hebrew_zayin: Keysym = Keysym(0x00000ce6);
+    pub const hebrew_zayin: Keysym = Keysym(0x00000ce6);
     /// hebrew_chet
-    pub const KEY_hebrew_chet: Keysym = Keysym(0x00000ce7);
+    pub const hebrew_chet: Keysym = Keysym(0x00000ce7);
     /// hebrew_het
-    pub const KEY_hebrew_het: Keysym = Keysym(0x00000ce7);
+    pub const hebrew_het: Keysym = Keysym(0x00000ce7);
     /// hebrew_tet
-    pub const KEY_hebrew_tet: Keysym = Keysym(0x00000ce8);
+    pub const hebrew_tet: Keysym = Keysym(0x00000ce8);
     /// hebrew_teth
-    pub const KEY_hebrew_teth: Keysym = Keysym(0x00000ce8);
+    pub const hebrew_teth: Keysym = Keysym(0x00000ce8);
     /// hebrew_yod
-    pub const KEY_hebrew_yod: Keysym = Keysym(0x00000ce9);
+    pub const hebrew_yod: Keysym = Keysym(0x00000ce9);
     /// hebrew_finalkaph
-    pub const KEY_hebrew_finalkaph: Keysym = Keysym(0x00000cea);
+    pub const hebrew_finalkaph: Keysym = Keysym(0x00000cea);
     /// hebrew_kaph
-    pub const KEY_hebrew_kaph: Keysym = Keysym(0x00000ceb);
+    pub const hebrew_kaph: Keysym = Keysym(0x00000ceb);
     /// hebrew_lamed
-    pub const KEY_hebrew_lamed: Keysym = Keysym(0x00000cec);
+    pub const hebrew_lamed: Keysym = Keysym(0x00000cec);
     /// hebrew_finalmem
-    pub const KEY_hebrew_finalmem: Keysym = Keysym(0x00000ced);
+    pub const hebrew_finalmem: Keysym = Keysym(0x00000ced);
     /// hebrew_mem
-    pub const KEY_hebrew_mem: Keysym = Keysym(0x00000cee);
+    pub const hebrew_mem: Keysym = Keysym(0x00000cee);
     /// hebrew_finalnun
-    pub const KEY_hebrew_finalnun: Keysym = Keysym(0x00000cef);
+    pub const hebrew_finalnun: Keysym = Keysym(0x00000cef);
     /// hebrew_nun
-    pub const KEY_hebrew_nun: Keysym = Keysym(0x00000cf0);
+    pub const hebrew_nun: Keysym = Keysym(0x00000cf0);
     /// hebrew_samech
-    pub const KEY_hebrew_samech: Keysym = Keysym(0x00000cf1);
+    pub const hebrew_samech: Keysym = Keysym(0x00000cf1);
     /// hebrew_samekh
-    pub const KEY_hebrew_samekh: Keysym = Keysym(0x00000cf1);
+    pub const hebrew_samekh: Keysym = Keysym(0x00000cf1);
     /// hebrew_ayin
-    pub const KEY_hebrew_ayin: Keysym = Keysym(0x00000cf2);
+    pub const hebrew_ayin: Keysym = Keysym(0x00000cf2);
     /// hebrew_finalpe
-    pub const KEY_hebrew_finalpe: Keysym = Keysym(0x00000cf3);
+    pub const hebrew_finalpe: Keysym = Keysym(0x00000cf3);
     /// hebrew_pe
-    pub const KEY_hebrew_pe: Keysym = Keysym(0x00000cf4);
+    pub const hebrew_pe: Keysym = Keysym(0x00000cf4);
     /// hebrew_finalzade
-    pub const KEY_hebrew_finalzade: Keysym = Keysym(0x00000cf5);
+    pub const hebrew_finalzade: Keysym = Keysym(0x00000cf5);
     /// hebrew_finalzadi
-    pub const KEY_hebrew_finalzadi: Keysym = Keysym(0x00000cf5);
+    pub const hebrew_finalzadi: Keysym = Keysym(0x00000cf5);
     /// hebrew_zade
-    pub const KEY_hebrew_zade: Keysym = Keysym(0x00000cf6);
+    pub const hebrew_zade: Keysym = Keysym(0x00000cf6);
     /// hebrew_zadi
-    pub const KEY_hebrew_zadi: Keysym = Keysym(0x00000cf6);
+    pub const hebrew_zadi: Keysym = Keysym(0x00000cf6);
     /// hebrew_qoph
-    pub const KEY_hebrew_qoph: Keysym = Keysym(0x00000cf7);
+    pub const hebrew_qoph: Keysym = Keysym(0x00000cf7);
     /// hebrew_kuf
-    pub const KEY_hebrew_kuf: Keysym = Keysym(0x00000cf7);
+    pub const hebrew_kuf: Keysym = Keysym(0x00000cf7);
     /// hebrew_resh
-    pub const KEY_hebrew_resh: Keysym = Keysym(0x00000cf8);
+    pub const hebrew_resh: Keysym = Keysym(0x00000cf8);
     /// hebrew_shin
-    pub const KEY_hebrew_shin: Keysym = Keysym(0x00000cf9);
+    pub const hebrew_shin: Keysym = Keysym(0x00000cf9);
     /// hebrew_taw
-    pub const KEY_hebrew_taw: Keysym = Keysym(0x00000cfa);
+    pub const hebrew_taw: Keysym = Keysym(0x00000cfa);
     /// hebrew_taf
-    pub const KEY_hebrew_taf: Keysym = Keysym(0x00000cfa);
+    pub const hebrew_taf: Keysym = Keysym(0x00000cfa);
     /// Thai_kokai
-    pub const KEY_Thai_kokai: Keysym = Keysym(0x00000da1);
+    pub const Thai_kokai: Keysym = Keysym(0x00000da1);
     /// Thai_khokhai
-    pub const KEY_Thai_khokhai: Keysym = Keysym(0x00000da2);
+    pub const Thai_khokhai: Keysym = Keysym(0x00000da2);
     /// Thai_khokhuat
-    pub const KEY_Thai_khokhuat: Keysym = Keysym(0x00000da3);
+    pub const Thai_khokhuat: Keysym = Keysym(0x00000da3);
     /// Thai_khokhwai
-    pub const KEY_Thai_khokhwai: Keysym = Keysym(0x00000da4);
+    pub const Thai_khokhwai: Keysym = Keysym(0x00000da4);
     /// Thai_khokhon
-    pub const KEY_Thai_khokhon: Keysym = Keysym(0x00000da5);
+    pub const Thai_khokhon: Keysym = Keysym(0x00000da5);
     /// Thai_khorakhang
-    pub const KEY_Thai_khorakhang: Keysym = Keysym(0x00000da6);
+    pub const Thai_khorakhang: Keysym = Keysym(0x00000da6);
     /// Thai_ngongu
-    pub const KEY_Thai_ngongu: Keysym = Keysym(0x00000da7);
+    pub const Thai_ngongu: Keysym = Keysym(0x00000da7);
     /// Thai_chochan
-    pub const KEY_Thai_chochan: Keysym = Keysym(0x00000da8);
+    pub const Thai_chochan: Keysym = Keysym(0x00000da8);
     /// Thai_choching
-    pub const KEY_Thai_choching: Keysym = Keysym(0x00000da9);
+    pub const Thai_choching: Keysym = Keysym(0x00000da9);
     /// Thai_chochang
-    pub const KEY_Thai_chochang: Keysym = Keysym(0x00000daa);
+    pub const Thai_chochang: Keysym = Keysym(0x00000daa);
     /// Thai_soso
-    pub const KEY_Thai_soso: Keysym = Keysym(0x00000dab);
+    pub const Thai_soso: Keysym = Keysym(0x00000dab);
     /// Thai_chochoe
-    pub const KEY_Thai_chochoe: Keysym = Keysym(0x00000dac);
+    pub const Thai_chochoe: Keysym = Keysym(0x00000dac);
     /// Thai_yoying
-    pub const KEY_Thai_yoying: Keysym = Keysym(0x00000dad);
+    pub const Thai_yoying: Keysym = Keysym(0x00000dad);
     /// Thai_dochada
-    pub const KEY_Thai_dochada: Keysym = Keysym(0x00000dae);
+    pub const Thai_dochada: Keysym = Keysym(0x00000dae);
     /// Thai_topatak
-    pub const KEY_Thai_topatak: Keysym = Keysym(0x00000daf);
+    pub const Thai_topatak: Keysym = Keysym(0x00000daf);
     /// Thai_thothan
-    pub const KEY_Thai_thothan: Keysym = Keysym(0x00000db0);
+    pub const Thai_thothan: Keysym = Keysym(0x00000db0);
     /// Thai_thonangmontho
-    pub const KEY_Thai_thonangmontho: Keysym = Keysym(0x00000db1);
+    pub const Thai_thonangmontho: Keysym = Keysym(0x00000db1);
     /// Thai_thophuthao
-    pub const KEY_Thai_thophuthao: Keysym = Keysym(0x00000db2);
+    pub const Thai_thophuthao: Keysym = Keysym(0x00000db2);
     /// Thai_nonen
-    pub const KEY_Thai_nonen: Keysym = Keysym(0x00000db3);
+    pub const Thai_nonen: Keysym = Keysym(0x00000db3);
     /// Thai_dodek
-    pub const KEY_Thai_dodek: Keysym = Keysym(0x00000db4);
+    pub const Thai_dodek: Keysym = Keysym(0x00000db4);
     /// Thai_totao
-    pub const KEY_Thai_totao: Keysym = Keysym(0x00000db5);
+    pub const Thai_totao: Keysym = Keysym(0x00000db5);
     /// Thai_thothung
-    pub const KEY_Thai_thothung: Keysym = Keysym(0x00000db6);
+    pub const Thai_thothung: Keysym = Keysym(0x00000db6);
     /// Thai_thothahan
-    pub const KEY_Thai_thothahan: Keysym = Keysym(0x00000db7);
+    pub const Thai_thothahan: Keysym = Keysym(0x00000db7);
     /// Thai_thothong
-    pub const KEY_Thai_thothong: Keysym = Keysym(0x00000db8);
+    pub const Thai_thothong: Keysym = Keysym(0x00000db8);
     /// Thai_nonu
-    pub const KEY_Thai_nonu: Keysym = Keysym(0x00000db9);
+    pub const Thai_nonu: Keysym = Keysym(0x00000db9);
     /// Thai_bobaimai
-    pub const KEY_Thai_bobaimai: Keysym = Keysym(0x00000dba);
+    pub const Thai_bobaimai: Keysym = Keysym(0x00000dba);
     /// Thai_popla
-    pub const KEY_Thai_popla: Keysym = Keysym(0x00000dbb);
+    pub const Thai_popla: Keysym = Keysym(0x00000dbb);
     /// Thai_phophung
-    pub const KEY_Thai_phophung: Keysym = Keysym(0x00000dbc);
+    pub const Thai_phophung: Keysym = Keysym(0x00000dbc);
     /// Thai_fofa
-    pub const KEY_Thai_fofa: Keysym = Keysym(0x00000dbd);
+    pub const Thai_fofa: Keysym = Keysym(0x00000dbd);
     /// Thai_phophan
-    pub const KEY_Thai_phophan: Keysym = Keysym(0x00000dbe);
+    pub const Thai_phophan: Keysym = Keysym(0x00000dbe);
     /// Thai_fofan
-    pub const KEY_Thai_fofan: Keysym = Keysym(0x00000dbf);
+    pub const Thai_fofan: Keysym = Keysym(0x00000dbf);
     /// Thai_phosamphao
-    pub const KEY_Thai_phosamphao: Keysym = Keysym(0x00000dc0);
+    pub const Thai_phosamphao: Keysym = Keysym(0x00000dc0);
     /// Thai_moma
-    pub const KEY_Thai_moma: Keysym = Keysym(0x00000dc1);
+    pub const Thai_moma: Keysym = Keysym(0x00000dc1);
     /// Thai_yoyak
-    pub const KEY_Thai_yoyak: Keysym = Keysym(0x00000dc2);
+    pub const Thai_yoyak: Keysym = Keysym(0x00000dc2);
     /// Thai_rorua
-    pub const KEY_Thai_rorua: Keysym = Keysym(0x00000dc3);
+    pub const Thai_rorua: Keysym = Keysym(0x00000dc3);
     /// Thai_ru
-    pub const KEY_Thai_ru: Keysym = Keysym(0x00000dc4);
+    pub const Thai_ru: Keysym = Keysym(0x00000dc4);
     /// Thai_loling
-    pub const KEY_Thai_loling: Keysym = Keysym(0x00000dc5);
+    pub const Thai_loling: Keysym = Keysym(0x00000dc5);
     /// Thai_lu
-    pub const KEY_Thai_lu: Keysym = Keysym(0x00000dc6);
+    pub const Thai_lu: Keysym = Keysym(0x00000dc6);
     /// Thai_wowaen
-    pub const KEY_Thai_wowaen: Keysym = Keysym(0x00000dc7);
+    pub const Thai_wowaen: Keysym = Keysym(0x00000dc7);
     /// Thai_sosala
-    pub const KEY_Thai_sosala: Keysym = Keysym(0x00000dc8);
+    pub const Thai_sosala: Keysym = Keysym(0x00000dc8);
     /// Thai_sorusi
-    pub const KEY_Thai_sorusi: Keysym = Keysym(0x00000dc9);
+    pub const Thai_sorusi: Keysym = Keysym(0x00000dc9);
     /// Thai_sosua
-    pub const KEY_Thai_sosua: Keysym = Keysym(0x00000dca);
+    pub const Thai_sosua: Keysym = Keysym(0x00000dca);
     /// Thai_hohip
-    pub const KEY_Thai_hohip: Keysym = Keysym(0x00000dcb);
+    pub const Thai_hohip: Keysym = Keysym(0x00000dcb);
     /// Thai_lochula
-    pub const KEY_Thai_lochula: Keysym = Keysym(0x00000dcc);
+    pub const Thai_lochula: Keysym = Keysym(0x00000dcc);
     /// Thai_oang
-    pub const KEY_Thai_oang: Keysym = Keysym(0x00000dcd);
+    pub const Thai_oang: Keysym = Keysym(0x00000dcd);
     /// Thai_honokhuk
-    pub const KEY_Thai_honokhuk: Keysym = Keysym(0x00000dce);
+    pub const Thai_honokhuk: Keysym = Keysym(0x00000dce);
     /// Thai_paiyannoi
-    pub const KEY_Thai_paiyannoi: Keysym = Keysym(0x00000dcf);
+    pub const Thai_paiyannoi: Keysym = Keysym(0x00000dcf);
     /// Thai_saraa
-    pub const KEY_Thai_saraa: Keysym = Keysym(0x00000dd0);
+    pub const Thai_saraa: Keysym = Keysym(0x00000dd0);
     /// Thai_maihanakat
-    pub const KEY_Thai_maihanakat: Keysym = Keysym(0x00000dd1);
+    pub const Thai_maihanakat: Keysym = Keysym(0x00000dd1);
     /// Thai_saraaa
-    pub const KEY_Thai_saraaa: Keysym = Keysym(0x00000dd2);
+    pub const Thai_saraaa: Keysym = Keysym(0x00000dd2);
     /// Thai_saraam
-    pub const KEY_Thai_saraam: Keysym = Keysym(0x00000dd3);
+    pub const Thai_saraam: Keysym = Keysym(0x00000dd3);
     /// Thai_sarai
-    pub const KEY_Thai_sarai: Keysym = Keysym(0x00000dd4);
+    pub const Thai_sarai: Keysym = Keysym(0x00000dd4);
     /// Thai_saraii
-    pub const KEY_Thai_saraii: Keysym = Keysym(0x00000dd5);
+    pub const Thai_saraii: Keysym = Keysym(0x00000dd5);
     /// Thai_saraue
-    pub const KEY_Thai_saraue: Keysym = Keysym(0x00000dd6);
+    pub const Thai_saraue: Keysym = Keysym(0x00000dd6);
     /// Thai_sarauee
-    pub const KEY_Thai_sarauee: Keysym = Keysym(0x00000dd7);
+    pub const Thai_sarauee: Keysym = Keysym(0x00000dd7);
     /// Thai_sarau
-    pub const KEY_Thai_sarau: Keysym = Keysym(0x00000dd8);
+    pub const Thai_sarau: Keysym = Keysym(0x00000dd8);
     /// Thai_sarauu
-    pub const KEY_Thai_sarauu: Keysym = Keysym(0x00000dd9);
+    pub const Thai_sarauu: Keysym = Keysym(0x00000dd9);
     /// Thai_phinthu
-    pub const KEY_Thai_phinthu: Keysym = Keysym(0x00000dda);
+    pub const Thai_phinthu: Keysym = Keysym(0x00000dda);
     /// Thai_maihanakat_maitho
-    pub const KEY_Thai_maihanakat_maitho: Keysym = Keysym(0x00000dde);
+    pub const Thai_maihanakat_maitho: Keysym = Keysym(0x00000dde);
     /// Thai_baht
-    pub const KEY_Thai_baht: Keysym = Keysym(0x00000ddf);
+    pub const Thai_baht: Keysym = Keysym(0x00000ddf);
     /// Thai_sarae
-    pub const KEY_Thai_sarae: Keysym = Keysym(0x00000de0);
+    pub const Thai_sarae: Keysym = Keysym(0x00000de0);
     /// Thai_saraae
-    pub const KEY_Thai_saraae: Keysym = Keysym(0x00000de1);
+    pub const Thai_saraae: Keysym = Keysym(0x00000de1);
     /// Thai_sarao
-    pub const KEY_Thai_sarao: Keysym = Keysym(0x00000de2);
+    pub const Thai_sarao: Keysym = Keysym(0x00000de2);
     /// Thai_saraaimaimuan
-    pub const KEY_Thai_saraaimaimuan: Keysym = Keysym(0x00000de3);
+    pub const Thai_saraaimaimuan: Keysym = Keysym(0x00000de3);
     /// Thai_saraaimaimalai
-    pub const KEY_Thai_saraaimaimalai: Keysym = Keysym(0x00000de4);
+    pub const Thai_saraaimaimalai: Keysym = Keysym(0x00000de4);
     /// Thai_lakkhangyao
-    pub const KEY_Thai_lakkhangyao: Keysym = Keysym(0x00000de5);
+    pub const Thai_lakkhangyao: Keysym = Keysym(0x00000de5);
     /// Thai_maiyamok
-    pub const KEY_Thai_maiyamok: Keysym = Keysym(0x00000de6);
+    pub const Thai_maiyamok: Keysym = Keysym(0x00000de6);
     /// Thai_maitaikhu
-    pub const KEY_Thai_maitaikhu: Keysym = Keysym(0x00000de7);
+    pub const Thai_maitaikhu: Keysym = Keysym(0x00000de7);
     /// Thai_maiek
-    pub const KEY_Thai_maiek: Keysym = Keysym(0x00000de8);
+    pub const Thai_maiek: Keysym = Keysym(0x00000de8);
     /// Thai_maitho
-    pub const KEY_Thai_maitho: Keysym = Keysym(0x00000de9);
+    pub const Thai_maitho: Keysym = Keysym(0x00000de9);
     /// Thai_maitri
-    pub const KEY_Thai_maitri: Keysym = Keysym(0x00000dea);
+    pub const Thai_maitri: Keysym = Keysym(0x00000dea);
     /// Thai_maichattawa
-    pub const KEY_Thai_maichattawa: Keysym = Keysym(0x00000deb);
+    pub const Thai_maichattawa: Keysym = Keysym(0x00000deb);
     /// Thai_thanthakhat
-    pub const KEY_Thai_thanthakhat: Keysym = Keysym(0x00000dec);
+    pub const Thai_thanthakhat: Keysym = Keysym(0x00000dec);
     /// Thai_nikhahit
-    pub const KEY_Thai_nikhahit: Keysym = Keysym(0x00000ded);
+    pub const Thai_nikhahit: Keysym = Keysym(0x00000ded);
     /// Thai_leksun
-    pub const KEY_Thai_leksun: Keysym = Keysym(0x00000df0);
+    pub const Thai_leksun: Keysym = Keysym(0x00000df0);
     /// Thai_leknung
-    pub const KEY_Thai_leknung: Keysym = Keysym(0x00000df1);
+    pub const Thai_leknung: Keysym = Keysym(0x00000df1);
     /// Thai_leksong
-    pub const KEY_Thai_leksong: Keysym = Keysym(0x00000df2);
+    pub const Thai_leksong: Keysym = Keysym(0x00000df2);
     /// Thai_leksam
-    pub const KEY_Thai_leksam: Keysym = Keysym(0x00000df3);
+    pub const Thai_leksam: Keysym = Keysym(0x00000df3);
     /// Thai_leksi
-    pub const KEY_Thai_leksi: Keysym = Keysym(0x00000df4);
+    pub const Thai_leksi: Keysym = Keysym(0x00000df4);
     /// Thai_lekha
-    pub const KEY_Thai_lekha: Keysym = Keysym(0x00000df5);
+    pub const Thai_lekha: Keysym = Keysym(0x00000df5);
     /// Thai_lekhok
-    pub const KEY_Thai_lekhok: Keysym = Keysym(0x00000df6);
+    pub const Thai_lekhok: Keysym = Keysym(0x00000df6);
     /// Thai_lekchet
-    pub const KEY_Thai_lekchet: Keysym = Keysym(0x00000df7);
+    pub const Thai_lekchet: Keysym = Keysym(0x00000df7);
     /// Thai_lekpaet
-    pub const KEY_Thai_lekpaet: Keysym = Keysym(0x00000df8);
+    pub const Thai_lekpaet: Keysym = Keysym(0x00000df8);
     /// Thai_lekkao
-    pub const KEY_Thai_lekkao: Keysym = Keysym(0x00000df9);
+    pub const Thai_lekkao: Keysym = Keysym(0x00000df9);
     /// Hangul_Kiyeog
-    pub const KEY_Hangul_Kiyeog: Keysym = Keysym(0x00000ea1);
+    pub const Hangul_Kiyeog: Keysym = Keysym(0x00000ea1);
     /// Hangul_SsangKiyeog
-    pub const KEY_Hangul_SsangKiyeog: Keysym = Keysym(0x00000ea2);
+    pub const Hangul_SsangKiyeog: Keysym = Keysym(0x00000ea2);
     /// Hangul_KiyeogSios
-    pub const KEY_Hangul_KiyeogSios: Keysym = Keysym(0x00000ea3);
+    pub const Hangul_KiyeogSios: Keysym = Keysym(0x00000ea3);
     /// Hangul_Nieun
-    pub const KEY_Hangul_Nieun: Keysym = Keysym(0x00000ea4);
+    pub const Hangul_Nieun: Keysym = Keysym(0x00000ea4);
     /// Hangul_NieunJieuj
-    pub const KEY_Hangul_NieunJieuj: Keysym = Keysym(0x00000ea5);
+    pub const Hangul_NieunJieuj: Keysym = Keysym(0x00000ea5);
     /// Hangul_NieunHieuh
-    pub const KEY_Hangul_NieunHieuh: Keysym = Keysym(0x00000ea6);
+    pub const Hangul_NieunHieuh: Keysym = Keysym(0x00000ea6);
     /// Hangul_Dikeud
-    pub const KEY_Hangul_Dikeud: Keysym = Keysym(0x00000ea7);
+    pub const Hangul_Dikeud: Keysym = Keysym(0x00000ea7);
     /// Hangul_SsangDikeud
-    pub const KEY_Hangul_SsangDikeud: Keysym = Keysym(0x00000ea8);
+    pub const Hangul_SsangDikeud: Keysym = Keysym(0x00000ea8);
     /// Hangul_Rieul
-    pub const KEY_Hangul_Rieul: Keysym = Keysym(0x00000ea9);
+    pub const Hangul_Rieul: Keysym = Keysym(0x00000ea9);
     /// Hangul_RieulKiyeog
-    pub const KEY_Hangul_RieulKiyeog: Keysym = Keysym(0x00000eaa);
+    pub const Hangul_RieulKiyeog: Keysym = Keysym(0x00000eaa);
     /// Hangul_RieulMieum
-    pub const KEY_Hangul_RieulMieum: Keysym = Keysym(0x00000eab);
+    pub const Hangul_RieulMieum: Keysym = Keysym(0x00000eab);
     /// Hangul_RieulPieub
-    pub const KEY_Hangul_RieulPieub: Keysym = Keysym(0x00000eac);
+    pub const Hangul_RieulPieub: Keysym = Keysym(0x00000eac);
     /// Hangul_RieulSios
-    pub const KEY_Hangul_RieulSios: Keysym = Keysym(0x00000ead);
+    pub const Hangul_RieulSios: Keysym = Keysym(0x00000ead);
     /// Hangul_RieulTieut
-    pub const KEY_Hangul_RieulTieut: Keysym = Keysym(0x00000eae);
+    pub const Hangul_RieulTieut: Keysym = Keysym(0x00000eae);
     /// Hangul_RieulPhieuf
-    pub const KEY_Hangul_RieulPhieuf: Keysym = Keysym(0x00000eaf);
+    pub const Hangul_RieulPhieuf: Keysym = Keysym(0x00000eaf);
     /// Hangul_RieulHieuh
-    pub const KEY_Hangul_RieulHieuh: Keysym = Keysym(0x00000eb0);
+    pub const Hangul_RieulHieuh: Keysym = Keysym(0x00000eb0);
     /// Hangul_Mieum
-    pub const KEY_Hangul_Mieum: Keysym = Keysym(0x00000eb1);
+    pub const Hangul_Mieum: Keysym = Keysym(0x00000eb1);
     /// Hangul_Pieub
-    pub const KEY_Hangul_Pieub: Keysym = Keysym(0x00000eb2);
+    pub const Hangul_Pieub: Keysym = Keysym(0x00000eb2);
     /// Hangul_SsangPieub
-    pub const KEY_Hangul_SsangPieub: Keysym = Keysym(0x00000eb3);
+    pub const Hangul_SsangPieub: Keysym = Keysym(0x00000eb3);
     /// Hangul_PieubSios
-    pub const KEY_Hangul_PieubSios: Keysym = Keysym(0x00000eb4);
+    pub const Hangul_PieubSios: Keysym = Keysym(0x00000eb4);
     /// Hangul_Sios
-    pub const KEY_Hangul_Sios: Keysym = Keysym(0x00000eb5);
+    pub const Hangul_Sios: Keysym = Keysym(0x00000eb5);
     /// Hangul_SsangSios
-    pub const KEY_Hangul_SsangSios: Keysym = Keysym(0x00000eb6);
+    pub const Hangul_SsangSios: Keysym = Keysym(0x00000eb6);
     /// Hangul_Ieung
-    pub const KEY_Hangul_Ieung: Keysym = Keysym(0x00000eb7);
+    pub const Hangul_Ieung: Keysym = Keysym(0x00000eb7);
     /// Hangul_Jieuj
-    pub const KEY_Hangul_Jieuj: Keysym = Keysym(0x00000eb8);
+    pub const Hangul_Jieuj: Keysym = Keysym(0x00000eb8);
     /// Hangul_SsangJieuj
-    pub const KEY_Hangul_SsangJieuj: Keysym = Keysym(0x00000eb9);
+    pub const Hangul_SsangJieuj: Keysym = Keysym(0x00000eb9);
     /// Hangul_Cieuc
-    pub const KEY_Hangul_Cieuc: Keysym = Keysym(0x00000eba);
+    pub const Hangul_Cieuc: Keysym = Keysym(0x00000eba);
     /// Hangul_Khieuq
-    pub const KEY_Hangul_Khieuq: Keysym = Keysym(0x00000ebb);
+    pub const Hangul_Khieuq: Keysym = Keysym(0x00000ebb);
     /// Hangul_Tieut
-    pub const KEY_Hangul_Tieut: Keysym = Keysym(0x00000ebc);
+    pub const Hangul_Tieut: Keysym = Keysym(0x00000ebc);
     /// Hangul_Phieuf
-    pub const KEY_Hangul_Phieuf: Keysym = Keysym(0x00000ebd);
+    pub const Hangul_Phieuf: Keysym = Keysym(0x00000ebd);
     /// Hangul_Hieuh
-    pub const KEY_Hangul_Hieuh: Keysym = Keysym(0x00000ebe);
+    pub const Hangul_Hieuh: Keysym = Keysym(0x00000ebe);
     /// Hangul_A
-    pub const KEY_Hangul_A: Keysym = Keysym(0x00000ebf);
+    pub const Hangul_A: Keysym = Keysym(0x00000ebf);
     /// Hangul_AE
-    pub const KEY_Hangul_AE: Keysym = Keysym(0x00000ec0);
+    pub const Hangul_AE: Keysym = Keysym(0x00000ec0);
     /// Hangul_YA
-    pub const KEY_Hangul_YA: Keysym = Keysym(0x00000ec1);
+    pub const Hangul_YA: Keysym = Keysym(0x00000ec1);
     /// Hangul_YAE
-    pub const KEY_Hangul_YAE: Keysym = Keysym(0x00000ec2);
+    pub const Hangul_YAE: Keysym = Keysym(0x00000ec2);
     /// Hangul_EO
-    pub const KEY_Hangul_EO: Keysym = Keysym(0x00000ec3);
+    pub const Hangul_EO: Keysym = Keysym(0x00000ec3);
     /// Hangul_E
-    pub const KEY_Hangul_E: Keysym = Keysym(0x00000ec4);
+    pub const Hangul_E: Keysym = Keysym(0x00000ec4);
     /// Hangul_YEO
-    pub const KEY_Hangul_YEO: Keysym = Keysym(0x00000ec5);
+    pub const Hangul_YEO: Keysym = Keysym(0x00000ec5);
     /// Hangul_YE
-    pub const KEY_Hangul_YE: Keysym = Keysym(0x00000ec6);
+    pub const Hangul_YE: Keysym = Keysym(0x00000ec6);
     /// Hangul_O
-    pub const KEY_Hangul_O: Keysym = Keysym(0x00000ec7);
+    pub const Hangul_O: Keysym = Keysym(0x00000ec7);
     /// Hangul_WA
-    pub const KEY_Hangul_WA: Keysym = Keysym(0x00000ec8);
+    pub const Hangul_WA: Keysym = Keysym(0x00000ec8);
     /// Hangul_WAE
-    pub const KEY_Hangul_WAE: Keysym = Keysym(0x00000ec9);
+    pub const Hangul_WAE: Keysym = Keysym(0x00000ec9);
     /// Hangul_OE
-    pub const KEY_Hangul_OE: Keysym = Keysym(0x00000eca);
+    pub const Hangul_OE: Keysym = Keysym(0x00000eca);
     /// Hangul_YO
-    pub const KEY_Hangul_YO: Keysym = Keysym(0x00000ecb);
+    pub const Hangul_YO: Keysym = Keysym(0x00000ecb);
     /// Hangul_U
-    pub const KEY_Hangul_U: Keysym = Keysym(0x00000ecc);
+    pub const Hangul_U: Keysym = Keysym(0x00000ecc);
     /// Hangul_WEO
-    pub const KEY_Hangul_WEO: Keysym = Keysym(0x00000ecd);
+    pub const Hangul_WEO: Keysym = Keysym(0x00000ecd);
     /// Hangul_WE
-    pub const KEY_Hangul_WE: Keysym = Keysym(0x00000ece);
+    pub const Hangul_WE: Keysym = Keysym(0x00000ece);
     /// Hangul_WI
-    pub const KEY_Hangul_WI: Keysym = Keysym(0x00000ecf);
+    pub const Hangul_WI: Keysym = Keysym(0x00000ecf);
     /// Hangul_YU
-    pub const KEY_Hangul_YU: Keysym = Keysym(0x00000ed0);
+    pub const Hangul_YU: Keysym = Keysym(0x00000ed0);
     /// Hangul_EU
-    pub const KEY_Hangul_EU: Keysym = Keysym(0x00000ed1);
+    pub const Hangul_EU: Keysym = Keysym(0x00000ed1);
     /// Hangul_YI
-    pub const KEY_Hangul_YI: Keysym = Keysym(0x00000ed2);
+    pub const Hangul_YI: Keysym = Keysym(0x00000ed2);
     /// Hangul_I
-    pub const KEY_Hangul_I: Keysym = Keysym(0x00000ed3);
+    pub const Hangul_I: Keysym = Keysym(0x00000ed3);
     /// Hangul_J_Kiyeog
-    pub const KEY_Hangul_J_Kiyeog: Keysym = Keysym(0x00000ed4);
+    pub const Hangul_J_Kiyeog: Keysym = Keysym(0x00000ed4);
     /// Hangul_J_SsangKiyeog
-    pub const KEY_Hangul_J_SsangKiyeog: Keysym = Keysym(0x00000ed5);
+    pub const Hangul_J_SsangKiyeog: Keysym = Keysym(0x00000ed5);
     /// Hangul_J_KiyeogSios
-    pub const KEY_Hangul_J_KiyeogSios: Keysym = Keysym(0x00000ed6);
+    pub const Hangul_J_KiyeogSios: Keysym = Keysym(0x00000ed6);
     /// Hangul_J_Nieun
-    pub const KEY_Hangul_J_Nieun: Keysym = Keysym(0x00000ed7);
+    pub const Hangul_J_Nieun: Keysym = Keysym(0x00000ed7);
     /// Hangul_J_NieunJieuj
-    pub const KEY_Hangul_J_NieunJieuj: Keysym = Keysym(0x00000ed8);
+    pub const Hangul_J_NieunJieuj: Keysym = Keysym(0x00000ed8);
     /// Hangul_J_NieunHieuh
-    pub const KEY_Hangul_J_NieunHieuh: Keysym = Keysym(0x00000ed9);
+    pub const Hangul_J_NieunHieuh: Keysym = Keysym(0x00000ed9);
     /// Hangul_J_Dikeud
-    pub const KEY_Hangul_J_Dikeud: Keysym = Keysym(0x00000eda);
+    pub const Hangul_J_Dikeud: Keysym = Keysym(0x00000eda);
     /// Hangul_J_Rieul
-    pub const KEY_Hangul_J_Rieul: Keysym = Keysym(0x00000edb);
+    pub const Hangul_J_Rieul: Keysym = Keysym(0x00000edb);
     /// Hangul_J_RieulKiyeog
-    pub const KEY_Hangul_J_RieulKiyeog: Keysym = Keysym(0x00000edc);
+    pub const Hangul_J_RieulKiyeog: Keysym = Keysym(0x00000edc);
     /// Hangul_J_RieulMieum
-    pub const KEY_Hangul_J_RieulMieum: Keysym = Keysym(0x00000edd);
+    pub const Hangul_J_RieulMieum: Keysym = Keysym(0x00000edd);
     /// Hangul_J_RieulPieub
-    pub const KEY_Hangul_J_RieulPieub: Keysym = Keysym(0x00000ede);
+    pub const Hangul_J_RieulPieub: Keysym = Keysym(0x00000ede);
     /// Hangul_J_RieulSios
-    pub const KEY_Hangul_J_RieulSios: Keysym = Keysym(0x00000edf);
+    pub const Hangul_J_RieulSios: Keysym = Keysym(0x00000edf);
     /// Hangul_J_RieulTieut
-    pub const KEY_Hangul_J_RieulTieut: Keysym = Keysym(0x00000ee0);
+    pub const Hangul_J_RieulTieut: Keysym = Keysym(0x00000ee0);
     /// Hangul_J_RieulPhieuf
-    pub const KEY_Hangul_J_RieulPhieuf: Keysym = Keysym(0x00000ee1);
+    pub const Hangul_J_RieulPhieuf: Keysym = Keysym(0x00000ee1);
     /// Hangul_J_RieulHieuh
-    pub const KEY_Hangul_J_RieulHieuh: Keysym = Keysym(0x00000ee2);
+    pub const Hangul_J_RieulHieuh: Keysym = Keysym(0x00000ee2);
     /// Hangul_J_Mieum
-    pub const KEY_Hangul_J_Mieum: Keysym = Keysym(0x00000ee3);
+    pub const Hangul_J_Mieum: Keysym = Keysym(0x00000ee3);
     /// Hangul_J_Pieub
-    pub const KEY_Hangul_J_Pieub: Keysym = Keysym(0x00000ee4);
+    pub const Hangul_J_Pieub: Keysym = Keysym(0x00000ee4);
     /// Hangul_J_PieubSios
-    pub const KEY_Hangul_J_PieubSios: Keysym = Keysym(0x00000ee5);
+    pub const Hangul_J_PieubSios: Keysym = Keysym(0x00000ee5);
     /// Hangul_J_Sios
-    pub const KEY_Hangul_J_Sios: Keysym = Keysym(0x00000ee6);
+    pub const Hangul_J_Sios: Keysym = Keysym(0x00000ee6);
     /// Hangul_J_SsangSios
-    pub const KEY_Hangul_J_SsangSios: Keysym = Keysym(0x00000ee7);
+    pub const Hangul_J_SsangSios: Keysym = Keysym(0x00000ee7);
     /// Hangul_J_Ieung
-    pub const KEY_Hangul_J_Ieung: Keysym = Keysym(0x00000ee8);
+    pub const Hangul_J_Ieung: Keysym = Keysym(0x00000ee8);
     /// Hangul_J_Jieuj
-    pub const KEY_Hangul_J_Jieuj: Keysym = Keysym(0x00000ee9);
+    pub const Hangul_J_Jieuj: Keysym = Keysym(0x00000ee9);
     /// Hangul_J_Cieuc
-    pub const KEY_Hangul_J_Cieuc: Keysym = Keysym(0x00000eea);
+    pub const Hangul_J_Cieuc: Keysym = Keysym(0x00000eea);
     /// Hangul_J_Khieuq
-    pub const KEY_Hangul_J_Khieuq: Keysym = Keysym(0x00000eeb);
+    pub const Hangul_J_Khieuq: Keysym = Keysym(0x00000eeb);
     /// Hangul_J_Tieut
-    pub const KEY_Hangul_J_Tieut: Keysym = Keysym(0x00000eec);
+    pub const Hangul_J_Tieut: Keysym = Keysym(0x00000eec);
     /// Hangul_J_Phieuf
-    pub const KEY_Hangul_J_Phieuf: Keysym = Keysym(0x00000eed);
+    pub const Hangul_J_Phieuf: Keysym = Keysym(0x00000eed);
     /// Hangul_J_Hieuh
-    pub const KEY_Hangul_J_Hieuh: Keysym = Keysym(0x00000eee);
+    pub const Hangul_J_Hieuh: Keysym = Keysym(0x00000eee);
     /// Hangul_RieulYeorinHieuh
-    pub const KEY_Hangul_RieulYeorinHieuh: Keysym = Keysym(0x00000eef);
+    pub const Hangul_RieulYeorinHieuh: Keysym = Keysym(0x00000eef);
     /// Hangul_SunkyeongeumMieum
-    pub const KEY_Hangul_SunkyeongeumMieum: Keysym = Keysym(0x00000ef0);
+    pub const Hangul_SunkyeongeumMieum: Keysym = Keysym(0x00000ef0);
     /// Hangul_SunkyeongeumPieub
-    pub const KEY_Hangul_SunkyeongeumPieub: Keysym = Keysym(0x00000ef1);
+    pub const Hangul_SunkyeongeumPieub: Keysym = Keysym(0x00000ef1);
     /// Hangul_PanSios
-    pub const KEY_Hangul_PanSios: Keysym = Keysym(0x00000ef2);
+    pub const Hangul_PanSios: Keysym = Keysym(0x00000ef2);
     /// Hangul_KkogjiDalrinIeung
-    pub const KEY_Hangul_KkogjiDalrinIeung: Keysym = Keysym(0x00000ef3);
+    pub const Hangul_KkogjiDalrinIeung: Keysym = Keysym(0x00000ef3);
     /// Hangul_SunkyeongeumPhieuf
-    pub const KEY_Hangul_SunkyeongeumPhieuf: Keysym = Keysym(0x00000ef4);
+    pub const Hangul_SunkyeongeumPhieuf: Keysym = Keysym(0x00000ef4);
     /// Hangul_YeorinHieuh
-    pub const KEY_Hangul_YeorinHieuh: Keysym = Keysym(0x00000ef5);
+    pub const Hangul_YeorinHieuh: Keysym = Keysym(0x00000ef5);
     /// Hangul_AraeA
-    pub const KEY_Hangul_AraeA: Keysym = Keysym(0x00000ef6);
+    pub const Hangul_AraeA: Keysym = Keysym(0x00000ef6);
     /// Hangul_AraeAE
-    pub const KEY_Hangul_AraeAE: Keysym = Keysym(0x00000ef7);
+    pub const Hangul_AraeAE: Keysym = Keysym(0x00000ef7);
     /// Hangul_J_PanSios
-    pub const KEY_Hangul_J_PanSios: Keysym = Keysym(0x00000ef8);
+    pub const Hangul_J_PanSios: Keysym = Keysym(0x00000ef8);
     /// Hangul_J_KkogjiDalrinIeung
-    pub const KEY_Hangul_J_KkogjiDalrinIeung: Keysym = Keysym(0x00000ef9);
+    pub const Hangul_J_KkogjiDalrinIeung: Keysym = Keysym(0x00000ef9);
     /// Hangul_J_YeorinHieuh
-    pub const KEY_Hangul_J_YeorinHieuh: Keysym = Keysym(0x00000efa);
+    pub const Hangul_J_YeorinHieuh: Keysym = Keysym(0x00000efa);
     /// Korean_Won
-    pub const KEY_Korean_Won: Keysym = Keysym(0x00000eff);
+    pub const Korean_Won: Keysym = Keysym(0x00000eff);
     /// OE
-    pub const KEY_OE: Keysym = Keysym(0x000013bc);
+    pub const OE: Keysym = Keysym(0x000013bc);
     /// oe
-    pub const KEY_oe: Keysym = Keysym(0x000013bd);
+    pub const oe: Keysym = Keysym(0x000013bd);
     /// Ydiaeresis
-    pub const KEY_Ydiaeresis: Keysym = Keysym(0x000013be);
+    pub const Ydiaeresis: Keysym = Keysym(0x000013be);
     /// EuroSign
-    pub const KEY_EuroSign: Keysym = Keysym(0x000020ac);
+    pub const EuroSign: Keysym = Keysym(0x000020ac);
     /// 3270_Duplicate
-    pub const KEY_3270_Duplicate: Keysym = Keysym(0x0000fd01);
+    pub const _3270_Duplicate: Keysym = Keysym(0x0000fd01);
     /// 3270_FieldMark
-    pub const KEY_3270_FieldMark: Keysym = Keysym(0x0000fd02);
+    pub const _3270_FieldMark: Keysym = Keysym(0x0000fd02);
     /// 3270_Right2
-    pub const KEY_3270_Right2: Keysym = Keysym(0x0000fd03);
+    pub const _3270_Right2: Keysym = Keysym(0x0000fd03);
     /// 3270_Left2
-    pub const KEY_3270_Left2: Keysym = Keysym(0x0000fd04);
+    pub const _3270_Left2: Keysym = Keysym(0x0000fd04);
     /// 3270_BackTab
-    pub const KEY_3270_BackTab: Keysym = Keysym(0x0000fd05);
+    pub const _3270_BackTab: Keysym = Keysym(0x0000fd05);
     /// 3270_EraseEOF
-    pub const KEY_3270_EraseEOF: Keysym = Keysym(0x0000fd06);
+    pub const _3270_EraseEOF: Keysym = Keysym(0x0000fd06);
     /// 3270_EraseInput
-    pub const KEY_3270_EraseInput: Keysym = Keysym(0x0000fd07);
+    pub const _3270_EraseInput: Keysym = Keysym(0x0000fd07);
     /// 3270_Reset
-    pub const KEY_3270_Reset: Keysym = Keysym(0x0000fd08);
+    pub const _3270_Reset: Keysym = Keysym(0x0000fd08);
     /// 3270_Quit
-    pub const KEY_3270_Quit: Keysym = Keysym(0x0000fd09);
+    pub const _3270_Quit: Keysym = Keysym(0x0000fd09);
     /// 3270_PA1
-    pub const KEY_3270_PA1: Keysym = Keysym(0x0000fd0a);
+    pub const _3270_PA1: Keysym = Keysym(0x0000fd0a);
     /// 3270_PA2
-    pub const KEY_3270_PA2: Keysym = Keysym(0x0000fd0b);
+    pub const _3270_PA2: Keysym = Keysym(0x0000fd0b);
     /// 3270_PA3
-    pub const KEY_3270_PA3: Keysym = Keysym(0x0000fd0c);
+    pub const _3270_PA3: Keysym = Keysym(0x0000fd0c);
     /// 3270_Test
-    pub const KEY_3270_Test: Keysym = Keysym(0x0000fd0d);
+    pub const _3270_Test: Keysym = Keysym(0x0000fd0d);
     /// 3270_Attn
-    pub const KEY_3270_Attn: Keysym = Keysym(0x0000fd0e);
+    pub const _3270_Attn: Keysym = Keysym(0x0000fd0e);
     /// 3270_CursorBlink
-    pub const KEY_3270_CursorBlink: Keysym = Keysym(0x0000fd0f);
+    pub const _3270_CursorBlink: Keysym = Keysym(0x0000fd0f);
     /// 3270_AltCursor
-    pub const KEY_3270_AltCursor: Keysym = Keysym(0x0000fd10);
+    pub const _3270_AltCursor: Keysym = Keysym(0x0000fd10);
     /// 3270_KeyClick
-    pub const KEY_3270_KeyClick: Keysym = Keysym(0x0000fd11);
+    pub const _3270_KeyClick: Keysym = Keysym(0x0000fd11);
     /// 3270_Jump
-    pub const KEY_3270_Jump: Keysym = Keysym(0x0000fd12);
+    pub const _3270_Jump: Keysym = Keysym(0x0000fd12);
     /// 3270_Ident
-    pub const KEY_3270_Ident: Keysym = Keysym(0x0000fd13);
+    pub const _3270_Ident: Keysym = Keysym(0x0000fd13);
     /// 3270_Rule
-    pub const KEY_3270_Rule: Keysym = Keysym(0x0000fd14);
+    pub const _3270_Rule: Keysym = Keysym(0x0000fd14);
     /// 3270_Copy
-    pub const KEY_3270_Copy: Keysym = Keysym(0x0000fd15);
+    pub const _3270_Copy: Keysym = Keysym(0x0000fd15);
     /// 3270_Play
-    pub const KEY_3270_Play: Keysym = Keysym(0x0000fd16);
+    pub const _3270_Play: Keysym = Keysym(0x0000fd16);
     /// 3270_Setup
-    pub const KEY_3270_Setup: Keysym = Keysym(0x0000fd17);
+    pub const _3270_Setup: Keysym = Keysym(0x0000fd17);
     /// 3270_Record
-    pub const KEY_3270_Record: Keysym = Keysym(0x0000fd18);
+    pub const _3270_Record: Keysym = Keysym(0x0000fd18);
     /// 3270_ChangeScreen
-    pub const KEY_3270_ChangeScreen: Keysym = Keysym(0x0000fd19);
+    pub const _3270_ChangeScreen: Keysym = Keysym(0x0000fd19);
     /// 3270_DeleteWord
-    pub const KEY_3270_DeleteWord: Keysym = Keysym(0x0000fd1a);
+    pub const _3270_DeleteWord: Keysym = Keysym(0x0000fd1a);
     /// 3270_ExSelect
-    pub const KEY_3270_ExSelect: Keysym = Keysym(0x0000fd1b);
+    pub const _3270_ExSelect: Keysym = Keysym(0x0000fd1b);
     /// 3270_CursorSelect
-    pub const KEY_3270_CursorSelect: Keysym = Keysym(0x0000fd1c);
+    pub const _3270_CursorSelect: Keysym = Keysym(0x0000fd1c);
     /// 3270_PrintScreen
-    pub const KEY_3270_PrintScreen: Keysym = Keysym(0x0000fd1d);
+    pub const _3270_PrintScreen: Keysym = Keysym(0x0000fd1d);
     /// 3270_Enter
-    pub const KEY_3270_Enter: Keysym = Keysym(0x0000fd1e);
+    pub const _3270_Enter: Keysym = Keysym(0x0000fd1e);
     /// ISO_Lock
-    pub const KEY_ISO_Lock: Keysym = Keysym(0x0000fe01);
+    pub const ISO_Lock: Keysym = Keysym(0x0000fe01);
     /// ISO_Level2_Latch
-    pub const KEY_ISO_Level2_Latch: Keysym = Keysym(0x0000fe02);
+    pub const ISO_Level2_Latch: Keysym = Keysym(0x0000fe02);
     /// ISO_Level3_Shift
-    pub const KEY_ISO_Level3_Shift: Keysym = Keysym(0x0000fe03);
+    pub const ISO_Level3_Shift: Keysym = Keysym(0x0000fe03);
     /// ISO_Level3_Latch
-    pub const KEY_ISO_Level3_Latch: Keysym = Keysym(0x0000fe04);
+    pub const ISO_Level3_Latch: Keysym = Keysym(0x0000fe04);
     /// ISO_Level3_Lock
-    pub const KEY_ISO_Level3_Lock: Keysym = Keysym(0x0000fe05);
+    pub const ISO_Level3_Lock: Keysym = Keysym(0x0000fe05);
     /// ISO_Group_Latch
-    pub const KEY_ISO_Group_Latch: Keysym = Keysym(0x0000fe06);
+    pub const ISO_Group_Latch: Keysym = Keysym(0x0000fe06);
     /// ISO_Group_Lock
-    pub const KEY_ISO_Group_Lock: Keysym = Keysym(0x0000fe07);
+    pub const ISO_Group_Lock: Keysym = Keysym(0x0000fe07);
     /// ISO_Next_Group
-    pub const KEY_ISO_Next_Group: Keysym = Keysym(0x0000fe08);
+    pub const ISO_Next_Group: Keysym = Keysym(0x0000fe08);
     /// ISO_Next_Group_Lock
-    pub const KEY_ISO_Next_Group_Lock: Keysym = Keysym(0x0000fe09);
+    pub const ISO_Next_Group_Lock: Keysym = Keysym(0x0000fe09);
     /// ISO_Prev_Group
-    pub const KEY_ISO_Prev_Group: Keysym = Keysym(0x0000fe0a);
+    pub const ISO_Prev_Group: Keysym = Keysym(0x0000fe0a);
     /// ISO_Prev_Group_Lock
-    pub const KEY_ISO_Prev_Group_Lock: Keysym = Keysym(0x0000fe0b);
+    pub const ISO_Prev_Group_Lock: Keysym = Keysym(0x0000fe0b);
     /// ISO_First_Group
-    pub const KEY_ISO_First_Group: Keysym = Keysym(0x0000fe0c);
+    pub const ISO_First_Group: Keysym = Keysym(0x0000fe0c);
     /// ISO_First_Group_Lock
-    pub const KEY_ISO_First_Group_Lock: Keysym = Keysym(0x0000fe0d);
+    pub const ISO_First_Group_Lock: Keysym = Keysym(0x0000fe0d);
     /// ISO_Last_Group
-    pub const KEY_ISO_Last_Group: Keysym = Keysym(0x0000fe0e);
+    pub const ISO_Last_Group: Keysym = Keysym(0x0000fe0e);
     /// ISO_Last_Group_Lock
-    pub const KEY_ISO_Last_Group_Lock: Keysym = Keysym(0x0000fe0f);
+    pub const ISO_Last_Group_Lock: Keysym = Keysym(0x0000fe0f);
     /// ISO_Level5_Shift
-    pub const KEY_ISO_Level5_Shift: Keysym = Keysym(0x0000fe11);
+    pub const ISO_Level5_Shift: Keysym = Keysym(0x0000fe11);
     /// ISO_Level5_Latch
-    pub const KEY_ISO_Level5_Latch: Keysym = Keysym(0x0000fe12);
+    pub const ISO_Level5_Latch: Keysym = Keysym(0x0000fe12);
     /// ISO_Level5_Lock
-    pub const KEY_ISO_Level5_Lock: Keysym = Keysym(0x0000fe13);
+    pub const ISO_Level5_Lock: Keysym = Keysym(0x0000fe13);
     /// ISO_Left_Tab
-    pub const KEY_ISO_Left_Tab: Keysym = Keysym(0x0000fe20);
+    pub const ISO_Left_Tab: Keysym = Keysym(0x0000fe20);
     /// ISO_Move_Line_Up
-    pub const KEY_ISO_Move_Line_Up: Keysym = Keysym(0x0000fe21);
+    pub const ISO_Move_Line_Up: Keysym = Keysym(0x0000fe21);
     /// ISO_Move_Line_Down
-    pub const KEY_ISO_Move_Line_Down: Keysym = Keysym(0x0000fe22);
+    pub const ISO_Move_Line_Down: Keysym = Keysym(0x0000fe22);
     /// ISO_Partial_Line_Up
-    pub const KEY_ISO_Partial_Line_Up: Keysym = Keysym(0x0000fe23);
+    pub const ISO_Partial_Line_Up: Keysym = Keysym(0x0000fe23);
     /// ISO_Partial_Line_Down
-    pub const KEY_ISO_Partial_Line_Down: Keysym = Keysym(0x0000fe24);
+    pub const ISO_Partial_Line_Down: Keysym = Keysym(0x0000fe24);
     /// ISO_Partial_Space_Left
-    pub const KEY_ISO_Partial_Space_Left: Keysym = Keysym(0x0000fe25);
+    pub const ISO_Partial_Space_Left: Keysym = Keysym(0x0000fe25);
     /// ISO_Partial_Space_Right
-    pub const KEY_ISO_Partial_Space_Right: Keysym = Keysym(0x0000fe26);
+    pub const ISO_Partial_Space_Right: Keysym = Keysym(0x0000fe26);
     /// ISO_Set_Margin_Left
-    pub const KEY_ISO_Set_Margin_Left: Keysym = Keysym(0x0000fe27);
+    pub const ISO_Set_Margin_Left: Keysym = Keysym(0x0000fe27);
     /// ISO_Set_Margin_Right
-    pub const KEY_ISO_Set_Margin_Right: Keysym = Keysym(0x0000fe28);
+    pub const ISO_Set_Margin_Right: Keysym = Keysym(0x0000fe28);
     /// ISO_Release_Margin_Left
-    pub const KEY_ISO_Release_Margin_Left: Keysym = Keysym(0x0000fe29);
+    pub const ISO_Release_Margin_Left: Keysym = Keysym(0x0000fe29);
     /// ISO_Release_Margin_Right
-    pub const KEY_ISO_Release_Margin_Right: Keysym = Keysym(0x0000fe2a);
+    pub const ISO_Release_Margin_Right: Keysym = Keysym(0x0000fe2a);
     /// ISO_Release_Both_Margins
-    pub const KEY_ISO_Release_Both_Margins: Keysym = Keysym(0x0000fe2b);
+    pub const ISO_Release_Both_Margins: Keysym = Keysym(0x0000fe2b);
     /// ISO_Fast_Cursor_Left
-    pub const KEY_ISO_Fast_Cursor_Left: Keysym = Keysym(0x0000fe2c);
+    pub const ISO_Fast_Cursor_Left: Keysym = Keysym(0x0000fe2c);
     /// ISO_Fast_Cursor_Right
-    pub const KEY_ISO_Fast_Cursor_Right: Keysym = Keysym(0x0000fe2d);
+    pub const ISO_Fast_Cursor_Right: Keysym = Keysym(0x0000fe2d);
     /// ISO_Fast_Cursor_Up
-    pub const KEY_ISO_Fast_Cursor_Up: Keysym = Keysym(0x0000fe2e);
+    pub const ISO_Fast_Cursor_Up: Keysym = Keysym(0x0000fe2e);
     /// ISO_Fast_Cursor_Down
-    pub const KEY_ISO_Fast_Cursor_Down: Keysym = Keysym(0x0000fe2f);
+    pub const ISO_Fast_Cursor_Down: Keysym = Keysym(0x0000fe2f);
     /// ISO_Continuous_Underline
-    pub const KEY_ISO_Continuous_Underline: Keysym = Keysym(0x0000fe30);
+    pub const ISO_Continuous_Underline: Keysym = Keysym(0x0000fe30);
     /// ISO_Discontinuous_Underline
-    pub const KEY_ISO_Discontinuous_Underline: Keysym = Keysym(0x0000fe31);
+    pub const ISO_Discontinuous_Underline: Keysym = Keysym(0x0000fe31);
     /// ISO_Emphasize
-    pub const KEY_ISO_Emphasize: Keysym = Keysym(0x0000fe32);
+    pub const ISO_Emphasize: Keysym = Keysym(0x0000fe32);
     /// ISO_Center_Object
-    pub const KEY_ISO_Center_Object: Keysym = Keysym(0x0000fe33);
+    pub const ISO_Center_Object: Keysym = Keysym(0x0000fe33);
     /// ISO_Enter
-    pub const KEY_ISO_Enter: Keysym = Keysym(0x0000fe34);
+    pub const ISO_Enter: Keysym = Keysym(0x0000fe34);
     /// dead_grave
-    pub const KEY_dead_grave: Keysym = Keysym(0x0000fe50);
+    pub const dead_grave: Keysym = Keysym(0x0000fe50);
     /// dead_acute
-    pub const KEY_dead_acute: Keysym = Keysym(0x0000fe51);
+    pub const dead_acute: Keysym = Keysym(0x0000fe51);
     /// dead_circumflex
-    pub const KEY_dead_circumflex: Keysym = Keysym(0x0000fe52);
+    pub const dead_circumflex: Keysym = Keysym(0x0000fe52);
     /// dead_tilde
-    pub const KEY_dead_tilde: Keysym = Keysym(0x0000fe53);
+    pub const dead_tilde: Keysym = Keysym(0x0000fe53);
     /// dead_perispomeni
-    pub const KEY_dead_perispomeni: Keysym = Keysym(0x0000fe53);
+    pub const dead_perispomeni: Keysym = Keysym(0x0000fe53);
     /// dead_macron
-    pub const KEY_dead_macron: Keysym = Keysym(0x0000fe54);
+    pub const dead_macron: Keysym = Keysym(0x0000fe54);
     /// dead_breve
-    pub const KEY_dead_breve: Keysym = Keysym(0x0000fe55);
+    pub const dead_breve: Keysym = Keysym(0x0000fe55);
     /// dead_abovedot
-    pub const KEY_dead_abovedot: Keysym = Keysym(0x0000fe56);
+    pub const dead_abovedot: Keysym = Keysym(0x0000fe56);
     /// dead_diaeresis
-    pub const KEY_dead_diaeresis: Keysym = Keysym(0x0000fe57);
+    pub const dead_diaeresis: Keysym = Keysym(0x0000fe57);
     /// dead_abovering
-    pub const KEY_dead_abovering: Keysym = Keysym(0x0000fe58);
+    pub const dead_abovering: Keysym = Keysym(0x0000fe58);
     /// dead_doubleacute
-    pub const KEY_dead_doubleacute: Keysym = Keysym(0x0000fe59);
+    pub const dead_doubleacute: Keysym = Keysym(0x0000fe59);
     /// dead_caron
-    pub const KEY_dead_caron: Keysym = Keysym(0x0000fe5a);
+    pub const dead_caron: Keysym = Keysym(0x0000fe5a);
     /// dead_cedilla
-    pub const KEY_dead_cedilla: Keysym = Keysym(0x0000fe5b);
+    pub const dead_cedilla: Keysym = Keysym(0x0000fe5b);
     /// dead_ogonek
-    pub const KEY_dead_ogonek: Keysym = Keysym(0x0000fe5c);
+    pub const dead_ogonek: Keysym = Keysym(0x0000fe5c);
     /// dead_iota
-    pub const KEY_dead_iota: Keysym = Keysym(0x0000fe5d);
+    pub const dead_iota: Keysym = Keysym(0x0000fe5d);
     /// dead_voiced_sound
-    pub const KEY_dead_voiced_sound: Keysym = Keysym(0x0000fe5e);
+    pub const dead_voiced_sound: Keysym = Keysym(0x0000fe5e);
     /// dead_semivoiced_sound
-    pub const KEY_dead_semivoiced_sound: Keysym = Keysym(0x0000fe5f);
+    pub const dead_semivoiced_sound: Keysym = Keysym(0x0000fe5f);
     /// dead_belowdot
-    pub const KEY_dead_belowdot: Keysym = Keysym(0x0000fe60);
+    pub const dead_belowdot: Keysym = Keysym(0x0000fe60);
     /// dead_hook
-    pub const KEY_dead_hook: Keysym = Keysym(0x0000fe61);
+    pub const dead_hook: Keysym = Keysym(0x0000fe61);
     /// dead_horn
-    pub const KEY_dead_horn: Keysym = Keysym(0x0000fe62);
+    pub const dead_horn: Keysym = Keysym(0x0000fe62);
     /// dead_stroke
-    pub const KEY_dead_stroke: Keysym = Keysym(0x0000fe63);
+    pub const dead_stroke: Keysym = Keysym(0x0000fe63);
     /// dead_abovecomma
-    pub const KEY_dead_abovecomma: Keysym = Keysym(0x0000fe64);
+    pub const dead_abovecomma: Keysym = Keysym(0x0000fe64);
     /// dead_psili
-    pub const KEY_dead_psili: Keysym = Keysym(0x0000fe64);
+    pub const dead_psili: Keysym = Keysym(0x0000fe64);
     /// dead_abovereversedcomma
-    pub const KEY_dead_abovereversedcomma: Keysym = Keysym(0x0000fe65);
+    pub const dead_abovereversedcomma: Keysym = Keysym(0x0000fe65);
     /// dead_dasia
-    pub const KEY_dead_dasia: Keysym = Keysym(0x0000fe65);
+    pub const dead_dasia: Keysym = Keysym(0x0000fe65);
     /// dead_doublegrave
-    pub const KEY_dead_doublegrave: Keysym = Keysym(0x0000fe66);
+    pub const dead_doublegrave: Keysym = Keysym(0x0000fe66);
     /// dead_belowring
-    pub const KEY_dead_belowring: Keysym = Keysym(0x0000fe67);
+    pub const dead_belowring: Keysym = Keysym(0x0000fe67);
     /// dead_belowmacron
-    pub const KEY_dead_belowmacron: Keysym = Keysym(0x0000fe68);
+    pub const dead_belowmacron: Keysym = Keysym(0x0000fe68);
     /// dead_belowcircumflex
-    pub const KEY_dead_belowcircumflex: Keysym = Keysym(0x0000fe69);
+    pub const dead_belowcircumflex: Keysym = Keysym(0x0000fe69);
     /// dead_belowtilde
-    pub const KEY_dead_belowtilde: Keysym = Keysym(0x0000fe6a);
+    pub const dead_belowtilde: Keysym = Keysym(0x0000fe6a);
     /// dead_belowbreve
-    pub const KEY_dead_belowbreve: Keysym = Keysym(0x0000fe6b);
+    pub const dead_belowbreve: Keysym = Keysym(0x0000fe6b);
     /// dead_belowdiaeresis
-    pub const KEY_dead_belowdiaeresis: Keysym = Keysym(0x0000fe6c);
+    pub const dead_belowdiaeresis: Keysym = Keysym(0x0000fe6c);
     /// dead_invertedbreve
-    pub const KEY_dead_invertedbreve: Keysym = Keysym(0x0000fe6d);
+    pub const dead_invertedbreve: Keysym = Keysym(0x0000fe6d);
     /// dead_belowcomma
-    pub const KEY_dead_belowcomma: Keysym = Keysym(0x0000fe6e);
+    pub const dead_belowcomma: Keysym = Keysym(0x0000fe6e);
     /// dead_currency
-    pub const KEY_dead_currency: Keysym = Keysym(0x0000fe6f);
+    pub const dead_currency: Keysym = Keysym(0x0000fe6f);
     /// AccessX_Enable
-    pub const KEY_AccessX_Enable: Keysym = Keysym(0x0000fe70);
+    pub const AccessX_Enable: Keysym = Keysym(0x0000fe70);
     /// AccessX_Feedback_Enable
-    pub const KEY_AccessX_Feedback_Enable: Keysym = Keysym(0x0000fe71);
+    pub const AccessX_Feedback_Enable: Keysym = Keysym(0x0000fe71);
     /// RepeatKeys_Enable
-    pub const KEY_RepeatKeys_Enable: Keysym = Keysym(0x0000fe72);
+    pub const RepeatKeys_Enable: Keysym = Keysym(0x0000fe72);
     /// SlowKeys_Enable
-    pub const KEY_SlowKeys_Enable: Keysym = Keysym(0x0000fe73);
+    pub const SlowKeys_Enable: Keysym = Keysym(0x0000fe73);
     /// BounceKeys_Enable
-    pub const KEY_BounceKeys_Enable: Keysym = Keysym(0x0000fe74);
+    pub const BounceKeys_Enable: Keysym = Keysym(0x0000fe74);
     /// StickyKeys_Enable
-    pub const KEY_StickyKeys_Enable: Keysym = Keysym(0x0000fe75);
+    pub const StickyKeys_Enable: Keysym = Keysym(0x0000fe75);
     /// MouseKeys_Enable
-    pub const KEY_MouseKeys_Enable: Keysym = Keysym(0x0000fe76);
+    pub const MouseKeys_Enable: Keysym = Keysym(0x0000fe76);
     /// MouseKeys_Accel_Enable
-    pub const KEY_MouseKeys_Accel_Enable: Keysym = Keysym(0x0000fe77);
+    pub const MouseKeys_Accel_Enable: Keysym = Keysym(0x0000fe77);
     /// Overlay1_Enable
-    pub const KEY_Overlay1_Enable: Keysym = Keysym(0x0000fe78);
+    pub const Overlay1_Enable: Keysym = Keysym(0x0000fe78);
     /// Overlay2_Enable
-    pub const KEY_Overlay2_Enable: Keysym = Keysym(0x0000fe79);
+    pub const Overlay2_Enable: Keysym = Keysym(0x0000fe79);
     /// AudibleBell_Enable
-    pub const KEY_AudibleBell_Enable: Keysym = Keysym(0x0000fe7a);
+    pub const AudibleBell_Enable: Keysym = Keysym(0x0000fe7a);
     /// dead_a
-    pub const KEY_dead_a: Keysym = Keysym(0x0000fe80);
+    pub const dead_a: Keysym = Keysym(0x0000fe80);
     /// dead_A
-    pub const KEY_dead_A: Keysym = Keysym(0x0000fe81);
+    pub const dead_A: Keysym = Keysym(0x0000fe81);
     /// dead_e
-    pub const KEY_dead_e: Keysym = Keysym(0x0000fe82);
+    pub const dead_e: Keysym = Keysym(0x0000fe82);
     /// dead_E
-    pub const KEY_dead_E: Keysym = Keysym(0x0000fe83);
+    pub const dead_E: Keysym = Keysym(0x0000fe83);
     /// dead_i
-    pub const KEY_dead_i: Keysym = Keysym(0x0000fe84);
+    pub const dead_i: Keysym = Keysym(0x0000fe84);
     /// dead_I
-    pub const KEY_dead_I: Keysym = Keysym(0x0000fe85);
+    pub const dead_I: Keysym = Keysym(0x0000fe85);
     /// dead_o
-    pub const KEY_dead_o: Keysym = Keysym(0x0000fe86);
+    pub const dead_o: Keysym = Keysym(0x0000fe86);
     /// dead_O
-    pub const KEY_dead_O: Keysym = Keysym(0x0000fe87);
+    pub const dead_O: Keysym = Keysym(0x0000fe87);
     /// dead_u
-    pub const KEY_dead_u: Keysym = Keysym(0x0000fe88);
+    pub const dead_u: Keysym = Keysym(0x0000fe88);
     /// dead_U
-    pub const KEY_dead_U: Keysym = Keysym(0x0000fe89);
+    pub const dead_U: Keysym = Keysym(0x0000fe89);
     /// dead_small_schwa
-    pub const KEY_dead_small_schwa: Keysym = Keysym(0x0000fe8a);
+    pub const dead_small_schwa: Keysym = Keysym(0x0000fe8a);
     /// dead_schwa
-    pub const KEY_dead_schwa: Keysym = Keysym(0x0000fe8a);
+    pub const dead_schwa: Keysym = Keysym(0x0000fe8a);
     /// dead_capital_schwa
-    pub const KEY_dead_capital_schwa: Keysym = Keysym(0x0000fe8b);
+    pub const dead_capital_schwa: Keysym = Keysym(0x0000fe8b);
     /// dead_SCHWA
-    pub const KEY_dead_SCHWA: Keysym = Keysym(0x0000fe8b);
+    pub const dead_SCHWA: Keysym = Keysym(0x0000fe8b);
     /// dead_greek
-    pub const KEY_dead_greek: Keysym = Keysym(0x0000fe8c);
+    pub const dead_greek: Keysym = Keysym(0x0000fe8c);
     /// dead_hamza
-    pub const KEY_dead_hamza: Keysym = Keysym(0x0000fe8d);
+    pub const dead_hamza: Keysym = Keysym(0x0000fe8d);
     /// dead_lowline
-    pub const KEY_dead_lowline: Keysym = Keysym(0x0000fe90);
+    pub const dead_lowline: Keysym = Keysym(0x0000fe90);
     /// dead_aboveverticalline
-    pub const KEY_dead_aboveverticalline: Keysym = Keysym(0x0000fe91);
+    pub const dead_aboveverticalline: Keysym = Keysym(0x0000fe91);
     /// dead_belowverticalline
-    pub const KEY_dead_belowverticalline: Keysym = Keysym(0x0000fe92);
+    pub const dead_belowverticalline: Keysym = Keysym(0x0000fe92);
     /// dead_longsolidusoverlay
-    pub const KEY_dead_longsolidusoverlay: Keysym = Keysym(0x0000fe93);
+    pub const dead_longsolidusoverlay: Keysym = Keysym(0x0000fe93);
     /// ch
-    pub const KEY_ch: Keysym = Keysym(0x0000fea0);
+    pub const ch: Keysym = Keysym(0x0000fea0);
     /// Ch
-    pub const KEY_Ch: Keysym = Keysym(0x0000fea1);
+    pub const Ch: Keysym = Keysym(0x0000fea1);
     /// CH
-    pub const KEY_CH: Keysym = Keysym(0x0000fea2);
+    pub const CH: Keysym = Keysym(0x0000fea2);
     /// c_h
-    pub const KEY_c_h: Keysym = Keysym(0x0000fea3);
+    pub const c_h: Keysym = Keysym(0x0000fea3);
     /// C_h
-    pub const KEY_C_h: Keysym = Keysym(0x0000fea4);
+    pub const C_h: Keysym = Keysym(0x0000fea4);
     /// C_H
-    pub const KEY_C_H: Keysym = Keysym(0x0000fea5);
+    pub const C_H: Keysym = Keysym(0x0000fea5);
     /// First_Virtual_Screen
-    pub const KEY_First_Virtual_Screen: Keysym = Keysym(0x0000fed0);
+    pub const First_Virtual_Screen: Keysym = Keysym(0x0000fed0);
     /// Prev_Virtual_Screen
-    pub const KEY_Prev_Virtual_Screen: Keysym = Keysym(0x0000fed1);
+    pub const Prev_Virtual_Screen: Keysym = Keysym(0x0000fed1);
     /// Next_Virtual_Screen
-    pub const KEY_Next_Virtual_Screen: Keysym = Keysym(0x0000fed2);
+    pub const Next_Virtual_Screen: Keysym = Keysym(0x0000fed2);
     /// Last_Virtual_Screen
-    pub const KEY_Last_Virtual_Screen: Keysym = Keysym(0x0000fed4);
+    pub const Last_Virtual_Screen: Keysym = Keysym(0x0000fed4);
     /// Terminate_Server
-    pub const KEY_Terminate_Server: Keysym = Keysym(0x0000fed5);
+    pub const Terminate_Server: Keysym = Keysym(0x0000fed5);
     /// Pointer_Left
-    pub const KEY_Pointer_Left: Keysym = Keysym(0x0000fee0);
+    pub const Pointer_Left: Keysym = Keysym(0x0000fee0);
     /// Pointer_Right
-    pub const KEY_Pointer_Right: Keysym = Keysym(0x0000fee1);
+    pub const Pointer_Right: Keysym = Keysym(0x0000fee1);
     /// Pointer_Up
-    pub const KEY_Pointer_Up: Keysym = Keysym(0x0000fee2);
+    pub const Pointer_Up: Keysym = Keysym(0x0000fee2);
     /// Pointer_Down
-    pub const KEY_Pointer_Down: Keysym = Keysym(0x0000fee3);
+    pub const Pointer_Down: Keysym = Keysym(0x0000fee3);
     /// Pointer_UpLeft
-    pub const KEY_Pointer_UpLeft: Keysym = Keysym(0x0000fee4);
+    pub const Pointer_UpLeft: Keysym = Keysym(0x0000fee4);
     /// Pointer_UpRight
-    pub const KEY_Pointer_UpRight: Keysym = Keysym(0x0000fee5);
+    pub const Pointer_UpRight: Keysym = Keysym(0x0000fee5);
     /// Pointer_DownLeft
-    pub const KEY_Pointer_DownLeft: Keysym = Keysym(0x0000fee6);
+    pub const Pointer_DownLeft: Keysym = Keysym(0x0000fee6);
     /// Pointer_DownRight
-    pub const KEY_Pointer_DownRight: Keysym = Keysym(0x0000fee7);
+    pub const Pointer_DownRight: Keysym = Keysym(0x0000fee7);
     /// Pointer_Button_Dflt
-    pub const KEY_Pointer_Button_Dflt: Keysym = Keysym(0x0000fee8);
+    pub const Pointer_Button_Dflt: Keysym = Keysym(0x0000fee8);
     /// Pointer_Button1
-    pub const KEY_Pointer_Button1: Keysym = Keysym(0x0000fee9);
+    pub const Pointer_Button1: Keysym = Keysym(0x0000fee9);
     /// Pointer_Button2
-    pub const KEY_Pointer_Button2: Keysym = Keysym(0x0000feea);
+    pub const Pointer_Button2: Keysym = Keysym(0x0000feea);
     /// Pointer_Button3
-    pub const KEY_Pointer_Button3: Keysym = Keysym(0x0000feeb);
+    pub const Pointer_Button3: Keysym = Keysym(0x0000feeb);
     /// Pointer_Button4
-    pub const KEY_Pointer_Button4: Keysym = Keysym(0x0000feec);
+    pub const Pointer_Button4: Keysym = Keysym(0x0000feec);
     /// Pointer_Button5
-    pub const KEY_Pointer_Button5: Keysym = Keysym(0x0000feed);
+    pub const Pointer_Button5: Keysym = Keysym(0x0000feed);
     /// Pointer_DblClick_Dflt
-    pub const KEY_Pointer_DblClick_Dflt: Keysym = Keysym(0x0000feee);
+    pub const Pointer_DblClick_Dflt: Keysym = Keysym(0x0000feee);
     /// Pointer_DblClick1
-    pub const KEY_Pointer_DblClick1: Keysym = Keysym(0x0000feef);
+    pub const Pointer_DblClick1: Keysym = Keysym(0x0000feef);
     /// Pointer_DblClick2
-    pub const KEY_Pointer_DblClick2: Keysym = Keysym(0x0000fef0);
+    pub const Pointer_DblClick2: Keysym = Keysym(0x0000fef0);
     /// Pointer_DblClick3
-    pub const KEY_Pointer_DblClick3: Keysym = Keysym(0x0000fef1);
+    pub const Pointer_DblClick3: Keysym = Keysym(0x0000fef1);
     /// Pointer_DblClick4
-    pub const KEY_Pointer_DblClick4: Keysym = Keysym(0x0000fef2);
+    pub const Pointer_DblClick4: Keysym = Keysym(0x0000fef2);
     /// Pointer_DblClick5
-    pub const KEY_Pointer_DblClick5: Keysym = Keysym(0x0000fef3);
+    pub const Pointer_DblClick5: Keysym = Keysym(0x0000fef3);
     /// Pointer_Drag_Dflt
-    pub const KEY_Pointer_Drag_Dflt: Keysym = Keysym(0x0000fef4);
+    pub const Pointer_Drag_Dflt: Keysym = Keysym(0x0000fef4);
     /// Pointer_Drag1
-    pub const KEY_Pointer_Drag1: Keysym = Keysym(0x0000fef5);
+    pub const Pointer_Drag1: Keysym = Keysym(0x0000fef5);
     /// Pointer_Drag2
-    pub const KEY_Pointer_Drag2: Keysym = Keysym(0x0000fef6);
+    pub const Pointer_Drag2: Keysym = Keysym(0x0000fef6);
     /// Pointer_Drag3
-    pub const KEY_Pointer_Drag3: Keysym = Keysym(0x0000fef7);
+    pub const Pointer_Drag3: Keysym = Keysym(0x0000fef7);
     /// Pointer_Drag4
-    pub const KEY_Pointer_Drag4: Keysym = Keysym(0x0000fef8);
+    pub const Pointer_Drag4: Keysym = Keysym(0x0000fef8);
     /// Pointer_EnableKeys
-    pub const KEY_Pointer_EnableKeys: Keysym = Keysym(0x0000fef9);
+    pub const Pointer_EnableKeys: Keysym = Keysym(0x0000fef9);
     /// Pointer_Accelerate
-    pub const KEY_Pointer_Accelerate: Keysym = Keysym(0x0000fefa);
+    pub const Pointer_Accelerate: Keysym = Keysym(0x0000fefa);
     /// Pointer_DfltBtnNext
-    pub const KEY_Pointer_DfltBtnNext: Keysym = Keysym(0x0000fefb);
+    pub const Pointer_DfltBtnNext: Keysym = Keysym(0x0000fefb);
     /// Pointer_DfltBtnPrev
-    pub const KEY_Pointer_DfltBtnPrev: Keysym = Keysym(0x0000fefc);
+    pub const Pointer_DfltBtnPrev: Keysym = Keysym(0x0000fefc);
     /// Pointer_Drag5
-    pub const KEY_Pointer_Drag5: Keysym = Keysym(0x0000fefd);
+    pub const Pointer_Drag5: Keysym = Keysym(0x0000fefd);
     /// BackSpace
-    pub const KEY_BackSpace: Keysym = Keysym(0x0000ff08);
+    pub const BackSpace: Keysym = Keysym(0x0000ff08);
     /// Tab
-    pub const KEY_Tab: Keysym = Keysym(0x0000ff09);
+    pub const Tab: Keysym = Keysym(0x0000ff09);
     /// Linefeed
-    pub const KEY_Linefeed: Keysym = Keysym(0x0000ff0a);
+    pub const Linefeed: Keysym = Keysym(0x0000ff0a);
     /// Clear
-    pub const KEY_Clear: Keysym = Keysym(0x0000ff0b);
+    pub const Clear: Keysym = Keysym(0x0000ff0b);
     /// Return
-    pub const KEY_Return: Keysym = Keysym(0x0000ff0d);
+    pub const Return: Keysym = Keysym(0x0000ff0d);
     /// Pause
-    pub const KEY_Pause: Keysym = Keysym(0x0000ff13);
+    pub const Pause: Keysym = Keysym(0x0000ff13);
     /// Scroll_Lock
-    pub const KEY_Scroll_Lock: Keysym = Keysym(0x0000ff14);
+    pub const Scroll_Lock: Keysym = Keysym(0x0000ff14);
     /// Sys_Req
-    pub const KEY_Sys_Req: Keysym = Keysym(0x0000ff15);
+    pub const Sys_Req: Keysym = Keysym(0x0000ff15);
     /// Escape
-    pub const KEY_Escape: Keysym = Keysym(0x0000ff1b);
+    pub const Escape: Keysym = Keysym(0x0000ff1b);
     /// Multi_key
-    pub const KEY_Multi_key: Keysym = Keysym(0x0000ff20);
+    pub const Multi_key: Keysym = Keysym(0x0000ff20);
     /// SunCompose
-    pub const KEY_SunCompose: Keysym = Keysym(0x0000ff20);
+    pub const SunCompose: Keysym = Keysym(0x0000ff20);
     /// Kanji
-    pub const KEY_Kanji: Keysym = Keysym(0x0000ff21);
+    pub const Kanji: Keysym = Keysym(0x0000ff21);
     /// Muhenkan
-    pub const KEY_Muhenkan: Keysym = Keysym(0x0000ff22);
+    pub const Muhenkan: Keysym = Keysym(0x0000ff22);
     /// Henkan_Mode
-    pub const KEY_Henkan_Mode: Keysym = Keysym(0x0000ff23);
+    pub const Henkan_Mode: Keysym = Keysym(0x0000ff23);
     /// Henkan
-    pub const KEY_Henkan: Keysym = Keysym(0x0000ff23);
+    pub const Henkan: Keysym = Keysym(0x0000ff23);
     /// Romaji
-    pub const KEY_Romaji: Keysym = Keysym(0x0000ff24);
+    pub const Romaji: Keysym = Keysym(0x0000ff24);
     /// Hiragana
-    pub const KEY_Hiragana: Keysym = Keysym(0x0000ff25);
+    pub const Hiragana: Keysym = Keysym(0x0000ff25);
     /// Katakana
-    pub const KEY_Katakana: Keysym = Keysym(0x0000ff26);
+    pub const Katakana: Keysym = Keysym(0x0000ff26);
     /// Hiragana_Katakana
-    pub const KEY_Hiragana_Katakana: Keysym = Keysym(0x0000ff27);
+    pub const Hiragana_Katakana: Keysym = Keysym(0x0000ff27);
     /// Zenkaku
-    pub const KEY_Zenkaku: Keysym = Keysym(0x0000ff28);
+    pub const Zenkaku: Keysym = Keysym(0x0000ff28);
     /// Hankaku
-    pub const KEY_Hankaku: Keysym = Keysym(0x0000ff29);
+    pub const Hankaku: Keysym = Keysym(0x0000ff29);
     /// Zenkaku_Hankaku
-    pub const KEY_Zenkaku_Hankaku: Keysym = Keysym(0x0000ff2a);
+    pub const Zenkaku_Hankaku: Keysym = Keysym(0x0000ff2a);
     /// Touroku
-    pub const KEY_Touroku: Keysym = Keysym(0x0000ff2b);
+    pub const Touroku: Keysym = Keysym(0x0000ff2b);
     /// Massyo
-    pub const KEY_Massyo: Keysym = Keysym(0x0000ff2c);
+    pub const Massyo: Keysym = Keysym(0x0000ff2c);
     /// Kana_Lock
-    pub const KEY_Kana_Lock: Keysym = Keysym(0x0000ff2d);
+    pub const Kana_Lock: Keysym = Keysym(0x0000ff2d);
     /// Kana_Shift
-    pub const KEY_Kana_Shift: Keysym = Keysym(0x0000ff2e);
+    pub const Kana_Shift: Keysym = Keysym(0x0000ff2e);
     /// Eisu_Shift
-    pub const KEY_Eisu_Shift: Keysym = Keysym(0x0000ff2f);
+    pub const Eisu_Shift: Keysym = Keysym(0x0000ff2f);
     /// Eisu_toggle
-    pub const KEY_Eisu_toggle: Keysym = Keysym(0x0000ff30);
+    pub const Eisu_toggle: Keysym = Keysym(0x0000ff30);
     /// Hangul
-    pub const KEY_Hangul: Keysym = Keysym(0x0000ff31);
+    pub const Hangul: Keysym = Keysym(0x0000ff31);
     /// Hangul_Start
-    pub const KEY_Hangul_Start: Keysym = Keysym(0x0000ff32);
+    pub const Hangul_Start: Keysym = Keysym(0x0000ff32);
     /// Hangul_End
-    pub const KEY_Hangul_End: Keysym = Keysym(0x0000ff33);
+    pub const Hangul_End: Keysym = Keysym(0x0000ff33);
     /// Hangul_Hanja
-    pub const KEY_Hangul_Hanja: Keysym = Keysym(0x0000ff34);
+    pub const Hangul_Hanja: Keysym = Keysym(0x0000ff34);
     /// Hangul_Jamo
-    pub const KEY_Hangul_Jamo: Keysym = Keysym(0x0000ff35);
+    pub const Hangul_Jamo: Keysym = Keysym(0x0000ff35);
     /// Hangul_Romaja
-    pub const KEY_Hangul_Romaja: Keysym = Keysym(0x0000ff36);
+    pub const Hangul_Romaja: Keysym = Keysym(0x0000ff36);
     /// Codeinput
-    pub const KEY_Codeinput: Keysym = Keysym(0x0000ff37);
+    pub const Codeinput: Keysym = Keysym(0x0000ff37);
     /// Kanji_Bangou
-    pub const KEY_Kanji_Bangou: Keysym = Keysym(0x0000ff37);
+    pub const Kanji_Bangou: Keysym = Keysym(0x0000ff37);
     /// Hangul_Codeinput
-    pub const KEY_Hangul_Codeinput: Keysym = Keysym(0x0000ff37);
+    pub const Hangul_Codeinput: Keysym = Keysym(0x0000ff37);
     /// Hangul_Jeonja
-    pub const KEY_Hangul_Jeonja: Keysym = Keysym(0x0000ff38);
+    pub const Hangul_Jeonja: Keysym = Keysym(0x0000ff38);
     /// Hangul_Banja
-    pub const KEY_Hangul_Banja: Keysym = Keysym(0x0000ff39);
+    pub const Hangul_Banja: Keysym = Keysym(0x0000ff39);
     /// Hangul_PreHanja
-    pub const KEY_Hangul_PreHanja: Keysym = Keysym(0x0000ff3a);
+    pub const Hangul_PreHanja: Keysym = Keysym(0x0000ff3a);
     /// Hangul_PostHanja
-    pub const KEY_Hangul_PostHanja: Keysym = Keysym(0x0000ff3b);
+    pub const Hangul_PostHanja: Keysym = Keysym(0x0000ff3b);
     /// SingleCandidate
-    pub const KEY_SingleCandidate: Keysym = Keysym(0x0000ff3c);
+    pub const SingleCandidate: Keysym = Keysym(0x0000ff3c);
     /// Hangul_SingleCandidate
-    pub const KEY_Hangul_SingleCandidate: Keysym = Keysym(0x0000ff3c);
+    pub const Hangul_SingleCandidate: Keysym = Keysym(0x0000ff3c);
     /// MultipleCandidate
-    pub const KEY_MultipleCandidate: Keysym = Keysym(0x0000ff3d);
+    pub const MultipleCandidate: Keysym = Keysym(0x0000ff3d);
     /// Zen_Koho
-    pub const KEY_Zen_Koho: Keysym = Keysym(0x0000ff3d);
+    pub const Zen_Koho: Keysym = Keysym(0x0000ff3d);
     /// Hangul_MultipleCandidate
-    pub const KEY_Hangul_MultipleCandidate: Keysym = Keysym(0x0000ff3d);
+    pub const Hangul_MultipleCandidate: Keysym = Keysym(0x0000ff3d);
     /// PreviousCandidate
-    pub const KEY_PreviousCandidate: Keysym = Keysym(0x0000ff3e);
+    pub const PreviousCandidate: Keysym = Keysym(0x0000ff3e);
     /// Mae_Koho
-    pub const KEY_Mae_Koho: Keysym = Keysym(0x0000ff3e);
+    pub const Mae_Koho: Keysym = Keysym(0x0000ff3e);
     /// Hangul_PreviousCandidate
-    pub const KEY_Hangul_PreviousCandidate: Keysym = Keysym(0x0000ff3e);
+    pub const Hangul_PreviousCandidate: Keysym = Keysym(0x0000ff3e);
     /// Hangul_Special
-    pub const KEY_Hangul_Special: Keysym = Keysym(0x0000ff3f);
+    pub const Hangul_Special: Keysym = Keysym(0x0000ff3f);
     /// Home
-    pub const KEY_Home: Keysym = Keysym(0x0000ff50);
+    pub const Home: Keysym = Keysym(0x0000ff50);
     /// Left
-    pub const KEY_Left: Keysym = Keysym(0x0000ff51);
+    pub const Left: Keysym = Keysym(0x0000ff51);
     /// Up
-    pub const KEY_Up: Keysym = Keysym(0x0000ff52);
+    pub const Up: Keysym = Keysym(0x0000ff52);
     /// Right
-    pub const KEY_Right: Keysym = Keysym(0x0000ff53);
+    pub const Right: Keysym = Keysym(0x0000ff53);
     /// Down
-    pub const KEY_Down: Keysym = Keysym(0x0000ff54);
+    pub const Down: Keysym = Keysym(0x0000ff54);
     /// Prior
-    pub const KEY_Prior: Keysym = Keysym(0x0000ff55);
+    pub const Prior: Keysym = Keysym(0x0000ff55);
     /// Page_Up
-    pub const KEY_Page_Up: Keysym = Keysym(0x0000ff55);
+    pub const Page_Up: Keysym = Keysym(0x0000ff55);
     /// SunPageUp
-    pub const KEY_SunPageUp: Keysym = Keysym(0x0000ff55);
+    pub const SunPageUp: Keysym = Keysym(0x0000ff55);
     /// Next
-    pub const KEY_Next: Keysym = Keysym(0x0000ff56);
+    pub const Next: Keysym = Keysym(0x0000ff56);
     /// Page_Down
-    pub const KEY_Page_Down: Keysym = Keysym(0x0000ff56);
+    pub const Page_Down: Keysym = Keysym(0x0000ff56);
     /// SunPageDown
-    pub const KEY_SunPageDown: Keysym = Keysym(0x0000ff56);
+    pub const SunPageDown: Keysym = Keysym(0x0000ff56);
     /// End
-    pub const KEY_End: Keysym = Keysym(0x0000ff57);
+    pub const End: Keysym = Keysym(0x0000ff57);
     /// Begin
-    pub const KEY_Begin: Keysym = Keysym(0x0000ff58);
+    pub const Begin: Keysym = Keysym(0x0000ff58);
     /// Select
-    pub const KEY_Select: Keysym = Keysym(0x0000ff60);
+    pub const Select: Keysym = Keysym(0x0000ff60);
     /// Print
-    pub const KEY_Print: Keysym = Keysym(0x0000ff61);
+    pub const Print: Keysym = Keysym(0x0000ff61);
     /// SunPrint_Screen
-    pub const KEY_SunPrint_Screen: Keysym = Keysym(0x0000ff61);
+    pub const SunPrint_Screen: Keysym = Keysym(0x0000ff61);
     /// Execute
-    pub const KEY_Execute: Keysym = Keysym(0x0000ff62);
+    pub const Execute: Keysym = Keysym(0x0000ff62);
     /// Insert
-    pub const KEY_Insert: Keysym = Keysym(0x0000ff63);
+    pub const Insert: Keysym = Keysym(0x0000ff63);
     /// Undo
-    pub const KEY_Undo: Keysym = Keysym(0x0000ff65);
+    pub const Undo: Keysym = Keysym(0x0000ff65);
     /// SunUndo
-    pub const KEY_SunUndo: Keysym = Keysym(0x0000ff65);
+    pub const SunUndo: Keysym = Keysym(0x0000ff65);
     /// Redo
-    pub const KEY_Redo: Keysym = Keysym(0x0000ff66);
+    pub const Redo: Keysym = Keysym(0x0000ff66);
     /// SunAgain
-    pub const KEY_SunAgain: Keysym = Keysym(0x0000ff66);
+    pub const SunAgain: Keysym = Keysym(0x0000ff66);
     /// Menu
-    pub const KEY_Menu: Keysym = Keysym(0x0000ff67);
+    pub const Menu: Keysym = Keysym(0x0000ff67);
     /// Find
-    pub const KEY_Find: Keysym = Keysym(0x0000ff68);
+    pub const Find: Keysym = Keysym(0x0000ff68);
     /// SunFind
-    pub const KEY_SunFind: Keysym = Keysym(0x0000ff68);
+    pub const SunFind: Keysym = Keysym(0x0000ff68);
     /// Cancel
-    pub const KEY_Cancel: Keysym = Keysym(0x0000ff69);
+    pub const Cancel: Keysym = Keysym(0x0000ff69);
     /// SunStop
-    pub const KEY_SunStop: Keysym = Keysym(0x0000ff69);
+    pub const SunStop: Keysym = Keysym(0x0000ff69);
     /// Help
-    pub const KEY_Help: Keysym = Keysym(0x0000ff6a);
+    pub const Help: Keysym = Keysym(0x0000ff6a);
     /// Break
-    pub const KEY_Break: Keysym = Keysym(0x0000ff6b);
+    pub const Break: Keysym = Keysym(0x0000ff6b);
     /// Mode_switch
-    pub const KEY_Mode_switch: Keysym = Keysym(0x0000ff7e);
+    pub const Mode_switch: Keysym = Keysym(0x0000ff7e);
     /// script_switch
-    pub const KEY_script_switch: Keysym = Keysym(0x0000ff7e);
+    pub const script_switch: Keysym = Keysym(0x0000ff7e);
     /// ISO_Group_Shift
-    pub const KEY_ISO_Group_Shift: Keysym = Keysym(0x0000ff7e);
+    pub const ISO_Group_Shift: Keysym = Keysym(0x0000ff7e);
     /// kana_switch
-    pub const KEY_kana_switch: Keysym = Keysym(0x0000ff7e);
+    pub const kana_switch: Keysym = Keysym(0x0000ff7e);
     /// Arabic_switch
-    pub const KEY_Arabic_switch: Keysym = Keysym(0x0000ff7e);
+    pub const Arabic_switch: Keysym = Keysym(0x0000ff7e);
     /// Greek_switch
-    pub const KEY_Greek_switch: Keysym = Keysym(0x0000ff7e);
+    pub const Greek_switch: Keysym = Keysym(0x0000ff7e);
     /// Hebrew_switch
-    pub const KEY_Hebrew_switch: Keysym = Keysym(0x0000ff7e);
+    pub const Hebrew_switch: Keysym = Keysym(0x0000ff7e);
     /// Hangul_switch
-    pub const KEY_Hangul_switch: Keysym = Keysym(0x0000ff7e);
+    pub const Hangul_switch: Keysym = Keysym(0x0000ff7e);
     /// SunAltGraph
-    pub const KEY_SunAltGraph: Keysym = Keysym(0x0000ff7e);
+    pub const SunAltGraph: Keysym = Keysym(0x0000ff7e);
     /// Num_Lock
-    pub const KEY_Num_Lock: Keysym = Keysym(0x0000ff7f);
+    pub const Num_Lock: Keysym = Keysym(0x0000ff7f);
     /// KP_Space
-    pub const KEY_KP_Space: Keysym = Keysym(0x0000ff80);
+    pub const KP_Space: Keysym = Keysym(0x0000ff80);
     /// KP_Tab
-    pub const KEY_KP_Tab: Keysym = Keysym(0x0000ff89);
+    pub const KP_Tab: Keysym = Keysym(0x0000ff89);
     /// KP_Enter
-    pub const KEY_KP_Enter: Keysym = Keysym(0x0000ff8d);
+    pub const KP_Enter: Keysym = Keysym(0x0000ff8d);
     /// KP_F1
-    pub const KEY_KP_F1: Keysym = Keysym(0x0000ff91);
+    pub const KP_F1: Keysym = Keysym(0x0000ff91);
     /// KP_F2
-    pub const KEY_KP_F2: Keysym = Keysym(0x0000ff92);
+    pub const KP_F2: Keysym = Keysym(0x0000ff92);
     /// KP_F3
-    pub const KEY_KP_F3: Keysym = Keysym(0x0000ff93);
+    pub const KP_F3: Keysym = Keysym(0x0000ff93);
     /// KP_F4
-    pub const KEY_KP_F4: Keysym = Keysym(0x0000ff94);
+    pub const KP_F4: Keysym = Keysym(0x0000ff94);
     /// KP_Home
-    pub const KEY_KP_Home: Keysym = Keysym(0x0000ff95);
+    pub const KP_Home: Keysym = Keysym(0x0000ff95);
     /// KP_Left
-    pub const KEY_KP_Left: Keysym = Keysym(0x0000ff96);
+    pub const KP_Left: Keysym = Keysym(0x0000ff96);
     /// KP_Up
-    pub const KEY_KP_Up: Keysym = Keysym(0x0000ff97);
+    pub const KP_Up: Keysym = Keysym(0x0000ff97);
     /// KP_Right
-    pub const KEY_KP_Right: Keysym = Keysym(0x0000ff98);
+    pub const KP_Right: Keysym = Keysym(0x0000ff98);
     /// KP_Down
-    pub const KEY_KP_Down: Keysym = Keysym(0x0000ff99);
+    pub const KP_Down: Keysym = Keysym(0x0000ff99);
     /// KP_Prior
-    pub const KEY_KP_Prior: Keysym = Keysym(0x0000ff9a);
+    pub const KP_Prior: Keysym = Keysym(0x0000ff9a);
     /// KP_Page_Up
-    pub const KEY_KP_Page_Up: Keysym = Keysym(0x0000ff9a);
+    pub const KP_Page_Up: Keysym = Keysym(0x0000ff9a);
     /// KP_Next
-    pub const KEY_KP_Next: Keysym = Keysym(0x0000ff9b);
+    pub const KP_Next: Keysym = Keysym(0x0000ff9b);
     /// KP_Page_Down
-    pub const KEY_KP_Page_Down: Keysym = Keysym(0x0000ff9b);
+    pub const KP_Page_Down: Keysym = Keysym(0x0000ff9b);
     /// KP_End
-    pub const KEY_KP_End: Keysym = Keysym(0x0000ff9c);
+    pub const KP_End: Keysym = Keysym(0x0000ff9c);
     /// KP_Begin
-    pub const KEY_KP_Begin: Keysym = Keysym(0x0000ff9d);
+    pub const KP_Begin: Keysym = Keysym(0x0000ff9d);
     /// KP_Insert
-    pub const KEY_KP_Insert: Keysym = Keysym(0x0000ff9e);
+    pub const KP_Insert: Keysym = Keysym(0x0000ff9e);
     /// KP_Delete
-    pub const KEY_KP_Delete: Keysym = Keysym(0x0000ff9f);
+    pub const KP_Delete: Keysym = Keysym(0x0000ff9f);
     /// KP_Multiply
-    pub const KEY_KP_Multiply: Keysym = Keysym(0x0000ffaa);
+    pub const KP_Multiply: Keysym = Keysym(0x0000ffaa);
     /// KP_Add
-    pub const KEY_KP_Add: Keysym = Keysym(0x0000ffab);
+    pub const KP_Add: Keysym = Keysym(0x0000ffab);
     /// KP_Separator
-    pub const KEY_KP_Separator: Keysym = Keysym(0x0000ffac);
+    pub const KP_Separator: Keysym = Keysym(0x0000ffac);
     /// KP_Subtract
-    pub const KEY_KP_Subtract: Keysym = Keysym(0x0000ffad);
+    pub const KP_Subtract: Keysym = Keysym(0x0000ffad);
     /// KP_Decimal
-    pub const KEY_KP_Decimal: Keysym = Keysym(0x0000ffae);
+    pub const KP_Decimal: Keysym = Keysym(0x0000ffae);
     /// KP_Divide
-    pub const KEY_KP_Divide: Keysym = Keysym(0x0000ffaf);
+    pub const KP_Divide: Keysym = Keysym(0x0000ffaf);
     /// KP_0
-    pub const KEY_KP_0: Keysym = Keysym(0x0000ffb0);
+    pub const KP_0: Keysym = Keysym(0x0000ffb0);
     /// KP_1
-    pub const KEY_KP_1: Keysym = Keysym(0x0000ffb1);
+    pub const KP_1: Keysym = Keysym(0x0000ffb1);
     /// KP_2
-    pub const KEY_KP_2: Keysym = Keysym(0x0000ffb2);
+    pub const KP_2: Keysym = Keysym(0x0000ffb2);
     /// KP_3
-    pub const KEY_KP_3: Keysym = Keysym(0x0000ffb3);
+    pub const KP_3: Keysym = Keysym(0x0000ffb3);
     /// KP_4
-    pub const KEY_KP_4: Keysym = Keysym(0x0000ffb4);
+    pub const KP_4: Keysym = Keysym(0x0000ffb4);
     /// KP_5
-    pub const KEY_KP_5: Keysym = Keysym(0x0000ffb5);
+    pub const KP_5: Keysym = Keysym(0x0000ffb5);
     /// KP_6
-    pub const KEY_KP_6: Keysym = Keysym(0x0000ffb6);
+    pub const KP_6: Keysym = Keysym(0x0000ffb6);
     /// KP_7
-    pub const KEY_KP_7: Keysym = Keysym(0x0000ffb7);
+    pub const KP_7: Keysym = Keysym(0x0000ffb7);
     /// KP_8
-    pub const KEY_KP_8: Keysym = Keysym(0x0000ffb8);
+    pub const KP_8: Keysym = Keysym(0x0000ffb8);
     /// KP_9
-    pub const KEY_KP_9: Keysym = Keysym(0x0000ffb9);
+    pub const KP_9: Keysym = Keysym(0x0000ffb9);
     /// KP_Equal
-    pub const KEY_KP_Equal: Keysym = Keysym(0x0000ffbd);
+    pub const KP_Equal: Keysym = Keysym(0x0000ffbd);
     /// F1
-    pub const KEY_F1: Keysym = Keysym(0x0000ffbe);
+    pub const F1: Keysym = Keysym(0x0000ffbe);
     /// F2
-    pub const KEY_F2: Keysym = Keysym(0x0000ffbf);
+    pub const F2: Keysym = Keysym(0x0000ffbf);
     /// F3
-    pub const KEY_F3: Keysym = Keysym(0x0000ffc0);
+    pub const F3: Keysym = Keysym(0x0000ffc0);
     /// F4
-    pub const KEY_F4: Keysym = Keysym(0x0000ffc1);
+    pub const F4: Keysym = Keysym(0x0000ffc1);
     /// F5
-    pub const KEY_F5: Keysym = Keysym(0x0000ffc2);
+    pub const F5: Keysym = Keysym(0x0000ffc2);
     /// F6
-    pub const KEY_F6: Keysym = Keysym(0x0000ffc3);
+    pub const F6: Keysym = Keysym(0x0000ffc3);
     /// F7
-    pub const KEY_F7: Keysym = Keysym(0x0000ffc4);
+    pub const F7: Keysym = Keysym(0x0000ffc4);
     /// F8
-    pub const KEY_F8: Keysym = Keysym(0x0000ffc5);
+    pub const F8: Keysym = Keysym(0x0000ffc5);
     /// F9
-    pub const KEY_F9: Keysym = Keysym(0x0000ffc6);
+    pub const F9: Keysym = Keysym(0x0000ffc6);
     /// F10
-    pub const KEY_F10: Keysym = Keysym(0x0000ffc7);
+    pub const F10: Keysym = Keysym(0x0000ffc7);
     /// F11
-    pub const KEY_F11: Keysym = Keysym(0x0000ffc8);
+    pub const F11: Keysym = Keysym(0x0000ffc8);
     /// L1
-    pub const KEY_L1: Keysym = Keysym(0x0000ffc8);
+    pub const L1: Keysym = Keysym(0x0000ffc8);
     /// F12
-    pub const KEY_F12: Keysym = Keysym(0x0000ffc9);
+    pub const F12: Keysym = Keysym(0x0000ffc9);
     /// L2
-    pub const KEY_L2: Keysym = Keysym(0x0000ffc9);
+    pub const L2: Keysym = Keysym(0x0000ffc9);
     /// F13
-    pub const KEY_F13: Keysym = Keysym(0x0000ffca);
+    pub const F13: Keysym = Keysym(0x0000ffca);
     /// L3
-    pub const KEY_L3: Keysym = Keysym(0x0000ffca);
+    pub const L3: Keysym = Keysym(0x0000ffca);
     /// F14
-    pub const KEY_F14: Keysym = Keysym(0x0000ffcb);
+    pub const F14: Keysym = Keysym(0x0000ffcb);
     /// L4
-    pub const KEY_L4: Keysym = Keysym(0x0000ffcb);
+    pub const L4: Keysym = Keysym(0x0000ffcb);
     /// F15
-    pub const KEY_F15: Keysym = Keysym(0x0000ffcc);
+    pub const F15: Keysym = Keysym(0x0000ffcc);
     /// L5
-    pub const KEY_L5: Keysym = Keysym(0x0000ffcc);
+    pub const L5: Keysym = Keysym(0x0000ffcc);
     /// F16
-    pub const KEY_F16: Keysym = Keysym(0x0000ffcd);
+    pub const F16: Keysym = Keysym(0x0000ffcd);
     /// L6
-    pub const KEY_L6: Keysym = Keysym(0x0000ffcd);
+    pub const L6: Keysym = Keysym(0x0000ffcd);
     /// F17
-    pub const KEY_F17: Keysym = Keysym(0x0000ffce);
+    pub const F17: Keysym = Keysym(0x0000ffce);
     /// L7
-    pub const KEY_L7: Keysym = Keysym(0x0000ffce);
+    pub const L7: Keysym = Keysym(0x0000ffce);
     /// F18
-    pub const KEY_F18: Keysym = Keysym(0x0000ffcf);
+    pub const F18: Keysym = Keysym(0x0000ffcf);
     /// L8
-    pub const KEY_L8: Keysym = Keysym(0x0000ffcf);
+    pub const L8: Keysym = Keysym(0x0000ffcf);
     /// F19
-    pub const KEY_F19: Keysym = Keysym(0x0000ffd0);
+    pub const F19: Keysym = Keysym(0x0000ffd0);
     /// L9
-    pub const KEY_L9: Keysym = Keysym(0x0000ffd0);
+    pub const L9: Keysym = Keysym(0x0000ffd0);
     /// F20
-    pub const KEY_F20: Keysym = Keysym(0x0000ffd1);
+    pub const F20: Keysym = Keysym(0x0000ffd1);
     /// L10
-    pub const KEY_L10: Keysym = Keysym(0x0000ffd1);
+    pub const L10: Keysym = Keysym(0x0000ffd1);
     /// F21
-    pub const KEY_F21: Keysym = Keysym(0x0000ffd2);
+    pub const F21: Keysym = Keysym(0x0000ffd2);
     /// R1
-    pub const KEY_R1: Keysym = Keysym(0x0000ffd2);
+    pub const R1: Keysym = Keysym(0x0000ffd2);
     /// F22
-    pub const KEY_F22: Keysym = Keysym(0x0000ffd3);
+    pub const F22: Keysym = Keysym(0x0000ffd3);
     /// R2
-    pub const KEY_R2: Keysym = Keysym(0x0000ffd3);
+    pub const R2: Keysym = Keysym(0x0000ffd3);
     /// F23
-    pub const KEY_F23: Keysym = Keysym(0x0000ffd4);
+    pub const F23: Keysym = Keysym(0x0000ffd4);
     /// R3
-    pub const KEY_R3: Keysym = Keysym(0x0000ffd4);
+    pub const R3: Keysym = Keysym(0x0000ffd4);
     /// F24
-    pub const KEY_F24: Keysym = Keysym(0x0000ffd5);
+    pub const F24: Keysym = Keysym(0x0000ffd5);
     /// R4
-    pub const KEY_R4: Keysym = Keysym(0x0000ffd5);
+    pub const R4: Keysym = Keysym(0x0000ffd5);
     /// F25
-    pub const KEY_F25: Keysym = Keysym(0x0000ffd6);
+    pub const F25: Keysym = Keysym(0x0000ffd6);
     /// R5
-    pub const KEY_R5: Keysym = Keysym(0x0000ffd6);
+    pub const R5: Keysym = Keysym(0x0000ffd6);
     /// F26
-    pub const KEY_F26: Keysym = Keysym(0x0000ffd7);
+    pub const F26: Keysym = Keysym(0x0000ffd7);
     /// R6
-    pub const KEY_R6: Keysym = Keysym(0x0000ffd7);
+    pub const R6: Keysym = Keysym(0x0000ffd7);
     /// F27
-    pub const KEY_F27: Keysym = Keysym(0x0000ffd8);
+    pub const F27: Keysym = Keysym(0x0000ffd8);
     /// R7
-    pub const KEY_R7: Keysym = Keysym(0x0000ffd8);
+    pub const R7: Keysym = Keysym(0x0000ffd8);
     /// F28
-    pub const KEY_F28: Keysym = Keysym(0x0000ffd9);
+    pub const F28: Keysym = Keysym(0x0000ffd9);
     /// R8
-    pub const KEY_R8: Keysym = Keysym(0x0000ffd9);
+    pub const R8: Keysym = Keysym(0x0000ffd9);
     /// F29
-    pub const KEY_F29: Keysym = Keysym(0x0000ffda);
+    pub const F29: Keysym = Keysym(0x0000ffda);
     /// R9
-    pub const KEY_R9: Keysym = Keysym(0x0000ffda);
+    pub const R9: Keysym = Keysym(0x0000ffda);
     /// F30
-    pub const KEY_F30: Keysym = Keysym(0x0000ffdb);
+    pub const F30: Keysym = Keysym(0x0000ffdb);
     /// R10
-    pub const KEY_R10: Keysym = Keysym(0x0000ffdb);
+    pub const R10: Keysym = Keysym(0x0000ffdb);
     /// F31
-    pub const KEY_F31: Keysym = Keysym(0x0000ffdc);
+    pub const F31: Keysym = Keysym(0x0000ffdc);
     /// R11
-    pub const KEY_R11: Keysym = Keysym(0x0000ffdc);
+    pub const R11: Keysym = Keysym(0x0000ffdc);
     /// F32
-    pub const KEY_F32: Keysym = Keysym(0x0000ffdd);
+    pub const F32: Keysym = Keysym(0x0000ffdd);
     /// R12
-    pub const KEY_R12: Keysym = Keysym(0x0000ffdd);
+    pub const R12: Keysym = Keysym(0x0000ffdd);
     /// F33
-    pub const KEY_F33: Keysym = Keysym(0x0000ffde);
+    pub const F33: Keysym = Keysym(0x0000ffde);
     /// R13
-    pub const KEY_R13: Keysym = Keysym(0x0000ffde);
+    pub const R13: Keysym = Keysym(0x0000ffde);
     /// F34
-    pub const KEY_F34: Keysym = Keysym(0x0000ffdf);
+    pub const F34: Keysym = Keysym(0x0000ffdf);
     /// R14
-    pub const KEY_R14: Keysym = Keysym(0x0000ffdf);
+    pub const R14: Keysym = Keysym(0x0000ffdf);
     /// F35
-    pub const KEY_F35: Keysym = Keysym(0x0000ffe0);
+    pub const F35: Keysym = Keysym(0x0000ffe0);
     /// R15
-    pub const KEY_R15: Keysym = Keysym(0x0000ffe0);
+    pub const R15: Keysym = Keysym(0x0000ffe0);
     /// Shift_L
-    pub const KEY_Shift_L: Keysym = Keysym(0x0000ffe1);
+    pub const Shift_L: Keysym = Keysym(0x0000ffe1);
     /// Shift_R
-    pub const KEY_Shift_R: Keysym = Keysym(0x0000ffe2);
+    pub const Shift_R: Keysym = Keysym(0x0000ffe2);
     /// Control_L
-    pub const KEY_Control_L: Keysym = Keysym(0x0000ffe3);
+    pub const Control_L: Keysym = Keysym(0x0000ffe3);
     /// Control_R
-    pub const KEY_Control_R: Keysym = Keysym(0x0000ffe4);
+    pub const Control_R: Keysym = Keysym(0x0000ffe4);
     /// Caps_Lock
-    pub const KEY_Caps_Lock: Keysym = Keysym(0x0000ffe5);
+    pub const Caps_Lock: Keysym = Keysym(0x0000ffe5);
     /// Shift_Lock
-    pub const KEY_Shift_Lock: Keysym = Keysym(0x0000ffe6);
+    pub const Shift_Lock: Keysym = Keysym(0x0000ffe6);
     /// Meta_L
-    pub const KEY_Meta_L: Keysym = Keysym(0x0000ffe7);
+    pub const Meta_L: Keysym = Keysym(0x0000ffe7);
     /// Meta_R
-    pub const KEY_Meta_R: Keysym = Keysym(0x0000ffe8);
+    pub const Meta_R: Keysym = Keysym(0x0000ffe8);
     /// Alt_L
-    pub const KEY_Alt_L: Keysym = Keysym(0x0000ffe9);
+    pub const Alt_L: Keysym = Keysym(0x0000ffe9);
     /// Alt_R
-    pub const KEY_Alt_R: Keysym = Keysym(0x0000ffea);
+    pub const Alt_R: Keysym = Keysym(0x0000ffea);
     /// Super_L
-    pub const KEY_Super_L: Keysym = Keysym(0x0000ffeb);
+    pub const Super_L: Keysym = Keysym(0x0000ffeb);
     /// Super_R
-    pub const KEY_Super_R: Keysym = Keysym(0x0000ffec);
+    pub const Super_R: Keysym = Keysym(0x0000ffec);
     /// Hyper_L
-    pub const KEY_Hyper_L: Keysym = Keysym(0x0000ffed);
+    pub const Hyper_L: Keysym = Keysym(0x0000ffed);
     /// Hyper_R
-    pub const KEY_Hyper_R: Keysym = Keysym(0x0000ffee);
+    pub const Hyper_R: Keysym = Keysym(0x0000ffee);
     /// braille_dot_1
-    pub const KEY_braille_dot_1: Keysym = Keysym(0x0000fff1);
+    pub const braille_dot_1: Keysym = Keysym(0x0000fff1);
     /// braille_dot_2
-    pub const KEY_braille_dot_2: Keysym = Keysym(0x0000fff2);
+    pub const braille_dot_2: Keysym = Keysym(0x0000fff2);
     /// braille_dot_3
-    pub const KEY_braille_dot_3: Keysym = Keysym(0x0000fff3);
+    pub const braille_dot_3: Keysym = Keysym(0x0000fff3);
     /// braille_dot_4
-    pub const KEY_braille_dot_4: Keysym = Keysym(0x0000fff4);
+    pub const braille_dot_4: Keysym = Keysym(0x0000fff4);
     /// braille_dot_5
-    pub const KEY_braille_dot_5: Keysym = Keysym(0x0000fff5);
+    pub const braille_dot_5: Keysym = Keysym(0x0000fff5);
     /// braille_dot_6
-    pub const KEY_braille_dot_6: Keysym = Keysym(0x0000fff6);
+    pub const braille_dot_6: Keysym = Keysym(0x0000fff6);
     /// braille_dot_7
-    pub const KEY_braille_dot_7: Keysym = Keysym(0x0000fff7);
+    pub const braille_dot_7: Keysym = Keysym(0x0000fff7);
     /// braille_dot_8
-    pub const KEY_braille_dot_8: Keysym = Keysym(0x0000fff8);
+    pub const braille_dot_8: Keysym = Keysym(0x0000fff8);
     /// braille_dot_9
-    pub const KEY_braille_dot_9: Keysym = Keysym(0x0000fff9);
+    pub const braille_dot_9: Keysym = Keysym(0x0000fff9);
     /// braille_dot_10
-    pub const KEY_braille_dot_10: Keysym = Keysym(0x0000fffa);
+    pub const braille_dot_10: Keysym = Keysym(0x0000fffa);
     /// Delete
-    pub const KEY_Delete: Keysym = Keysym(0x0000ffff);
+    pub const Delete: Keysym = Keysym(0x0000ffff);
     /// VoidSymbol
-    pub const KEY_VoidSymbol: Keysym = Keysym(0x00ffffff);
+    pub const VoidSymbol: Keysym = Keysym(0x00ffffff);
     /// Ibreve
-    pub const KEY_Ibreve: Keysym = Keysym(0x0100012c);
+    pub const Ibreve: Keysym = Keysym(0x0100012c);
     /// ibreve
-    pub const KEY_ibreve: Keysym = Keysym(0x0100012d);
+    pub const ibreve: Keysym = Keysym(0x0100012d);
     /// Wcircumflex
-    pub const KEY_Wcircumflex: Keysym = Keysym(0x01000174);
+    pub const Wcircumflex: Keysym = Keysym(0x01000174);
     /// wcircumflex
-    pub const KEY_wcircumflex: Keysym = Keysym(0x01000175);
+    pub const wcircumflex: Keysym = Keysym(0x01000175);
     /// Ycircumflex
-    pub const KEY_Ycircumflex: Keysym = Keysym(0x01000176);
+    pub const Ycircumflex: Keysym = Keysym(0x01000176);
     /// ycircumflex
-    pub const KEY_ycircumflex: Keysym = Keysym(0x01000177);
+    pub const ycircumflex: Keysym = Keysym(0x01000177);
     /// SCHWA
-    pub const KEY_SCHWA: Keysym = Keysym(0x0100018f);
+    pub const SCHWA: Keysym = Keysym(0x0100018f);
     /// Obarred
-    pub const KEY_Obarred: Keysym = Keysym(0x0100019f);
+    pub const Obarred: Keysym = Keysym(0x0100019f);
     /// Ohorn
-    pub const KEY_Ohorn: Keysym = Keysym(0x010001a0);
+    pub const Ohorn: Keysym = Keysym(0x010001a0);
     /// ohorn
-    pub const KEY_ohorn: Keysym = Keysym(0x010001a1);
+    pub const ohorn: Keysym = Keysym(0x010001a1);
     /// Uhorn
-    pub const KEY_Uhorn: Keysym = Keysym(0x010001af);
+    pub const Uhorn: Keysym = Keysym(0x010001af);
     /// uhorn
-    pub const KEY_uhorn: Keysym = Keysym(0x010001b0);
+    pub const uhorn: Keysym = Keysym(0x010001b0);
     /// Zstroke
-    pub const KEY_Zstroke: Keysym = Keysym(0x010001b5);
+    pub const Zstroke: Keysym = Keysym(0x010001b5);
     /// zstroke
-    pub const KEY_zstroke: Keysym = Keysym(0x010001b6);
+    pub const zstroke: Keysym = Keysym(0x010001b6);
     /// EZH
-    pub const KEY_EZH: Keysym = Keysym(0x010001b7);
+    pub const EZH: Keysym = Keysym(0x010001b7);
     /// Ocaron
-    pub const KEY_Ocaron: Keysym = Keysym(0x010001d1);
+    pub const Ocaron: Keysym = Keysym(0x010001d1);
     /// ocaron
-    pub const KEY_ocaron: Keysym = Keysym(0x010001d2);
+    pub const ocaron: Keysym = Keysym(0x010001d2);
     /// Gcaron
-    pub const KEY_Gcaron: Keysym = Keysym(0x010001e6);
+    pub const Gcaron: Keysym = Keysym(0x010001e6);
     /// gcaron
-    pub const KEY_gcaron: Keysym = Keysym(0x010001e7);
+    pub const gcaron: Keysym = Keysym(0x010001e7);
     /// schwa
-    pub const KEY_schwa: Keysym = Keysym(0x01000259);
+    pub const schwa: Keysym = Keysym(0x01000259);
     /// obarred
-    pub const KEY_obarred: Keysym = Keysym(0x01000275);
+    pub const obarred: Keysym = Keysym(0x01000275);
     /// ezh
-    pub const KEY_ezh: Keysym = Keysym(0x01000292);
+    pub const ezh: Keysym = Keysym(0x01000292);
     /// combining_grave
-    pub const KEY_combining_grave: Keysym = Keysym(0x01000300);
+    pub const combining_grave: Keysym = Keysym(0x01000300);
     /// combining_acute
-    pub const KEY_combining_acute: Keysym = Keysym(0x01000301);
+    pub const combining_acute: Keysym = Keysym(0x01000301);
     /// combining_tilde
-    pub const KEY_combining_tilde: Keysym = Keysym(0x01000303);
+    pub const combining_tilde: Keysym = Keysym(0x01000303);
     /// combining_hook
-    pub const KEY_combining_hook: Keysym = Keysym(0x01000309);
+    pub const combining_hook: Keysym = Keysym(0x01000309);
     /// combining_belowdot
-    pub const KEY_combining_belowdot: Keysym = Keysym(0x01000323);
+    pub const combining_belowdot: Keysym = Keysym(0x01000323);
     /// Cyrillic_GHE_bar
-    pub const KEY_Cyrillic_GHE_bar: Keysym = Keysym(0x01000492);
+    pub const Cyrillic_GHE_bar: Keysym = Keysym(0x01000492);
     /// Cyrillic_ghe_bar
-    pub const KEY_Cyrillic_ghe_bar: Keysym = Keysym(0x01000493);
+    pub const Cyrillic_ghe_bar: Keysym = Keysym(0x01000493);
     /// Cyrillic_ZHE_descender
-    pub const KEY_Cyrillic_ZHE_descender: Keysym = Keysym(0x01000496);
+    pub const Cyrillic_ZHE_descender: Keysym = Keysym(0x01000496);
     /// Cyrillic_zhe_descender
-    pub const KEY_Cyrillic_zhe_descender: Keysym = Keysym(0x01000497);
+    pub const Cyrillic_zhe_descender: Keysym = Keysym(0x01000497);
     /// Cyrillic_KA_descender
-    pub const KEY_Cyrillic_KA_descender: Keysym = Keysym(0x0100049a);
+    pub const Cyrillic_KA_descender: Keysym = Keysym(0x0100049a);
     /// Cyrillic_ka_descender
-    pub const KEY_Cyrillic_ka_descender: Keysym = Keysym(0x0100049b);
+    pub const Cyrillic_ka_descender: Keysym = Keysym(0x0100049b);
     /// Cyrillic_KA_vertstroke
-    pub const KEY_Cyrillic_KA_vertstroke: Keysym = Keysym(0x0100049c);
+    pub const Cyrillic_KA_vertstroke: Keysym = Keysym(0x0100049c);
     /// Cyrillic_ka_vertstroke
-    pub const KEY_Cyrillic_ka_vertstroke: Keysym = Keysym(0x0100049d);
+    pub const Cyrillic_ka_vertstroke: Keysym = Keysym(0x0100049d);
     /// Cyrillic_EN_descender
-    pub const KEY_Cyrillic_EN_descender: Keysym = Keysym(0x010004a2);
+    pub const Cyrillic_EN_descender: Keysym = Keysym(0x010004a2);
     /// Cyrillic_en_descender
-    pub const KEY_Cyrillic_en_descender: Keysym = Keysym(0x010004a3);
+    pub const Cyrillic_en_descender: Keysym = Keysym(0x010004a3);
     /// Cyrillic_U_straight
-    pub const KEY_Cyrillic_U_straight: Keysym = Keysym(0x010004ae);
+    pub const Cyrillic_U_straight: Keysym = Keysym(0x010004ae);
     /// Cyrillic_u_straight
-    pub const KEY_Cyrillic_u_straight: Keysym = Keysym(0x010004af);
+    pub const Cyrillic_u_straight: Keysym = Keysym(0x010004af);
     /// Cyrillic_U_straight_bar
-    pub const KEY_Cyrillic_U_straight_bar: Keysym = Keysym(0x010004b0);
+    pub const Cyrillic_U_straight_bar: Keysym = Keysym(0x010004b0);
     /// Cyrillic_u_straight_bar
-    pub const KEY_Cyrillic_u_straight_bar: Keysym = Keysym(0x010004b1);
+    pub const Cyrillic_u_straight_bar: Keysym = Keysym(0x010004b1);
     /// Cyrillic_HA_descender
-    pub const KEY_Cyrillic_HA_descender: Keysym = Keysym(0x010004b2);
+    pub const Cyrillic_HA_descender: Keysym = Keysym(0x010004b2);
     /// Cyrillic_ha_descender
-    pub const KEY_Cyrillic_ha_descender: Keysym = Keysym(0x010004b3);
+    pub const Cyrillic_ha_descender: Keysym = Keysym(0x010004b3);
     /// Cyrillic_CHE_descender
-    pub const KEY_Cyrillic_CHE_descender: Keysym = Keysym(0x010004b6);
+    pub const Cyrillic_CHE_descender: Keysym = Keysym(0x010004b6);
     /// Cyrillic_che_descender
-    pub const KEY_Cyrillic_che_descender: Keysym = Keysym(0x010004b7);
+    pub const Cyrillic_che_descender: Keysym = Keysym(0x010004b7);
     /// Cyrillic_CHE_vertstroke
-    pub const KEY_Cyrillic_CHE_vertstroke: Keysym = Keysym(0x010004b8);
+    pub const Cyrillic_CHE_vertstroke: Keysym = Keysym(0x010004b8);
     /// Cyrillic_che_vertstroke
-    pub const KEY_Cyrillic_che_vertstroke: Keysym = Keysym(0x010004b9);
+    pub const Cyrillic_che_vertstroke: Keysym = Keysym(0x010004b9);
     /// Cyrillic_SHHA
-    pub const KEY_Cyrillic_SHHA: Keysym = Keysym(0x010004ba);
+    pub const Cyrillic_SHHA: Keysym = Keysym(0x010004ba);
     /// Cyrillic_shha
-    pub const KEY_Cyrillic_shha: Keysym = Keysym(0x010004bb);
+    pub const Cyrillic_shha: Keysym = Keysym(0x010004bb);
     /// Cyrillic_SCHWA
-    pub const KEY_Cyrillic_SCHWA: Keysym = Keysym(0x010004d8);
+    pub const Cyrillic_SCHWA: Keysym = Keysym(0x010004d8);
     /// Cyrillic_schwa
-    pub const KEY_Cyrillic_schwa: Keysym = Keysym(0x010004d9);
+    pub const Cyrillic_schwa: Keysym = Keysym(0x010004d9);
     /// Cyrillic_I_macron
-    pub const KEY_Cyrillic_I_macron: Keysym = Keysym(0x010004e2);
+    pub const Cyrillic_I_macron: Keysym = Keysym(0x010004e2);
     /// Cyrillic_i_macron
-    pub const KEY_Cyrillic_i_macron: Keysym = Keysym(0x010004e3);
+    pub const Cyrillic_i_macron: Keysym = Keysym(0x010004e3);
     /// Cyrillic_O_bar
-    pub const KEY_Cyrillic_O_bar: Keysym = Keysym(0x010004e8);
+    pub const Cyrillic_O_bar: Keysym = Keysym(0x010004e8);
     /// Cyrillic_o_bar
-    pub const KEY_Cyrillic_o_bar: Keysym = Keysym(0x010004e9);
+    pub const Cyrillic_o_bar: Keysym = Keysym(0x010004e9);
     /// Cyrillic_U_macron
-    pub const KEY_Cyrillic_U_macron: Keysym = Keysym(0x010004ee);
+    pub const Cyrillic_U_macron: Keysym = Keysym(0x010004ee);
     /// Cyrillic_u_macron
-    pub const KEY_Cyrillic_u_macron: Keysym = Keysym(0x010004ef);
+    pub const Cyrillic_u_macron: Keysym = Keysym(0x010004ef);
     /// Armenian_AYB
-    pub const KEY_Armenian_AYB: Keysym = Keysym(0x01000531);
+    pub const Armenian_AYB: Keysym = Keysym(0x01000531);
     /// Armenian_BEN
-    pub const KEY_Armenian_BEN: Keysym = Keysym(0x01000532);
+    pub const Armenian_BEN: Keysym = Keysym(0x01000532);
     /// Armenian_GIM
-    pub const KEY_Armenian_GIM: Keysym = Keysym(0x01000533);
+    pub const Armenian_GIM: Keysym = Keysym(0x01000533);
     /// Armenian_DA
-    pub const KEY_Armenian_DA: Keysym = Keysym(0x01000534);
+    pub const Armenian_DA: Keysym = Keysym(0x01000534);
     /// Armenian_YECH
-    pub const KEY_Armenian_YECH: Keysym = Keysym(0x01000535);
+    pub const Armenian_YECH: Keysym = Keysym(0x01000535);
     /// Armenian_ZA
-    pub const KEY_Armenian_ZA: Keysym = Keysym(0x01000536);
+    pub const Armenian_ZA: Keysym = Keysym(0x01000536);
     /// Armenian_E
-    pub const KEY_Armenian_E: Keysym = Keysym(0x01000537);
+    pub const Armenian_E: Keysym = Keysym(0x01000537);
     /// Armenian_AT
-    pub const KEY_Armenian_AT: Keysym = Keysym(0x01000538);
+    pub const Armenian_AT: Keysym = Keysym(0x01000538);
     /// Armenian_TO
-    pub const KEY_Armenian_TO: Keysym = Keysym(0x01000539);
+    pub const Armenian_TO: Keysym = Keysym(0x01000539);
     /// Armenian_ZHE
-    pub const KEY_Armenian_ZHE: Keysym = Keysym(0x0100053a);
+    pub const Armenian_ZHE: Keysym = Keysym(0x0100053a);
     /// Armenian_INI
-    pub const KEY_Armenian_INI: Keysym = Keysym(0x0100053b);
+    pub const Armenian_INI: Keysym = Keysym(0x0100053b);
     /// Armenian_LYUN
-    pub const KEY_Armenian_LYUN: Keysym = Keysym(0x0100053c);
+    pub const Armenian_LYUN: Keysym = Keysym(0x0100053c);
     /// Armenian_KHE
-    pub const KEY_Armenian_KHE: Keysym = Keysym(0x0100053d);
+    pub const Armenian_KHE: Keysym = Keysym(0x0100053d);
     /// Armenian_TSA
-    pub const KEY_Armenian_TSA: Keysym = Keysym(0x0100053e);
+    pub const Armenian_TSA: Keysym = Keysym(0x0100053e);
     /// Armenian_KEN
-    pub const KEY_Armenian_KEN: Keysym = Keysym(0x0100053f);
+    pub const Armenian_KEN: Keysym = Keysym(0x0100053f);
     /// Armenian_HO
-    pub const KEY_Armenian_HO: Keysym = Keysym(0x01000540);
+    pub const Armenian_HO: Keysym = Keysym(0x01000540);
     /// Armenian_DZA
-    pub const KEY_Armenian_DZA: Keysym = Keysym(0x01000541);
+    pub const Armenian_DZA: Keysym = Keysym(0x01000541);
     /// Armenian_GHAT
-    pub const KEY_Armenian_GHAT: Keysym = Keysym(0x01000542);
+    pub const Armenian_GHAT: Keysym = Keysym(0x01000542);
     /// Armenian_TCHE
-    pub const KEY_Armenian_TCHE: Keysym = Keysym(0x01000543);
+    pub const Armenian_TCHE: Keysym = Keysym(0x01000543);
     /// Armenian_MEN
-    pub const KEY_Armenian_MEN: Keysym = Keysym(0x01000544);
+    pub const Armenian_MEN: Keysym = Keysym(0x01000544);
     /// Armenian_HI
-    pub const KEY_Armenian_HI: Keysym = Keysym(0x01000545);
+    pub const Armenian_HI: Keysym = Keysym(0x01000545);
     /// Armenian_NU
-    pub const KEY_Armenian_NU: Keysym = Keysym(0x01000546);
+    pub const Armenian_NU: Keysym = Keysym(0x01000546);
     /// Armenian_SHA
-    pub const KEY_Armenian_SHA: Keysym = Keysym(0x01000547);
+    pub const Armenian_SHA: Keysym = Keysym(0x01000547);
     /// Armenian_VO
-    pub const KEY_Armenian_VO: Keysym = Keysym(0x01000548);
+    pub const Armenian_VO: Keysym = Keysym(0x01000548);
     /// Armenian_CHA
-    pub const KEY_Armenian_CHA: Keysym = Keysym(0x01000549);
+    pub const Armenian_CHA: Keysym = Keysym(0x01000549);
     /// Armenian_PE
-    pub const KEY_Armenian_PE: Keysym = Keysym(0x0100054a);
+    pub const Armenian_PE: Keysym = Keysym(0x0100054a);
     /// Armenian_JE
-    pub const KEY_Armenian_JE: Keysym = Keysym(0x0100054b);
+    pub const Armenian_JE: Keysym = Keysym(0x0100054b);
     /// Armenian_RA
-    pub const KEY_Armenian_RA: Keysym = Keysym(0x0100054c);
+    pub const Armenian_RA: Keysym = Keysym(0x0100054c);
     /// Armenian_SE
-    pub const KEY_Armenian_SE: Keysym = Keysym(0x0100054d);
+    pub const Armenian_SE: Keysym = Keysym(0x0100054d);
     /// Armenian_VEV
-    pub const KEY_Armenian_VEV: Keysym = Keysym(0x0100054e);
+    pub const Armenian_VEV: Keysym = Keysym(0x0100054e);
     /// Armenian_TYUN
-    pub const KEY_Armenian_TYUN: Keysym = Keysym(0x0100054f);
+    pub const Armenian_TYUN: Keysym = Keysym(0x0100054f);
     /// Armenian_RE
-    pub const KEY_Armenian_RE: Keysym = Keysym(0x01000550);
+    pub const Armenian_RE: Keysym = Keysym(0x01000550);
     /// Armenian_TSO
-    pub const KEY_Armenian_TSO: Keysym = Keysym(0x01000551);
+    pub const Armenian_TSO: Keysym = Keysym(0x01000551);
     /// Armenian_VYUN
-    pub const KEY_Armenian_VYUN: Keysym = Keysym(0x01000552);
+    pub const Armenian_VYUN: Keysym = Keysym(0x01000552);
     /// Armenian_PYUR
-    pub const KEY_Armenian_PYUR: Keysym = Keysym(0x01000553);
+    pub const Armenian_PYUR: Keysym = Keysym(0x01000553);
     /// Armenian_KE
-    pub const KEY_Armenian_KE: Keysym = Keysym(0x01000554);
+    pub const Armenian_KE: Keysym = Keysym(0x01000554);
     /// Armenian_O
-    pub const KEY_Armenian_O: Keysym = Keysym(0x01000555);
+    pub const Armenian_O: Keysym = Keysym(0x01000555);
     /// Armenian_FE
-    pub const KEY_Armenian_FE: Keysym = Keysym(0x01000556);
+    pub const Armenian_FE: Keysym = Keysym(0x01000556);
     /// Armenian_apostrophe
-    pub const KEY_Armenian_apostrophe: Keysym = Keysym(0x0100055a);
+    pub const Armenian_apostrophe: Keysym = Keysym(0x0100055a);
     /// Armenian_accent
-    pub const KEY_Armenian_accent: Keysym = Keysym(0x0100055b);
+    pub const Armenian_accent: Keysym = Keysym(0x0100055b);
     /// Armenian_shesht
-    pub const KEY_Armenian_shesht: Keysym = Keysym(0x0100055b);
+    pub const Armenian_shesht: Keysym = Keysym(0x0100055b);
     /// Armenian_exclam
-    pub const KEY_Armenian_exclam: Keysym = Keysym(0x0100055c);
+    pub const Armenian_exclam: Keysym = Keysym(0x0100055c);
     /// Armenian_amanak
-    pub const KEY_Armenian_amanak: Keysym = Keysym(0x0100055c);
+    pub const Armenian_amanak: Keysym = Keysym(0x0100055c);
     /// Armenian_separation_mark
-    pub const KEY_Armenian_separation_mark: Keysym = Keysym(0x0100055d);
+    pub const Armenian_separation_mark: Keysym = Keysym(0x0100055d);
     /// Armenian_but
-    pub const KEY_Armenian_but: Keysym = Keysym(0x0100055d);
+    pub const Armenian_but: Keysym = Keysym(0x0100055d);
     /// Armenian_question
-    pub const KEY_Armenian_question: Keysym = Keysym(0x0100055e);
+    pub const Armenian_question: Keysym = Keysym(0x0100055e);
     /// Armenian_paruyk
-    pub const KEY_Armenian_paruyk: Keysym = Keysym(0x0100055e);
+    pub const Armenian_paruyk: Keysym = Keysym(0x0100055e);
     /// Armenian_ayb
-    pub const KEY_Armenian_ayb: Keysym = Keysym(0x01000561);
+    pub const Armenian_ayb: Keysym = Keysym(0x01000561);
     /// Armenian_ben
-    pub const KEY_Armenian_ben: Keysym = Keysym(0x01000562);
+    pub const Armenian_ben: Keysym = Keysym(0x01000562);
     /// Armenian_gim
-    pub const KEY_Armenian_gim: Keysym = Keysym(0x01000563);
+    pub const Armenian_gim: Keysym = Keysym(0x01000563);
     /// Armenian_da
-    pub const KEY_Armenian_da: Keysym = Keysym(0x01000564);
+    pub const Armenian_da: Keysym = Keysym(0x01000564);
     /// Armenian_yech
-    pub const KEY_Armenian_yech: Keysym = Keysym(0x01000565);
+    pub const Armenian_yech: Keysym = Keysym(0x01000565);
     /// Armenian_za
-    pub const KEY_Armenian_za: Keysym = Keysym(0x01000566);
+    pub const Armenian_za: Keysym = Keysym(0x01000566);
     /// Armenian_e
-    pub const KEY_Armenian_e: Keysym = Keysym(0x01000567);
+    pub const Armenian_e: Keysym = Keysym(0x01000567);
     /// Armenian_at
-    pub const KEY_Armenian_at: Keysym = Keysym(0x01000568);
+    pub const Armenian_at: Keysym = Keysym(0x01000568);
     /// Armenian_to
-    pub const KEY_Armenian_to: Keysym = Keysym(0x01000569);
+    pub const Armenian_to: Keysym = Keysym(0x01000569);
     /// Armenian_zhe
-    pub const KEY_Armenian_zhe: Keysym = Keysym(0x0100056a);
+    pub const Armenian_zhe: Keysym = Keysym(0x0100056a);
     /// Armenian_ini
-    pub const KEY_Armenian_ini: Keysym = Keysym(0x0100056b);
+    pub const Armenian_ini: Keysym = Keysym(0x0100056b);
     /// Armenian_lyun
-    pub const KEY_Armenian_lyun: Keysym = Keysym(0x0100056c);
+    pub const Armenian_lyun: Keysym = Keysym(0x0100056c);
     /// Armenian_khe
-    pub const KEY_Armenian_khe: Keysym = Keysym(0x0100056d);
+    pub const Armenian_khe: Keysym = Keysym(0x0100056d);
     /// Armenian_tsa
-    pub const KEY_Armenian_tsa: Keysym = Keysym(0x0100056e);
+    pub const Armenian_tsa: Keysym = Keysym(0x0100056e);
     /// Armenian_ken
-    pub const KEY_Armenian_ken: Keysym = Keysym(0x0100056f);
+    pub const Armenian_ken: Keysym = Keysym(0x0100056f);
     /// Armenian_ho
-    pub const KEY_Armenian_ho: Keysym = Keysym(0x01000570);
+    pub const Armenian_ho: Keysym = Keysym(0x01000570);
     /// Armenian_dza
-    pub const KEY_Armenian_dza: Keysym = Keysym(0x01000571);
+    pub const Armenian_dza: Keysym = Keysym(0x01000571);
     /// Armenian_ghat
-    pub const KEY_Armenian_ghat: Keysym = Keysym(0x01000572);
+    pub const Armenian_ghat: Keysym = Keysym(0x01000572);
     /// Armenian_tche
-    pub const KEY_Armenian_tche: Keysym = Keysym(0x01000573);
+    pub const Armenian_tche: Keysym = Keysym(0x01000573);
     /// Armenian_men
-    pub const KEY_Armenian_men: Keysym = Keysym(0x01000574);
+    pub const Armenian_men: Keysym = Keysym(0x01000574);
     /// Armenian_hi
-    pub const KEY_Armenian_hi: Keysym = Keysym(0x01000575);
+    pub const Armenian_hi: Keysym = Keysym(0x01000575);
     /// Armenian_nu
-    pub const KEY_Armenian_nu: Keysym = Keysym(0x01000576);
+    pub const Armenian_nu: Keysym = Keysym(0x01000576);
     /// Armenian_sha
-    pub const KEY_Armenian_sha: Keysym = Keysym(0x01000577);
+    pub const Armenian_sha: Keysym = Keysym(0x01000577);
     /// Armenian_vo
-    pub const KEY_Armenian_vo: Keysym = Keysym(0x01000578);
+    pub const Armenian_vo: Keysym = Keysym(0x01000578);
     /// Armenian_cha
-    pub const KEY_Armenian_cha: Keysym = Keysym(0x01000579);
+    pub const Armenian_cha: Keysym = Keysym(0x01000579);
     /// Armenian_pe
-    pub const KEY_Armenian_pe: Keysym = Keysym(0x0100057a);
+    pub const Armenian_pe: Keysym = Keysym(0x0100057a);
     /// Armenian_je
-    pub const KEY_Armenian_je: Keysym = Keysym(0x0100057b);
+    pub const Armenian_je: Keysym = Keysym(0x0100057b);
     /// Armenian_ra
-    pub const KEY_Armenian_ra: Keysym = Keysym(0x0100057c);
+    pub const Armenian_ra: Keysym = Keysym(0x0100057c);
     /// Armenian_se
-    pub const KEY_Armenian_se: Keysym = Keysym(0x0100057d);
+    pub const Armenian_se: Keysym = Keysym(0x0100057d);
     /// Armenian_vev
-    pub const KEY_Armenian_vev: Keysym = Keysym(0x0100057e);
+    pub const Armenian_vev: Keysym = Keysym(0x0100057e);
     /// Armenian_tyun
-    pub const KEY_Armenian_tyun: Keysym = Keysym(0x0100057f);
+    pub const Armenian_tyun: Keysym = Keysym(0x0100057f);
     /// Armenian_re
-    pub const KEY_Armenian_re: Keysym = Keysym(0x01000580);
+    pub const Armenian_re: Keysym = Keysym(0x01000580);
     /// Armenian_tso
-    pub const KEY_Armenian_tso: Keysym = Keysym(0x01000581);
+    pub const Armenian_tso: Keysym = Keysym(0x01000581);
     /// Armenian_vyun
-    pub const KEY_Armenian_vyun: Keysym = Keysym(0x01000582);
+    pub const Armenian_vyun: Keysym = Keysym(0x01000582);
     /// Armenian_pyur
-    pub const KEY_Armenian_pyur: Keysym = Keysym(0x01000583);
+    pub const Armenian_pyur: Keysym = Keysym(0x01000583);
     /// Armenian_ke
-    pub const KEY_Armenian_ke: Keysym = Keysym(0x01000584);
+    pub const Armenian_ke: Keysym = Keysym(0x01000584);
     /// Armenian_o
-    pub const KEY_Armenian_o: Keysym = Keysym(0x01000585);
+    pub const Armenian_o: Keysym = Keysym(0x01000585);
     /// Armenian_fe
-    pub const KEY_Armenian_fe: Keysym = Keysym(0x01000586);
+    pub const Armenian_fe: Keysym = Keysym(0x01000586);
     /// Armenian_ligature_ew
-    pub const KEY_Armenian_ligature_ew: Keysym = Keysym(0x01000587);
+    pub const Armenian_ligature_ew: Keysym = Keysym(0x01000587);
     /// Armenian_full_stop
-    pub const KEY_Armenian_full_stop: Keysym = Keysym(0x01000589);
+    pub const Armenian_full_stop: Keysym = Keysym(0x01000589);
     /// Armenian_verjaket
-    pub const KEY_Armenian_verjaket: Keysym = Keysym(0x01000589);
+    pub const Armenian_verjaket: Keysym = Keysym(0x01000589);
     /// Armenian_hyphen
-    pub const KEY_Armenian_hyphen: Keysym = Keysym(0x0100058a);
+    pub const Armenian_hyphen: Keysym = Keysym(0x0100058a);
     /// Armenian_yentamna
-    pub const KEY_Armenian_yentamna: Keysym = Keysym(0x0100058a);
+    pub const Armenian_yentamna: Keysym = Keysym(0x0100058a);
     /// Arabic_madda_above
-    pub const KEY_Arabic_madda_above: Keysym = Keysym(0x01000653);
+    pub const Arabic_madda_above: Keysym = Keysym(0x01000653);
     /// Arabic_hamza_above
-    pub const KEY_Arabic_hamza_above: Keysym = Keysym(0x01000654);
+    pub const Arabic_hamza_above: Keysym = Keysym(0x01000654);
     /// Arabic_hamza_below
-    pub const KEY_Arabic_hamza_below: Keysym = Keysym(0x01000655);
+    pub const Arabic_hamza_below: Keysym = Keysym(0x01000655);
     /// Arabic_0
-    pub const KEY_Arabic_0: Keysym = Keysym(0x01000660);
+    pub const Arabic_0: Keysym = Keysym(0x01000660);
     /// Arabic_1
-    pub const KEY_Arabic_1: Keysym = Keysym(0x01000661);
+    pub const Arabic_1: Keysym = Keysym(0x01000661);
     /// Arabic_2
-    pub const KEY_Arabic_2: Keysym = Keysym(0x01000662);
+    pub const Arabic_2: Keysym = Keysym(0x01000662);
     /// Arabic_3
-    pub const KEY_Arabic_3: Keysym = Keysym(0x01000663);
+    pub const Arabic_3: Keysym = Keysym(0x01000663);
     /// Arabic_4
-    pub const KEY_Arabic_4: Keysym = Keysym(0x01000664);
+    pub const Arabic_4: Keysym = Keysym(0x01000664);
     /// Arabic_5
-    pub const KEY_Arabic_5: Keysym = Keysym(0x01000665);
+    pub const Arabic_5: Keysym = Keysym(0x01000665);
     /// Arabic_6
-    pub const KEY_Arabic_6: Keysym = Keysym(0x01000666);
+    pub const Arabic_6: Keysym = Keysym(0x01000666);
     /// Arabic_7
-    pub const KEY_Arabic_7: Keysym = Keysym(0x01000667);
+    pub const Arabic_7: Keysym = Keysym(0x01000667);
     /// Arabic_8
-    pub const KEY_Arabic_8: Keysym = Keysym(0x01000668);
+    pub const Arabic_8: Keysym = Keysym(0x01000668);
     /// Arabic_9
-    pub const KEY_Arabic_9: Keysym = Keysym(0x01000669);
+    pub const Arabic_9: Keysym = Keysym(0x01000669);
     /// Arabic_percent
-    pub const KEY_Arabic_percent: Keysym = Keysym(0x0100066a);
+    pub const Arabic_percent: Keysym = Keysym(0x0100066a);
     /// Arabic_superscript_alef
-    pub const KEY_Arabic_superscript_alef: Keysym = Keysym(0x01000670);
+    pub const Arabic_superscript_alef: Keysym = Keysym(0x01000670);
     /// Arabic_tteh
-    pub const KEY_Arabic_tteh: Keysym = Keysym(0x01000679);
+    pub const Arabic_tteh: Keysym = Keysym(0x01000679);
     /// Arabic_peh
-    pub const KEY_Arabic_peh: Keysym = Keysym(0x0100067e);
+    pub const Arabic_peh: Keysym = Keysym(0x0100067e);
     /// Arabic_tcheh
-    pub const KEY_Arabic_tcheh: Keysym = Keysym(0x01000686);
+    pub const Arabic_tcheh: Keysym = Keysym(0x01000686);
     /// Arabic_ddal
-    pub const KEY_Arabic_ddal: Keysym = Keysym(0x01000688);
+    pub const Arabic_ddal: Keysym = Keysym(0x01000688);
     /// Arabic_rreh
-    pub const KEY_Arabic_rreh: Keysym = Keysym(0x01000691);
+    pub const Arabic_rreh: Keysym = Keysym(0x01000691);
     /// Arabic_jeh
-    pub const KEY_Arabic_jeh: Keysym = Keysym(0x01000698);
+    pub const Arabic_jeh: Keysym = Keysym(0x01000698);
     /// Arabic_veh
-    pub const KEY_Arabic_veh: Keysym = Keysym(0x010006a4);
+    pub const Arabic_veh: Keysym = Keysym(0x010006a4);
     /// Arabic_keheh
-    pub const KEY_Arabic_keheh: Keysym = Keysym(0x010006a9);
+    pub const Arabic_keheh: Keysym = Keysym(0x010006a9);
     /// Arabic_gaf
-    pub const KEY_Arabic_gaf: Keysym = Keysym(0x010006af);
+    pub const Arabic_gaf: Keysym = Keysym(0x010006af);
     /// Arabic_noon_ghunna
-    pub const KEY_Arabic_noon_ghunna: Keysym = Keysym(0x010006ba);
+    pub const Arabic_noon_ghunna: Keysym = Keysym(0x010006ba);
     /// Arabic_heh_doachashmee
-    pub const KEY_Arabic_heh_doachashmee: Keysym = Keysym(0x010006be);
+    pub const Arabic_heh_doachashmee: Keysym = Keysym(0x010006be);
     /// Arabic_heh_goal
-    pub const KEY_Arabic_heh_goal: Keysym = Keysym(0x010006c1);
+    pub const Arabic_heh_goal: Keysym = Keysym(0x010006c1);
     /// Farsi_yeh
-    pub const KEY_Farsi_yeh: Keysym = Keysym(0x010006cc);
+    pub const Farsi_yeh: Keysym = Keysym(0x010006cc);
     /// Arabic_farsi_yeh
-    pub const KEY_Arabic_farsi_yeh: Keysym = Keysym(0x010006cc);
+    pub const Arabic_farsi_yeh: Keysym = Keysym(0x010006cc);
     /// Arabic_yeh_baree
-    pub const KEY_Arabic_yeh_baree: Keysym = Keysym(0x010006d2);
+    pub const Arabic_yeh_baree: Keysym = Keysym(0x010006d2);
     /// Arabic_fullstop
-    pub const KEY_Arabic_fullstop: Keysym = Keysym(0x010006d4);
+    pub const Arabic_fullstop: Keysym = Keysym(0x010006d4);
     /// Farsi_0
-    pub const KEY_Farsi_0: Keysym = Keysym(0x010006f0);
+    pub const Farsi_0: Keysym = Keysym(0x010006f0);
     /// Farsi_1
-    pub const KEY_Farsi_1: Keysym = Keysym(0x010006f1);
+    pub const Farsi_1: Keysym = Keysym(0x010006f1);
     /// Farsi_2
-    pub const KEY_Farsi_2: Keysym = Keysym(0x010006f2);
+    pub const Farsi_2: Keysym = Keysym(0x010006f2);
     /// Farsi_3
-    pub const KEY_Farsi_3: Keysym = Keysym(0x010006f3);
+    pub const Farsi_3: Keysym = Keysym(0x010006f3);
     /// Farsi_4
-    pub const KEY_Farsi_4: Keysym = Keysym(0x010006f4);
+    pub const Farsi_4: Keysym = Keysym(0x010006f4);
     /// Farsi_5
-    pub const KEY_Farsi_5: Keysym = Keysym(0x010006f5);
+    pub const Farsi_5: Keysym = Keysym(0x010006f5);
     /// Farsi_6
-    pub const KEY_Farsi_6: Keysym = Keysym(0x010006f6);
+    pub const Farsi_6: Keysym = Keysym(0x010006f6);
     /// Farsi_7
-    pub const KEY_Farsi_7: Keysym = Keysym(0x010006f7);
+    pub const Farsi_7: Keysym = Keysym(0x010006f7);
     /// Farsi_8
-    pub const KEY_Farsi_8: Keysym = Keysym(0x010006f8);
+    pub const Farsi_8: Keysym = Keysym(0x010006f8);
     /// Farsi_9
-    pub const KEY_Farsi_9: Keysym = Keysym(0x010006f9);
+    pub const Farsi_9: Keysym = Keysym(0x010006f9);
     /// Sinh_ng
-    pub const KEY_Sinh_ng: Keysym = Keysym(0x01000d82);
+    pub const Sinh_ng: Keysym = Keysym(0x01000d82);
     /// Sinh_h2
-    pub const KEY_Sinh_h2: Keysym = Keysym(0x01000d83);
+    pub const Sinh_h2: Keysym = Keysym(0x01000d83);
     /// Sinh_a
-    pub const KEY_Sinh_a: Keysym = Keysym(0x01000d85);
+    pub const Sinh_a: Keysym = Keysym(0x01000d85);
     /// Sinh_aa
-    pub const KEY_Sinh_aa: Keysym = Keysym(0x01000d86);
+    pub const Sinh_aa: Keysym = Keysym(0x01000d86);
     /// Sinh_ae
-    pub const KEY_Sinh_ae: Keysym = Keysym(0x01000d87);
+    pub const Sinh_ae: Keysym = Keysym(0x01000d87);
     /// Sinh_aee
-    pub const KEY_Sinh_aee: Keysym = Keysym(0x01000d88);
+    pub const Sinh_aee: Keysym = Keysym(0x01000d88);
     /// Sinh_i
-    pub const KEY_Sinh_i: Keysym = Keysym(0x01000d89);
+    pub const Sinh_i: Keysym = Keysym(0x01000d89);
     /// Sinh_ii
-    pub const KEY_Sinh_ii: Keysym = Keysym(0x01000d8a);
+    pub const Sinh_ii: Keysym = Keysym(0x01000d8a);
     /// Sinh_u
-    pub const KEY_Sinh_u: Keysym = Keysym(0x01000d8b);
+    pub const Sinh_u: Keysym = Keysym(0x01000d8b);
     /// Sinh_uu
-    pub const KEY_Sinh_uu: Keysym = Keysym(0x01000d8c);
+    pub const Sinh_uu: Keysym = Keysym(0x01000d8c);
     /// Sinh_ri
-    pub const KEY_Sinh_ri: Keysym = Keysym(0x01000d8d);
+    pub const Sinh_ri: Keysym = Keysym(0x01000d8d);
     /// Sinh_rii
-    pub const KEY_Sinh_rii: Keysym = Keysym(0x01000d8e);
+    pub const Sinh_rii: Keysym = Keysym(0x01000d8e);
     /// Sinh_lu
-    pub const KEY_Sinh_lu: Keysym = Keysym(0x01000d8f);
+    pub const Sinh_lu: Keysym = Keysym(0x01000d8f);
     /// Sinh_luu
-    pub const KEY_Sinh_luu: Keysym = Keysym(0x01000d90);
+    pub const Sinh_luu: Keysym = Keysym(0x01000d90);
     /// Sinh_e
-    pub const KEY_Sinh_e: Keysym = Keysym(0x01000d91);
+    pub const Sinh_e: Keysym = Keysym(0x01000d91);
     /// Sinh_ee
-    pub const KEY_Sinh_ee: Keysym = Keysym(0x01000d92);
+    pub const Sinh_ee: Keysym = Keysym(0x01000d92);
     /// Sinh_ai
-    pub const KEY_Sinh_ai: Keysym = Keysym(0x01000d93);
+    pub const Sinh_ai: Keysym = Keysym(0x01000d93);
     /// Sinh_o
-    pub const KEY_Sinh_o: Keysym = Keysym(0x01000d94);
+    pub const Sinh_o: Keysym = Keysym(0x01000d94);
     /// Sinh_oo
-    pub const KEY_Sinh_oo: Keysym = Keysym(0x01000d95);
+    pub const Sinh_oo: Keysym = Keysym(0x01000d95);
     /// Sinh_au
-    pub const KEY_Sinh_au: Keysym = Keysym(0x01000d96);
+    pub const Sinh_au: Keysym = Keysym(0x01000d96);
     /// Sinh_ka
-    pub const KEY_Sinh_ka: Keysym = Keysym(0x01000d9a);
+    pub const Sinh_ka: Keysym = Keysym(0x01000d9a);
     /// Sinh_kha
-    pub const KEY_Sinh_kha: Keysym = Keysym(0x01000d9b);
+    pub const Sinh_kha: Keysym = Keysym(0x01000d9b);
     /// Sinh_ga
-    pub const KEY_Sinh_ga: Keysym = Keysym(0x01000d9c);
+    pub const Sinh_ga: Keysym = Keysym(0x01000d9c);
     /// Sinh_gha
-    pub const KEY_Sinh_gha: Keysym = Keysym(0x01000d9d);
+    pub const Sinh_gha: Keysym = Keysym(0x01000d9d);
     /// Sinh_ng2
-    pub const KEY_Sinh_ng2: Keysym = Keysym(0x01000d9e);
+    pub const Sinh_ng2: Keysym = Keysym(0x01000d9e);
     /// Sinh_nga
-    pub const KEY_Sinh_nga: Keysym = Keysym(0x01000d9f);
+    pub const Sinh_nga: Keysym = Keysym(0x01000d9f);
     /// Sinh_ca
-    pub const KEY_Sinh_ca: Keysym = Keysym(0x01000da0);
+    pub const Sinh_ca: Keysym = Keysym(0x01000da0);
     /// Sinh_cha
-    pub const KEY_Sinh_cha: Keysym = Keysym(0x01000da1);
+    pub const Sinh_cha: Keysym = Keysym(0x01000da1);
     /// Sinh_ja
-    pub const KEY_Sinh_ja: Keysym = Keysym(0x01000da2);
+    pub const Sinh_ja: Keysym = Keysym(0x01000da2);
     /// Sinh_jha
-    pub const KEY_Sinh_jha: Keysym = Keysym(0x01000da3);
+    pub const Sinh_jha: Keysym = Keysym(0x01000da3);
     /// Sinh_nya
-    pub const KEY_Sinh_nya: Keysym = Keysym(0x01000da4);
+    pub const Sinh_nya: Keysym = Keysym(0x01000da4);
     /// Sinh_jnya
-    pub const KEY_Sinh_jnya: Keysym = Keysym(0x01000da5);
+    pub const Sinh_jnya: Keysym = Keysym(0x01000da5);
     /// Sinh_nja
-    pub const KEY_Sinh_nja: Keysym = Keysym(0x01000da6);
+    pub const Sinh_nja: Keysym = Keysym(0x01000da6);
     /// Sinh_tta
-    pub const KEY_Sinh_tta: Keysym = Keysym(0x01000da7);
+    pub const Sinh_tta: Keysym = Keysym(0x01000da7);
     /// Sinh_ttha
-    pub const KEY_Sinh_ttha: Keysym = Keysym(0x01000da8);
+    pub const Sinh_ttha: Keysym = Keysym(0x01000da8);
     /// Sinh_dda
-    pub const KEY_Sinh_dda: Keysym = Keysym(0x01000da9);
+    pub const Sinh_dda: Keysym = Keysym(0x01000da9);
     /// Sinh_ddha
-    pub const KEY_Sinh_ddha: Keysym = Keysym(0x01000daa);
+    pub const Sinh_ddha: Keysym = Keysym(0x01000daa);
     /// Sinh_nna
-    pub const KEY_Sinh_nna: Keysym = Keysym(0x01000dab);
+    pub const Sinh_nna: Keysym = Keysym(0x01000dab);
     /// Sinh_ndda
-    pub const KEY_Sinh_ndda: Keysym = Keysym(0x01000dac);
+    pub const Sinh_ndda: Keysym = Keysym(0x01000dac);
     /// Sinh_tha
-    pub const KEY_Sinh_tha: Keysym = Keysym(0x01000dad);
+    pub const Sinh_tha: Keysym = Keysym(0x01000dad);
     /// Sinh_thha
-    pub const KEY_Sinh_thha: Keysym = Keysym(0x01000dae);
+    pub const Sinh_thha: Keysym = Keysym(0x01000dae);
     /// Sinh_dha
-    pub const KEY_Sinh_dha: Keysym = Keysym(0x01000daf);
+    pub const Sinh_dha: Keysym = Keysym(0x01000daf);
     /// Sinh_dhha
-    pub const KEY_Sinh_dhha: Keysym = Keysym(0x01000db0);
+    pub const Sinh_dhha: Keysym = Keysym(0x01000db0);
     /// Sinh_na
-    pub const KEY_Sinh_na: Keysym = Keysym(0x01000db1);
+    pub const Sinh_na: Keysym = Keysym(0x01000db1);
     /// Sinh_ndha
-    pub const KEY_Sinh_ndha: Keysym = Keysym(0x01000db3);
+    pub const Sinh_ndha: Keysym = Keysym(0x01000db3);
     /// Sinh_pa
-    pub const KEY_Sinh_pa: Keysym = Keysym(0x01000db4);
+    pub const Sinh_pa: Keysym = Keysym(0x01000db4);
     /// Sinh_pha
-    pub const KEY_Sinh_pha: Keysym = Keysym(0x01000db5);
+    pub const Sinh_pha: Keysym = Keysym(0x01000db5);
     /// Sinh_ba
-    pub const KEY_Sinh_ba: Keysym = Keysym(0x01000db6);
+    pub const Sinh_ba: Keysym = Keysym(0x01000db6);
     /// Sinh_bha
-    pub const KEY_Sinh_bha: Keysym = Keysym(0x01000db7);
+    pub const Sinh_bha: Keysym = Keysym(0x01000db7);
     /// Sinh_ma
-    pub const KEY_Sinh_ma: Keysym = Keysym(0x01000db8);
+    pub const Sinh_ma: Keysym = Keysym(0x01000db8);
     /// Sinh_mba
-    pub const KEY_Sinh_mba: Keysym = Keysym(0x01000db9);
+    pub const Sinh_mba: Keysym = Keysym(0x01000db9);
     /// Sinh_ya
-    pub const KEY_Sinh_ya: Keysym = Keysym(0x01000dba);
+    pub const Sinh_ya: Keysym = Keysym(0x01000dba);
     /// Sinh_ra
-    pub const KEY_Sinh_ra: Keysym = Keysym(0x01000dbb);
+    pub const Sinh_ra: Keysym = Keysym(0x01000dbb);
     /// Sinh_la
-    pub const KEY_Sinh_la: Keysym = Keysym(0x01000dbd);
+    pub const Sinh_la: Keysym = Keysym(0x01000dbd);
     /// Sinh_va
-    pub const KEY_Sinh_va: Keysym = Keysym(0x01000dc0);
+    pub const Sinh_va: Keysym = Keysym(0x01000dc0);
     /// Sinh_sha
-    pub const KEY_Sinh_sha: Keysym = Keysym(0x01000dc1);
+    pub const Sinh_sha: Keysym = Keysym(0x01000dc1);
     /// Sinh_ssha
-    pub const KEY_Sinh_ssha: Keysym = Keysym(0x01000dc2);
+    pub const Sinh_ssha: Keysym = Keysym(0x01000dc2);
     /// Sinh_sa
-    pub const KEY_Sinh_sa: Keysym = Keysym(0x01000dc3);
+    pub const Sinh_sa: Keysym = Keysym(0x01000dc3);
     /// Sinh_ha
-    pub const KEY_Sinh_ha: Keysym = Keysym(0x01000dc4);
+    pub const Sinh_ha: Keysym = Keysym(0x01000dc4);
     /// Sinh_lla
-    pub const KEY_Sinh_lla: Keysym = Keysym(0x01000dc5);
+    pub const Sinh_lla: Keysym = Keysym(0x01000dc5);
     /// Sinh_fa
-    pub const KEY_Sinh_fa: Keysym = Keysym(0x01000dc6);
+    pub const Sinh_fa: Keysym = Keysym(0x01000dc6);
     /// Sinh_al
-    pub const KEY_Sinh_al: Keysym = Keysym(0x01000dca);
+    pub const Sinh_al: Keysym = Keysym(0x01000dca);
     /// Sinh_aa2
-    pub const KEY_Sinh_aa2: Keysym = Keysym(0x01000dcf);
+    pub const Sinh_aa2: Keysym = Keysym(0x01000dcf);
     /// Sinh_ae2
-    pub const KEY_Sinh_ae2: Keysym = Keysym(0x01000dd0);
+    pub const Sinh_ae2: Keysym = Keysym(0x01000dd0);
     /// Sinh_aee2
-    pub const KEY_Sinh_aee2: Keysym = Keysym(0x01000dd1);
+    pub const Sinh_aee2: Keysym = Keysym(0x01000dd1);
     /// Sinh_i2
-    pub const KEY_Sinh_i2: Keysym = Keysym(0x01000dd2);
+    pub const Sinh_i2: Keysym = Keysym(0x01000dd2);
     /// Sinh_ii2
-    pub const KEY_Sinh_ii2: Keysym = Keysym(0x01000dd3);
+    pub const Sinh_ii2: Keysym = Keysym(0x01000dd3);
     /// Sinh_u2
-    pub const KEY_Sinh_u2: Keysym = Keysym(0x01000dd4);
+    pub const Sinh_u2: Keysym = Keysym(0x01000dd4);
     /// Sinh_uu2
-    pub const KEY_Sinh_uu2: Keysym = Keysym(0x01000dd6);
+    pub const Sinh_uu2: Keysym = Keysym(0x01000dd6);
     /// Sinh_ru2
-    pub const KEY_Sinh_ru2: Keysym = Keysym(0x01000dd8);
+    pub const Sinh_ru2: Keysym = Keysym(0x01000dd8);
     /// Sinh_e2
-    pub const KEY_Sinh_e2: Keysym = Keysym(0x01000dd9);
+    pub const Sinh_e2: Keysym = Keysym(0x01000dd9);
     /// Sinh_ee2
-    pub const KEY_Sinh_ee2: Keysym = Keysym(0x01000dda);
+    pub const Sinh_ee2: Keysym = Keysym(0x01000dda);
     /// Sinh_ai2
-    pub const KEY_Sinh_ai2: Keysym = Keysym(0x01000ddb);
+    pub const Sinh_ai2: Keysym = Keysym(0x01000ddb);
     /// Sinh_o2
-    pub const KEY_Sinh_o2: Keysym = Keysym(0x01000ddc);
+    pub const Sinh_o2: Keysym = Keysym(0x01000ddc);
     /// Sinh_oo2
-    pub const KEY_Sinh_oo2: Keysym = Keysym(0x01000ddd);
+    pub const Sinh_oo2: Keysym = Keysym(0x01000ddd);
     /// Sinh_au2
-    pub const KEY_Sinh_au2: Keysym = Keysym(0x01000dde);
+    pub const Sinh_au2: Keysym = Keysym(0x01000dde);
     /// Sinh_lu2
-    pub const KEY_Sinh_lu2: Keysym = Keysym(0x01000ddf);
+    pub const Sinh_lu2: Keysym = Keysym(0x01000ddf);
     /// Sinh_ruu2
-    pub const KEY_Sinh_ruu2: Keysym = Keysym(0x01000df2);
+    pub const Sinh_ruu2: Keysym = Keysym(0x01000df2);
     /// Sinh_luu2
-    pub const KEY_Sinh_luu2: Keysym = Keysym(0x01000df3);
+    pub const Sinh_luu2: Keysym = Keysym(0x01000df3);
     /// Sinh_kunddaliya
-    pub const KEY_Sinh_kunddaliya: Keysym = Keysym(0x01000df4);
+    pub const Sinh_kunddaliya: Keysym = Keysym(0x01000df4);
     /// Georgian_an
-    pub const KEY_Georgian_an: Keysym = Keysym(0x010010d0);
+    pub const Georgian_an: Keysym = Keysym(0x010010d0);
     /// Georgian_ban
-    pub const KEY_Georgian_ban: Keysym = Keysym(0x010010d1);
+    pub const Georgian_ban: Keysym = Keysym(0x010010d1);
     /// Georgian_gan
-    pub const KEY_Georgian_gan: Keysym = Keysym(0x010010d2);
+    pub const Georgian_gan: Keysym = Keysym(0x010010d2);
     /// Georgian_don
-    pub const KEY_Georgian_don: Keysym = Keysym(0x010010d3);
+    pub const Georgian_don: Keysym = Keysym(0x010010d3);
     /// Georgian_en
-    pub const KEY_Georgian_en: Keysym = Keysym(0x010010d4);
+    pub const Georgian_en: Keysym = Keysym(0x010010d4);
     /// Georgian_vin
-    pub const KEY_Georgian_vin: Keysym = Keysym(0x010010d5);
+    pub const Georgian_vin: Keysym = Keysym(0x010010d5);
     /// Georgian_zen
-    pub const KEY_Georgian_zen: Keysym = Keysym(0x010010d6);
+    pub const Georgian_zen: Keysym = Keysym(0x010010d6);
     /// Georgian_tan
-    pub const KEY_Georgian_tan: Keysym = Keysym(0x010010d7);
+    pub const Georgian_tan: Keysym = Keysym(0x010010d7);
     /// Georgian_in
-    pub const KEY_Georgian_in: Keysym = Keysym(0x010010d8);
+    pub const Georgian_in: Keysym = Keysym(0x010010d8);
     /// Georgian_kan
-    pub const KEY_Georgian_kan: Keysym = Keysym(0x010010d9);
+    pub const Georgian_kan: Keysym = Keysym(0x010010d9);
     /// Georgian_las
-    pub const KEY_Georgian_las: Keysym = Keysym(0x010010da);
+    pub const Georgian_las: Keysym = Keysym(0x010010da);
     /// Georgian_man
-    pub const KEY_Georgian_man: Keysym = Keysym(0x010010db);
+    pub const Georgian_man: Keysym = Keysym(0x010010db);
     /// Georgian_nar
-    pub const KEY_Georgian_nar: Keysym = Keysym(0x010010dc);
+    pub const Georgian_nar: Keysym = Keysym(0x010010dc);
     /// Georgian_on
-    pub const KEY_Georgian_on: Keysym = Keysym(0x010010dd);
+    pub const Georgian_on: Keysym = Keysym(0x010010dd);
     /// Georgian_par
-    pub const KEY_Georgian_par: Keysym = Keysym(0x010010de);
+    pub const Georgian_par: Keysym = Keysym(0x010010de);
     /// Georgian_zhar
-    pub const KEY_Georgian_zhar: Keysym = Keysym(0x010010df);
+    pub const Georgian_zhar: Keysym = Keysym(0x010010df);
     /// Georgian_rae
-    pub const KEY_Georgian_rae: Keysym = Keysym(0x010010e0);
+    pub const Georgian_rae: Keysym = Keysym(0x010010e0);
     /// Georgian_san
-    pub const KEY_Georgian_san: Keysym = Keysym(0x010010e1);
+    pub const Georgian_san: Keysym = Keysym(0x010010e1);
     /// Georgian_tar
-    pub const KEY_Georgian_tar: Keysym = Keysym(0x010010e2);
+    pub const Georgian_tar: Keysym = Keysym(0x010010e2);
     /// Georgian_un
-    pub const KEY_Georgian_un: Keysym = Keysym(0x010010e3);
+    pub const Georgian_un: Keysym = Keysym(0x010010e3);
     /// Georgian_phar
-    pub const KEY_Georgian_phar: Keysym = Keysym(0x010010e4);
+    pub const Georgian_phar: Keysym = Keysym(0x010010e4);
     /// Georgian_khar
-    pub const KEY_Georgian_khar: Keysym = Keysym(0x010010e5);
+    pub const Georgian_khar: Keysym = Keysym(0x010010e5);
     /// Georgian_ghan
-    pub const KEY_Georgian_ghan: Keysym = Keysym(0x010010e6);
+    pub const Georgian_ghan: Keysym = Keysym(0x010010e6);
     /// Georgian_qar
-    pub const KEY_Georgian_qar: Keysym = Keysym(0x010010e7);
+    pub const Georgian_qar: Keysym = Keysym(0x010010e7);
     /// Georgian_shin
-    pub const KEY_Georgian_shin: Keysym = Keysym(0x010010e8);
+    pub const Georgian_shin: Keysym = Keysym(0x010010e8);
     /// Georgian_chin
-    pub const KEY_Georgian_chin: Keysym = Keysym(0x010010e9);
+    pub const Georgian_chin: Keysym = Keysym(0x010010e9);
     /// Georgian_can
-    pub const KEY_Georgian_can: Keysym = Keysym(0x010010ea);
+    pub const Georgian_can: Keysym = Keysym(0x010010ea);
     /// Georgian_jil
-    pub const KEY_Georgian_jil: Keysym = Keysym(0x010010eb);
+    pub const Georgian_jil: Keysym = Keysym(0x010010eb);
     /// Georgian_cil
-    pub const KEY_Georgian_cil: Keysym = Keysym(0x010010ec);
+    pub const Georgian_cil: Keysym = Keysym(0x010010ec);
     /// Georgian_char
-    pub const KEY_Georgian_char: Keysym = Keysym(0x010010ed);
+    pub const Georgian_char: Keysym = Keysym(0x010010ed);
     /// Georgian_xan
-    pub const KEY_Georgian_xan: Keysym = Keysym(0x010010ee);
+    pub const Georgian_xan: Keysym = Keysym(0x010010ee);
     /// Georgian_jhan
-    pub const KEY_Georgian_jhan: Keysym = Keysym(0x010010ef);
+    pub const Georgian_jhan: Keysym = Keysym(0x010010ef);
     /// Georgian_hae
-    pub const KEY_Georgian_hae: Keysym = Keysym(0x010010f0);
+    pub const Georgian_hae: Keysym = Keysym(0x010010f0);
     /// Georgian_he
-    pub const KEY_Georgian_he: Keysym = Keysym(0x010010f1);
+    pub const Georgian_he: Keysym = Keysym(0x010010f1);
     /// Georgian_hie
-    pub const KEY_Georgian_hie: Keysym = Keysym(0x010010f2);
+    pub const Georgian_hie: Keysym = Keysym(0x010010f2);
     /// Georgian_we
-    pub const KEY_Georgian_we: Keysym = Keysym(0x010010f3);
+    pub const Georgian_we: Keysym = Keysym(0x010010f3);
     /// Georgian_har
-    pub const KEY_Georgian_har: Keysym = Keysym(0x010010f4);
+    pub const Georgian_har: Keysym = Keysym(0x010010f4);
     /// Georgian_hoe
-    pub const KEY_Georgian_hoe: Keysym = Keysym(0x010010f5);
+    pub const Georgian_hoe: Keysym = Keysym(0x010010f5);
     /// Georgian_fi
-    pub const KEY_Georgian_fi: Keysym = Keysym(0x010010f6);
+    pub const Georgian_fi: Keysym = Keysym(0x010010f6);
     /// Babovedot
-    pub const KEY_Babovedot: Keysym = Keysym(0x01001e02);
+    pub const Babovedot: Keysym = Keysym(0x01001e02);
     /// babovedot
-    pub const KEY_babovedot: Keysym = Keysym(0x01001e03);
+    pub const babovedot: Keysym = Keysym(0x01001e03);
     /// Dabovedot
-    pub const KEY_Dabovedot: Keysym = Keysym(0x01001e0a);
+    pub const Dabovedot: Keysym = Keysym(0x01001e0a);
     /// dabovedot
-    pub const KEY_dabovedot: Keysym = Keysym(0x01001e0b);
+    pub const dabovedot: Keysym = Keysym(0x01001e0b);
     /// Fabovedot
-    pub const KEY_Fabovedot: Keysym = Keysym(0x01001e1e);
+    pub const Fabovedot: Keysym = Keysym(0x01001e1e);
     /// fabovedot
-    pub const KEY_fabovedot: Keysym = Keysym(0x01001e1f);
+    pub const fabovedot: Keysym = Keysym(0x01001e1f);
     /// Lbelowdot
-    pub const KEY_Lbelowdot: Keysym = Keysym(0x01001e36);
+    pub const Lbelowdot: Keysym = Keysym(0x01001e36);
     /// lbelowdot
-    pub const KEY_lbelowdot: Keysym = Keysym(0x01001e37);
+    pub const lbelowdot: Keysym = Keysym(0x01001e37);
     /// Mabovedot
-    pub const KEY_Mabovedot: Keysym = Keysym(0x01001e40);
+    pub const Mabovedot: Keysym = Keysym(0x01001e40);
     /// mabovedot
-    pub const KEY_mabovedot: Keysym = Keysym(0x01001e41);
+    pub const mabovedot: Keysym = Keysym(0x01001e41);
     /// Pabovedot
-    pub const KEY_Pabovedot: Keysym = Keysym(0x01001e56);
+    pub const Pabovedot: Keysym = Keysym(0x01001e56);
     /// pabovedot
-    pub const KEY_pabovedot: Keysym = Keysym(0x01001e57);
+    pub const pabovedot: Keysym = Keysym(0x01001e57);
     /// Sabovedot
-    pub const KEY_Sabovedot: Keysym = Keysym(0x01001e60);
+    pub const Sabovedot: Keysym = Keysym(0x01001e60);
     /// sabovedot
-    pub const KEY_sabovedot: Keysym = Keysym(0x01001e61);
+    pub const sabovedot: Keysym = Keysym(0x01001e61);
     /// Tabovedot
-    pub const KEY_Tabovedot: Keysym = Keysym(0x01001e6a);
+    pub const Tabovedot: Keysym = Keysym(0x01001e6a);
     /// tabovedot
-    pub const KEY_tabovedot: Keysym = Keysym(0x01001e6b);
+    pub const tabovedot: Keysym = Keysym(0x01001e6b);
     /// Wgrave
-    pub const KEY_Wgrave: Keysym = Keysym(0x01001e80);
+    pub const Wgrave: Keysym = Keysym(0x01001e80);
     /// wgrave
-    pub const KEY_wgrave: Keysym = Keysym(0x01001e81);
+    pub const wgrave: Keysym = Keysym(0x01001e81);
     /// Wacute
-    pub const KEY_Wacute: Keysym = Keysym(0x01001e82);
+    pub const Wacute: Keysym = Keysym(0x01001e82);
     /// wacute
-    pub const KEY_wacute: Keysym = Keysym(0x01001e83);
+    pub const wacute: Keysym = Keysym(0x01001e83);
     /// Wdiaeresis
-    pub const KEY_Wdiaeresis: Keysym = Keysym(0x01001e84);
+    pub const Wdiaeresis: Keysym = Keysym(0x01001e84);
     /// wdiaeresis
-    pub const KEY_wdiaeresis: Keysym = Keysym(0x01001e85);
+    pub const wdiaeresis: Keysym = Keysym(0x01001e85);
     /// Xabovedot
-    pub const KEY_Xabovedot: Keysym = Keysym(0x01001e8a);
+    pub const Xabovedot: Keysym = Keysym(0x01001e8a);
     /// xabovedot
-    pub const KEY_xabovedot: Keysym = Keysym(0x01001e8b);
+    pub const xabovedot: Keysym = Keysym(0x01001e8b);
     /// Abelowdot
-    pub const KEY_Abelowdot: Keysym = Keysym(0x01001ea0);
+    pub const Abelowdot: Keysym = Keysym(0x01001ea0);
     /// abelowdot
-    pub const KEY_abelowdot: Keysym = Keysym(0x01001ea1);
+    pub const abelowdot: Keysym = Keysym(0x01001ea1);
     /// Ahook
-    pub const KEY_Ahook: Keysym = Keysym(0x01001ea2);
+    pub const Ahook: Keysym = Keysym(0x01001ea2);
     /// ahook
-    pub const KEY_ahook: Keysym = Keysym(0x01001ea3);
+    pub const ahook: Keysym = Keysym(0x01001ea3);
     /// Acircumflexacute
-    pub const KEY_Acircumflexacute: Keysym = Keysym(0x01001ea4);
+    pub const Acircumflexacute: Keysym = Keysym(0x01001ea4);
     /// acircumflexacute
-    pub const KEY_acircumflexacute: Keysym = Keysym(0x01001ea5);
+    pub const acircumflexacute: Keysym = Keysym(0x01001ea5);
     /// Acircumflexgrave
-    pub const KEY_Acircumflexgrave: Keysym = Keysym(0x01001ea6);
+    pub const Acircumflexgrave: Keysym = Keysym(0x01001ea6);
     /// acircumflexgrave
-    pub const KEY_acircumflexgrave: Keysym = Keysym(0x01001ea7);
+    pub const acircumflexgrave: Keysym = Keysym(0x01001ea7);
     /// Acircumflexhook
-    pub const KEY_Acircumflexhook: Keysym = Keysym(0x01001ea8);
+    pub const Acircumflexhook: Keysym = Keysym(0x01001ea8);
     /// acircumflexhook
-    pub const KEY_acircumflexhook: Keysym = Keysym(0x01001ea9);
+    pub const acircumflexhook: Keysym = Keysym(0x01001ea9);
     /// Acircumflextilde
-    pub const KEY_Acircumflextilde: Keysym = Keysym(0x01001eaa);
+    pub const Acircumflextilde: Keysym = Keysym(0x01001eaa);
     /// acircumflextilde
-    pub const KEY_acircumflextilde: Keysym = Keysym(0x01001eab);
+    pub const acircumflextilde: Keysym = Keysym(0x01001eab);
     /// Acircumflexbelowdot
-    pub const KEY_Acircumflexbelowdot: Keysym = Keysym(0x01001eac);
+    pub const Acircumflexbelowdot: Keysym = Keysym(0x01001eac);
     /// acircumflexbelowdot
-    pub const KEY_acircumflexbelowdot: Keysym = Keysym(0x01001ead);
+    pub const acircumflexbelowdot: Keysym = Keysym(0x01001ead);
     /// Abreveacute
-    pub const KEY_Abreveacute: Keysym = Keysym(0x01001eae);
+    pub const Abreveacute: Keysym = Keysym(0x01001eae);
     /// abreveacute
-    pub const KEY_abreveacute: Keysym = Keysym(0x01001eaf);
+    pub const abreveacute: Keysym = Keysym(0x01001eaf);
     /// Abrevegrave
-    pub const KEY_Abrevegrave: Keysym = Keysym(0x01001eb0);
+    pub const Abrevegrave: Keysym = Keysym(0x01001eb0);
     /// abrevegrave
-    pub const KEY_abrevegrave: Keysym = Keysym(0x01001eb1);
+    pub const abrevegrave: Keysym = Keysym(0x01001eb1);
     /// Abrevehook
-    pub const KEY_Abrevehook: Keysym = Keysym(0x01001eb2);
+    pub const Abrevehook: Keysym = Keysym(0x01001eb2);
     /// abrevehook
-    pub const KEY_abrevehook: Keysym = Keysym(0x01001eb3);
+    pub const abrevehook: Keysym = Keysym(0x01001eb3);
     /// Abrevetilde
-    pub const KEY_Abrevetilde: Keysym = Keysym(0x01001eb4);
+    pub const Abrevetilde: Keysym = Keysym(0x01001eb4);
     /// abrevetilde
-    pub const KEY_abrevetilde: Keysym = Keysym(0x01001eb5);
+    pub const abrevetilde: Keysym = Keysym(0x01001eb5);
     /// Abrevebelowdot
-    pub const KEY_Abrevebelowdot: Keysym = Keysym(0x01001eb6);
+    pub const Abrevebelowdot: Keysym = Keysym(0x01001eb6);
     /// abrevebelowdot
-    pub const KEY_abrevebelowdot: Keysym = Keysym(0x01001eb7);
+    pub const abrevebelowdot: Keysym = Keysym(0x01001eb7);
     /// Ebelowdot
-    pub const KEY_Ebelowdot: Keysym = Keysym(0x01001eb8);
+    pub const Ebelowdot: Keysym = Keysym(0x01001eb8);
     /// ebelowdot
-    pub const KEY_ebelowdot: Keysym = Keysym(0x01001eb9);
+    pub const ebelowdot: Keysym = Keysym(0x01001eb9);
     /// Ehook
-    pub const KEY_Ehook: Keysym = Keysym(0x01001eba);
+    pub const Ehook: Keysym = Keysym(0x01001eba);
     /// ehook
-    pub const KEY_ehook: Keysym = Keysym(0x01001ebb);
+    pub const ehook: Keysym = Keysym(0x01001ebb);
     /// Etilde
-    pub const KEY_Etilde: Keysym = Keysym(0x01001ebc);
+    pub const Etilde: Keysym = Keysym(0x01001ebc);
     /// etilde
-    pub const KEY_etilde: Keysym = Keysym(0x01001ebd);
+    pub const etilde: Keysym = Keysym(0x01001ebd);
     /// Ecircumflexacute
-    pub const KEY_Ecircumflexacute: Keysym = Keysym(0x01001ebe);
+    pub const Ecircumflexacute: Keysym = Keysym(0x01001ebe);
     /// ecircumflexacute
-    pub const KEY_ecircumflexacute: Keysym = Keysym(0x01001ebf);
+    pub const ecircumflexacute: Keysym = Keysym(0x01001ebf);
     /// Ecircumflexgrave
-    pub const KEY_Ecircumflexgrave: Keysym = Keysym(0x01001ec0);
+    pub const Ecircumflexgrave: Keysym = Keysym(0x01001ec0);
     /// ecircumflexgrave
-    pub const KEY_ecircumflexgrave: Keysym = Keysym(0x01001ec1);
+    pub const ecircumflexgrave: Keysym = Keysym(0x01001ec1);
     /// Ecircumflexhook
-    pub const KEY_Ecircumflexhook: Keysym = Keysym(0x01001ec2);
+    pub const Ecircumflexhook: Keysym = Keysym(0x01001ec2);
     /// ecircumflexhook
-    pub const KEY_ecircumflexhook: Keysym = Keysym(0x01001ec3);
+    pub const ecircumflexhook: Keysym = Keysym(0x01001ec3);
     /// Ecircumflextilde
-    pub const KEY_Ecircumflextilde: Keysym = Keysym(0x01001ec4);
+    pub const Ecircumflextilde: Keysym = Keysym(0x01001ec4);
     /// ecircumflextilde
-    pub const KEY_ecircumflextilde: Keysym = Keysym(0x01001ec5);
+    pub const ecircumflextilde: Keysym = Keysym(0x01001ec5);
     /// Ecircumflexbelowdot
-    pub const KEY_Ecircumflexbelowdot: Keysym = Keysym(0x01001ec6);
+    pub const Ecircumflexbelowdot: Keysym = Keysym(0x01001ec6);
     /// ecircumflexbelowdot
-    pub const KEY_ecircumflexbelowdot: Keysym = Keysym(0x01001ec7);
+    pub const ecircumflexbelowdot: Keysym = Keysym(0x01001ec7);
     /// Ihook
-    pub const KEY_Ihook: Keysym = Keysym(0x01001ec8);
+    pub const Ihook: Keysym = Keysym(0x01001ec8);
     /// ihook
-    pub const KEY_ihook: Keysym = Keysym(0x01001ec9);
+    pub const ihook: Keysym = Keysym(0x01001ec9);
     /// Ibelowdot
-    pub const KEY_Ibelowdot: Keysym = Keysym(0x01001eca);
+    pub const Ibelowdot: Keysym = Keysym(0x01001eca);
     /// ibelowdot
-    pub const KEY_ibelowdot: Keysym = Keysym(0x01001ecb);
+    pub const ibelowdot: Keysym = Keysym(0x01001ecb);
     /// Obelowdot
-    pub const KEY_Obelowdot: Keysym = Keysym(0x01001ecc);
+    pub const Obelowdot: Keysym = Keysym(0x01001ecc);
     /// obelowdot
-    pub const KEY_obelowdot: Keysym = Keysym(0x01001ecd);
+    pub const obelowdot: Keysym = Keysym(0x01001ecd);
     /// Ohook
-    pub const KEY_Ohook: Keysym = Keysym(0x01001ece);
+    pub const Ohook: Keysym = Keysym(0x01001ece);
     /// ohook
-    pub const KEY_ohook: Keysym = Keysym(0x01001ecf);
+    pub const ohook: Keysym = Keysym(0x01001ecf);
     /// Ocircumflexacute
-    pub const KEY_Ocircumflexacute: Keysym = Keysym(0x01001ed0);
+    pub const Ocircumflexacute: Keysym = Keysym(0x01001ed0);
     /// ocircumflexacute
-    pub const KEY_ocircumflexacute: Keysym = Keysym(0x01001ed1);
+    pub const ocircumflexacute: Keysym = Keysym(0x01001ed1);
     /// Ocircumflexgrave
-    pub const KEY_Ocircumflexgrave: Keysym = Keysym(0x01001ed2);
+    pub const Ocircumflexgrave: Keysym = Keysym(0x01001ed2);
     /// ocircumflexgrave
-    pub const KEY_ocircumflexgrave: Keysym = Keysym(0x01001ed3);
+    pub const ocircumflexgrave: Keysym = Keysym(0x01001ed3);
     /// Ocircumflexhook
-    pub const KEY_Ocircumflexhook: Keysym = Keysym(0x01001ed4);
+    pub const Ocircumflexhook: Keysym = Keysym(0x01001ed4);
     /// ocircumflexhook
-    pub const KEY_ocircumflexhook: Keysym = Keysym(0x01001ed5);
+    pub const ocircumflexhook: Keysym = Keysym(0x01001ed5);
     /// Ocircumflextilde
-    pub const KEY_Ocircumflextilde: Keysym = Keysym(0x01001ed6);
+    pub const Ocircumflextilde: Keysym = Keysym(0x01001ed6);
     /// ocircumflextilde
-    pub const KEY_ocircumflextilde: Keysym = Keysym(0x01001ed7);
+    pub const ocircumflextilde: Keysym = Keysym(0x01001ed7);
     /// Ocircumflexbelowdot
-    pub const KEY_Ocircumflexbelowdot: Keysym = Keysym(0x01001ed8);
+    pub const Ocircumflexbelowdot: Keysym = Keysym(0x01001ed8);
     /// ocircumflexbelowdot
-    pub const KEY_ocircumflexbelowdot: Keysym = Keysym(0x01001ed9);
+    pub const ocircumflexbelowdot: Keysym = Keysym(0x01001ed9);
     /// Ohornacute
-    pub const KEY_Ohornacute: Keysym = Keysym(0x01001eda);
+    pub const Ohornacute: Keysym = Keysym(0x01001eda);
     /// ohornacute
-    pub const KEY_ohornacute: Keysym = Keysym(0x01001edb);
+    pub const ohornacute: Keysym = Keysym(0x01001edb);
     /// Ohorngrave
-    pub const KEY_Ohorngrave: Keysym = Keysym(0x01001edc);
+    pub const Ohorngrave: Keysym = Keysym(0x01001edc);
     /// ohorngrave
-    pub const KEY_ohorngrave: Keysym = Keysym(0x01001edd);
+    pub const ohorngrave: Keysym = Keysym(0x01001edd);
     /// Ohornhook
-    pub const KEY_Ohornhook: Keysym = Keysym(0x01001ede);
+    pub const Ohornhook: Keysym = Keysym(0x01001ede);
     /// ohornhook
-    pub const KEY_ohornhook: Keysym = Keysym(0x01001edf);
+    pub const ohornhook: Keysym = Keysym(0x01001edf);
     /// Ohorntilde
-    pub const KEY_Ohorntilde: Keysym = Keysym(0x01001ee0);
+    pub const Ohorntilde: Keysym = Keysym(0x01001ee0);
     /// ohorntilde
-    pub const KEY_ohorntilde: Keysym = Keysym(0x01001ee1);
+    pub const ohorntilde: Keysym = Keysym(0x01001ee1);
     /// Ohornbelowdot
-    pub const KEY_Ohornbelowdot: Keysym = Keysym(0x01001ee2);
+    pub const Ohornbelowdot: Keysym = Keysym(0x01001ee2);
     /// ohornbelowdot
-    pub const KEY_ohornbelowdot: Keysym = Keysym(0x01001ee3);
+    pub const ohornbelowdot: Keysym = Keysym(0x01001ee3);
     /// Ubelowdot
-    pub const KEY_Ubelowdot: Keysym = Keysym(0x01001ee4);
+    pub const Ubelowdot: Keysym = Keysym(0x01001ee4);
     /// ubelowdot
-    pub const KEY_ubelowdot: Keysym = Keysym(0x01001ee5);
+    pub const ubelowdot: Keysym = Keysym(0x01001ee5);
     /// Uhook
-    pub const KEY_Uhook: Keysym = Keysym(0x01001ee6);
+    pub const Uhook: Keysym = Keysym(0x01001ee6);
     /// uhook
-    pub const KEY_uhook: Keysym = Keysym(0x01001ee7);
+    pub const uhook: Keysym = Keysym(0x01001ee7);
     /// Uhornacute
-    pub const KEY_Uhornacute: Keysym = Keysym(0x01001ee8);
+    pub const Uhornacute: Keysym = Keysym(0x01001ee8);
     /// uhornacute
-    pub const KEY_uhornacute: Keysym = Keysym(0x01001ee9);
+    pub const uhornacute: Keysym = Keysym(0x01001ee9);
     /// Uhorngrave
-    pub const KEY_Uhorngrave: Keysym = Keysym(0x01001eea);
+    pub const Uhorngrave: Keysym = Keysym(0x01001eea);
     /// uhorngrave
-    pub const KEY_uhorngrave: Keysym = Keysym(0x01001eeb);
+    pub const uhorngrave: Keysym = Keysym(0x01001eeb);
     /// Uhornhook
-    pub const KEY_Uhornhook: Keysym = Keysym(0x01001eec);
+    pub const Uhornhook: Keysym = Keysym(0x01001eec);
     /// uhornhook
-    pub const KEY_uhornhook: Keysym = Keysym(0x01001eed);
+    pub const uhornhook: Keysym = Keysym(0x01001eed);
     /// Uhorntilde
-    pub const KEY_Uhorntilde: Keysym = Keysym(0x01001eee);
+    pub const Uhorntilde: Keysym = Keysym(0x01001eee);
     /// uhorntilde
-    pub const KEY_uhorntilde: Keysym = Keysym(0x01001eef);
+    pub const uhorntilde: Keysym = Keysym(0x01001eef);
     /// Uhornbelowdot
-    pub const KEY_Uhornbelowdot: Keysym = Keysym(0x01001ef0);
+    pub const Uhornbelowdot: Keysym = Keysym(0x01001ef0);
     /// uhornbelowdot
-    pub const KEY_uhornbelowdot: Keysym = Keysym(0x01001ef1);
+    pub const uhornbelowdot: Keysym = Keysym(0x01001ef1);
     /// Ygrave
-    pub const KEY_Ygrave: Keysym = Keysym(0x01001ef2);
+    pub const Ygrave: Keysym = Keysym(0x01001ef2);
     /// ygrave
-    pub const KEY_ygrave: Keysym = Keysym(0x01001ef3);
+    pub const ygrave: Keysym = Keysym(0x01001ef3);
     /// Ybelowdot
-    pub const KEY_Ybelowdot: Keysym = Keysym(0x01001ef4);
+    pub const Ybelowdot: Keysym = Keysym(0x01001ef4);
     /// ybelowdot
-    pub const KEY_ybelowdot: Keysym = Keysym(0x01001ef5);
+    pub const ybelowdot: Keysym = Keysym(0x01001ef5);
     /// Yhook
-    pub const KEY_Yhook: Keysym = Keysym(0x01001ef6);
+    pub const Yhook: Keysym = Keysym(0x01001ef6);
     /// yhook
-    pub const KEY_yhook: Keysym = Keysym(0x01001ef7);
+    pub const yhook: Keysym = Keysym(0x01001ef7);
     /// Ytilde
-    pub const KEY_Ytilde: Keysym = Keysym(0x01001ef8);
+    pub const Ytilde: Keysym = Keysym(0x01001ef8);
     /// ytilde
-    pub const KEY_ytilde: Keysym = Keysym(0x01001ef9);
+    pub const ytilde: Keysym = Keysym(0x01001ef9);
     /// zerosuperior
-    pub const KEY_zerosuperior: Keysym = Keysym(0x01002070);
+    pub const zerosuperior: Keysym = Keysym(0x01002070);
     /// foursuperior
-    pub const KEY_foursuperior: Keysym = Keysym(0x01002074);
+    pub const foursuperior: Keysym = Keysym(0x01002074);
     /// fivesuperior
-    pub const KEY_fivesuperior: Keysym = Keysym(0x01002075);
+    pub const fivesuperior: Keysym = Keysym(0x01002075);
     /// sixsuperior
-    pub const KEY_sixsuperior: Keysym = Keysym(0x01002076);
+    pub const sixsuperior: Keysym = Keysym(0x01002076);
     /// sevensuperior
-    pub const KEY_sevensuperior: Keysym = Keysym(0x01002077);
+    pub const sevensuperior: Keysym = Keysym(0x01002077);
     /// eightsuperior
-    pub const KEY_eightsuperior: Keysym = Keysym(0x01002078);
+    pub const eightsuperior: Keysym = Keysym(0x01002078);
     /// ninesuperior
-    pub const KEY_ninesuperior: Keysym = Keysym(0x01002079);
+    pub const ninesuperior: Keysym = Keysym(0x01002079);
     /// zerosubscript
-    pub const KEY_zerosubscript: Keysym = Keysym(0x01002080);
+    pub const zerosubscript: Keysym = Keysym(0x01002080);
     /// onesubscript
-    pub const KEY_onesubscript: Keysym = Keysym(0x01002081);
+    pub const onesubscript: Keysym = Keysym(0x01002081);
     /// twosubscript
-    pub const KEY_twosubscript: Keysym = Keysym(0x01002082);
+    pub const twosubscript: Keysym = Keysym(0x01002082);
     /// threesubscript
-    pub const KEY_threesubscript: Keysym = Keysym(0x01002083);
+    pub const threesubscript: Keysym = Keysym(0x01002083);
     /// foursubscript
-    pub const KEY_foursubscript: Keysym = Keysym(0x01002084);
+    pub const foursubscript: Keysym = Keysym(0x01002084);
     /// fivesubscript
-    pub const KEY_fivesubscript: Keysym = Keysym(0x01002085);
+    pub const fivesubscript: Keysym = Keysym(0x01002085);
     /// sixsubscript
-    pub const KEY_sixsubscript: Keysym = Keysym(0x01002086);
+    pub const sixsubscript: Keysym = Keysym(0x01002086);
     /// sevensubscript
-    pub const KEY_sevensubscript: Keysym = Keysym(0x01002087);
+    pub const sevensubscript: Keysym = Keysym(0x01002087);
     /// eightsubscript
-    pub const KEY_eightsubscript: Keysym = Keysym(0x01002088);
+    pub const eightsubscript: Keysym = Keysym(0x01002088);
     /// ninesubscript
-    pub const KEY_ninesubscript: Keysym = Keysym(0x01002089);
+    pub const ninesubscript: Keysym = Keysym(0x01002089);
     /// EcuSign
-    pub const KEY_EcuSign: Keysym = Keysym(0x010020a0);
+    pub const EcuSign: Keysym = Keysym(0x010020a0);
     /// ColonSign
-    pub const KEY_ColonSign: Keysym = Keysym(0x010020a1);
+    pub const ColonSign: Keysym = Keysym(0x010020a1);
     /// CruzeiroSign
-    pub const KEY_CruzeiroSign: Keysym = Keysym(0x010020a2);
+    pub const CruzeiroSign: Keysym = Keysym(0x010020a2);
     /// FFrancSign
-    pub const KEY_FFrancSign: Keysym = Keysym(0x010020a3);
+    pub const FFrancSign: Keysym = Keysym(0x010020a3);
     /// LiraSign
-    pub const KEY_LiraSign: Keysym = Keysym(0x010020a4);
+    pub const LiraSign: Keysym = Keysym(0x010020a4);
     /// MillSign
-    pub const KEY_MillSign: Keysym = Keysym(0x010020a5);
+    pub const MillSign: Keysym = Keysym(0x010020a5);
     /// NairaSign
-    pub const KEY_NairaSign: Keysym = Keysym(0x010020a6);
+    pub const NairaSign: Keysym = Keysym(0x010020a6);
     /// PesetaSign
-    pub const KEY_PesetaSign: Keysym = Keysym(0x010020a7);
+    pub const PesetaSign: Keysym = Keysym(0x010020a7);
     /// RupeeSign
-    pub const KEY_RupeeSign: Keysym = Keysym(0x010020a8);
+    pub const RupeeSign: Keysym = Keysym(0x010020a8);
     /// WonSign
-    pub const KEY_WonSign: Keysym = Keysym(0x010020a9);
+    pub const WonSign: Keysym = Keysym(0x010020a9);
     /// NewSheqelSign
-    pub const KEY_NewSheqelSign: Keysym = Keysym(0x010020aa);
+    pub const NewSheqelSign: Keysym = Keysym(0x010020aa);
     /// DongSign
-    pub const KEY_DongSign: Keysym = Keysym(0x010020ab);
+    pub const DongSign: Keysym = Keysym(0x010020ab);
     /// partdifferential
-    pub const KEY_partdifferential: Keysym = Keysym(0x01002202);
+    pub const partdifferential: Keysym = Keysym(0x01002202);
     /// emptyset
-    pub const KEY_emptyset: Keysym = Keysym(0x01002205);
+    pub const emptyset: Keysym = Keysym(0x01002205);
     /// elementof
-    pub const KEY_elementof: Keysym = Keysym(0x01002208);
+    pub const elementof: Keysym = Keysym(0x01002208);
     /// notelementof
-    pub const KEY_notelementof: Keysym = Keysym(0x01002209);
+    pub const notelementof: Keysym = Keysym(0x01002209);
     /// containsas
-    pub const KEY_containsas: Keysym = Keysym(0x0100220b);
+    pub const containsas: Keysym = Keysym(0x0100220b);
     /// squareroot
-    pub const KEY_squareroot: Keysym = Keysym(0x0100221a);
+    pub const squareroot: Keysym = Keysym(0x0100221a);
     /// cuberoot
-    pub const KEY_cuberoot: Keysym = Keysym(0x0100221b);
+    pub const cuberoot: Keysym = Keysym(0x0100221b);
     /// fourthroot
-    pub const KEY_fourthroot: Keysym = Keysym(0x0100221c);
+    pub const fourthroot: Keysym = Keysym(0x0100221c);
     /// dintegral
-    pub const KEY_dintegral: Keysym = Keysym(0x0100222c);
+    pub const dintegral: Keysym = Keysym(0x0100222c);
     /// tintegral
-    pub const KEY_tintegral: Keysym = Keysym(0x0100222d);
+    pub const tintegral: Keysym = Keysym(0x0100222d);
     /// because
-    pub const KEY_because: Keysym = Keysym(0x01002235);
+    pub const because: Keysym = Keysym(0x01002235);
     /// notapproxeq
-    pub const KEY_notapproxeq: Keysym = Keysym(0x01002247);
+    pub const notapproxeq: Keysym = Keysym(0x01002247);
     /// approxeq
-    pub const KEY_approxeq: Keysym = Keysym(0x01002248);
+    pub const approxeq: Keysym = Keysym(0x01002248);
     /// notidentical
-    pub const KEY_notidentical: Keysym = Keysym(0x01002262);
+    pub const notidentical: Keysym = Keysym(0x01002262);
     /// stricteq
-    pub const KEY_stricteq: Keysym = Keysym(0x01002263);
+    pub const stricteq: Keysym = Keysym(0x01002263);
     /// braille_blank
-    pub const KEY_braille_blank: Keysym = Keysym(0x01002800);
+    pub const braille_blank: Keysym = Keysym(0x01002800);
     /// braille_dots_1
-    pub const KEY_braille_dots_1: Keysym = Keysym(0x01002801);
+    pub const braille_dots_1: Keysym = Keysym(0x01002801);
     /// braille_dots_2
-    pub const KEY_braille_dots_2: Keysym = Keysym(0x01002802);
+    pub const braille_dots_2: Keysym = Keysym(0x01002802);
     /// braille_dots_12
-    pub const KEY_braille_dots_12: Keysym = Keysym(0x01002803);
+    pub const braille_dots_12: Keysym = Keysym(0x01002803);
     /// braille_dots_3
-    pub const KEY_braille_dots_3: Keysym = Keysym(0x01002804);
+    pub const braille_dots_3: Keysym = Keysym(0x01002804);
     /// braille_dots_13
-    pub const KEY_braille_dots_13: Keysym = Keysym(0x01002805);
+    pub const braille_dots_13: Keysym = Keysym(0x01002805);
     /// braille_dots_23
-    pub const KEY_braille_dots_23: Keysym = Keysym(0x01002806);
+    pub const braille_dots_23: Keysym = Keysym(0x01002806);
     /// braille_dots_123
-    pub const KEY_braille_dots_123: Keysym = Keysym(0x01002807);
+    pub const braille_dots_123: Keysym = Keysym(0x01002807);
     /// braille_dots_4
-    pub const KEY_braille_dots_4: Keysym = Keysym(0x01002808);
+    pub const braille_dots_4: Keysym = Keysym(0x01002808);
     /// braille_dots_14
-    pub const KEY_braille_dots_14: Keysym = Keysym(0x01002809);
+    pub const braille_dots_14: Keysym = Keysym(0x01002809);
     /// braille_dots_24
-    pub const KEY_braille_dots_24: Keysym = Keysym(0x0100280a);
+    pub const braille_dots_24: Keysym = Keysym(0x0100280a);
     /// braille_dots_124
-    pub const KEY_braille_dots_124: Keysym = Keysym(0x0100280b);
+    pub const braille_dots_124: Keysym = Keysym(0x0100280b);
     /// braille_dots_34
-    pub const KEY_braille_dots_34: Keysym = Keysym(0x0100280c);
+    pub const braille_dots_34: Keysym = Keysym(0x0100280c);
     /// braille_dots_134
-    pub const KEY_braille_dots_134: Keysym = Keysym(0x0100280d);
+    pub const braille_dots_134: Keysym = Keysym(0x0100280d);
     /// braille_dots_234
-    pub const KEY_braille_dots_234: Keysym = Keysym(0x0100280e);
+    pub const braille_dots_234: Keysym = Keysym(0x0100280e);
     /// braille_dots_1234
-    pub const KEY_braille_dots_1234: Keysym = Keysym(0x0100280f);
+    pub const braille_dots_1234: Keysym = Keysym(0x0100280f);
     /// braille_dots_5
-    pub const KEY_braille_dots_5: Keysym = Keysym(0x01002810);
+    pub const braille_dots_5: Keysym = Keysym(0x01002810);
     /// braille_dots_15
-    pub const KEY_braille_dots_15: Keysym = Keysym(0x01002811);
+    pub const braille_dots_15: Keysym = Keysym(0x01002811);
     /// braille_dots_25
-    pub const KEY_braille_dots_25: Keysym = Keysym(0x01002812);
+    pub const braille_dots_25: Keysym = Keysym(0x01002812);
     /// braille_dots_125
-    pub const KEY_braille_dots_125: Keysym = Keysym(0x01002813);
+    pub const braille_dots_125: Keysym = Keysym(0x01002813);
     /// braille_dots_35
-    pub const KEY_braille_dots_35: Keysym = Keysym(0x01002814);
+    pub const braille_dots_35: Keysym = Keysym(0x01002814);
     /// braille_dots_135
-    pub const KEY_braille_dots_135: Keysym = Keysym(0x01002815);
+    pub const braille_dots_135: Keysym = Keysym(0x01002815);
     /// braille_dots_235
-    pub const KEY_braille_dots_235: Keysym = Keysym(0x01002816);
+    pub const braille_dots_235: Keysym = Keysym(0x01002816);
     /// braille_dots_1235
-    pub const KEY_braille_dots_1235: Keysym = Keysym(0x01002817);
+    pub const braille_dots_1235: Keysym = Keysym(0x01002817);
     /// braille_dots_45
-    pub const KEY_braille_dots_45: Keysym = Keysym(0x01002818);
+    pub const braille_dots_45: Keysym = Keysym(0x01002818);
     /// braille_dots_145
-    pub const KEY_braille_dots_145: Keysym = Keysym(0x01002819);
+    pub const braille_dots_145: Keysym = Keysym(0x01002819);
     /// braille_dots_245
-    pub const KEY_braille_dots_245: Keysym = Keysym(0x0100281a);
+    pub const braille_dots_245: Keysym = Keysym(0x0100281a);
     /// braille_dots_1245
-    pub const KEY_braille_dots_1245: Keysym = Keysym(0x0100281b);
+    pub const braille_dots_1245: Keysym = Keysym(0x0100281b);
     /// braille_dots_345
-    pub const KEY_braille_dots_345: Keysym = Keysym(0x0100281c);
+    pub const braille_dots_345: Keysym = Keysym(0x0100281c);
     /// braille_dots_1345
-    pub const KEY_braille_dots_1345: Keysym = Keysym(0x0100281d);
+    pub const braille_dots_1345: Keysym = Keysym(0x0100281d);
     /// braille_dots_2345
-    pub const KEY_braille_dots_2345: Keysym = Keysym(0x0100281e);
+    pub const braille_dots_2345: Keysym = Keysym(0x0100281e);
     /// braille_dots_12345
-    pub const KEY_braille_dots_12345: Keysym = Keysym(0x0100281f);
+    pub const braille_dots_12345: Keysym = Keysym(0x0100281f);
     /// braille_dots_6
-    pub const KEY_braille_dots_6: Keysym = Keysym(0x01002820);
+    pub const braille_dots_6: Keysym = Keysym(0x01002820);
     /// braille_dots_16
-    pub const KEY_braille_dots_16: Keysym = Keysym(0x01002821);
+    pub const braille_dots_16: Keysym = Keysym(0x01002821);
     /// braille_dots_26
-    pub const KEY_braille_dots_26: Keysym = Keysym(0x01002822);
+    pub const braille_dots_26: Keysym = Keysym(0x01002822);
     /// braille_dots_126
-    pub const KEY_braille_dots_126: Keysym = Keysym(0x01002823);
+    pub const braille_dots_126: Keysym = Keysym(0x01002823);
     /// braille_dots_36
-    pub const KEY_braille_dots_36: Keysym = Keysym(0x01002824);
+    pub const braille_dots_36: Keysym = Keysym(0x01002824);
     /// braille_dots_136
-    pub const KEY_braille_dots_136: Keysym = Keysym(0x01002825);
+    pub const braille_dots_136: Keysym = Keysym(0x01002825);
     /// braille_dots_236
-    pub const KEY_braille_dots_236: Keysym = Keysym(0x01002826);
+    pub const braille_dots_236: Keysym = Keysym(0x01002826);
     /// braille_dots_1236
-    pub const KEY_braille_dots_1236: Keysym = Keysym(0x01002827);
+    pub const braille_dots_1236: Keysym = Keysym(0x01002827);
     /// braille_dots_46
-    pub const KEY_braille_dots_46: Keysym = Keysym(0x01002828);
+    pub const braille_dots_46: Keysym = Keysym(0x01002828);
     /// braille_dots_146
-    pub const KEY_braille_dots_146: Keysym = Keysym(0x01002829);
+    pub const braille_dots_146: Keysym = Keysym(0x01002829);
     /// braille_dots_246
-    pub const KEY_braille_dots_246: Keysym = Keysym(0x0100282a);
+    pub const braille_dots_246: Keysym = Keysym(0x0100282a);
     /// braille_dots_1246
-    pub const KEY_braille_dots_1246: Keysym = Keysym(0x0100282b);
+    pub const braille_dots_1246: Keysym = Keysym(0x0100282b);
     /// braille_dots_346
-    pub const KEY_braille_dots_346: Keysym = Keysym(0x0100282c);
+    pub const braille_dots_346: Keysym = Keysym(0x0100282c);
     /// braille_dots_1346
-    pub const KEY_braille_dots_1346: Keysym = Keysym(0x0100282d);
+    pub const braille_dots_1346: Keysym = Keysym(0x0100282d);
     /// braille_dots_2346
-    pub const KEY_braille_dots_2346: Keysym = Keysym(0x0100282e);
+    pub const braille_dots_2346: Keysym = Keysym(0x0100282e);
     /// braille_dots_12346
-    pub const KEY_braille_dots_12346: Keysym = Keysym(0x0100282f);
+    pub const braille_dots_12346: Keysym = Keysym(0x0100282f);
     /// braille_dots_56
-    pub const KEY_braille_dots_56: Keysym = Keysym(0x01002830);
+    pub const braille_dots_56: Keysym = Keysym(0x01002830);
     /// braille_dots_156
-    pub const KEY_braille_dots_156: Keysym = Keysym(0x01002831);
+    pub const braille_dots_156: Keysym = Keysym(0x01002831);
     /// braille_dots_256
-    pub const KEY_braille_dots_256: Keysym = Keysym(0x01002832);
+    pub const braille_dots_256: Keysym = Keysym(0x01002832);
     /// braille_dots_1256
-    pub const KEY_braille_dots_1256: Keysym = Keysym(0x01002833);
+    pub const braille_dots_1256: Keysym = Keysym(0x01002833);
     /// braille_dots_356
-    pub const KEY_braille_dots_356: Keysym = Keysym(0x01002834);
+    pub const braille_dots_356: Keysym = Keysym(0x01002834);
     /// braille_dots_1356
-    pub const KEY_braille_dots_1356: Keysym = Keysym(0x01002835);
+    pub const braille_dots_1356: Keysym = Keysym(0x01002835);
     /// braille_dots_2356
-    pub const KEY_braille_dots_2356: Keysym = Keysym(0x01002836);
+    pub const braille_dots_2356: Keysym = Keysym(0x01002836);
     /// braille_dots_12356
-    pub const KEY_braille_dots_12356: Keysym = Keysym(0x01002837);
+    pub const braille_dots_12356: Keysym = Keysym(0x01002837);
     /// braille_dots_456
-    pub const KEY_braille_dots_456: Keysym = Keysym(0x01002838);
+    pub const braille_dots_456: Keysym = Keysym(0x01002838);
     /// braille_dots_1456
-    pub const KEY_braille_dots_1456: Keysym = Keysym(0x01002839);
+    pub const braille_dots_1456: Keysym = Keysym(0x01002839);
     /// braille_dots_2456
-    pub const KEY_braille_dots_2456: Keysym = Keysym(0x0100283a);
+    pub const braille_dots_2456: Keysym = Keysym(0x0100283a);
     /// braille_dots_12456
-    pub const KEY_braille_dots_12456: Keysym = Keysym(0x0100283b);
+    pub const braille_dots_12456: Keysym = Keysym(0x0100283b);
     /// braille_dots_3456
-    pub const KEY_braille_dots_3456: Keysym = Keysym(0x0100283c);
+    pub const braille_dots_3456: Keysym = Keysym(0x0100283c);
     /// braille_dots_13456
-    pub const KEY_braille_dots_13456: Keysym = Keysym(0x0100283d);
+    pub const braille_dots_13456: Keysym = Keysym(0x0100283d);
     /// braille_dots_23456
-    pub const KEY_braille_dots_23456: Keysym = Keysym(0x0100283e);
+    pub const braille_dots_23456: Keysym = Keysym(0x0100283e);
     /// braille_dots_123456
-    pub const KEY_braille_dots_123456: Keysym = Keysym(0x0100283f);
+    pub const braille_dots_123456: Keysym = Keysym(0x0100283f);
     /// braille_dots_7
-    pub const KEY_braille_dots_7: Keysym = Keysym(0x01002840);
+    pub const braille_dots_7: Keysym = Keysym(0x01002840);
     /// braille_dots_17
-    pub const KEY_braille_dots_17: Keysym = Keysym(0x01002841);
+    pub const braille_dots_17: Keysym = Keysym(0x01002841);
     /// braille_dots_27
-    pub const KEY_braille_dots_27: Keysym = Keysym(0x01002842);
+    pub const braille_dots_27: Keysym = Keysym(0x01002842);
     /// braille_dots_127
-    pub const KEY_braille_dots_127: Keysym = Keysym(0x01002843);
+    pub const braille_dots_127: Keysym = Keysym(0x01002843);
     /// braille_dots_37
-    pub const KEY_braille_dots_37: Keysym = Keysym(0x01002844);
+    pub const braille_dots_37: Keysym = Keysym(0x01002844);
     /// braille_dots_137
-    pub const KEY_braille_dots_137: Keysym = Keysym(0x01002845);
+    pub const braille_dots_137: Keysym = Keysym(0x01002845);
     /// braille_dots_237
-    pub const KEY_braille_dots_237: Keysym = Keysym(0x01002846);
+    pub const braille_dots_237: Keysym = Keysym(0x01002846);
     /// braille_dots_1237
-    pub const KEY_braille_dots_1237: Keysym = Keysym(0x01002847);
+    pub const braille_dots_1237: Keysym = Keysym(0x01002847);
     /// braille_dots_47
-    pub const KEY_braille_dots_47: Keysym = Keysym(0x01002848);
+    pub const braille_dots_47: Keysym = Keysym(0x01002848);
     /// braille_dots_147
-    pub const KEY_braille_dots_147: Keysym = Keysym(0x01002849);
+    pub const braille_dots_147: Keysym = Keysym(0x01002849);
     /// braille_dots_247
-    pub const KEY_braille_dots_247: Keysym = Keysym(0x0100284a);
+    pub const braille_dots_247: Keysym = Keysym(0x0100284a);
     /// braille_dots_1247
-    pub const KEY_braille_dots_1247: Keysym = Keysym(0x0100284b);
+    pub const braille_dots_1247: Keysym = Keysym(0x0100284b);
     /// braille_dots_347
-    pub const KEY_braille_dots_347: Keysym = Keysym(0x0100284c);
+    pub const braille_dots_347: Keysym = Keysym(0x0100284c);
     /// braille_dots_1347
-    pub const KEY_braille_dots_1347: Keysym = Keysym(0x0100284d);
+    pub const braille_dots_1347: Keysym = Keysym(0x0100284d);
     /// braille_dots_2347
-    pub const KEY_braille_dots_2347: Keysym = Keysym(0x0100284e);
+    pub const braille_dots_2347: Keysym = Keysym(0x0100284e);
     /// braille_dots_12347
-    pub const KEY_braille_dots_12347: Keysym = Keysym(0x0100284f);
+    pub const braille_dots_12347: Keysym = Keysym(0x0100284f);
     /// braille_dots_57
-    pub const KEY_braille_dots_57: Keysym = Keysym(0x01002850);
+    pub const braille_dots_57: Keysym = Keysym(0x01002850);
     /// braille_dots_157
-    pub const KEY_braille_dots_157: Keysym = Keysym(0x01002851);
+    pub const braille_dots_157: Keysym = Keysym(0x01002851);
     /// braille_dots_257
-    pub const KEY_braille_dots_257: Keysym = Keysym(0x01002852);
+    pub const braille_dots_257: Keysym = Keysym(0x01002852);
     /// braille_dots_1257
-    pub const KEY_braille_dots_1257: Keysym = Keysym(0x01002853);
+    pub const braille_dots_1257: Keysym = Keysym(0x01002853);
     /// braille_dots_357
-    pub const KEY_braille_dots_357: Keysym = Keysym(0x01002854);
+    pub const braille_dots_357: Keysym = Keysym(0x01002854);
     /// braille_dots_1357
-    pub const KEY_braille_dots_1357: Keysym = Keysym(0x01002855);
+    pub const braille_dots_1357: Keysym = Keysym(0x01002855);
     /// braille_dots_2357
-    pub const KEY_braille_dots_2357: Keysym = Keysym(0x01002856);
+    pub const braille_dots_2357: Keysym = Keysym(0x01002856);
     /// braille_dots_12357
-    pub const KEY_braille_dots_12357: Keysym = Keysym(0x01002857);
+    pub const braille_dots_12357: Keysym = Keysym(0x01002857);
     /// braille_dots_457
-    pub const KEY_braille_dots_457: Keysym = Keysym(0x01002858);
+    pub const braille_dots_457: Keysym = Keysym(0x01002858);
     /// braille_dots_1457
-    pub const KEY_braille_dots_1457: Keysym = Keysym(0x01002859);
+    pub const braille_dots_1457: Keysym = Keysym(0x01002859);
     /// braille_dots_2457
-    pub const KEY_braille_dots_2457: Keysym = Keysym(0x0100285a);
+    pub const braille_dots_2457: Keysym = Keysym(0x0100285a);
     /// braille_dots_12457
-    pub const KEY_braille_dots_12457: Keysym = Keysym(0x0100285b);
+    pub const braille_dots_12457: Keysym = Keysym(0x0100285b);
     /// braille_dots_3457
-    pub const KEY_braille_dots_3457: Keysym = Keysym(0x0100285c);
+    pub const braille_dots_3457: Keysym = Keysym(0x0100285c);
     /// braille_dots_13457
-    pub const KEY_braille_dots_13457: Keysym = Keysym(0x0100285d);
+    pub const braille_dots_13457: Keysym = Keysym(0x0100285d);
     /// braille_dots_23457
-    pub const KEY_braille_dots_23457: Keysym = Keysym(0x0100285e);
+    pub const braille_dots_23457: Keysym = Keysym(0x0100285e);
     /// braille_dots_123457
-    pub const KEY_braille_dots_123457: Keysym = Keysym(0x0100285f);
+    pub const braille_dots_123457: Keysym = Keysym(0x0100285f);
     /// braille_dots_67
-    pub const KEY_braille_dots_67: Keysym = Keysym(0x01002860);
+    pub const braille_dots_67: Keysym = Keysym(0x01002860);
     /// braille_dots_167
-    pub const KEY_braille_dots_167: Keysym = Keysym(0x01002861);
+    pub const braille_dots_167: Keysym = Keysym(0x01002861);
     /// braille_dots_267
-    pub const KEY_braille_dots_267: Keysym = Keysym(0x01002862);
+    pub const braille_dots_267: Keysym = Keysym(0x01002862);
     /// braille_dots_1267
-    pub const KEY_braille_dots_1267: Keysym = Keysym(0x01002863);
+    pub const braille_dots_1267: Keysym = Keysym(0x01002863);
     /// braille_dots_367
-    pub const KEY_braille_dots_367: Keysym = Keysym(0x01002864);
+    pub const braille_dots_367: Keysym = Keysym(0x01002864);
     /// braille_dots_1367
-    pub const KEY_braille_dots_1367: Keysym = Keysym(0x01002865);
+    pub const braille_dots_1367: Keysym = Keysym(0x01002865);
     /// braille_dots_2367
-    pub const KEY_braille_dots_2367: Keysym = Keysym(0x01002866);
+    pub const braille_dots_2367: Keysym = Keysym(0x01002866);
     /// braille_dots_12367
-    pub const KEY_braille_dots_12367: Keysym = Keysym(0x01002867);
+    pub const braille_dots_12367: Keysym = Keysym(0x01002867);
     /// braille_dots_467
-    pub const KEY_braille_dots_467: Keysym = Keysym(0x01002868);
+    pub const braille_dots_467: Keysym = Keysym(0x01002868);
     /// braille_dots_1467
-    pub const KEY_braille_dots_1467: Keysym = Keysym(0x01002869);
+    pub const braille_dots_1467: Keysym = Keysym(0x01002869);
     /// braille_dots_2467
-    pub const KEY_braille_dots_2467: Keysym = Keysym(0x0100286a);
+    pub const braille_dots_2467: Keysym = Keysym(0x0100286a);
     /// braille_dots_12467
-    pub const KEY_braille_dots_12467: Keysym = Keysym(0x0100286b);
+    pub const braille_dots_12467: Keysym = Keysym(0x0100286b);
     /// braille_dots_3467
-    pub const KEY_braille_dots_3467: Keysym = Keysym(0x0100286c);
+    pub const braille_dots_3467: Keysym = Keysym(0x0100286c);
     /// braille_dots_13467
-    pub const KEY_braille_dots_13467: Keysym = Keysym(0x0100286d);
+    pub const braille_dots_13467: Keysym = Keysym(0x0100286d);
     /// braille_dots_23467
-    pub const KEY_braille_dots_23467: Keysym = Keysym(0x0100286e);
+    pub const braille_dots_23467: Keysym = Keysym(0x0100286e);
     /// braille_dots_123467
-    pub const KEY_braille_dots_123467: Keysym = Keysym(0x0100286f);
+    pub const braille_dots_123467: Keysym = Keysym(0x0100286f);
     /// braille_dots_567
-    pub const KEY_braille_dots_567: Keysym = Keysym(0x01002870);
+    pub const braille_dots_567: Keysym = Keysym(0x01002870);
     /// braille_dots_1567
-    pub const KEY_braille_dots_1567: Keysym = Keysym(0x01002871);
+    pub const braille_dots_1567: Keysym = Keysym(0x01002871);
     /// braille_dots_2567
-    pub const KEY_braille_dots_2567: Keysym = Keysym(0x01002872);
+    pub const braille_dots_2567: Keysym = Keysym(0x01002872);
     /// braille_dots_12567
-    pub const KEY_braille_dots_12567: Keysym = Keysym(0x01002873);
+    pub const braille_dots_12567: Keysym = Keysym(0x01002873);
     /// braille_dots_3567
-    pub const KEY_braille_dots_3567: Keysym = Keysym(0x01002874);
+    pub const braille_dots_3567: Keysym = Keysym(0x01002874);
     /// braille_dots_13567
-    pub const KEY_braille_dots_13567: Keysym = Keysym(0x01002875);
+    pub const braille_dots_13567: Keysym = Keysym(0x01002875);
     /// braille_dots_23567
-    pub const KEY_braille_dots_23567: Keysym = Keysym(0x01002876);
+    pub const braille_dots_23567: Keysym = Keysym(0x01002876);
     /// braille_dots_123567
-    pub const KEY_braille_dots_123567: Keysym = Keysym(0x01002877);
+    pub const braille_dots_123567: Keysym = Keysym(0x01002877);
     /// braille_dots_4567
-    pub const KEY_braille_dots_4567: Keysym = Keysym(0x01002878);
+    pub const braille_dots_4567: Keysym = Keysym(0x01002878);
     /// braille_dots_14567
-    pub const KEY_braille_dots_14567: Keysym = Keysym(0x01002879);
+    pub const braille_dots_14567: Keysym = Keysym(0x01002879);
     /// braille_dots_24567
-    pub const KEY_braille_dots_24567: Keysym = Keysym(0x0100287a);
+    pub const braille_dots_24567: Keysym = Keysym(0x0100287a);
     /// braille_dots_124567
-    pub const KEY_braille_dots_124567: Keysym = Keysym(0x0100287b);
+    pub const braille_dots_124567: Keysym = Keysym(0x0100287b);
     /// braille_dots_34567
-    pub const KEY_braille_dots_34567: Keysym = Keysym(0x0100287c);
+    pub const braille_dots_34567: Keysym = Keysym(0x0100287c);
     /// braille_dots_134567
-    pub const KEY_braille_dots_134567: Keysym = Keysym(0x0100287d);
+    pub const braille_dots_134567: Keysym = Keysym(0x0100287d);
     /// braille_dots_234567
-    pub const KEY_braille_dots_234567: Keysym = Keysym(0x0100287e);
+    pub const braille_dots_234567: Keysym = Keysym(0x0100287e);
     /// braille_dots_1234567
-    pub const KEY_braille_dots_1234567: Keysym = Keysym(0x0100287f);
+    pub const braille_dots_1234567: Keysym = Keysym(0x0100287f);
     /// braille_dots_8
-    pub const KEY_braille_dots_8: Keysym = Keysym(0x01002880);
+    pub const braille_dots_8: Keysym = Keysym(0x01002880);
     /// braille_dots_18
-    pub const KEY_braille_dots_18: Keysym = Keysym(0x01002881);
+    pub const braille_dots_18: Keysym = Keysym(0x01002881);
     /// braille_dots_28
-    pub const KEY_braille_dots_28: Keysym = Keysym(0x01002882);
+    pub const braille_dots_28: Keysym = Keysym(0x01002882);
     /// braille_dots_128
-    pub const KEY_braille_dots_128: Keysym = Keysym(0x01002883);
+    pub const braille_dots_128: Keysym = Keysym(0x01002883);
     /// braille_dots_38
-    pub const KEY_braille_dots_38: Keysym = Keysym(0x01002884);
+    pub const braille_dots_38: Keysym = Keysym(0x01002884);
     /// braille_dots_138
-    pub const KEY_braille_dots_138: Keysym = Keysym(0x01002885);
+    pub const braille_dots_138: Keysym = Keysym(0x01002885);
     /// braille_dots_238
-    pub const KEY_braille_dots_238: Keysym = Keysym(0x01002886);
+    pub const braille_dots_238: Keysym = Keysym(0x01002886);
     /// braille_dots_1238
-    pub const KEY_braille_dots_1238: Keysym = Keysym(0x01002887);
+    pub const braille_dots_1238: Keysym = Keysym(0x01002887);
     /// braille_dots_48
-    pub const KEY_braille_dots_48: Keysym = Keysym(0x01002888);
+    pub const braille_dots_48: Keysym = Keysym(0x01002888);
     /// braille_dots_148
-    pub const KEY_braille_dots_148: Keysym = Keysym(0x01002889);
+    pub const braille_dots_148: Keysym = Keysym(0x01002889);
     /// braille_dots_248
-    pub const KEY_braille_dots_248: Keysym = Keysym(0x0100288a);
+    pub const braille_dots_248: Keysym = Keysym(0x0100288a);
     /// braille_dots_1248
-    pub const KEY_braille_dots_1248: Keysym = Keysym(0x0100288b);
+    pub const braille_dots_1248: Keysym = Keysym(0x0100288b);
     /// braille_dots_348
-    pub const KEY_braille_dots_348: Keysym = Keysym(0x0100288c);
+    pub const braille_dots_348: Keysym = Keysym(0x0100288c);
     /// braille_dots_1348
-    pub const KEY_braille_dots_1348: Keysym = Keysym(0x0100288d);
+    pub const braille_dots_1348: Keysym = Keysym(0x0100288d);
     /// braille_dots_2348
-    pub const KEY_braille_dots_2348: Keysym = Keysym(0x0100288e);
+    pub const braille_dots_2348: Keysym = Keysym(0x0100288e);
     /// braille_dots_12348
-    pub const KEY_braille_dots_12348: Keysym = Keysym(0x0100288f);
+    pub const braille_dots_12348: Keysym = Keysym(0x0100288f);
     /// braille_dots_58
-    pub const KEY_braille_dots_58: Keysym = Keysym(0x01002890);
+    pub const braille_dots_58: Keysym = Keysym(0x01002890);
     /// braille_dots_158
-    pub const KEY_braille_dots_158: Keysym = Keysym(0x01002891);
+    pub const braille_dots_158: Keysym = Keysym(0x01002891);
     /// braille_dots_258
-    pub const KEY_braille_dots_258: Keysym = Keysym(0x01002892);
+    pub const braille_dots_258: Keysym = Keysym(0x01002892);
     /// braille_dots_1258
-    pub const KEY_braille_dots_1258: Keysym = Keysym(0x01002893);
+    pub const braille_dots_1258: Keysym = Keysym(0x01002893);
     /// braille_dots_358
-    pub const KEY_braille_dots_358: Keysym = Keysym(0x01002894);
+    pub const braille_dots_358: Keysym = Keysym(0x01002894);
     /// braille_dots_1358
-    pub const KEY_braille_dots_1358: Keysym = Keysym(0x01002895);
+    pub const braille_dots_1358: Keysym = Keysym(0x01002895);
     /// braille_dots_2358
-    pub const KEY_braille_dots_2358: Keysym = Keysym(0x01002896);
+    pub const braille_dots_2358: Keysym = Keysym(0x01002896);
     /// braille_dots_12358
-    pub const KEY_braille_dots_12358: Keysym = Keysym(0x01002897);
+    pub const braille_dots_12358: Keysym = Keysym(0x01002897);
     /// braille_dots_458
-    pub const KEY_braille_dots_458: Keysym = Keysym(0x01002898);
+    pub const braille_dots_458: Keysym = Keysym(0x01002898);
     /// braille_dots_1458
-    pub const KEY_braille_dots_1458: Keysym = Keysym(0x01002899);
+    pub const braille_dots_1458: Keysym = Keysym(0x01002899);
     /// braille_dots_2458
-    pub const KEY_braille_dots_2458: Keysym = Keysym(0x0100289a);
+    pub const braille_dots_2458: Keysym = Keysym(0x0100289a);
     /// braille_dots_12458
-    pub const KEY_braille_dots_12458: Keysym = Keysym(0x0100289b);
+    pub const braille_dots_12458: Keysym = Keysym(0x0100289b);
     /// braille_dots_3458
-    pub const KEY_braille_dots_3458: Keysym = Keysym(0x0100289c);
+    pub const braille_dots_3458: Keysym = Keysym(0x0100289c);
     /// braille_dots_13458
-    pub const KEY_braille_dots_13458: Keysym = Keysym(0x0100289d);
+    pub const braille_dots_13458: Keysym = Keysym(0x0100289d);
     /// braille_dots_23458
-    pub const KEY_braille_dots_23458: Keysym = Keysym(0x0100289e);
+    pub const braille_dots_23458: Keysym = Keysym(0x0100289e);
     /// braille_dots_123458
-    pub const KEY_braille_dots_123458: Keysym = Keysym(0x0100289f);
+    pub const braille_dots_123458: Keysym = Keysym(0x0100289f);
     /// braille_dots_68
-    pub const KEY_braille_dots_68: Keysym = Keysym(0x010028a0);
+    pub const braille_dots_68: Keysym = Keysym(0x010028a0);
     /// braille_dots_168
-    pub const KEY_braille_dots_168: Keysym = Keysym(0x010028a1);
+    pub const braille_dots_168: Keysym = Keysym(0x010028a1);
     /// braille_dots_268
-    pub const KEY_braille_dots_268: Keysym = Keysym(0x010028a2);
+    pub const braille_dots_268: Keysym = Keysym(0x010028a2);
     /// braille_dots_1268
-    pub const KEY_braille_dots_1268: Keysym = Keysym(0x010028a3);
+    pub const braille_dots_1268: Keysym = Keysym(0x010028a3);
     /// braille_dots_368
-    pub const KEY_braille_dots_368: Keysym = Keysym(0x010028a4);
+    pub const braille_dots_368: Keysym = Keysym(0x010028a4);
     /// braille_dots_1368
-    pub const KEY_braille_dots_1368: Keysym = Keysym(0x010028a5);
+    pub const braille_dots_1368: Keysym = Keysym(0x010028a5);
     /// braille_dots_2368
-    pub const KEY_braille_dots_2368: Keysym = Keysym(0x010028a6);
+    pub const braille_dots_2368: Keysym = Keysym(0x010028a6);
     /// braille_dots_12368
-    pub const KEY_braille_dots_12368: Keysym = Keysym(0x010028a7);
+    pub const braille_dots_12368: Keysym = Keysym(0x010028a7);
     /// braille_dots_468
-    pub const KEY_braille_dots_468: Keysym = Keysym(0x010028a8);
+    pub const braille_dots_468: Keysym = Keysym(0x010028a8);
     /// braille_dots_1468
-    pub const KEY_braille_dots_1468: Keysym = Keysym(0x010028a9);
+    pub const braille_dots_1468: Keysym = Keysym(0x010028a9);
     /// braille_dots_2468
-    pub const KEY_braille_dots_2468: Keysym = Keysym(0x010028aa);
+    pub const braille_dots_2468: Keysym = Keysym(0x010028aa);
     /// braille_dots_12468
-    pub const KEY_braille_dots_12468: Keysym = Keysym(0x010028ab);
+    pub const braille_dots_12468: Keysym = Keysym(0x010028ab);
     /// braille_dots_3468
-    pub const KEY_braille_dots_3468: Keysym = Keysym(0x010028ac);
+    pub const braille_dots_3468: Keysym = Keysym(0x010028ac);
     /// braille_dots_13468
-    pub const KEY_braille_dots_13468: Keysym = Keysym(0x010028ad);
+    pub const braille_dots_13468: Keysym = Keysym(0x010028ad);
     /// braille_dots_23468
-    pub const KEY_braille_dots_23468: Keysym = Keysym(0x010028ae);
+    pub const braille_dots_23468: Keysym = Keysym(0x010028ae);
     /// braille_dots_123468
-    pub const KEY_braille_dots_123468: Keysym = Keysym(0x010028af);
+    pub const braille_dots_123468: Keysym = Keysym(0x010028af);
     /// braille_dots_568
-    pub const KEY_braille_dots_568: Keysym = Keysym(0x010028b0);
+    pub const braille_dots_568: Keysym = Keysym(0x010028b0);
     /// braille_dots_1568
-    pub const KEY_braille_dots_1568: Keysym = Keysym(0x010028b1);
+    pub const braille_dots_1568: Keysym = Keysym(0x010028b1);
     /// braille_dots_2568
-    pub const KEY_braille_dots_2568: Keysym = Keysym(0x010028b2);
+    pub const braille_dots_2568: Keysym = Keysym(0x010028b2);
     /// braille_dots_12568
-    pub const KEY_braille_dots_12568: Keysym = Keysym(0x010028b3);
+    pub const braille_dots_12568: Keysym = Keysym(0x010028b3);
     /// braille_dots_3568
-    pub const KEY_braille_dots_3568: Keysym = Keysym(0x010028b4);
+    pub const braille_dots_3568: Keysym = Keysym(0x010028b4);
     /// braille_dots_13568
-    pub const KEY_braille_dots_13568: Keysym = Keysym(0x010028b5);
+    pub const braille_dots_13568: Keysym = Keysym(0x010028b5);
     /// braille_dots_23568
-    pub const KEY_braille_dots_23568: Keysym = Keysym(0x010028b6);
+    pub const braille_dots_23568: Keysym = Keysym(0x010028b6);
     /// braille_dots_123568
-    pub const KEY_braille_dots_123568: Keysym = Keysym(0x010028b7);
+    pub const braille_dots_123568: Keysym = Keysym(0x010028b7);
     /// braille_dots_4568
-    pub const KEY_braille_dots_4568: Keysym = Keysym(0x010028b8);
+    pub const braille_dots_4568: Keysym = Keysym(0x010028b8);
     /// braille_dots_14568
-    pub const KEY_braille_dots_14568: Keysym = Keysym(0x010028b9);
+    pub const braille_dots_14568: Keysym = Keysym(0x010028b9);
     /// braille_dots_24568
-    pub const KEY_braille_dots_24568: Keysym = Keysym(0x010028ba);
+    pub const braille_dots_24568: Keysym = Keysym(0x010028ba);
     /// braille_dots_124568
-    pub const KEY_braille_dots_124568: Keysym = Keysym(0x010028bb);
+    pub const braille_dots_124568: Keysym = Keysym(0x010028bb);
     /// braille_dots_34568
-    pub const KEY_braille_dots_34568: Keysym = Keysym(0x010028bc);
+    pub const braille_dots_34568: Keysym = Keysym(0x010028bc);
     /// braille_dots_134568
-    pub const KEY_braille_dots_134568: Keysym = Keysym(0x010028bd);
+    pub const braille_dots_134568: Keysym = Keysym(0x010028bd);
     /// braille_dots_234568
-    pub const KEY_braille_dots_234568: Keysym = Keysym(0x010028be);
+    pub const braille_dots_234568: Keysym = Keysym(0x010028be);
     /// braille_dots_1234568
-    pub const KEY_braille_dots_1234568: Keysym = Keysym(0x010028bf);
+    pub const braille_dots_1234568: Keysym = Keysym(0x010028bf);
     /// braille_dots_78
-    pub const KEY_braille_dots_78: Keysym = Keysym(0x010028c0);
+    pub const braille_dots_78: Keysym = Keysym(0x010028c0);
     /// braille_dots_178
-    pub const KEY_braille_dots_178: Keysym = Keysym(0x010028c1);
+    pub const braille_dots_178: Keysym = Keysym(0x010028c1);
     /// braille_dots_278
-    pub const KEY_braille_dots_278: Keysym = Keysym(0x010028c2);
+    pub const braille_dots_278: Keysym = Keysym(0x010028c2);
     /// braille_dots_1278
-    pub const KEY_braille_dots_1278: Keysym = Keysym(0x010028c3);
+    pub const braille_dots_1278: Keysym = Keysym(0x010028c3);
     /// braille_dots_378
-    pub const KEY_braille_dots_378: Keysym = Keysym(0x010028c4);
+    pub const braille_dots_378: Keysym = Keysym(0x010028c4);
     /// braille_dots_1378
-    pub const KEY_braille_dots_1378: Keysym = Keysym(0x010028c5);
+    pub const braille_dots_1378: Keysym = Keysym(0x010028c5);
     /// braille_dots_2378
-    pub const KEY_braille_dots_2378: Keysym = Keysym(0x010028c6);
+    pub const braille_dots_2378: Keysym = Keysym(0x010028c6);
     /// braille_dots_12378
-    pub const KEY_braille_dots_12378: Keysym = Keysym(0x010028c7);
+    pub const braille_dots_12378: Keysym = Keysym(0x010028c7);
     /// braille_dots_478
-    pub const KEY_braille_dots_478: Keysym = Keysym(0x010028c8);
+    pub const braille_dots_478: Keysym = Keysym(0x010028c8);
     /// braille_dots_1478
-    pub const KEY_braille_dots_1478: Keysym = Keysym(0x010028c9);
+    pub const braille_dots_1478: Keysym = Keysym(0x010028c9);
     /// braille_dots_2478
-    pub const KEY_braille_dots_2478: Keysym = Keysym(0x010028ca);
+    pub const braille_dots_2478: Keysym = Keysym(0x010028ca);
     /// braille_dots_12478
-    pub const KEY_braille_dots_12478: Keysym = Keysym(0x010028cb);
+    pub const braille_dots_12478: Keysym = Keysym(0x010028cb);
     /// braille_dots_3478
-    pub const KEY_braille_dots_3478: Keysym = Keysym(0x010028cc);
+    pub const braille_dots_3478: Keysym = Keysym(0x010028cc);
     /// braille_dots_13478
-    pub const KEY_braille_dots_13478: Keysym = Keysym(0x010028cd);
+    pub const braille_dots_13478: Keysym = Keysym(0x010028cd);
     /// braille_dots_23478
-    pub const KEY_braille_dots_23478: Keysym = Keysym(0x010028ce);
+    pub const braille_dots_23478: Keysym = Keysym(0x010028ce);
     /// braille_dots_123478
-    pub const KEY_braille_dots_123478: Keysym = Keysym(0x010028cf);
+    pub const braille_dots_123478: Keysym = Keysym(0x010028cf);
     /// braille_dots_578
-    pub const KEY_braille_dots_578: Keysym = Keysym(0x010028d0);
+    pub const braille_dots_578: Keysym = Keysym(0x010028d0);
     /// braille_dots_1578
-    pub const KEY_braille_dots_1578: Keysym = Keysym(0x010028d1);
+    pub const braille_dots_1578: Keysym = Keysym(0x010028d1);
     /// braille_dots_2578
-    pub const KEY_braille_dots_2578: Keysym = Keysym(0x010028d2);
+    pub const braille_dots_2578: Keysym = Keysym(0x010028d2);
     /// braille_dots_12578
-    pub const KEY_braille_dots_12578: Keysym = Keysym(0x010028d3);
+    pub const braille_dots_12578: Keysym = Keysym(0x010028d3);
     /// braille_dots_3578
-    pub const KEY_braille_dots_3578: Keysym = Keysym(0x010028d4);
+    pub const braille_dots_3578: Keysym = Keysym(0x010028d4);
     /// braille_dots_13578
-    pub const KEY_braille_dots_13578: Keysym = Keysym(0x010028d5);
+    pub const braille_dots_13578: Keysym = Keysym(0x010028d5);
     /// braille_dots_23578
-    pub const KEY_braille_dots_23578: Keysym = Keysym(0x010028d6);
+    pub const braille_dots_23578: Keysym = Keysym(0x010028d6);
     /// braille_dots_123578
-    pub const KEY_braille_dots_123578: Keysym = Keysym(0x010028d7);
+    pub const braille_dots_123578: Keysym = Keysym(0x010028d7);
     /// braille_dots_4578
-    pub const KEY_braille_dots_4578: Keysym = Keysym(0x010028d8);
+    pub const braille_dots_4578: Keysym = Keysym(0x010028d8);
     /// braille_dots_14578
-    pub const KEY_braille_dots_14578: Keysym = Keysym(0x010028d9);
+    pub const braille_dots_14578: Keysym = Keysym(0x010028d9);
     /// braille_dots_24578
-    pub const KEY_braille_dots_24578: Keysym = Keysym(0x010028da);
+    pub const braille_dots_24578: Keysym = Keysym(0x010028da);
     /// braille_dots_124578
-    pub const KEY_braille_dots_124578: Keysym = Keysym(0x010028db);
+    pub const braille_dots_124578: Keysym = Keysym(0x010028db);
     /// braille_dots_34578
-    pub const KEY_braille_dots_34578: Keysym = Keysym(0x010028dc);
+    pub const braille_dots_34578: Keysym = Keysym(0x010028dc);
     /// braille_dots_134578
-    pub const KEY_braille_dots_134578: Keysym = Keysym(0x010028dd);
+    pub const braille_dots_134578: Keysym = Keysym(0x010028dd);
     /// braille_dots_234578
-    pub const KEY_braille_dots_234578: Keysym = Keysym(0x010028de);
+    pub const braille_dots_234578: Keysym = Keysym(0x010028de);
     /// braille_dots_1234578
-    pub const KEY_braille_dots_1234578: Keysym = Keysym(0x010028df);
+    pub const braille_dots_1234578: Keysym = Keysym(0x010028df);
     /// braille_dots_678
-    pub const KEY_braille_dots_678: Keysym = Keysym(0x010028e0);
+    pub const braille_dots_678: Keysym = Keysym(0x010028e0);
     /// braille_dots_1678
-    pub const KEY_braille_dots_1678: Keysym = Keysym(0x010028e1);
+    pub const braille_dots_1678: Keysym = Keysym(0x010028e1);
     /// braille_dots_2678
-    pub const KEY_braille_dots_2678: Keysym = Keysym(0x010028e2);
+    pub const braille_dots_2678: Keysym = Keysym(0x010028e2);
     /// braille_dots_12678
-    pub const KEY_braille_dots_12678: Keysym = Keysym(0x010028e3);
+    pub const braille_dots_12678: Keysym = Keysym(0x010028e3);
     /// braille_dots_3678
-    pub const KEY_braille_dots_3678: Keysym = Keysym(0x010028e4);
+    pub const braille_dots_3678: Keysym = Keysym(0x010028e4);
     /// braille_dots_13678
-    pub const KEY_braille_dots_13678: Keysym = Keysym(0x010028e5);
+    pub const braille_dots_13678: Keysym = Keysym(0x010028e5);
     /// braille_dots_23678
-    pub const KEY_braille_dots_23678: Keysym = Keysym(0x010028e6);
+    pub const braille_dots_23678: Keysym = Keysym(0x010028e6);
     /// braille_dots_123678
-    pub const KEY_braille_dots_123678: Keysym = Keysym(0x010028e7);
+    pub const braille_dots_123678: Keysym = Keysym(0x010028e7);
     /// braille_dots_4678
-    pub const KEY_braille_dots_4678: Keysym = Keysym(0x010028e8);
+    pub const braille_dots_4678: Keysym = Keysym(0x010028e8);
     /// braille_dots_14678
-    pub const KEY_braille_dots_14678: Keysym = Keysym(0x010028e9);
+    pub const braille_dots_14678: Keysym = Keysym(0x010028e9);
     /// braille_dots_24678
-    pub const KEY_braille_dots_24678: Keysym = Keysym(0x010028ea);
+    pub const braille_dots_24678: Keysym = Keysym(0x010028ea);
     /// braille_dots_124678
-    pub const KEY_braille_dots_124678: Keysym = Keysym(0x010028eb);
+    pub const braille_dots_124678: Keysym = Keysym(0x010028eb);
     /// braille_dots_34678
-    pub const KEY_braille_dots_34678: Keysym = Keysym(0x010028ec);
+    pub const braille_dots_34678: Keysym = Keysym(0x010028ec);
     /// braille_dots_134678
-    pub const KEY_braille_dots_134678: Keysym = Keysym(0x010028ed);
+    pub const braille_dots_134678: Keysym = Keysym(0x010028ed);
     /// braille_dots_234678
-    pub const KEY_braille_dots_234678: Keysym = Keysym(0x010028ee);
+    pub const braille_dots_234678: Keysym = Keysym(0x010028ee);
     /// braille_dots_1234678
-    pub const KEY_braille_dots_1234678: Keysym = Keysym(0x010028ef);
+    pub const braille_dots_1234678: Keysym = Keysym(0x010028ef);
     /// braille_dots_5678
-    pub const KEY_braille_dots_5678: Keysym = Keysym(0x010028f0);
+    pub const braille_dots_5678: Keysym = Keysym(0x010028f0);
     /// braille_dots_15678
-    pub const KEY_braille_dots_15678: Keysym = Keysym(0x010028f1);
+    pub const braille_dots_15678: Keysym = Keysym(0x010028f1);
     /// braille_dots_25678
-    pub const KEY_braille_dots_25678: Keysym = Keysym(0x010028f2);
+    pub const braille_dots_25678: Keysym = Keysym(0x010028f2);
     /// braille_dots_125678
-    pub const KEY_braille_dots_125678: Keysym = Keysym(0x010028f3);
+    pub const braille_dots_125678: Keysym = Keysym(0x010028f3);
     /// braille_dots_35678
-    pub const KEY_braille_dots_35678: Keysym = Keysym(0x010028f4);
+    pub const braille_dots_35678: Keysym = Keysym(0x010028f4);
     /// braille_dots_135678
-    pub const KEY_braille_dots_135678: Keysym = Keysym(0x010028f5);
+    pub const braille_dots_135678: Keysym = Keysym(0x010028f5);
     /// braille_dots_235678
-    pub const KEY_braille_dots_235678: Keysym = Keysym(0x010028f6);
+    pub const braille_dots_235678: Keysym = Keysym(0x010028f6);
     /// braille_dots_1235678
-    pub const KEY_braille_dots_1235678: Keysym = Keysym(0x010028f7);
+    pub const braille_dots_1235678: Keysym = Keysym(0x010028f7);
     /// braille_dots_45678
-    pub const KEY_braille_dots_45678: Keysym = Keysym(0x010028f8);
+    pub const braille_dots_45678: Keysym = Keysym(0x010028f8);
     /// braille_dots_145678
-    pub const KEY_braille_dots_145678: Keysym = Keysym(0x010028f9);
+    pub const braille_dots_145678: Keysym = Keysym(0x010028f9);
     /// braille_dots_245678
-    pub const KEY_braille_dots_245678: Keysym = Keysym(0x010028fa);
+    pub const braille_dots_245678: Keysym = Keysym(0x010028fa);
     /// braille_dots_1245678
-    pub const KEY_braille_dots_1245678: Keysym = Keysym(0x010028fb);
+    pub const braille_dots_1245678: Keysym = Keysym(0x010028fb);
     /// braille_dots_345678
-    pub const KEY_braille_dots_345678: Keysym = Keysym(0x010028fc);
+    pub const braille_dots_345678: Keysym = Keysym(0x010028fc);
     /// braille_dots_1345678
-    pub const KEY_braille_dots_1345678: Keysym = Keysym(0x010028fd);
+    pub const braille_dots_1345678: Keysym = Keysym(0x010028fd);
     /// braille_dots_2345678
-    pub const KEY_braille_dots_2345678: Keysym = Keysym(0x010028fe);
+    pub const braille_dots_2345678: Keysym = Keysym(0x010028fe);
     /// braille_dots_12345678
-    pub const KEY_braille_dots_12345678: Keysym = Keysym(0x010028ff);
+    pub const braille_dots_12345678: Keysym = Keysym(0x010028ff);
     /// hpmute_acute
-    pub const KEY_hpmute_acute: Keysym = Keysym(0x100000a8);
+    pub const hpmute_acute: Keysym = Keysym(0x100000a8);
     /// mute_acute
-    pub const KEY_mute_acute: Keysym = Keysym(0x100000a8);
+    pub const mute_acute: Keysym = Keysym(0x100000a8);
     /// hpmute_grave
-    pub const KEY_hpmute_grave: Keysym = Keysym(0x100000a9);
+    pub const hpmute_grave: Keysym = Keysym(0x100000a9);
     /// mute_grave
-    pub const KEY_mute_grave: Keysym = Keysym(0x100000a9);
+    pub const mute_grave: Keysym = Keysym(0x100000a9);
     /// hpmute_asciicircum
-    pub const KEY_hpmute_asciicircum: Keysym = Keysym(0x100000aa);
+    pub const hpmute_asciicircum: Keysym = Keysym(0x100000aa);
     /// mute_asciicircum
-    pub const KEY_mute_asciicircum: Keysym = Keysym(0x100000aa);
+    pub const mute_asciicircum: Keysym = Keysym(0x100000aa);
     /// hpmute_diaeresis
-    pub const KEY_hpmute_diaeresis: Keysym = Keysym(0x100000ab);
+    pub const hpmute_diaeresis: Keysym = Keysym(0x100000ab);
     /// mute_diaeresis
-    pub const KEY_mute_diaeresis: Keysym = Keysym(0x100000ab);
+    pub const mute_diaeresis: Keysym = Keysym(0x100000ab);
     /// hpmute_asciitilde
-    pub const KEY_hpmute_asciitilde: Keysym = Keysym(0x100000ac);
+    pub const hpmute_asciitilde: Keysym = Keysym(0x100000ac);
     /// mute_asciitilde
-    pub const KEY_mute_asciitilde: Keysym = Keysym(0x100000ac);
+    pub const mute_asciitilde: Keysym = Keysym(0x100000ac);
     /// hplira
-    pub const KEY_hplira: Keysym = Keysym(0x100000af);
+    pub const hplira: Keysym = Keysym(0x100000af);
     /// lira
-    pub const KEY_lira: Keysym = Keysym(0x100000af);
+    pub const lira: Keysym = Keysym(0x100000af);
     /// hpguilder
-    pub const KEY_hpguilder: Keysym = Keysym(0x100000be);
+    pub const hpguilder: Keysym = Keysym(0x100000be);
     /// guilder
-    pub const KEY_guilder: Keysym = Keysym(0x100000be);
+    pub const guilder: Keysym = Keysym(0x100000be);
     /// hpYdiaeresis
-    pub const KEY_hpYdiaeresis: Keysym = Keysym(0x100000ee);
+    pub const hpYdiaeresis: Keysym = Keysym(0x100000ee);
     /// hpIO
-    pub const KEY_hpIO: Keysym = Keysym(0x100000ee);
+    pub const hpIO: Keysym = Keysym(0x100000ee);
     /// IO
-    pub const KEY_IO: Keysym = Keysym(0x100000ee);
+    pub const IO: Keysym = Keysym(0x100000ee);
     /// hplongminus
-    pub const KEY_hplongminus: Keysym = Keysym(0x100000f6);
+    pub const hplongminus: Keysym = Keysym(0x100000f6);
     /// longminus
-    pub const KEY_longminus: Keysym = Keysym(0x100000f6);
+    pub const longminus: Keysym = Keysym(0x100000f6);
     /// hpblock
-    pub const KEY_hpblock: Keysym = Keysym(0x100000fc);
+    pub const hpblock: Keysym = Keysym(0x100000fc);
     /// block
-    pub const KEY_block: Keysym = Keysym(0x100000fc);
+    pub const block: Keysym = Keysym(0x100000fc);
     /// Ddiaeresis
-    pub const KEY_Ddiaeresis: Keysym = Keysym(0x1000fe22);
+    pub const Ddiaeresis: Keysym = Keysym(0x1000fe22);
     /// Dacute_accent
-    pub const KEY_Dacute_accent: Keysym = Keysym(0x1000fe27);
+    pub const Dacute_accent: Keysym = Keysym(0x1000fe27);
     /// Dcedilla_accent
-    pub const KEY_Dcedilla_accent: Keysym = Keysym(0x1000fe2c);
+    pub const Dcedilla_accent: Keysym = Keysym(0x1000fe2c);
     /// Dcircumflex_accent
-    pub const KEY_Dcircumflex_accent: Keysym = Keysym(0x1000fe5e);
+    pub const Dcircumflex_accent: Keysym = Keysym(0x1000fe5e);
     /// Dgrave_accent
-    pub const KEY_Dgrave_accent: Keysym = Keysym(0x1000fe60);
+    pub const Dgrave_accent: Keysym = Keysym(0x1000fe60);
     /// Dtilde
-    pub const KEY_Dtilde: Keysym = Keysym(0x1000fe7e);
+    pub const Dtilde: Keysym = Keysym(0x1000fe7e);
     /// Dring_accent
-    pub const KEY_Dring_accent: Keysym = Keysym(0x1000feb0);
+    pub const Dring_accent: Keysym = Keysym(0x1000feb0);
     /// DRemove
-    pub const KEY_DRemove: Keysym = Keysym(0x1000ff00);
+    pub const DRemove: Keysym = Keysym(0x1000ff00);
     /// hpModelock1
-    pub const KEY_hpModelock1: Keysym = Keysym(0x1000ff48);
+    pub const hpModelock1: Keysym = Keysym(0x1000ff48);
     /// hpModelock2
-    pub const KEY_hpModelock2: Keysym = Keysym(0x1000ff49);
+    pub const hpModelock2: Keysym = Keysym(0x1000ff49);
     /// hpReset
-    pub const KEY_hpReset: Keysym = Keysym(0x1000ff6c);
+    pub const hpReset: Keysym = Keysym(0x1000ff6c);
     /// Reset
-    pub const KEY_Reset: Keysym = Keysym(0x1000ff6c);
+    pub const Reset: Keysym = Keysym(0x1000ff6c);
     /// hpSystem
-    pub const KEY_hpSystem: Keysym = Keysym(0x1000ff6d);
+    pub const hpSystem: Keysym = Keysym(0x1000ff6d);
     /// System
-    pub const KEY_System: Keysym = Keysym(0x1000ff6d);
+    pub const System: Keysym = Keysym(0x1000ff6d);
     /// hpUser
-    pub const KEY_hpUser: Keysym = Keysym(0x1000ff6e);
+    pub const hpUser: Keysym = Keysym(0x1000ff6e);
     /// User
-    pub const KEY_User: Keysym = Keysym(0x1000ff6e);
+    pub const User: Keysym = Keysym(0x1000ff6e);
     /// hpClearLine
-    pub const KEY_hpClearLine: Keysym = Keysym(0x1000ff6f);
+    pub const hpClearLine: Keysym = Keysym(0x1000ff6f);
     /// ClearLine
-    pub const KEY_ClearLine: Keysym = Keysym(0x1000ff6f);
+    pub const ClearLine: Keysym = Keysym(0x1000ff6f);
     /// hpInsertLine
-    pub const KEY_hpInsertLine: Keysym = Keysym(0x1000ff70);
+    pub const hpInsertLine: Keysym = Keysym(0x1000ff70);
     /// InsertLine
-    pub const KEY_InsertLine: Keysym = Keysym(0x1000ff70);
+    pub const InsertLine: Keysym = Keysym(0x1000ff70);
     /// hpDeleteLine
-    pub const KEY_hpDeleteLine: Keysym = Keysym(0x1000ff71);
+    pub const hpDeleteLine: Keysym = Keysym(0x1000ff71);
     /// DeleteLine
-    pub const KEY_DeleteLine: Keysym = Keysym(0x1000ff71);
+    pub const DeleteLine: Keysym = Keysym(0x1000ff71);
     /// hpInsertChar
-    pub const KEY_hpInsertChar: Keysym = Keysym(0x1000ff72);
+    pub const hpInsertChar: Keysym = Keysym(0x1000ff72);
     /// InsertChar
-    pub const KEY_InsertChar: Keysym = Keysym(0x1000ff72);
+    pub const InsertChar: Keysym = Keysym(0x1000ff72);
     /// hpDeleteChar
-    pub const KEY_hpDeleteChar: Keysym = Keysym(0x1000ff73);
+    pub const hpDeleteChar: Keysym = Keysym(0x1000ff73);
     /// DeleteChar
-    pub const KEY_DeleteChar: Keysym = Keysym(0x1000ff73);
+    pub const DeleteChar: Keysym = Keysym(0x1000ff73);
     /// hpBackTab
-    pub const KEY_hpBackTab: Keysym = Keysym(0x1000ff74);
+    pub const hpBackTab: Keysym = Keysym(0x1000ff74);
     /// BackTab
-    pub const KEY_BackTab: Keysym = Keysym(0x1000ff74);
+    pub const BackTab: Keysym = Keysym(0x1000ff74);
     /// hpKP_BackTab
-    pub const KEY_hpKP_BackTab: Keysym = Keysym(0x1000ff75);
+    pub const hpKP_BackTab: Keysym = Keysym(0x1000ff75);
     /// KP_BackTab
-    pub const KEY_KP_BackTab: Keysym = Keysym(0x1000ff75);
+    pub const KP_BackTab: Keysym = Keysym(0x1000ff75);
     /// Ext16bit_L
-    pub const KEY_Ext16bit_L: Keysym = Keysym(0x1000ff76);
+    pub const Ext16bit_L: Keysym = Keysym(0x1000ff76);
     /// Ext16bit_R
-    pub const KEY_Ext16bit_R: Keysym = Keysym(0x1000ff77);
+    pub const Ext16bit_R: Keysym = Keysym(0x1000ff77);
     /// osfCopy
-    pub const KEY_osfCopy: Keysym = Keysym(0x1004ff02);
+    pub const osfCopy: Keysym = Keysym(0x1004ff02);
     /// osfCut
-    pub const KEY_osfCut: Keysym = Keysym(0x1004ff03);
+    pub const osfCut: Keysym = Keysym(0x1004ff03);
     /// osfPaste
-    pub const KEY_osfPaste: Keysym = Keysym(0x1004ff04);
+    pub const osfPaste: Keysym = Keysym(0x1004ff04);
     /// osfBackTab
-    pub const KEY_osfBackTab: Keysym = Keysym(0x1004ff07);
+    pub const osfBackTab: Keysym = Keysym(0x1004ff07);
     /// osfBackSpace
-    pub const KEY_osfBackSpace: Keysym = Keysym(0x1004ff08);
+    pub const osfBackSpace: Keysym = Keysym(0x1004ff08);
     /// osfClear
-    pub const KEY_osfClear: Keysym = Keysym(0x1004ff0b);
+    pub const osfClear: Keysym = Keysym(0x1004ff0b);
     /// osfEscape
-    pub const KEY_osfEscape: Keysym = Keysym(0x1004ff1b);
+    pub const osfEscape: Keysym = Keysym(0x1004ff1b);
     /// osfAddMode
-    pub const KEY_osfAddMode: Keysym = Keysym(0x1004ff31);
+    pub const osfAddMode: Keysym = Keysym(0x1004ff31);
     /// osfPrimaryPaste
-    pub const KEY_osfPrimaryPaste: Keysym = Keysym(0x1004ff32);
+    pub const osfPrimaryPaste: Keysym = Keysym(0x1004ff32);
     /// osfQuickPaste
-    pub const KEY_osfQuickPaste: Keysym = Keysym(0x1004ff33);
+    pub const osfQuickPaste: Keysym = Keysym(0x1004ff33);
     /// osfPageLeft
-    pub const KEY_osfPageLeft: Keysym = Keysym(0x1004ff40);
+    pub const osfPageLeft: Keysym = Keysym(0x1004ff40);
     /// osfPageUp
-    pub const KEY_osfPageUp: Keysym = Keysym(0x1004ff41);
+    pub const osfPageUp: Keysym = Keysym(0x1004ff41);
     /// osfPageDown
-    pub const KEY_osfPageDown: Keysym = Keysym(0x1004ff42);
+    pub const osfPageDown: Keysym = Keysym(0x1004ff42);
     /// osfPageRight
-    pub const KEY_osfPageRight: Keysym = Keysym(0x1004ff43);
+    pub const osfPageRight: Keysym = Keysym(0x1004ff43);
     /// osfActivate
-    pub const KEY_osfActivate: Keysym = Keysym(0x1004ff44);
+    pub const osfActivate: Keysym = Keysym(0x1004ff44);
     /// osfMenuBar
-    pub const KEY_osfMenuBar: Keysym = Keysym(0x1004ff45);
+    pub const osfMenuBar: Keysym = Keysym(0x1004ff45);
     /// osfLeft
-    pub const KEY_osfLeft: Keysym = Keysym(0x1004ff51);
+    pub const osfLeft: Keysym = Keysym(0x1004ff51);
     /// osfUp
-    pub const KEY_osfUp: Keysym = Keysym(0x1004ff52);
+    pub const osfUp: Keysym = Keysym(0x1004ff52);
     /// osfRight
-    pub const KEY_osfRight: Keysym = Keysym(0x1004ff53);
+    pub const osfRight: Keysym = Keysym(0x1004ff53);
     /// osfDown
-    pub const KEY_osfDown: Keysym = Keysym(0x1004ff54);
+    pub const osfDown: Keysym = Keysym(0x1004ff54);
     /// osfEndLine
-    pub const KEY_osfEndLine: Keysym = Keysym(0x1004ff57);
+    pub const osfEndLine: Keysym = Keysym(0x1004ff57);
     /// osfBeginLine
-    pub const KEY_osfBeginLine: Keysym = Keysym(0x1004ff58);
+    pub const osfBeginLine: Keysym = Keysym(0x1004ff58);
     /// osfEndData
-    pub const KEY_osfEndData: Keysym = Keysym(0x1004ff59);
+    pub const osfEndData: Keysym = Keysym(0x1004ff59);
     /// osfBeginData
-    pub const KEY_osfBeginData: Keysym = Keysym(0x1004ff5a);
+    pub const osfBeginData: Keysym = Keysym(0x1004ff5a);
     /// osfPrevMenu
-    pub const KEY_osfPrevMenu: Keysym = Keysym(0x1004ff5b);
+    pub const osfPrevMenu: Keysym = Keysym(0x1004ff5b);
     /// osfNextMenu
-    pub const KEY_osfNextMenu: Keysym = Keysym(0x1004ff5c);
+    pub const osfNextMenu: Keysym = Keysym(0x1004ff5c);
     /// osfPrevField
-    pub const KEY_osfPrevField: Keysym = Keysym(0x1004ff5d);
+    pub const osfPrevField: Keysym = Keysym(0x1004ff5d);
     /// osfNextField
-    pub const KEY_osfNextField: Keysym = Keysym(0x1004ff5e);
+    pub const osfNextField: Keysym = Keysym(0x1004ff5e);
     /// osfSelect
-    pub const KEY_osfSelect: Keysym = Keysym(0x1004ff60);
+    pub const osfSelect: Keysym = Keysym(0x1004ff60);
     /// osfInsert
-    pub const KEY_osfInsert: Keysym = Keysym(0x1004ff63);
+    pub const osfInsert: Keysym = Keysym(0x1004ff63);
     /// osfUndo
-    pub const KEY_osfUndo: Keysym = Keysym(0x1004ff65);
+    pub const osfUndo: Keysym = Keysym(0x1004ff65);
     /// osfMenu
-    pub const KEY_osfMenu: Keysym = Keysym(0x1004ff67);
+    pub const osfMenu: Keysym = Keysym(0x1004ff67);
     /// osfCancel
-    pub const KEY_osfCancel: Keysym = Keysym(0x1004ff69);
+    pub const osfCancel: Keysym = Keysym(0x1004ff69);
     /// osfHelp
-    pub const KEY_osfHelp: Keysym = Keysym(0x1004ff6a);
+    pub const osfHelp: Keysym = Keysym(0x1004ff6a);
     /// osfSelectAll
-    pub const KEY_osfSelectAll: Keysym = Keysym(0x1004ff71);
+    pub const osfSelectAll: Keysym = Keysym(0x1004ff71);
     /// osfDeselectAll
-    pub const KEY_osfDeselectAll: Keysym = Keysym(0x1004ff72);
+    pub const osfDeselectAll: Keysym = Keysym(0x1004ff72);
     /// osfReselect
-    pub const KEY_osfReselect: Keysym = Keysym(0x1004ff73);
+    pub const osfReselect: Keysym = Keysym(0x1004ff73);
     /// osfExtend
-    pub const KEY_osfExtend: Keysym = Keysym(0x1004ff74);
+    pub const osfExtend: Keysym = Keysym(0x1004ff74);
     /// osfRestore
-    pub const KEY_osfRestore: Keysym = Keysym(0x1004ff78);
+    pub const osfRestore: Keysym = Keysym(0x1004ff78);
     /// osfDelete
-    pub const KEY_osfDelete: Keysym = Keysym(0x1004ffff);
+    pub const osfDelete: Keysym = Keysym(0x1004ffff);
     /// SunFA_Grave
-    pub const KEY_SunFA_Grave: Keysym = Keysym(0x1005ff00);
+    pub const SunFA_Grave: Keysym = Keysym(0x1005ff00);
     /// SunFA_Circum
-    pub const KEY_SunFA_Circum: Keysym = Keysym(0x1005ff01);
+    pub const SunFA_Circum: Keysym = Keysym(0x1005ff01);
     /// SunFA_Tilde
-    pub const KEY_SunFA_Tilde: Keysym = Keysym(0x1005ff02);
+    pub const SunFA_Tilde: Keysym = Keysym(0x1005ff02);
     /// SunFA_Acute
-    pub const KEY_SunFA_Acute: Keysym = Keysym(0x1005ff03);
+    pub const SunFA_Acute: Keysym = Keysym(0x1005ff03);
     /// SunFA_Diaeresis
-    pub const KEY_SunFA_Diaeresis: Keysym = Keysym(0x1005ff04);
+    pub const SunFA_Diaeresis: Keysym = Keysym(0x1005ff04);
     /// SunFA_Cedilla
-    pub const KEY_SunFA_Cedilla: Keysym = Keysym(0x1005ff05);
+    pub const SunFA_Cedilla: Keysym = Keysym(0x1005ff05);
     /// SunF36
-    pub const KEY_SunF36: Keysym = Keysym(0x1005ff10);
+    pub const SunF36: Keysym = Keysym(0x1005ff10);
     /// SunF37
-    pub const KEY_SunF37: Keysym = Keysym(0x1005ff11);
+    pub const SunF37: Keysym = Keysym(0x1005ff11);
     /// SunSys_Req
-    pub const KEY_SunSys_Req: Keysym = Keysym(0x1005ff60);
+    pub const SunSys_Req: Keysym = Keysym(0x1005ff60);
     /// SunProps
-    pub const KEY_SunProps: Keysym = Keysym(0x1005ff70);
+    pub const SunProps: Keysym = Keysym(0x1005ff70);
     /// SunFront
-    pub const KEY_SunFront: Keysym = Keysym(0x1005ff71);
+    pub const SunFront: Keysym = Keysym(0x1005ff71);
     /// SunCopy
-    pub const KEY_SunCopy: Keysym = Keysym(0x1005ff72);
+    pub const SunCopy: Keysym = Keysym(0x1005ff72);
     /// SunOpen
-    pub const KEY_SunOpen: Keysym = Keysym(0x1005ff73);
+    pub const SunOpen: Keysym = Keysym(0x1005ff73);
     /// SunPaste
-    pub const KEY_SunPaste: Keysym = Keysym(0x1005ff74);
+    pub const SunPaste: Keysym = Keysym(0x1005ff74);
     /// SunCut
-    pub const KEY_SunCut: Keysym = Keysym(0x1005ff75);
+    pub const SunCut: Keysym = Keysym(0x1005ff75);
     /// SunPowerSwitch
-    pub const KEY_SunPowerSwitch: Keysym = Keysym(0x1005ff76);
+    pub const SunPowerSwitch: Keysym = Keysym(0x1005ff76);
     /// SunAudioLowerVolume
-    pub const KEY_SunAudioLowerVolume: Keysym = Keysym(0x1005ff77);
+    pub const SunAudioLowerVolume: Keysym = Keysym(0x1005ff77);
     /// SunAudioMute
-    pub const KEY_SunAudioMute: Keysym = Keysym(0x1005ff78);
+    pub const SunAudioMute: Keysym = Keysym(0x1005ff78);
     /// SunAudioRaiseVolume
-    pub const KEY_SunAudioRaiseVolume: Keysym = Keysym(0x1005ff79);
+    pub const SunAudioRaiseVolume: Keysym = Keysym(0x1005ff79);
     /// SunVideoDegauss
-    pub const KEY_SunVideoDegauss: Keysym = Keysym(0x1005ff7a);
+    pub const SunVideoDegauss: Keysym = Keysym(0x1005ff7a);
     /// SunVideoLowerBrightness
-    pub const KEY_SunVideoLowerBrightness: Keysym = Keysym(0x1005ff7b);
+    pub const SunVideoLowerBrightness: Keysym = Keysym(0x1005ff7b);
     /// SunVideoRaiseBrightness
-    pub const KEY_SunVideoRaiseBrightness: Keysym = Keysym(0x1005ff7c);
+    pub const SunVideoRaiseBrightness: Keysym = Keysym(0x1005ff7c);
     /// SunPowerSwitchShift
-    pub const KEY_SunPowerSwitchShift: Keysym = Keysym(0x1005ff7d);
+    pub const SunPowerSwitchShift: Keysym = Keysym(0x1005ff7d);
     /// XF86BrightnessAuto
-    pub const KEY_XF86BrightnessAuto: Keysym = Keysym(0x100810f4);
+    pub const XF86BrightnessAuto: Keysym = Keysym(0x100810f4);
     /// XF86DisplayOff
-    pub const KEY_XF86DisplayOff: Keysym = Keysym(0x100810f5);
+    pub const XF86DisplayOff: Keysym = Keysym(0x100810f5);
     /// XF86Info
-    pub const KEY_XF86Info: Keysym = Keysym(0x10081166);
+    pub const XF86Info: Keysym = Keysym(0x10081166);
     /// XF86AspectRatio
-    pub const KEY_XF86AspectRatio: Keysym = Keysym(0x10081177);
+    pub const XF86AspectRatio: Keysym = Keysym(0x10081177);
     /// XF86DVD
-    pub const KEY_XF86DVD: Keysym = Keysym(0x10081185);
+    pub const XF86DVD: Keysym = Keysym(0x10081185);
     /// XF86Audio
-    pub const KEY_XF86Audio: Keysym = Keysym(0x10081188);
+    pub const XF86Audio: Keysym = Keysym(0x10081188);
     /// XF86ChannelUp
-    pub const KEY_XF86ChannelUp: Keysym = Keysym(0x10081192);
+    pub const XF86ChannelUp: Keysym = Keysym(0x10081192);
     /// XF86ChannelDown
-    pub const KEY_XF86ChannelDown: Keysym = Keysym(0x10081193);
+    pub const XF86ChannelDown: Keysym = Keysym(0x10081193);
     /// XF86Break
-    pub const KEY_XF86Break: Keysym = Keysym(0x1008119b);
+    pub const XF86Break: Keysym = Keysym(0x1008119b);
     /// XF86VideoPhone
-    pub const KEY_XF86VideoPhone: Keysym = Keysym(0x100811a0);
+    pub const XF86VideoPhone: Keysym = Keysym(0x100811a0);
     /// XF86ZoomReset
-    pub const KEY_XF86ZoomReset: Keysym = Keysym(0x100811a4);
+    pub const XF86ZoomReset: Keysym = Keysym(0x100811a4);
     /// XF86Editor
-    pub const KEY_XF86Editor: Keysym = Keysym(0x100811a6);
+    pub const XF86Editor: Keysym = Keysym(0x100811a6);
     /// XF86GraphicsEditor
-    pub const KEY_XF86GraphicsEditor: Keysym = Keysym(0x100811a8);
+    pub const XF86GraphicsEditor: Keysym = Keysym(0x100811a8);
     /// XF86Presentation
-    pub const KEY_XF86Presentation: Keysym = Keysym(0x100811a9);
+    pub const XF86Presentation: Keysym = Keysym(0x100811a9);
     /// XF86Database
-    pub const KEY_XF86Database: Keysym = Keysym(0x100811aa);
+    pub const XF86Database: Keysym = Keysym(0x100811aa);
     /// XF86Voicemail
-    pub const KEY_XF86Voicemail: Keysym = Keysym(0x100811ac);
+    pub const XF86Voicemail: Keysym = Keysym(0x100811ac);
     /// XF86Addressbook
-    pub const KEY_XF86Addressbook: Keysym = Keysym(0x100811ad);
+    pub const XF86Addressbook: Keysym = Keysym(0x100811ad);
     /// XF86DisplayToggle
-    pub const KEY_XF86DisplayToggle: Keysym = Keysym(0x100811af);
+    pub const XF86DisplayToggle: Keysym = Keysym(0x100811af);
     /// XF86SpellCheck
-    pub const KEY_XF86SpellCheck: Keysym = Keysym(0x100811b0);
+    pub const XF86SpellCheck: Keysym = Keysym(0x100811b0);
     /// XF86ContextMenu
-    pub const KEY_XF86ContextMenu: Keysym = Keysym(0x100811b6);
+    pub const XF86ContextMenu: Keysym = Keysym(0x100811b6);
     /// XF86MediaRepeat
-    pub const KEY_XF86MediaRepeat: Keysym = Keysym(0x100811b7);
+    pub const XF86MediaRepeat: Keysym = Keysym(0x100811b7);
     /// XF8610ChannelsUp
-    pub const KEY_XF8610ChannelsUp: Keysym = Keysym(0x100811b8);
+    pub const XF8610ChannelsUp: Keysym = Keysym(0x100811b8);
     /// XF8610ChannelsDown
-    pub const KEY_XF8610ChannelsDown: Keysym = Keysym(0x100811b9);
+    pub const XF8610ChannelsDown: Keysym = Keysym(0x100811b9);
     /// XF86Images
-    pub const KEY_XF86Images: Keysym = Keysym(0x100811ba);
+    pub const XF86Images: Keysym = Keysym(0x100811ba);
     /// XF86NotificationCenter
-    pub const KEY_XF86NotificationCenter: Keysym = Keysym(0x100811bc);
+    pub const XF86NotificationCenter: Keysym = Keysym(0x100811bc);
     /// XF86PickupPhone
-    pub const KEY_XF86PickupPhone: Keysym = Keysym(0x100811bd);
+    pub const XF86PickupPhone: Keysym = Keysym(0x100811bd);
     /// XF86HangupPhone
-    pub const KEY_XF86HangupPhone: Keysym = Keysym(0x100811be);
+    pub const XF86HangupPhone: Keysym = Keysym(0x100811be);
     /// XF86Fn
-    pub const KEY_XF86Fn: Keysym = Keysym(0x100811d0);
+    pub const XF86Fn: Keysym = Keysym(0x100811d0);
     /// XF86Fn_Esc
-    pub const KEY_XF86Fn_Esc: Keysym = Keysym(0x100811d1);
+    pub const XF86Fn_Esc: Keysym = Keysym(0x100811d1);
     /// XF86FnRightShift
-    pub const KEY_XF86FnRightShift: Keysym = Keysym(0x100811e5);
+    pub const XF86FnRightShift: Keysym = Keysym(0x100811e5);
     /// XF86Numeric0
-    pub const KEY_XF86Numeric0: Keysym = Keysym(0x10081200);
+    pub const XF86Numeric0: Keysym = Keysym(0x10081200);
     /// XF86Numeric1
-    pub const KEY_XF86Numeric1: Keysym = Keysym(0x10081201);
+    pub const XF86Numeric1: Keysym = Keysym(0x10081201);
     /// XF86Numeric2
-    pub const KEY_XF86Numeric2: Keysym = Keysym(0x10081202);
+    pub const XF86Numeric2: Keysym = Keysym(0x10081202);
     /// XF86Numeric3
-    pub const KEY_XF86Numeric3: Keysym = Keysym(0x10081203);
+    pub const XF86Numeric3: Keysym = Keysym(0x10081203);
     /// XF86Numeric4
-    pub const KEY_XF86Numeric4: Keysym = Keysym(0x10081204);
+    pub const XF86Numeric4: Keysym = Keysym(0x10081204);
     /// XF86Numeric5
-    pub const KEY_XF86Numeric5: Keysym = Keysym(0x10081205);
+    pub const XF86Numeric5: Keysym = Keysym(0x10081205);
     /// XF86Numeric6
-    pub const KEY_XF86Numeric6: Keysym = Keysym(0x10081206);
+    pub const XF86Numeric6: Keysym = Keysym(0x10081206);
     /// XF86Numeric7
-    pub const KEY_XF86Numeric7: Keysym = Keysym(0x10081207);
+    pub const XF86Numeric7: Keysym = Keysym(0x10081207);
     /// XF86Numeric8
-    pub const KEY_XF86Numeric8: Keysym = Keysym(0x10081208);
+    pub const XF86Numeric8: Keysym = Keysym(0x10081208);
     /// XF86Numeric9
-    pub const KEY_XF86Numeric9: Keysym = Keysym(0x10081209);
+    pub const XF86Numeric9: Keysym = Keysym(0x10081209);
     /// XF86NumericStar
-    pub const KEY_XF86NumericStar: Keysym = Keysym(0x1008120a);
+    pub const XF86NumericStar: Keysym = Keysym(0x1008120a);
     /// XF86NumericPound
-    pub const KEY_XF86NumericPound: Keysym = Keysym(0x1008120b);
+    pub const XF86NumericPound: Keysym = Keysym(0x1008120b);
     /// XF86NumericA
-    pub const KEY_XF86NumericA: Keysym = Keysym(0x1008120c);
+    pub const XF86NumericA: Keysym = Keysym(0x1008120c);
     /// XF86NumericB
-    pub const KEY_XF86NumericB: Keysym = Keysym(0x1008120d);
+    pub const XF86NumericB: Keysym = Keysym(0x1008120d);
     /// XF86NumericC
-    pub const KEY_XF86NumericC: Keysym = Keysym(0x1008120e);
+    pub const XF86NumericC: Keysym = Keysym(0x1008120e);
     /// XF86NumericD
-    pub const KEY_XF86NumericD: Keysym = Keysym(0x1008120f);
+    pub const XF86NumericD: Keysym = Keysym(0x1008120f);
     /// XF86CameraFocus
-    pub const KEY_XF86CameraFocus: Keysym = Keysym(0x10081210);
+    pub const XF86CameraFocus: Keysym = Keysym(0x10081210);
     /// XF86WPSButton
-    pub const KEY_XF86WPSButton: Keysym = Keysym(0x10081211);
+    pub const XF86WPSButton: Keysym = Keysym(0x10081211);
     /// XF86CameraZoomIn
-    pub const KEY_XF86CameraZoomIn: Keysym = Keysym(0x10081215);
+    pub const XF86CameraZoomIn: Keysym = Keysym(0x10081215);
     /// XF86CameraZoomOut
-    pub const KEY_XF86CameraZoomOut: Keysym = Keysym(0x10081216);
+    pub const XF86CameraZoomOut: Keysym = Keysym(0x10081216);
     /// XF86CameraUp
-    pub const KEY_XF86CameraUp: Keysym = Keysym(0x10081217);
+    pub const XF86CameraUp: Keysym = Keysym(0x10081217);
     /// XF86CameraDown
-    pub const KEY_XF86CameraDown: Keysym = Keysym(0x10081218);
+    pub const XF86CameraDown: Keysym = Keysym(0x10081218);
     /// XF86CameraLeft
-    pub const KEY_XF86CameraLeft: Keysym = Keysym(0x10081219);
+    pub const XF86CameraLeft: Keysym = Keysym(0x10081219);
     /// XF86CameraRight
-    pub const KEY_XF86CameraRight: Keysym = Keysym(0x1008121a);
+    pub const XF86CameraRight: Keysym = Keysym(0x1008121a);
     /// XF86AttendantOn
-    pub const KEY_XF86AttendantOn: Keysym = Keysym(0x1008121b);
+    pub const XF86AttendantOn: Keysym = Keysym(0x1008121b);
     /// XF86AttendantOff
-    pub const KEY_XF86AttendantOff: Keysym = Keysym(0x1008121c);
+    pub const XF86AttendantOff: Keysym = Keysym(0x1008121c);
     /// XF86AttendantToggle
-    pub const KEY_XF86AttendantToggle: Keysym = Keysym(0x1008121d);
+    pub const XF86AttendantToggle: Keysym = Keysym(0x1008121d);
     /// XF86LightsToggle
-    pub const KEY_XF86LightsToggle: Keysym = Keysym(0x1008121e);
+    pub const XF86LightsToggle: Keysym = Keysym(0x1008121e);
     /// XF86ALSToggle
-    pub const KEY_XF86ALSToggle: Keysym = Keysym(0x10081230);
+    pub const XF86ALSToggle: Keysym = Keysym(0x10081230);
     /// XF86RefreshRateToggle
-    pub const KEY_XF86RefreshRateToggle: Keysym = Keysym(0x10081232);
+    pub const XF86RefreshRateToggle: Keysym = Keysym(0x10081232);
     /// XF86Buttonconfig
-    pub const KEY_XF86Buttonconfig: Keysym = Keysym(0x10081240);
+    pub const XF86Buttonconfig: Keysym = Keysym(0x10081240);
     /// XF86Taskmanager
-    pub const KEY_XF86Taskmanager: Keysym = Keysym(0x10081241);
+    pub const XF86Taskmanager: Keysym = Keysym(0x10081241);
     /// XF86Journal
-    pub const KEY_XF86Journal: Keysym = Keysym(0x10081242);
+    pub const XF86Journal: Keysym = Keysym(0x10081242);
     /// XF86ControlPanel
-    pub const KEY_XF86ControlPanel: Keysym = Keysym(0x10081243);
+    pub const XF86ControlPanel: Keysym = Keysym(0x10081243);
     /// XF86AppSelect
-    pub const KEY_XF86AppSelect: Keysym = Keysym(0x10081244);
+    pub const XF86AppSelect: Keysym = Keysym(0x10081244);
     /// XF86Screensaver
-    pub const KEY_XF86Screensaver: Keysym = Keysym(0x10081245);
+    pub const XF86Screensaver: Keysym = Keysym(0x10081245);
     /// XF86VoiceCommand
-    pub const KEY_XF86VoiceCommand: Keysym = Keysym(0x10081246);
+    pub const XF86VoiceCommand: Keysym = Keysym(0x10081246);
     /// XF86Assistant
-    pub const KEY_XF86Assistant: Keysym = Keysym(0x10081247);
+    pub const XF86Assistant: Keysym = Keysym(0x10081247);
     /// XF86EmojiPicker
-    pub const KEY_XF86EmojiPicker: Keysym = Keysym(0x10081249);
+    pub const XF86EmojiPicker: Keysym = Keysym(0x10081249);
     /// XF86Dictate
-    pub const KEY_XF86Dictate: Keysym = Keysym(0x1008124a);
+    pub const XF86Dictate: Keysym = Keysym(0x1008124a);
     /// XF86CameraAccessEnable
-    pub const KEY_XF86CameraAccessEnable: Keysym = Keysym(0x1008124b);
+    pub const XF86CameraAccessEnable: Keysym = Keysym(0x1008124b);
     /// XF86CameraAccessDisable
-    pub const KEY_XF86CameraAccessDisable: Keysym = Keysym(0x1008124c);
+    pub const XF86CameraAccessDisable: Keysym = Keysym(0x1008124c);
     /// XF86CameraAccessToggle
-    pub const KEY_XF86CameraAccessToggle: Keysym = Keysym(0x1008124d);
+    pub const XF86CameraAccessToggle: Keysym = Keysym(0x1008124d);
     /// XF86Accessibility
-    pub const KEY_XF86Accessibility: Keysym = Keysym(0x1008124e);
+    pub const XF86Accessibility: Keysym = Keysym(0x1008124e);
     /// XF86DoNotDisturb
-    pub const KEY_XF86DoNotDisturb: Keysym = Keysym(0x1008124f);
+    pub const XF86DoNotDisturb: Keysym = Keysym(0x1008124f);
     /// XF86BrightnessMin
-    pub const KEY_XF86BrightnessMin: Keysym = Keysym(0x10081250);
+    pub const XF86BrightnessMin: Keysym = Keysym(0x10081250);
     /// XF86BrightnessMax
-    pub const KEY_XF86BrightnessMax: Keysym = Keysym(0x10081251);
+    pub const XF86BrightnessMax: Keysym = Keysym(0x10081251);
     /// XF86KbdInputAssistPrev
-    pub const KEY_XF86KbdInputAssistPrev: Keysym = Keysym(0x10081260);
+    pub const XF86KbdInputAssistPrev: Keysym = Keysym(0x10081260);
     /// XF86KbdInputAssistNext
-    pub const KEY_XF86KbdInputAssistNext: Keysym = Keysym(0x10081261);
+    pub const XF86KbdInputAssistNext: Keysym = Keysym(0x10081261);
     /// XF86KbdInputAssistPrevgroup
-    pub const KEY_XF86KbdInputAssistPrevgroup: Keysym = Keysym(0x10081262);
+    pub const XF86KbdInputAssistPrevgroup: Keysym = Keysym(0x10081262);
     /// XF86KbdInputAssistNextgroup
-    pub const KEY_XF86KbdInputAssistNextgroup: Keysym = Keysym(0x10081263);
+    pub const XF86KbdInputAssistNextgroup: Keysym = Keysym(0x10081263);
     /// XF86KbdInputAssistAccept
-    pub const KEY_XF86KbdInputAssistAccept: Keysym = Keysym(0x10081264);
+    pub const XF86KbdInputAssistAccept: Keysym = Keysym(0x10081264);
     /// XF86KbdInputAssistCancel
-    pub const KEY_XF86KbdInputAssistCancel: Keysym = Keysym(0x10081265);
+    pub const XF86KbdInputAssistCancel: Keysym = Keysym(0x10081265);
     /// XF86RightUp
-    pub const KEY_XF86RightUp: Keysym = Keysym(0x10081266);
+    pub const XF86RightUp: Keysym = Keysym(0x10081266);
     /// XF86RightDown
-    pub const KEY_XF86RightDown: Keysym = Keysym(0x10081267);
+    pub const XF86RightDown: Keysym = Keysym(0x10081267);
     /// XF86LeftUp
-    pub const KEY_XF86LeftUp: Keysym = Keysym(0x10081268);
+    pub const XF86LeftUp: Keysym = Keysym(0x10081268);
     /// XF86LeftDown
-    pub const KEY_XF86LeftDown: Keysym = Keysym(0x10081269);
+    pub const XF86LeftDown: Keysym = Keysym(0x10081269);
     /// XF86RootMenu
-    pub const KEY_XF86RootMenu: Keysym = Keysym(0x1008126a);
+    pub const XF86RootMenu: Keysym = Keysym(0x1008126a);
     /// XF86MediaTopMenu
-    pub const KEY_XF86MediaTopMenu: Keysym = Keysym(0x1008126b);
+    pub const XF86MediaTopMenu: Keysym = Keysym(0x1008126b);
     /// XF86Numeric11
-    pub const KEY_XF86Numeric11: Keysym = Keysym(0x1008126c);
+    pub const XF86Numeric11: Keysym = Keysym(0x1008126c);
     /// XF86Numeric12
-    pub const KEY_XF86Numeric12: Keysym = Keysym(0x1008126d);
+    pub const XF86Numeric12: Keysym = Keysym(0x1008126d);
     /// XF86AudioDesc
-    pub const KEY_XF86AudioDesc: Keysym = Keysym(0x1008126e);
+    pub const XF86AudioDesc: Keysym = Keysym(0x1008126e);
     /// XF863DMode
-    pub const KEY_XF863DMode: Keysym = Keysym(0x1008126f);
+    pub const XF863DMode: Keysym = Keysym(0x1008126f);
     /// XF86NextFavorite
-    pub const KEY_XF86NextFavorite: Keysym = Keysym(0x10081270);
+    pub const XF86NextFavorite: Keysym = Keysym(0x10081270);
     /// XF86StopRecord
-    pub const KEY_XF86StopRecord: Keysym = Keysym(0x10081271);
+    pub const XF86StopRecord: Keysym = Keysym(0x10081271);
     /// XF86PauseRecord
-    pub const KEY_XF86PauseRecord: Keysym = Keysym(0x10081272);
+    pub const XF86PauseRecord: Keysym = Keysym(0x10081272);
     /// XF86VOD
-    pub const KEY_XF86VOD: Keysym = Keysym(0x10081273);
+    pub const XF86VOD: Keysym = Keysym(0x10081273);
     /// XF86Unmute
-    pub const KEY_XF86Unmute: Keysym = Keysym(0x10081274);
+    pub const XF86Unmute: Keysym = Keysym(0x10081274);
     /// XF86FastReverse
-    pub const KEY_XF86FastReverse: Keysym = Keysym(0x10081275);
+    pub const XF86FastReverse: Keysym = Keysym(0x10081275);
     /// XF86SlowReverse
-    pub const KEY_XF86SlowReverse: Keysym = Keysym(0x10081276);
+    pub const XF86SlowReverse: Keysym = Keysym(0x10081276);
     /// XF86Data
-    pub const KEY_XF86Data: Keysym = Keysym(0x10081277);
+    pub const XF86Data: Keysym = Keysym(0x10081277);
     /// XF86OnScreenKeyboard
-    pub const KEY_XF86OnScreenKeyboard: Keysym = Keysym(0x10081278);
+    pub const XF86OnScreenKeyboard: Keysym = Keysym(0x10081278);
     /// XF86PrivacyScreenToggle
-    pub const KEY_XF86PrivacyScreenToggle: Keysym = Keysym(0x10081279);
+    pub const XF86PrivacyScreenToggle: Keysym = Keysym(0x10081279);
     /// XF86SelectiveScreenshot
-    pub const KEY_XF86SelectiveScreenshot: Keysym = Keysym(0x1008127a);
+    pub const XF86SelectiveScreenshot: Keysym = Keysym(0x1008127a);
     /// XF86NextElement
-    pub const KEY_XF86NextElement: Keysym = Keysym(0x1008127b);
+    pub const XF86NextElement: Keysym = Keysym(0x1008127b);
     /// XF86PreviousElement
-    pub const KEY_XF86PreviousElement: Keysym = Keysym(0x1008127c);
+    pub const XF86PreviousElement: Keysym = Keysym(0x1008127c);
     /// XF86AutopilotEngageToggle
-    pub const KEY_XF86AutopilotEngageToggle: Keysym = Keysym(0x1008127d);
+    pub const XF86AutopilotEngageToggle: Keysym = Keysym(0x1008127d);
     /// XF86MarkWaypoint
-    pub const KEY_XF86MarkWaypoint: Keysym = Keysym(0x1008127e);
+    pub const XF86MarkWaypoint: Keysym = Keysym(0x1008127e);
     /// XF86Sos
-    pub const KEY_XF86Sos: Keysym = Keysym(0x1008127f);
+    pub const XF86Sos: Keysym = Keysym(0x1008127f);
     /// XF86NavChart
-    pub const KEY_XF86NavChart: Keysym = Keysym(0x10081280);
+    pub const XF86NavChart: Keysym = Keysym(0x10081280);
     /// XF86FishingChart
-    pub const KEY_XF86FishingChart: Keysym = Keysym(0x10081281);
+    pub const XF86FishingChart: Keysym = Keysym(0x10081281);
     /// XF86SingleRangeRadar
-    pub const KEY_XF86SingleRangeRadar: Keysym = Keysym(0x10081282);
+    pub const XF86SingleRangeRadar: Keysym = Keysym(0x10081282);
     /// XF86DualRangeRadar
-    pub const KEY_XF86DualRangeRadar: Keysym = Keysym(0x10081283);
+    pub const XF86DualRangeRadar: Keysym = Keysym(0x10081283);
     /// XF86RadarOverlay
-    pub const KEY_XF86RadarOverlay: Keysym = Keysym(0x10081284);
+    pub const XF86RadarOverlay: Keysym = Keysym(0x10081284);
     /// XF86TraditionalSonar
-    pub const KEY_XF86TraditionalSonar: Keysym = Keysym(0x10081285);
+    pub const XF86TraditionalSonar: Keysym = Keysym(0x10081285);
     /// XF86ClearvuSonar
-    pub const KEY_XF86ClearvuSonar: Keysym = Keysym(0x10081286);
+    pub const XF86ClearvuSonar: Keysym = Keysym(0x10081286);
     /// XF86SidevuSonar
-    pub const KEY_XF86SidevuSonar: Keysym = Keysym(0x10081287);
+    pub const XF86SidevuSonar: Keysym = Keysym(0x10081287);
     /// XF86NavInfo
-    pub const KEY_XF86NavInfo: Keysym = Keysym(0x10081288);
+    pub const XF86NavInfo: Keysym = Keysym(0x10081288);
     /// XF86Macro1
-    pub const KEY_XF86Macro1: Keysym = Keysym(0x10081290);
+    pub const XF86Macro1: Keysym = Keysym(0x10081290);
     /// XF86Macro2
-    pub const KEY_XF86Macro2: Keysym = Keysym(0x10081291);
+    pub const XF86Macro2: Keysym = Keysym(0x10081291);
     /// XF86Macro3
-    pub const KEY_XF86Macro3: Keysym = Keysym(0x10081292);
+    pub const XF86Macro3: Keysym = Keysym(0x10081292);
     /// XF86Macro4
-    pub const KEY_XF86Macro4: Keysym = Keysym(0x10081293);
+    pub const XF86Macro4: Keysym = Keysym(0x10081293);
     /// XF86Macro5
-    pub const KEY_XF86Macro5: Keysym = Keysym(0x10081294);
+    pub const XF86Macro5: Keysym = Keysym(0x10081294);
     /// XF86Macro6
-    pub const KEY_XF86Macro6: Keysym = Keysym(0x10081295);
+    pub const XF86Macro6: Keysym = Keysym(0x10081295);
     /// XF86Macro7
-    pub const KEY_XF86Macro7: Keysym = Keysym(0x10081296);
+    pub const XF86Macro7: Keysym = Keysym(0x10081296);
     /// XF86Macro8
-    pub const KEY_XF86Macro8: Keysym = Keysym(0x10081297);
+    pub const XF86Macro8: Keysym = Keysym(0x10081297);
     /// XF86Macro9
-    pub const KEY_XF86Macro9: Keysym = Keysym(0x10081298);
+    pub const XF86Macro9: Keysym = Keysym(0x10081298);
     /// XF86Macro10
-    pub const KEY_XF86Macro10: Keysym = Keysym(0x10081299);
+    pub const XF86Macro10: Keysym = Keysym(0x10081299);
     /// XF86Macro11
-    pub const KEY_XF86Macro11: Keysym = Keysym(0x1008129a);
+    pub const XF86Macro11: Keysym = Keysym(0x1008129a);
     /// XF86Macro12
-    pub const KEY_XF86Macro12: Keysym = Keysym(0x1008129b);
+    pub const XF86Macro12: Keysym = Keysym(0x1008129b);
     /// XF86Macro13
-    pub const KEY_XF86Macro13: Keysym = Keysym(0x1008129c);
+    pub const XF86Macro13: Keysym = Keysym(0x1008129c);
     /// XF86Macro14
-    pub const KEY_XF86Macro14: Keysym = Keysym(0x1008129d);
+    pub const XF86Macro14: Keysym = Keysym(0x1008129d);
     /// XF86Macro15
-    pub const KEY_XF86Macro15: Keysym = Keysym(0x1008129e);
+    pub const XF86Macro15: Keysym = Keysym(0x1008129e);
     /// XF86Macro16
-    pub const KEY_XF86Macro16: Keysym = Keysym(0x1008129f);
+    pub const XF86Macro16: Keysym = Keysym(0x1008129f);
     /// XF86Macro17
-    pub const KEY_XF86Macro17: Keysym = Keysym(0x100812a0);
+    pub const XF86Macro17: Keysym = Keysym(0x100812a0);
     /// XF86Macro18
-    pub const KEY_XF86Macro18: Keysym = Keysym(0x100812a1);
+    pub const XF86Macro18: Keysym = Keysym(0x100812a1);
     /// XF86Macro19
-    pub const KEY_XF86Macro19: Keysym = Keysym(0x100812a2);
+    pub const XF86Macro19: Keysym = Keysym(0x100812a2);
     /// XF86Macro20
-    pub const KEY_XF86Macro20: Keysym = Keysym(0x100812a3);
+    pub const XF86Macro20: Keysym = Keysym(0x100812a3);
     /// XF86Macro21
-    pub const KEY_XF86Macro21: Keysym = Keysym(0x100812a4);
+    pub const XF86Macro21: Keysym = Keysym(0x100812a4);
     /// XF86Macro22
-    pub const KEY_XF86Macro22: Keysym = Keysym(0x100812a5);
+    pub const XF86Macro22: Keysym = Keysym(0x100812a5);
     /// XF86Macro23
-    pub const KEY_XF86Macro23: Keysym = Keysym(0x100812a6);
+    pub const XF86Macro23: Keysym = Keysym(0x100812a6);
     /// XF86Macro24
-    pub const KEY_XF86Macro24: Keysym = Keysym(0x100812a7);
+    pub const XF86Macro24: Keysym = Keysym(0x100812a7);
     /// XF86Macro25
-    pub const KEY_XF86Macro25: Keysym = Keysym(0x100812a8);
+    pub const XF86Macro25: Keysym = Keysym(0x100812a8);
     /// XF86Macro26
-    pub const KEY_XF86Macro26: Keysym = Keysym(0x100812a9);
+    pub const XF86Macro26: Keysym = Keysym(0x100812a9);
     /// XF86Macro27
-    pub const KEY_XF86Macro27: Keysym = Keysym(0x100812aa);
+    pub const XF86Macro27: Keysym = Keysym(0x100812aa);
     /// XF86Macro28
-    pub const KEY_XF86Macro28: Keysym = Keysym(0x100812ab);
+    pub const XF86Macro28: Keysym = Keysym(0x100812ab);
     /// XF86Macro29
-    pub const KEY_XF86Macro29: Keysym = Keysym(0x100812ac);
+    pub const XF86Macro29: Keysym = Keysym(0x100812ac);
     /// XF86Macro30
-    pub const KEY_XF86Macro30: Keysym = Keysym(0x100812ad);
+    pub const XF86Macro30: Keysym = Keysym(0x100812ad);
     /// XF86MacroRecordStart
-    pub const KEY_XF86MacroRecordStart: Keysym = Keysym(0x100812b0);
+    pub const XF86MacroRecordStart: Keysym = Keysym(0x100812b0);
     /// XF86MacroRecordStop
-    pub const KEY_XF86MacroRecordStop: Keysym = Keysym(0x100812b1);
+    pub const XF86MacroRecordStop: Keysym = Keysym(0x100812b1);
     /// XF86MacroPresetCycle
-    pub const KEY_XF86MacroPresetCycle: Keysym = Keysym(0x100812b2);
+    pub const XF86MacroPresetCycle: Keysym = Keysym(0x100812b2);
     /// XF86MacroPreset1
-    pub const KEY_XF86MacroPreset1: Keysym = Keysym(0x100812b3);
+    pub const XF86MacroPreset1: Keysym = Keysym(0x100812b3);
     /// XF86MacroPreset2
-    pub const KEY_XF86MacroPreset2: Keysym = Keysym(0x100812b4);
+    pub const XF86MacroPreset2: Keysym = Keysym(0x100812b4);
     /// XF86MacroPreset3
-    pub const KEY_XF86MacroPreset3: Keysym = Keysym(0x100812b5);
+    pub const XF86MacroPreset3: Keysym = Keysym(0x100812b5);
     /// XF86KbdLcdMenu1
-    pub const KEY_XF86KbdLcdMenu1: Keysym = Keysym(0x100812b8);
+    pub const XF86KbdLcdMenu1: Keysym = Keysym(0x100812b8);
     /// XF86KbdLcdMenu2
-    pub const KEY_XF86KbdLcdMenu2: Keysym = Keysym(0x100812b9);
+    pub const XF86KbdLcdMenu2: Keysym = Keysym(0x100812b9);
     /// XF86KbdLcdMenu3
-    pub const KEY_XF86KbdLcdMenu3: Keysym = Keysym(0x100812ba);
+    pub const XF86KbdLcdMenu3: Keysym = Keysym(0x100812ba);
     /// XF86KbdLcdMenu4
-    pub const KEY_XF86KbdLcdMenu4: Keysym = Keysym(0x100812bb);
+    pub const XF86KbdLcdMenu4: Keysym = Keysym(0x100812bb);
     /// XF86KbdLcdMenu5
-    pub const KEY_XF86KbdLcdMenu5: Keysym = Keysym(0x100812bc);
+    pub const XF86KbdLcdMenu5: Keysym = Keysym(0x100812bc);
     /// XF86Switch_VT_1
-    pub const KEY_XF86Switch_VT_1: Keysym = Keysym(0x1008fe01);
+    pub const XF86Switch_VT_1: Keysym = Keysym(0x1008fe01);
     /// XF86Switch_VT_2
-    pub const KEY_XF86Switch_VT_2: Keysym = Keysym(0x1008fe02);
+    pub const XF86Switch_VT_2: Keysym = Keysym(0x1008fe02);
     /// XF86Switch_VT_3
-    pub const KEY_XF86Switch_VT_3: Keysym = Keysym(0x1008fe03);
+    pub const XF86Switch_VT_3: Keysym = Keysym(0x1008fe03);
     /// XF86Switch_VT_4
-    pub const KEY_XF86Switch_VT_4: Keysym = Keysym(0x1008fe04);
+    pub const XF86Switch_VT_4: Keysym = Keysym(0x1008fe04);
     /// XF86Switch_VT_5
-    pub const KEY_XF86Switch_VT_5: Keysym = Keysym(0x1008fe05);
+    pub const XF86Switch_VT_5: Keysym = Keysym(0x1008fe05);
     /// XF86Switch_VT_6
-    pub const KEY_XF86Switch_VT_6: Keysym = Keysym(0x1008fe06);
+    pub const XF86Switch_VT_6: Keysym = Keysym(0x1008fe06);
     /// XF86Switch_VT_7
-    pub const KEY_XF86Switch_VT_7: Keysym = Keysym(0x1008fe07);
+    pub const XF86Switch_VT_7: Keysym = Keysym(0x1008fe07);
     /// XF86Switch_VT_8
-    pub const KEY_XF86Switch_VT_8: Keysym = Keysym(0x1008fe08);
+    pub const XF86Switch_VT_8: Keysym = Keysym(0x1008fe08);
     /// XF86Switch_VT_9
-    pub const KEY_XF86Switch_VT_9: Keysym = Keysym(0x1008fe09);
+    pub const XF86Switch_VT_9: Keysym = Keysym(0x1008fe09);
     /// XF86Switch_VT_10
-    pub const KEY_XF86Switch_VT_10: Keysym = Keysym(0x1008fe0a);
+    pub const XF86Switch_VT_10: Keysym = Keysym(0x1008fe0a);
     /// XF86Switch_VT_11
-    pub const KEY_XF86Switch_VT_11: Keysym = Keysym(0x1008fe0b);
+    pub const XF86Switch_VT_11: Keysym = Keysym(0x1008fe0b);
     /// XF86Switch_VT_12
-    pub const KEY_XF86Switch_VT_12: Keysym = Keysym(0x1008fe0c);
+    pub const XF86Switch_VT_12: Keysym = Keysym(0x1008fe0c);
     /// XF86Ungrab
-    pub const KEY_XF86Ungrab: Keysym = Keysym(0x1008fe20);
+    pub const XF86Ungrab: Keysym = Keysym(0x1008fe20);
     /// XF86ClearGrab
-    pub const KEY_XF86ClearGrab: Keysym = Keysym(0x1008fe21);
+    pub const XF86ClearGrab: Keysym = Keysym(0x1008fe21);
     /// XF86Next_VMode
-    pub const KEY_XF86Next_VMode: Keysym = Keysym(0x1008fe22);
+    pub const XF86Next_VMode: Keysym = Keysym(0x1008fe22);
     /// XF86Prev_VMode
-    pub const KEY_XF86Prev_VMode: Keysym = Keysym(0x1008fe23);
+    pub const XF86Prev_VMode: Keysym = Keysym(0x1008fe23);
     /// XF86LogWindowTree
-    pub const KEY_XF86LogWindowTree: Keysym = Keysym(0x1008fe24);
+    pub const XF86LogWindowTree: Keysym = Keysym(0x1008fe24);
     /// XF86LogGrabInfo
-    pub const KEY_XF86LogGrabInfo: Keysym = Keysym(0x1008fe25);
+    pub const XF86LogGrabInfo: Keysym = Keysym(0x1008fe25);
     /// XF86ModeLock
-    pub const KEY_XF86ModeLock: Keysym = Keysym(0x1008ff01);
+    pub const XF86ModeLock: Keysym = Keysym(0x1008ff01);
     /// XF86MonBrightnessUp
-    pub const KEY_XF86MonBrightnessUp: Keysym = Keysym(0x1008ff02);
+    pub const XF86MonBrightnessUp: Keysym = Keysym(0x1008ff02);
     /// XF86MonBrightnessDown
-    pub const KEY_XF86MonBrightnessDown: Keysym = Keysym(0x1008ff03);
+    pub const XF86MonBrightnessDown: Keysym = Keysym(0x1008ff03);
     /// XF86KbdLightOnOff
-    pub const KEY_XF86KbdLightOnOff: Keysym = Keysym(0x1008ff04);
+    pub const XF86KbdLightOnOff: Keysym = Keysym(0x1008ff04);
     /// XF86KbdBrightnessUp
-    pub const KEY_XF86KbdBrightnessUp: Keysym = Keysym(0x1008ff05);
+    pub const XF86KbdBrightnessUp: Keysym = Keysym(0x1008ff05);
     /// XF86KbdBrightnessDown
-    pub const KEY_XF86KbdBrightnessDown: Keysym = Keysym(0x1008ff06);
+    pub const XF86KbdBrightnessDown: Keysym = Keysym(0x1008ff06);
     /// XF86MonBrightnessCycle
-    pub const KEY_XF86MonBrightnessCycle: Keysym = Keysym(0x1008ff07);
+    pub const XF86MonBrightnessCycle: Keysym = Keysym(0x1008ff07);
     /// XF86Standby
-    pub const KEY_XF86Standby: Keysym = Keysym(0x1008ff10);
+    pub const XF86Standby: Keysym = Keysym(0x1008ff10);
     /// XF86AudioLowerVolume
-    pub const KEY_XF86AudioLowerVolume: Keysym = Keysym(0x1008ff11);
+    pub const XF86AudioLowerVolume: Keysym = Keysym(0x1008ff11);
     /// XF86AudioMute
-    pub const KEY_XF86AudioMute: Keysym = Keysym(0x1008ff12);
+    pub const XF86AudioMute: Keysym = Keysym(0x1008ff12);
     /// XF86AudioRaiseVolume
-    pub const KEY_XF86AudioRaiseVolume: Keysym = Keysym(0x1008ff13);
+    pub const XF86AudioRaiseVolume: Keysym = Keysym(0x1008ff13);
     /// XF86AudioPlay
-    pub const KEY_XF86AudioPlay: Keysym = Keysym(0x1008ff14);
+    pub const XF86AudioPlay: Keysym = Keysym(0x1008ff14);
     /// XF86AudioStop
-    pub const KEY_XF86AudioStop: Keysym = Keysym(0x1008ff15);
+    pub const XF86AudioStop: Keysym = Keysym(0x1008ff15);
     /// XF86AudioPrev
-    pub const KEY_XF86AudioPrev: Keysym = Keysym(0x1008ff16);
+    pub const XF86AudioPrev: Keysym = Keysym(0x1008ff16);
     /// XF86AudioNext
-    pub const KEY_XF86AudioNext: Keysym = Keysym(0x1008ff17);
+    pub const XF86AudioNext: Keysym = Keysym(0x1008ff17);
     /// XF86HomePage
-    pub const KEY_XF86HomePage: Keysym = Keysym(0x1008ff18);
+    pub const XF86HomePage: Keysym = Keysym(0x1008ff18);
     /// XF86Mail
-    pub const KEY_XF86Mail: Keysym = Keysym(0x1008ff19);
+    pub const XF86Mail: Keysym = Keysym(0x1008ff19);
     /// XF86Start
-    pub const KEY_XF86Start: Keysym = Keysym(0x1008ff1a);
+    pub const XF86Start: Keysym = Keysym(0x1008ff1a);
     /// XF86Search
-    pub const KEY_XF86Search: Keysym = Keysym(0x1008ff1b);
+    pub const XF86Search: Keysym = Keysym(0x1008ff1b);
     /// XF86AudioRecord
-    pub const KEY_XF86AudioRecord: Keysym = Keysym(0x1008ff1c);
+    pub const XF86AudioRecord: Keysym = Keysym(0x1008ff1c);
     /// XF86Calculator
-    pub const KEY_XF86Calculator: Keysym = Keysym(0x1008ff1d);
+    pub const XF86Calculator: Keysym = Keysym(0x1008ff1d);
     /// XF86Memo
-    pub const KEY_XF86Memo: Keysym = Keysym(0x1008ff1e);
+    pub const XF86Memo: Keysym = Keysym(0x1008ff1e);
     /// XF86ToDoList
-    pub const KEY_XF86ToDoList: Keysym = Keysym(0x1008ff1f);
+    pub const XF86ToDoList: Keysym = Keysym(0x1008ff1f);
     /// XF86Calendar
-    pub const KEY_XF86Calendar: Keysym = Keysym(0x1008ff20);
+    pub const XF86Calendar: Keysym = Keysym(0x1008ff20);
     /// XF86PowerDown
-    pub const KEY_XF86PowerDown: Keysym = Keysym(0x1008ff21);
+    pub const XF86PowerDown: Keysym = Keysym(0x1008ff21);
     /// XF86ContrastAdjust
-    pub const KEY_XF86ContrastAdjust: Keysym = Keysym(0x1008ff22);
+    pub const XF86ContrastAdjust: Keysym = Keysym(0x1008ff22);
     /// XF86RockerUp
-    pub const KEY_XF86RockerUp: Keysym = Keysym(0x1008ff23);
+    pub const XF86RockerUp: Keysym = Keysym(0x1008ff23);
     /// XF86RockerDown
-    pub const KEY_XF86RockerDown: Keysym = Keysym(0x1008ff24);
+    pub const XF86RockerDown: Keysym = Keysym(0x1008ff24);
     /// XF86RockerEnter
-    pub const KEY_XF86RockerEnter: Keysym = Keysym(0x1008ff25);
+    pub const XF86RockerEnter: Keysym = Keysym(0x1008ff25);
     /// XF86Back
-    pub const KEY_XF86Back: Keysym = Keysym(0x1008ff26);
+    pub const XF86Back: Keysym = Keysym(0x1008ff26);
     /// XF86Forward
-    pub const KEY_XF86Forward: Keysym = Keysym(0x1008ff27);
+    pub const XF86Forward: Keysym = Keysym(0x1008ff27);
     /// XF86Stop
-    pub const KEY_XF86Stop: Keysym = Keysym(0x1008ff28);
+    pub const XF86Stop: Keysym = Keysym(0x1008ff28);
     /// XF86Refresh
-    pub const KEY_XF86Refresh: Keysym = Keysym(0x1008ff29);
+    pub const XF86Refresh: Keysym = Keysym(0x1008ff29);
     /// XF86PowerOff
-    pub const KEY_XF86PowerOff: Keysym = Keysym(0x1008ff2a);
+    pub const XF86PowerOff: Keysym = Keysym(0x1008ff2a);
     /// XF86WakeUp
-    pub const KEY_XF86WakeUp: Keysym = Keysym(0x1008ff2b);
+    pub const XF86WakeUp: Keysym = Keysym(0x1008ff2b);
     /// XF86Eject
-    pub const KEY_XF86Eject: Keysym = Keysym(0x1008ff2c);
+    pub const XF86Eject: Keysym = Keysym(0x1008ff2c);
     /// XF86ScreenSaver
-    pub const KEY_XF86ScreenSaver: Keysym = Keysym(0x1008ff2d);
+    pub const XF86ScreenSaver: Keysym = Keysym(0x1008ff2d);
     /// XF86WWW
-    pub const KEY_XF86WWW: Keysym = Keysym(0x1008ff2e);
+    pub const XF86WWW: Keysym = Keysym(0x1008ff2e);
     /// XF86Sleep
-    pub const KEY_XF86Sleep: Keysym = Keysym(0x1008ff2f);
+    pub const XF86Sleep: Keysym = Keysym(0x1008ff2f);
     /// XF86Favorites
-    pub const KEY_XF86Favorites: Keysym = Keysym(0x1008ff30);
+    pub const XF86Favorites: Keysym = Keysym(0x1008ff30);
     /// XF86AudioPause
-    pub const KEY_XF86AudioPause: Keysym = Keysym(0x1008ff31);
+    pub const XF86AudioPause: Keysym = Keysym(0x1008ff31);
     /// XF86AudioMedia
-    pub const KEY_XF86AudioMedia: Keysym = Keysym(0x1008ff32);
+    pub const XF86AudioMedia: Keysym = Keysym(0x1008ff32);
     /// XF86MyComputer
-    pub const KEY_XF86MyComputer: Keysym = Keysym(0x1008ff33);
+    pub const XF86MyComputer: Keysym = Keysym(0x1008ff33);
     /// XF86VendorHome
-    pub const KEY_XF86VendorHome: Keysym = Keysym(0x1008ff34);
+    pub const XF86VendorHome: Keysym = Keysym(0x1008ff34);
     /// XF86LightBulb
-    pub const KEY_XF86LightBulb: Keysym = Keysym(0x1008ff35);
+    pub const XF86LightBulb: Keysym = Keysym(0x1008ff35);
     /// XF86Shop
-    pub const KEY_XF86Shop: Keysym = Keysym(0x1008ff36);
+    pub const XF86Shop: Keysym = Keysym(0x1008ff36);
     /// XF86History
-    pub const KEY_XF86History: Keysym = Keysym(0x1008ff37);
+    pub const XF86History: Keysym = Keysym(0x1008ff37);
     /// XF86OpenURL
-    pub const KEY_XF86OpenURL: Keysym = Keysym(0x1008ff38);
+    pub const XF86OpenURL: Keysym = Keysym(0x1008ff38);
     /// XF86AddFavorite
-    pub const KEY_XF86AddFavorite: Keysym = Keysym(0x1008ff39);
+    pub const XF86AddFavorite: Keysym = Keysym(0x1008ff39);
     /// XF86HotLinks
-    pub const KEY_XF86HotLinks: Keysym = Keysym(0x1008ff3a);
+    pub const XF86HotLinks: Keysym = Keysym(0x1008ff3a);
     /// XF86BrightnessAdjust
-    pub const KEY_XF86BrightnessAdjust: Keysym = Keysym(0x1008ff3b);
+    pub const XF86BrightnessAdjust: Keysym = Keysym(0x1008ff3b);
     /// XF86Finance
-    pub const KEY_XF86Finance: Keysym = Keysym(0x1008ff3c);
+    pub const XF86Finance: Keysym = Keysym(0x1008ff3c);
     /// XF86Community
-    pub const KEY_XF86Community: Keysym = Keysym(0x1008ff3d);
+    pub const XF86Community: Keysym = Keysym(0x1008ff3d);
     /// XF86AudioRewind
-    pub const KEY_XF86AudioRewind: Keysym = Keysym(0x1008ff3e);
+    pub const XF86AudioRewind: Keysym = Keysym(0x1008ff3e);
     /// XF86BackForward
-    pub const KEY_XF86BackForward: Keysym = Keysym(0x1008ff3f);
+    pub const XF86BackForward: Keysym = Keysym(0x1008ff3f);
     /// XF86Launch0
-    pub const KEY_XF86Launch0: Keysym = Keysym(0x1008ff40);
+    pub const XF86Launch0: Keysym = Keysym(0x1008ff40);
     /// XF86Launch1
-    pub const KEY_XF86Launch1: Keysym = Keysym(0x1008ff41);
+    pub const XF86Launch1: Keysym = Keysym(0x1008ff41);
     /// XF86Launch2
-    pub const KEY_XF86Launch2: Keysym = Keysym(0x1008ff42);
+    pub const XF86Launch2: Keysym = Keysym(0x1008ff42);
     /// XF86Launch3
-    pub const KEY_XF86Launch3: Keysym = Keysym(0x1008ff43);
+    pub const XF86Launch3: Keysym = Keysym(0x1008ff43);
     /// XF86Launch4
-    pub const KEY_XF86Launch4: Keysym = Keysym(0x1008ff44);
+    pub const XF86Launch4: Keysym = Keysym(0x1008ff44);
     /// XF86Launch5
-    pub const KEY_XF86Launch5: Keysym = Keysym(0x1008ff45);
+    pub const XF86Launch5: Keysym = Keysym(0x1008ff45);
     /// XF86Launch6
-    pub const KEY_XF86Launch6: Keysym = Keysym(0x1008ff46);
+    pub const XF86Launch6: Keysym = Keysym(0x1008ff46);
     /// XF86Launch7
-    pub const KEY_XF86Launch7: Keysym = Keysym(0x1008ff47);
+    pub const XF86Launch7: Keysym = Keysym(0x1008ff47);
     /// XF86Launch8
-    pub const KEY_XF86Launch8: Keysym = Keysym(0x1008ff48);
+    pub const XF86Launch8: Keysym = Keysym(0x1008ff48);
     /// XF86Launch9
-    pub const KEY_XF86Launch9: Keysym = Keysym(0x1008ff49);
+    pub const XF86Launch9: Keysym = Keysym(0x1008ff49);
     /// XF86LaunchA
-    pub const KEY_XF86LaunchA: Keysym = Keysym(0x1008ff4a);
+    pub const XF86LaunchA: Keysym = Keysym(0x1008ff4a);
     /// XF86LaunchB
-    pub const KEY_XF86LaunchB: Keysym = Keysym(0x1008ff4b);
+    pub const XF86LaunchB: Keysym = Keysym(0x1008ff4b);
     /// XF86LaunchC
-    pub const KEY_XF86LaunchC: Keysym = Keysym(0x1008ff4c);
+    pub const XF86LaunchC: Keysym = Keysym(0x1008ff4c);
     /// XF86LaunchD
-    pub const KEY_XF86LaunchD: Keysym = Keysym(0x1008ff4d);
+    pub const XF86LaunchD: Keysym = Keysym(0x1008ff4d);
     /// XF86LaunchE
-    pub const KEY_XF86LaunchE: Keysym = Keysym(0x1008ff4e);
+    pub const XF86LaunchE: Keysym = Keysym(0x1008ff4e);
     /// XF86LaunchF
-    pub const KEY_XF86LaunchF: Keysym = Keysym(0x1008ff4f);
+    pub const XF86LaunchF: Keysym = Keysym(0x1008ff4f);
     /// XF86ApplicationLeft
-    pub const KEY_XF86ApplicationLeft: Keysym = Keysym(0x1008ff50);
+    pub const XF86ApplicationLeft: Keysym = Keysym(0x1008ff50);
     /// XF86ApplicationRight
-    pub const KEY_XF86ApplicationRight: Keysym = Keysym(0x1008ff51);
+    pub const XF86ApplicationRight: Keysym = Keysym(0x1008ff51);
     /// XF86Book
-    pub const KEY_XF86Book: Keysym = Keysym(0x1008ff52);
+    pub const XF86Book: Keysym = Keysym(0x1008ff52);
     /// XF86CD
-    pub const KEY_XF86CD: Keysym = Keysym(0x1008ff53);
+    pub const XF86CD: Keysym = Keysym(0x1008ff53);
     /// XF86Calculater
-    pub const KEY_XF86Calculater: Keysym = Keysym(0x1008ff54);
+    pub const XF86Calculater: Keysym = Keysym(0x1008ff54);
     /// XF86Clear
-    pub const KEY_XF86Clear: Keysym = Keysym(0x1008ff55);
+    pub const XF86Clear: Keysym = Keysym(0x1008ff55);
     /// XF86Close
-    pub const KEY_XF86Close: Keysym = Keysym(0x1008ff56);
+    pub const XF86Close: Keysym = Keysym(0x1008ff56);
     /// XF86Copy
-    pub const KEY_XF86Copy: Keysym = Keysym(0x1008ff57);
+    pub const XF86Copy: Keysym = Keysym(0x1008ff57);
     /// XF86Cut
-    pub const KEY_XF86Cut: Keysym = Keysym(0x1008ff58);
+    pub const XF86Cut: Keysym = Keysym(0x1008ff58);
     /// XF86Display
-    pub const KEY_XF86Display: Keysym = Keysym(0x1008ff59);
+    pub const XF86Display: Keysym = Keysym(0x1008ff59);
     /// XF86DOS
-    pub const KEY_XF86DOS: Keysym = Keysym(0x1008ff5a);
+    pub const XF86DOS: Keysym = Keysym(0x1008ff5a);
     /// XF86Documents
-    pub const KEY_XF86Documents: Keysym = Keysym(0x1008ff5b);
+    pub const XF86Documents: Keysym = Keysym(0x1008ff5b);
     /// XF86Excel
-    pub const KEY_XF86Excel: Keysym = Keysym(0x1008ff5c);
+    pub const XF86Excel: Keysym = Keysym(0x1008ff5c);
     /// XF86Explorer
-    pub const KEY_XF86Explorer: Keysym = Keysym(0x1008ff5d);
+    pub const XF86Explorer: Keysym = Keysym(0x1008ff5d);
     /// XF86Game
-    pub const KEY_XF86Game: Keysym = Keysym(0x1008ff5e);
+    pub const XF86Game: Keysym = Keysym(0x1008ff5e);
     /// XF86Go
-    pub const KEY_XF86Go: Keysym = Keysym(0x1008ff5f);
+    pub const XF86Go: Keysym = Keysym(0x1008ff5f);
     /// XF86iTouch
-    pub const KEY_XF86iTouch: Keysym = Keysym(0x1008ff60);
+    pub const XF86iTouch: Keysym = Keysym(0x1008ff60);
     /// XF86LogOff
-    pub const KEY_XF86LogOff: Keysym = Keysym(0x1008ff61);
+    pub const XF86LogOff: Keysym = Keysym(0x1008ff61);
     /// XF86Market
-    pub const KEY_XF86Market: Keysym = Keysym(0x1008ff62);
+    pub const XF86Market: Keysym = Keysym(0x1008ff62);
     /// XF86Meeting
-    pub const KEY_XF86Meeting: Keysym = Keysym(0x1008ff63);
+    pub const XF86Meeting: Keysym = Keysym(0x1008ff63);
     /// XF86MenuKB
-    pub const KEY_XF86MenuKB: Keysym = Keysym(0x1008ff65);
+    pub const XF86MenuKB: Keysym = Keysym(0x1008ff65);
     /// XF86MenuPB
-    pub const KEY_XF86MenuPB: Keysym = Keysym(0x1008ff66);
+    pub const XF86MenuPB: Keysym = Keysym(0x1008ff66);
     /// XF86MySites
-    pub const KEY_XF86MySites: Keysym = Keysym(0x1008ff67);
+    pub const XF86MySites: Keysym = Keysym(0x1008ff67);
     /// XF86New
-    pub const KEY_XF86New: Keysym = Keysym(0x1008ff68);
+    pub const XF86New: Keysym = Keysym(0x1008ff68);
     /// XF86News
-    pub const KEY_XF86News: Keysym = Keysym(0x1008ff69);
+    pub const XF86News: Keysym = Keysym(0x1008ff69);
     /// XF86OfficeHome
-    pub const KEY_XF86OfficeHome: Keysym = Keysym(0x1008ff6a);
+    pub const XF86OfficeHome: Keysym = Keysym(0x1008ff6a);
     /// XF86Open
-    pub const KEY_XF86Open: Keysym = Keysym(0x1008ff6b);
+    pub const XF86Open: Keysym = Keysym(0x1008ff6b);
     /// XF86Option
-    pub const KEY_XF86Option: Keysym = Keysym(0x1008ff6c);
+    pub const XF86Option: Keysym = Keysym(0x1008ff6c);
     /// XF86Paste
-    pub const KEY_XF86Paste: Keysym = Keysym(0x1008ff6d);
+    pub const XF86Paste: Keysym = Keysym(0x1008ff6d);
     /// XF86Phone
-    pub const KEY_XF86Phone: Keysym = Keysym(0x1008ff6e);
+    pub const XF86Phone: Keysym = Keysym(0x1008ff6e);
     /// XF86Q
-    pub const KEY_XF86Q: Keysym = Keysym(0x1008ff70);
+    pub const XF86Q: Keysym = Keysym(0x1008ff70);
     /// XF86Reply
-    pub const KEY_XF86Reply: Keysym = Keysym(0x1008ff72);
+    pub const XF86Reply: Keysym = Keysym(0x1008ff72);
     /// XF86Reload
-    pub const KEY_XF86Reload: Keysym = Keysym(0x1008ff73);
+    pub const XF86Reload: Keysym = Keysym(0x1008ff73);
     /// XF86RotateWindows
-    pub const KEY_XF86RotateWindows: Keysym = Keysym(0x1008ff74);
+    pub const XF86RotateWindows: Keysym = Keysym(0x1008ff74);
     /// XF86RotationPB
-    pub const KEY_XF86RotationPB: Keysym = Keysym(0x1008ff75);
+    pub const XF86RotationPB: Keysym = Keysym(0x1008ff75);
     /// XF86RotationKB
-    pub const KEY_XF86RotationKB: Keysym = Keysym(0x1008ff76);
+    pub const XF86RotationKB: Keysym = Keysym(0x1008ff76);
     /// XF86Save
-    pub const KEY_XF86Save: Keysym = Keysym(0x1008ff77);
+    pub const XF86Save: Keysym = Keysym(0x1008ff77);
     /// XF86ScrollUp
-    pub const KEY_XF86ScrollUp: Keysym = Keysym(0x1008ff78);
+    pub const XF86ScrollUp: Keysym = Keysym(0x1008ff78);
     /// XF86ScrollDown
-    pub const KEY_XF86ScrollDown: Keysym = Keysym(0x1008ff79);
+    pub const XF86ScrollDown: Keysym = Keysym(0x1008ff79);
     /// XF86ScrollClick
-    pub const KEY_XF86ScrollClick: Keysym = Keysym(0x1008ff7a);
+    pub const XF86ScrollClick: Keysym = Keysym(0x1008ff7a);
     /// XF86Send
-    pub const KEY_XF86Send: Keysym = Keysym(0x1008ff7b);
+    pub const XF86Send: Keysym = Keysym(0x1008ff7b);
     /// XF86Spell
-    pub const KEY_XF86Spell: Keysym = Keysym(0x1008ff7c);
+    pub const XF86Spell: Keysym = Keysym(0x1008ff7c);
     /// XF86SplitScreen
-    pub const KEY_XF86SplitScreen: Keysym = Keysym(0x1008ff7d);
+    pub const XF86SplitScreen: Keysym = Keysym(0x1008ff7d);
     /// XF86Support
-    pub const KEY_XF86Support: Keysym = Keysym(0x1008ff7e);
+    pub const XF86Support: Keysym = Keysym(0x1008ff7e);
     /// XF86TaskPane
-    pub const KEY_XF86TaskPane: Keysym = Keysym(0x1008ff7f);
+    pub const XF86TaskPane: Keysym = Keysym(0x1008ff7f);
     /// XF86Terminal
-    pub const KEY_XF86Terminal: Keysym = Keysym(0x1008ff80);
+    pub const XF86Terminal: Keysym = Keysym(0x1008ff80);
     /// XF86Tools
-    pub const KEY_XF86Tools: Keysym = Keysym(0x1008ff81);
+    pub const XF86Tools: Keysym = Keysym(0x1008ff81);
     /// XF86Travel
-    pub const KEY_XF86Travel: Keysym = Keysym(0x1008ff82);
+    pub const XF86Travel: Keysym = Keysym(0x1008ff82);
     /// XF86UserPB
-    pub const KEY_XF86UserPB: Keysym = Keysym(0x1008ff84);
+    pub const XF86UserPB: Keysym = Keysym(0x1008ff84);
     /// XF86User1KB
-    pub const KEY_XF86User1KB: Keysym = Keysym(0x1008ff85);
+    pub const XF86User1KB: Keysym = Keysym(0x1008ff85);
     /// XF86User2KB
-    pub const KEY_XF86User2KB: Keysym = Keysym(0x1008ff86);
+    pub const XF86User2KB: Keysym = Keysym(0x1008ff86);
     /// XF86Video
-    pub const KEY_XF86Video: Keysym = Keysym(0x1008ff87);
+    pub const XF86Video: Keysym = Keysym(0x1008ff87);
     /// XF86WheelButton
-    pub const KEY_XF86WheelButton: Keysym = Keysym(0x1008ff88);
+    pub const XF86WheelButton: Keysym = Keysym(0x1008ff88);
     /// XF86Word
-    pub const KEY_XF86Word: Keysym = Keysym(0x1008ff89);
+    pub const XF86Word: Keysym = Keysym(0x1008ff89);
     /// XF86Xfer
-    pub const KEY_XF86Xfer: Keysym = Keysym(0x1008ff8a);
+    pub const XF86Xfer: Keysym = Keysym(0x1008ff8a);
     /// XF86ZoomIn
-    pub const KEY_XF86ZoomIn: Keysym = Keysym(0x1008ff8b);
+    pub const XF86ZoomIn: Keysym = Keysym(0x1008ff8b);
     /// XF86ZoomOut
-    pub const KEY_XF86ZoomOut: Keysym = Keysym(0x1008ff8c);
+    pub const XF86ZoomOut: Keysym = Keysym(0x1008ff8c);
     /// XF86Away
-    pub const KEY_XF86Away: Keysym = Keysym(0x1008ff8d);
+    pub const XF86Away: Keysym = Keysym(0x1008ff8d);
     /// XF86Messenger
-    pub const KEY_XF86Messenger: Keysym = Keysym(0x1008ff8e);
+    pub const XF86Messenger: Keysym = Keysym(0x1008ff8e);
     /// XF86WebCam
-    pub const KEY_XF86WebCam: Keysym = Keysym(0x1008ff8f);
+    pub const XF86WebCam: Keysym = Keysym(0x1008ff8f);
     /// XF86MailForward
-    pub const KEY_XF86MailForward: Keysym = Keysym(0x1008ff90);
+    pub const XF86MailForward: Keysym = Keysym(0x1008ff90);
     /// XF86Pictures
-    pub const KEY_XF86Pictures: Keysym = Keysym(0x1008ff91);
+    pub const XF86Pictures: Keysym = Keysym(0x1008ff91);
     /// XF86Music
-    pub const KEY_XF86Music: Keysym = Keysym(0x1008ff92);
+    pub const XF86Music: Keysym = Keysym(0x1008ff92);
     /// XF86Battery
-    pub const KEY_XF86Battery: Keysym = Keysym(0x1008ff93);
+    pub const XF86Battery: Keysym = Keysym(0x1008ff93);
     /// XF86Bluetooth
-    pub const KEY_XF86Bluetooth: Keysym = Keysym(0x1008ff94);
+    pub const XF86Bluetooth: Keysym = Keysym(0x1008ff94);
     /// XF86WLAN
-    pub const KEY_XF86WLAN: Keysym = Keysym(0x1008ff95);
+    pub const XF86WLAN: Keysym = Keysym(0x1008ff95);
     /// XF86UWB
-    pub const KEY_XF86UWB: Keysym = Keysym(0x1008ff96);
+    pub const XF86UWB: Keysym = Keysym(0x1008ff96);
     /// XF86AudioForward
-    pub const KEY_XF86AudioForward: Keysym = Keysym(0x1008ff97);
+    pub const XF86AudioForward: Keysym = Keysym(0x1008ff97);
     /// XF86AudioRepeat
-    pub const KEY_XF86AudioRepeat: Keysym = Keysym(0x1008ff98);
+    pub const XF86AudioRepeat: Keysym = Keysym(0x1008ff98);
     /// XF86AudioRandomPlay
-    pub const KEY_XF86AudioRandomPlay: Keysym = Keysym(0x1008ff99);
+    pub const XF86AudioRandomPlay: Keysym = Keysym(0x1008ff99);
     /// XF86Subtitle
-    pub const KEY_XF86Subtitle: Keysym = Keysym(0x1008ff9a);
+    pub const XF86Subtitle: Keysym = Keysym(0x1008ff9a);
     /// XF86AudioCycleTrack
-    pub const KEY_XF86AudioCycleTrack: Keysym = Keysym(0x1008ff9b);
+    pub const XF86AudioCycleTrack: Keysym = Keysym(0x1008ff9b);
     /// XF86CycleAngle
-    pub const KEY_XF86CycleAngle: Keysym = Keysym(0x1008ff9c);
+    pub const XF86CycleAngle: Keysym = Keysym(0x1008ff9c);
     /// XF86FrameBack
-    pub const KEY_XF86FrameBack: Keysym = Keysym(0x1008ff9d);
+    pub const XF86FrameBack: Keysym = Keysym(0x1008ff9d);
     /// XF86FrameForward
-    pub const KEY_XF86FrameForward: Keysym = Keysym(0x1008ff9e);
+    pub const XF86FrameForward: Keysym = Keysym(0x1008ff9e);
     /// XF86Time
-    pub const KEY_XF86Time: Keysym = Keysym(0x1008ff9f);
+    pub const XF86Time: Keysym = Keysym(0x1008ff9f);
     /// XF86Select
-    pub const KEY_XF86Select: Keysym = Keysym(0x1008ffa0);
+    pub const XF86Select: Keysym = Keysym(0x1008ffa0);
     /// XF86View
-    pub const KEY_XF86View: Keysym = Keysym(0x1008ffa1);
+    pub const XF86View: Keysym = Keysym(0x1008ffa1);
     /// XF86TopMenu
-    pub const KEY_XF86TopMenu: Keysym = Keysym(0x1008ffa2);
+    pub const XF86TopMenu: Keysym = Keysym(0x1008ffa2);
     /// XF86Red
-    pub const KEY_XF86Red: Keysym = Keysym(0x1008ffa3);
+    pub const XF86Red: Keysym = Keysym(0x1008ffa3);
     /// XF86Green
-    pub const KEY_XF86Green: Keysym = Keysym(0x1008ffa4);
+    pub const XF86Green: Keysym = Keysym(0x1008ffa4);
     /// XF86Yellow
-    pub const KEY_XF86Yellow: Keysym = Keysym(0x1008ffa5);
+    pub const XF86Yellow: Keysym = Keysym(0x1008ffa5);
     /// XF86Blue
-    pub const KEY_XF86Blue: Keysym = Keysym(0x1008ffa6);
+    pub const XF86Blue: Keysym = Keysym(0x1008ffa6);
     /// XF86Suspend
-    pub const KEY_XF86Suspend: Keysym = Keysym(0x1008ffa7);
+    pub const XF86Suspend: Keysym = Keysym(0x1008ffa7);
     /// XF86Hibernate
-    pub const KEY_XF86Hibernate: Keysym = Keysym(0x1008ffa8);
+    pub const XF86Hibernate: Keysym = Keysym(0x1008ffa8);
     /// XF86TouchpadToggle
-    pub const KEY_XF86TouchpadToggle: Keysym = Keysym(0x1008ffa9);
+    pub const XF86TouchpadToggle: Keysym = Keysym(0x1008ffa9);
     /// XF86TouchpadOn
-    pub const KEY_XF86TouchpadOn: Keysym = Keysym(0x1008ffb0);
+    pub const XF86TouchpadOn: Keysym = Keysym(0x1008ffb0);
     /// XF86TouchpadOff
-    pub const KEY_XF86TouchpadOff: Keysym = Keysym(0x1008ffb1);
+    pub const XF86TouchpadOff: Keysym = Keysym(0x1008ffb1);
     /// XF86AudioMicMute
-    pub const KEY_XF86AudioMicMute: Keysym = Keysym(0x1008ffb2);
+    pub const XF86AudioMicMute: Keysym = Keysym(0x1008ffb2);
     /// XF86Keyboard
-    pub const KEY_XF86Keyboard: Keysym = Keysym(0x1008ffb3);
+    pub const XF86Keyboard: Keysym = Keysym(0x1008ffb3);
     /// XF86WWAN
-    pub const KEY_XF86WWAN: Keysym = Keysym(0x1008ffb4);
+    pub const XF86WWAN: Keysym = Keysym(0x1008ffb4);
     /// XF86RFKill
-    pub const KEY_XF86RFKill: Keysym = Keysym(0x1008ffb5);
+    pub const XF86RFKill: Keysym = Keysym(0x1008ffb5);
     /// XF86AudioPreset
-    pub const KEY_XF86AudioPreset: Keysym = Keysym(0x1008ffb6);
+    pub const XF86AudioPreset: Keysym = Keysym(0x1008ffb6);
     /// XF86RotationLockToggle
-    pub const KEY_XF86RotationLockToggle: Keysym = Keysym(0x1008ffb7);
+    pub const XF86RotationLockToggle: Keysym = Keysym(0x1008ffb7);
     /// XF86FullScreen
-    pub const KEY_XF86FullScreen: Keysym = Keysym(0x1008ffb8);
+    pub const XF86FullScreen: Keysym = Keysym(0x1008ffb8);
 }
 

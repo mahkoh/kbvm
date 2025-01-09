@@ -1,7 +1,7 @@
 use crate::{
     group::GroupIndex,
     modifier::ModifierMask,
-    state_machine::{Keycode, LogicalEvent, State},
+    state_machine::{Direction, Keycode, LogicalEvent},
     xkb::Context,
 };
 
@@ -21,11 +21,19 @@ fn test() {
     let builder = context.to_builder();
     let state_machine = builder.build_state_machine();
     let lookup = builder.build_lookup_table();
-    let mut state = State::default();
+    let mut state = state_machine.create_state();
     let mut effective_mods = ModifierMask::default();
     let mut key = |key: Keycode, down: bool| {
         let mut events = vec![];
-        state_machine.handle_key(&mut state, &mut events, key, down);
+        state_machine.handle_key(
+            &mut state,
+            &mut events,
+            key,
+            match down {
+                false => Direction::Up,
+                true => Direction::Down,
+            },
+        );
         for event in events {
             println!("{:#?}", event);
             match event {

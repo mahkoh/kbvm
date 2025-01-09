@@ -840,10 +840,10 @@ impl KeyLevel {
     /// };
     /// ```
     ///
-    /// If this object refers to the first level, then this function returns `&[KEY_a]`.
+    /// If this object refers to the first level, then this function returns `&[syms::a]`.
     ///
     /// If this object refers to the second level, then this function returns
-    /// `&[KEY_A, KEY_B]`.
+    /// `&[syms::A, syms::B]`.
     pub fn symbols(&self) -> &[Keysym] {
         &self.symbols
     }

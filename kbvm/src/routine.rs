@@ -38,29 +38,12 @@ impl Debug for Register {
     }
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
-pub enum Global {
-    G0,
-    G1,
-    G2,
-    G3,
-    G4,
-    G5,
-    G6,
-    G7,
-    G8,
-    G9,
-    G10,
-    G11,
-    G12,
-    G13,
-    G14,
-    G15,
-}
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+pub struct Global(pub(crate) u32);
 
 impl Debug for Global {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "g{}", self.linearize())
+        write!(f, "g{}", self.0)
     }
 }
 
@@ -478,7 +461,7 @@ pub(crate) fn run<H>(
     h: &mut H,
     ops: &[Lo],
     registers: &mut StaticMap<Register, u32>,
-    globals: &mut StaticMap<Global, u32>,
+    globals: &mut [u32],
     flags: &mut StaticMap<Flag, u32>,
     spill: &mut [u32],
 ) where
@@ -520,10 +503,15 @@ pub(crate) fn run<H>(
                 registers[rd] = lit;
             }
             Lo::GlobalLoad { rd, g } => {
-                registers[rd] = globals[g];
+                registers[rd] = match globals.get(g.0 as usize) {
+                    None => 0,
+                    Some(v) => *v,
+                };
             }
             Lo::GlobalStore { rs, g } => {
-                globals[g] = registers[rs];
+                if let Some(v) = globals.get_mut(g.0 as usize) {
+                    *v = registers[rs];
+                }
             }
             Lo::BinOp { op, rd, rl, rr } => {
                 let l = registers[rl];

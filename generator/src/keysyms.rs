@@ -567,10 +567,15 @@ fn generate_sym_consts(output: &IndexMap<u32, KeysymInfo>) -> String {
     res.push_str("    use super::*;\n");
     for v in output.values() {
         for name in &v.names {
+            let prefix = if let b'0'..=b'9' = name.name.as_bytes()[0] {
+                "_"
+            } else {
+                ""
+            };
             writeln!(res, "    /// {}", name.name).unwrap();
             writeln!(
                 res,
-                "    pub const KEY_{}: Keysym = Keysym(0x{:08x});",
+                "    pub const {prefix}{}: Keysym = Keysym(0x{:08x});",
                 name.name, v.keysym
             )
             .unwrap();

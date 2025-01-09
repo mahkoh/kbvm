@@ -4,7 +4,7 @@ mod tests;
 use {
     crate::{
         keysym::Keysym,
-        keysyms::KEY_NoSymbol,
+        syms,
         modifier::{ModifierIndex, ModifierMask},
         state_machine::Keycode,
         xkb::{
@@ -326,7 +326,7 @@ fn infer_key_type(group: &SymbolsKeyGroup) -> BuiltInKeytype {
             if let Some(sym) = l.symbols.first() {
                 return Some(sym.val);
             }
-            return Some(KEY_NoSymbol);
+            return Some(syms::NoSymbol);
         }
         None
     };
@@ -1194,7 +1194,7 @@ impl ConfigWalker for CompatResolver<'_, '_, '_, '_> {
                         return;
                     }
                 };
-                let keysym = (keysym.val != KEY_NoSymbol).then_some(keysym);
+                let keysym = (keysym.val != syms::NoSymbol).then_some(keysym);
                 let filter = match &e.match_.val.filter {
                     None => None,
                     Some(e) => {

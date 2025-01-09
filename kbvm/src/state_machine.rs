@@ -8,7 +8,7 @@ use {
         group::{GroupDelta, GroupIndex},
         group_type::GroupType,
         modifier::{ModifierMask, NUM_MODS, NUM_MODS_MASK},
-        routine::{run, Component, Flag, Global, Lo, Register, Routine, StateEventHandler},
+        routine::{run, Component, Flag, Lo, Register, Routine, StateEventHandler},
     },
     hashbrown::HashMap,
     isnt::std_1::primitive::IsntSliceExt,
@@ -23,6 +23,7 @@ use {
 #[derive(Debug)]
 pub struct StateMachine {
     pub(crate) num_groups: u32,
+    pub(crate) num_globals: usize,
     pub(crate) keys: HashMap<Keycode, KeyGroups>,
 }
 
@@ -43,9 +44,8 @@ pub(crate) struct KeyLayer {
     pub(crate) routine: Option<Routine>,
 }
 
-#[derive(Default)]
 pub struct State {
-    globals: StaticMap<Global, u32>,
+    globals: Box<[u32]>,
     active: Vec<ActiveKey>,
     mods_pressed_count: [u32; NUM_MODS],
     components: Components,
@@ -100,8 +100,8 @@ impl LogHandler<'_> {
         }
         self.any_state_changed = false;
         let acs = &mut self.acc_state;
-        acs.mods_effective = acs.mods_pressed | acs.mods_latched | acs.mods_locked;
-        acs.group_effective = acs.group_locked + acs.group_pressed + acs.group_latched;
+        acs.mods = acs.mods_pressed | acs.mods_latched | acs.mods_locked;
+        acs.group = acs.group_locked + acs.group_pressed + acs.group_latched;
         macro_rules! wrap_group {
             ($value:expr) => {
                 if $value.0 >= self.num_groups {
@@ -115,7 +115,7 @@ impl LogHandler<'_> {
             };
         }
         wrap_group!(acs.group_locked);
-        wrap_group!(acs.group_effective);
+        wrap_group!(acs.group);
         macro_rules! flush {
             ($($camel:ident, $field:ident;)*) => {
                 $(
@@ -130,11 +130,11 @@ impl LogHandler<'_> {
             ModsPressed, mods_pressed;
             ModsLatched, mods_latched;
             ModsLocked, mods_locked;
-            ModsEffective, mods_effective;
+            ModsEffective, mods;
             GroupPressed, group_pressed;
             GroupLatched, group_latched;
             GroupLocked, group_locked;
-            GroupEffective, group_effective;
+            GroupEffective, group;
         }
     }
 }
@@ -219,22 +219,22 @@ pub struct Keycode(pub(crate) u32);
 
 impl Keycode {
     #[inline]
-    pub fn from_raw(kc: u32) -> Self {
+    pub const fn from_raw(kc: u32) -> Self {
         Self(kc)
     }
 
     #[inline]
-    pub fn to_raw(self) -> u32 {
+    pub const fn to_raw(self) -> u32 {
         self.0
     }
 
     #[inline]
-    pub fn from_evdev(kc: u32) -> Self {
+    pub const fn from_evdev(kc: u32) -> Self {
         Self(kc.saturating_add(8))
     }
 
     #[inline]
-    pub fn to_evdev(self) -> u32 {
+    pub const fn to_evdev(self) -> u32 {
         self.0.saturating_sub(8)
     }
 }
@@ -249,17 +249,34 @@ struct ActiveKey {
     spill: Box<[u32]>,
 }
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
+pub enum Direction {
+    Up,
+    Down,
+}
+
 impl StateMachine {
+    pub fn create_state(&self) -> State {
+        State {
+            globals: vec![0; self.num_globals].into_boxed_slice(),
+            active: Default::default(),
+            mods_pressed_count: Default::default(),
+            components: Default::default(),
+            actuation: Default::default(),
+            press: Default::default(),
+        }
+    }
+
     pub fn handle_key(
         &self,
         state: &mut State,
         events: &mut Vec<LogicalEvent>,
         key: Keycode,
-        down: bool,
+        direction: Direction,
     ) {
-        self.handle_key_(state, events, key, down);
+        self.handle_key_(state, events, key, direction);
         state.actuation += 1;
-        if down {
+        if direction == Direction::Down {
             state.press = state.actuation;
         }
     }
@@ -269,51 +286,51 @@ impl StateMachine {
         state: &mut State,
         events: &mut Vec<LogicalEvent>,
         key: Keycode,
-        down: bool,
+        direction: Direction,
     ) {
         for i in 0..state.active.len() {
             let active = &mut state.active[i];
-            if active.key == key {
-                if down {
-                    active.down_log = active.down_log.saturating_add(1);
-                    return;
-                }
-                if active.down_log == 1 {
-                    if let Some(release) = &active.on_release {
-                        active.flags[Flag::LaterKeyActuated] =
-                            (active.actuation < state.actuation) as u32;
-                        let mut handler = LogHandler {
-                            num_groups: self.num_groups,
-                            mods_pressed_count: &mut state.mods_pressed_count,
-                            acc_state: state.components,
-                            pub_state: &mut state.components,
-                            events,
-                            any_state_changed: false,
-                        };
-                        run(
-                            &mut handler,
-                            release,
-                            &mut active.registers_log,
-                            &mut state.globals,
-                            &mut active.flags,
-                            &mut active.spill,
-                        );
-                        handler.flush_state();
-                    } else {
-                        events.push(LogicalEvent::KeyUp(key));
-                    }
-                    state.active.swap_remove(i);
-                    return;
-                }
-                active.down_log -= 1;
+            if active.key != key {
+                continue;
+            }
+            if direction == Direction::Down {
+                active.down_log = active.down_log.saturating_add(1);
                 return;
             }
-        }
-        if !down {
+            active.down_log -= 1;
+            if active.down_log != 0 {
+                return;
+            }
+            if let Some(release) = &active.on_release {
+                active.flags[Flag::LaterKeyActuated] = (active.actuation < state.actuation) as u32;
+                let mut handler = LogHandler {
+                    num_groups: self.num_groups,
+                    mods_pressed_count: &mut state.mods_pressed_count,
+                    acc_state: state.components,
+                    pub_state: &mut state.components,
+                    events,
+                    any_state_changed: false,
+                };
+                run(
+                    &mut handler,
+                    release,
+                    &mut active.registers_log,
+                    &mut state.globals,
+                    &mut active.flags,
+                    &mut active.spill,
+                );
+                handler.flush_state();
+            } else {
+                events.push(LogicalEvent::KeyUp(key));
+            }
+            state.active.swap_remove(i);
             return;
         }
-        let group = state.components.group_effective;
-        let mods = state.components.mods_effective;
+        if direction == Direction::Up {
+            return;
+        }
+        let group = state.components.group;
+        let mods = state.components.mods;
         let mut on_press = None;
         let mut on_release = None;
         let mut spill = Box::new([]) as Box<[u32]>;

@@ -2,10 +2,7 @@ use {
     crate::{
         builder::Redirect,
         group_type,
-        keysyms::{
-            KEY_Alt_L, KEY_Alt_R, KEY_Caps_Lock, KEY_Control_L, KEY_Control_R, KEY_Num_Lock,
-            KEY_Shift_L, KEY_Shift_R, KEY_Super_L, KEY_Super_R,
-        },
+        syms,
         lookup::LookupTable,
         modifier::ModifierIndex,
         xkb::{
@@ -38,7 +35,7 @@ impl LookupTable {
     /// ```
     /// # use kbvm::builder::Builder;
     /// # use kbvm::group_type::GroupType;
-    /// # use kbvm::keysyms::{KEY_Alt_L, KEY_a, KEY_A};
+    /// # use kbvm::syms;
     /// # use kbvm::modifier::ModifierMask;
     /// # use kbvm::state_machine::Keycode;
     /// let mut builder = Builder::default();
@@ -49,14 +46,14 @@ impl LookupTable {
     ///     let mut key = builder.add_key(Keycode::from_raw(9));
     ///     key.repeats(true);
     ///     let mut gb = key.add_group(0, &gt);
-    ///     gb.add_layer(0).keysyms(&[KEY_a]);
-    ///     gb.add_layer(1).keysyms(&[KEY_A]);
+    ///     gb.add_layer(0).keysyms(&[syms::a]);
+    ///     gb.add_layer(1).keysyms(&[syms::A]);
     /// }
     /// {
     ///     let gt = GroupType::builder(ModifierMask::NONE).build();
     ///     let mut key = builder.add_key(Keycode::from_raw(10));
     ///     let mut gb = key.add_group(0, &gt);
-    ///     gb.add_layer(0).keysyms(&[KEY_Alt_L]);
+    ///     gb.add_layer(0).keysyms(&[syms::Alt_L]);
     /// }
     /// let map = builder.build_lookup_table().to_xkb_keymap();
     /// println!("{:#}", map);
@@ -135,7 +132,6 @@ impl LookupTable {
                 macro_rules! syms_to_map {
                     ($($syms:pat => $mask:ident,)*) => {{
                         for &sym in group.layers.iter().flat_map(|l| l.symbols.iter()) {
-                            #[expect(non_upper_case_globals)]
                             let idx = $(
                                 if let $syms = sym {
                                     ModifierIndex::$mask
@@ -155,12 +151,12 @@ impl LookupTable {
                     }};
                 }
                 syms_to_map! {
-                    KEY_Shift_L | KEY_Shift_R => SHIFT,
-                    KEY_Caps_Lock => LOCK,
-                    KEY_Control_L | KEY_Control_R => CONTROL,
-                    KEY_Alt_L | KEY_Alt_R => MOD1,
-                    KEY_Num_Lock => MOD2,
-                    KEY_Super_L | KEY_Super_R => MOD4,
+                    syms::Shift_L | syms::Shift_R => SHIFT,
+                    syms::Caps_Lock => LOCK,
+                    syms::Control_L | syms::Control_R => CONTROL,
+                    syms::Alt_L | syms::Alt_R => MOD1,
+                    syms::Num_Lock => MOD2,
+                    syms::Super_L | syms::Super_R => MOD4,
                 }
                 for layer in &group.layers {
                     levels.push(KeyLevel {

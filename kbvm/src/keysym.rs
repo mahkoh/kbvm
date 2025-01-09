@@ -11,10 +11,7 @@ use {
             CHAR_TO_BESPOKE_IDX, DATAS, KEYSYM_TO_CHAR, KEYSYM_TO_IDX, KEYSYM_TO_LOWER_KEYSYM,
             KEYSYM_TO_UPPER_KEYSYM, LONGEST_NAME, LOWER_NAME_TO_IDX, NAMES,
         },
-        keysyms::{
-            KEY_Delete, KEY_Hyper_R, KEY_ISO_Level5_Lock, KEY_ISO_Lock, KEY_KP_Equal, KEY_KP_Space,
-            KEY_Mode_switch, KEY_NoSymbol, KEY_Num_Lock, KEY_Shift_L,
-        },
+        syms,
         phf_map::PhfMap,
     },
     arrayvec::ArrayVec,
@@ -171,13 +168,13 @@ impl Keysym {
             return Self(c | 0xff00);
         }
         if matches!(c, 0x7f) {
-            return KEY_Delete;
+            return syms::Delete;
         }
         if matches!(c, 0xfdd0..=0xfdef) {
-            return KEY_NoSymbol;
+            return syms::NoSymbol;
         }
         if matches!(c & 0xffff, 0xfffe..=0xffff) {
-            return KEY_NoSymbol;
+            return syms::NoSymbol;
         }
         let idx = CHAR_TO_BESPOKE_IDX[&char];
         let data = &DATAS[idx as usize];
@@ -327,14 +324,14 @@ impl Keysym {
     }
 
     pub fn is_keypad(self) -> bool {
-        self >= KEY_KP_Space && self <= KEY_KP_Equal
+        self >= syms::KP_Space && self <= syms::KP_Equal
     }
 
     pub fn is_modifier(self) -> bool {
-        (self >= KEY_Shift_L && self <= KEY_Hyper_R)
-            || (self >= KEY_ISO_Lock && self <= KEY_ISO_Level5_Lock)
-            || self == KEY_Mode_switch
-            || self == KEY_Num_Lock
+        (self >= syms::Shift_L && self <= syms::Hyper_R)
+            || (self >= syms::ISO_Lock && self <= syms::ISO_Level5_Lock)
+            || self == syms::Mode_switch
+            || self == syms::Num_Lock
     }
 }
 

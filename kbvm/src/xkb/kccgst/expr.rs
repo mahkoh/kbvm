@@ -2,7 +2,7 @@ use {
     crate::{
         from_bytes::FromBytes,
         keysym::Keysym,
-        keysyms::{KEY_NoSymbol, KEY_VoidSymbol, KEY_0},
+        syms,
         modifier::{ModifierIndex, ModifierMask},
         xkb::{
             code_map::CodeMap,
@@ -623,8 +623,8 @@ pub(crate) fn keysym_from_ident(
 ) -> Result<Spanned<Keysym>, Spanned<EvalError>> {
     let meaning = meaning_cache.get_case_insensitive(interner, ident.val);
     let sym = match meaning {
-        Meaning::Any | Meaning::Nosymbol => KEY_NoSymbol,
-        Meaning::None | Meaning::Voidsymbol => KEY_VoidSymbol,
+        Meaning::Any | Meaning::Nosymbol => syms::NoSymbol,
+        Meaning::None | Meaning::Voidsymbol => syms::VoidSymbol,
         _ => {
             return Keysym::from_str(interner.get(ident.val))
                 .ok_or(UnknownKeysym)
@@ -645,7 +645,7 @@ pub(crate) fn eval_keysym(
             _ => Err(UnknownKeysym),
         },
         Expr::Integer(_, i) => match *i {
-            0..=9 => Ok(Keysym(KEY_0.0 + *i as u32)),
+            0..=9 => Ok(Keysym(syms::_0.0 + *i as u32)),
             _ => u32::try_from(*i)
                 .map(Keysym)
                 .map_err(|_| KeysymCalculationOverflow),
@@ -1727,8 +1727,7 @@ pub(crate) fn eval_symbols_field(
             |e| {
                 let ks = eval_keysym(interner, meaning_cache, e)?;
                 let ks = match ks.val {
-                    #[allow(non_upper_case_globals)]
-                    KEY_NoSymbol => None,
+                    syms::NoSymbol => None,
                     _ => Some(ks),
                 };
                 Ok(ks)

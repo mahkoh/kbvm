@@ -1,3 +1,5 @@
+#[expect(unused_imports)]
+use crate::xkb::Keymap;
 use {
     crate::{
         group::GroupIndex,
@@ -5,7 +7,7 @@ use {
         keysym::Keysym,
         lookup::{self, LookupTable},
         modifier::{ModifierIndex, ModifierMask},
-        routine::Routine,
+        routine::{Global, Routine},
         state_machine::{self, Keycode, StateMachine},
     },
     hashbrown::HashMap,
@@ -13,8 +15,130 @@ use {
     smallvec::SmallVec,
 };
 
+/// A builder for compositor-side [`StateMachine`] and client-side [`LookupTable`].
+///
+/// This type is usually created using [`Keymap::to_builder`] but can also be created
+/// manually.
+///
+/// This type allows you to fully specify the behavior of a keyboard, which keys produce
+/// which modifiers, which groups, and which keysyms.
+///
+/// # Example
+///
+/// ```
+/// # use {
+/// #     kbvm::{
+/// #         builder::{Builder, GroupBuilder, KeyBuilder, LayerBuilder},
+/// #         group_type::GroupType,
+/// #         syms,
+/// #         modifier::ModifierMask,
+/// #         routine::Routine,
+/// #         state_machine::{Direction::{Up, Down}, Keycode, LogicalEvent},
+/// #         Components,
+/// #     },
+/// # };
+/// // From /usr/include/linux/input-event-codes.h
+/// const A: Keycode = Keycode::from_evdev(30);
+/// const LEFT_SHIFT: Keycode = Keycode::from_evdev(42);
+///
+/// let mut builder = Builder::default();
+///
+/// // Define types for shift and alphabetic keys. These types determine how modifiers
+/// // are mapped to layers. If no mapping is specified, the modifiers automatically
+/// // map to the 0th layer.
+/// let shift_key_type = GroupType::builder(ModifierMask::NONE).build();
+/// let alphabetic_key_type = GroupType::builder(ModifierMask::SHIFT | ModifierMask::LOCK)
+///     .map(ModifierMask::SHIFT, 1)
+///     .map(ModifierMask::LOCK, 1)
+///     .build();
+///
+/// // Define the A key.
+/// {
+///     // Lowercase letter on the first layer.
+///     let mut first_layer = LayerBuilder::new(0);
+///     first_layer.keysyms(&[syms::a]);
+///     // Uppercase letter on the second layer.
+///     let mut second_layer = LayerBuilder::new(1);
+///     second_layer.keysyms(&[syms::A]);
+///     // We only use a single group.
+///     let mut group = GroupBuilder::new(0, &alphabetic_key_type);
+///     group.add_layer(first_layer);
+///     group.add_layer(second_layer);
+///     let mut key = KeyBuilder::new(A);
+///     key.add_group(group);
+///     builder.add_key(key);
+/// }
+///
+/// // Define the LEFT_SHIFT key.
+/// {
+///     // Use a custom routine to define how key-press and key-release affect the
+///     // modifiers.
+///     let routine = {
+///         let mut routine = Routine::builder();
+///         let [mods, key] = routine.allocate_vars();
+///         routine
+///             .load_lit(key, LEFT_SHIFT.to_raw())
+///             .key_down(key)
+///             .load_lit(mods, ModifierMask::SHIFT.0)
+///             .pressed_mods_inc(mods)
+///             .on_release()
+///             .key_up(key)
+///             .pressed_mods_dec(mods);
+///         routine.build()
+///     };
+///     let mut layer = LayerBuilder::new(0);
+///     layer.keysyms(&[syms::Shift_L]);
+///     // Attach the routine to the first layer. The first part of the routine is
+///     // executed when this layer is pressed. The second part, after `on_release`,
+///     // is executed when the layer is released.
+///     layer.routine(&routine);
+///     let mut group = GroupBuilder::new(0, &shift_key_type);
+///     group.add_layer(layer);
+///     let mut key = KeyBuilder::new(LEFT_SHIFT);
+///     key.add_group(group);
+///     builder.add_key(key);
+/// }
+///
+/// // Build the state machine and lookup table.
+/// let state_machine = builder.build_state_machine();
+/// let lookup_table = builder.build_lookup_table();
+/// let mut state = state_machine.create_state();
+/// let mut events = vec![];
+///
+/// // Simulate key press and release events.
+/// state_machine.handle_key(&mut state, &mut events, A, Down);
+/// state_machine.handle_key(&mut state, &mut events, A, Up);
+/// state_machine.handle_key(&mut state, &mut events, LEFT_SHIFT, Down);
+/// state_machine.handle_key(&mut state, &mut events, A, Down);
+/// state_machine.handle_key(&mut state, &mut events, A, Up);
+/// state_machine.handle_key(&mut state, &mut events, LEFT_SHIFT, Up);
+/// state_machine.handle_key(&mut state, &mut events, A, Down);
+/// state_machine.handle_key(&mut state, &mut events, A, Up);
+///
+/// // The components contain information about the currently effective group and
+/// // modifiers.
+/// let mut components = Components::default();
+/// for event in events {
+///     // Applying the event updates the group and modifiers.
+///     components.apply_event(event);
+///     if let LogicalEvent::KeyDown(kc) = event {
+///         // Print the keysyms produced by this key press.
+///         let syms = lookup_table.lookup(components.group, components.mods, kc);
+///         for sym in syms {
+///             println!("{}", sym.keysym().name().unwrap());
+///         }
+///     }
+/// }
+///
+/// // Output:
+/// // a
+/// // Shift_L
+/// // A
+/// // a
+/// ```
 #[derive(Default, Debug)]
 pub struct Builder {
+    next_global: u32,
     ctrl: Option<ModifierMask>,
     caps: Option<ModifierMask>,
     keys: HashMap<Keycode, BuilderKey>,
@@ -73,19 +197,28 @@ struct BuilderLayer {
     routine: Option<Routine>,
 }
 
-pub struct KeyBuilder<'a> {
-    groups: &'a mut BuilderKey,
+pub struct KeyBuilder {
+    code: Keycode,
+    key: BuilderKey,
 }
 
-pub struct GroupBuilder<'a> {
-    group: &'a mut BuilderGroup,
+pub struct GroupBuilder {
+    idx: usize,
+    group: BuilderGroup,
 }
 
-pub struct LayerBuilder<'a> {
-    layer: &'a mut BuilderLayer,
+pub struct LayerBuilder {
+    idx: usize,
+    layer: BuilderLayer,
 }
 
 impl Builder {
+    pub fn add_global(&mut self) -> Global {
+        let g = Global(self.next_global);
+        self.next_global = self.next_global.checked_add(1).unwrap();
+        g
+    }
+
     pub fn set_ctrl(&mut self, ctrl: Option<ModifierIndex>) {
         self.ctrl = ctrl.map(|c| c.to_mask());
     }
@@ -94,10 +227,8 @@ impl Builder {
         self.caps = caps.map(|c| c.to_mask());
     }
 
-    pub fn add_key(&mut self, key: Keycode) -> KeyBuilder<'_> {
-        KeyBuilder {
-            groups: self.keys.entry(key).or_default(),
-        }
+    pub fn add_key(&mut self, key: KeyBuilder) {
+        self.keys.insert(key.code, key.key);
     }
 
     pub fn build_state_machine(&self) -> StateMachine {
@@ -144,6 +275,7 @@ impl Builder {
         }
         StateMachine {
             num_groups: (num_groups as u32).max(1),
+            num_globals: self.next_global as usize,
             keys: map,
         }
     }
@@ -197,39 +329,59 @@ impl Builder {
     }
 }
 
-impl KeyBuilder<'_> {
+impl KeyBuilder {
+    pub fn new(key: Keycode) -> Self {
+        Self {
+            code: key,
+            key: Default::default(),
+        }
+    }
+
     pub fn repeats(&mut self, repeats: bool) {
-        self.groups.repeats = repeats;
+        self.key.repeats = repeats;
     }
 
     pub fn redirect(&mut self, redirect: Redirect) {
-        self.groups.redirect = redirect;
+        self.key.redirect = redirect;
     }
 
-    pub fn add_group(&mut self, group: usize, ty: &GroupType) -> GroupBuilder<'_> {
-        if self.groups.groups.len() <= group {
-            self.groups.groups.resize_with(group + 1, Default::default);
+    pub fn add_group(&mut self, group: GroupBuilder) {
+        if self.key.groups.len() <= group.idx {
+            self.key.groups.resize_with(group.idx + 1, Default::default);
         }
-        let group = self.groups.groups[group].get_or_insert_with(|| BuilderGroup {
-            ty: ty.clone(),
-            layers: vec![],
-        });
-        group.ty = ty.clone();
-        GroupBuilder { group }
+        self.key.groups[group.idx] = Some(group.group);
     }
 }
 
-impl GroupBuilder<'_> {
-    pub fn add_layer(&mut self, layer: usize) -> LayerBuilder<'_> {
-        if self.group.layers.len() <= layer {
-            self.group.layers.resize_with(layer + 1, Default::default);
+impl GroupBuilder {
+    pub fn new(group: usize, ty: &GroupType) -> Self {
+        Self {
+            idx: group,
+            group: BuilderGroup {
+                ty: ty.clone(),
+                layers: vec![],
+            },
         }
-        let layer = self.group.layers[layer].get_or_insert_default();
-        LayerBuilder { layer }
+    }
+
+    pub fn add_layer(&mut self, layer: LayerBuilder) {
+        if self.group.layers.len() <= layer.idx {
+            self.group
+                .layers
+                .resize_with(layer.idx + 1, Default::default);
+        }
+        self.group.layers[layer.idx] = Some(layer.layer);
     }
 }
 
-impl LayerBuilder<'_> {
+impl LayerBuilder {
+    pub fn new(layer: usize) -> Self {
+        Self {
+            idx: layer,
+            layer: Default::default(),
+        }
+    }
+
     pub fn routine(&mut self, routine: &Routine) -> &mut Self {
         self.layer.routine = Some(routine.clone());
         self

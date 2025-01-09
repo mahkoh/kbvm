@@ -208,7 +208,7 @@ fn test_case2(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), 
     let builder = map.to_builder();
     let state_machine = builder.build_state_machine();
     let lookup_table = builder.build_lookup_table();
-    let mut state = State::default();
+    let mut state = state_machine.create_state();
 
     // println!("{:#?}", state_machine);
 

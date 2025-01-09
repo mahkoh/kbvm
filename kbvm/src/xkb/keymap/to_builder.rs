@@ -2,7 +2,7 @@
 use {crate::lookup::LookupTable, crate::state_machine::StateMachine};
 use {
     crate::{
-        builder::Builder,
+        builder::{Builder, GroupBuilder, KeyBuilder, LayerBuilder},
         group_type::GroupType,
         modifier::ModifierIndex,
         routine::{Routine, RoutineBuilder, SkipAnchor, Var},
@@ -40,26 +40,29 @@ impl Keymap {
             types.insert(&**ty as *const KeyType, builder.build());
         }
         for key in self.keys.values() {
-            let mut builder = builder.add_key(key.key_code);
-            builder.repeats(key.repeat);
-            builder.redirect(key.redirect.to_redirect());
+            let mut kb = KeyBuilder::new(key.key_code);
+            kb.repeats(key.repeat);
+            kb.redirect(key.redirect.to_redirect());
             for (idx, group) in key.groups.iter().enumerate() {
                 let Some(group) = group else {
                     continue;
                 };
                 let ty = &types[&(&*group.key_type as *const KeyType)];
-                let mut builder = builder.add_group(idx, ty);
+                let mut gb = GroupBuilder::new(idx, ty);
                 for (idx, layer) in group.levels.iter().enumerate() {
                     if layer.actions.is_empty() && layer.symbols.is_empty() {
                         continue;
                     }
-                    let mut builder = builder.add_layer(idx);
-                    builder.keysyms(&layer.symbols);
+                    let mut lb = LayerBuilder::new(idx);
+                    lb.keysyms(&layer.symbols);
                     if layer.actions.is_not_empty() {
-                        builder.routine(&actions_to_routine(key.key_code, &layer.actions));
+                        lb.routine(&actions_to_routine(key.key_code, &layer.actions));
                     }
+                    gb.add_layer(lb);
                 }
+                kb.add_group(gb);
             }
+            builder.add_key(kb);
         }
         builder
     }

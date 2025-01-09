@@ -15,7 +15,7 @@ mod from_bytes;
 pub mod group;
 pub mod group_type;
 pub mod keysym;
-pub mod keysyms;
+pub mod syms;
 pub mod lookup;
 pub mod modifier;
 mod phf;

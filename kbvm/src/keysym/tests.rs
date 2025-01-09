@@ -4,7 +4,7 @@ use {
             generated::{LEN, LONGEST_NAME},
             keysyms, Keysym,
         },
-        keysyms::KEY_ssharp,
+        syms,
     },
     bstr::ByteSlice,
     libxkbcommon_test_linker::{
@@ -175,5 +175,5 @@ fn to_lower() {
 
 #[test]
 fn ssharp_is_lower() {
-    assert!(KEY_ssharp.is_lowercase());
+    assert!(syms::ssharp.is_lowercase());
 }

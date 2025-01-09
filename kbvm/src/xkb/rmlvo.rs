@@ -38,7 +38,7 @@ pub struct Expanded {
 
 #[cfg(test)]
 mod tests {
-    use crate::xkb::{Context, RmlvoGroup};
+    use crate::xkb::{rmlvo, Context};
 
     #[test]
     fn test() {
@@ -48,7 +48,7 @@ mod tests {
             &mut diag,
             None,
             None,
-            Some(&[RmlvoGroup {
+            Some(&[rmlvo::Group {
                 layout: "de",
                 variant: "neo",
             }]),
