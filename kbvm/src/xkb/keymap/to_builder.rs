@@ -1,3 +1,5 @@
+#[expect(unused_imports)]
+use {crate::lookup::LookupTable, crate::state_machine::StateMachine};
 use {
     crate::{
         builder::Builder,
@@ -16,6 +18,10 @@ use {
 };
 
 impl Keymap {
+    /// Creates a [`Builder`] which can in turn create a (client-side) [`LookupTable`] or
+    /// a (compositor-side) [`StateMachine`].
+    ///
+    /// The builder will represent the XKB logic required by this keymap.
     pub fn to_builder(&self) -> Builder {
         let mut builder = Builder::default();
         builder.set_ctrl(Some(ModifierIndex::CONTROL));

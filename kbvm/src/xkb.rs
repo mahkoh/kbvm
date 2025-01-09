@@ -1,5 +1,5 @@
 pub use {
-    context::{Context, ContextBuilder, RmlvoGroup},
+    context::{Context, ContextBuilder},
     keymap::Keymap,
 };
 

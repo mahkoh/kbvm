@@ -3,8 +3,8 @@ use {
     isnt::std_1::{primitive::IsntStrExt, vec::IsntVecExt},
     kbvm::xkb::{
         diagnostic::Diagnostic,
-        rmlvo::{Element, Expanded, MergeMode},
-        Context, Keymap, RmlvoGroup,
+        rmlvo::{self, Element, Expanded, MergeMode},
+        Context, Keymap,
     },
     parking_lot::Mutex,
     serde::{Deserialize, Serialize},
@@ -204,7 +204,7 @@ fn test_kccgst(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(),
     context.append_path("./include");
     let context = context.build();
     let map_actual = context
-        .parse_keymap(&mut diagnostics, Some(&input_path), &input)
+        .keymap_from_bytes(&mut diagnostics, Some(&input_path), &input)
         .map_err(ResultError::ParsingFailed)?;
 
     // let builder = map_actual.to_builder().build_state_machine();
@@ -236,7 +236,7 @@ fn test_kccgst(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(),
 
     let expected = expected.map_err(ResultError::ReadExpected)?;
     let map_expected = context
-        .parse_keymap(&mut diagnostics, Some(&expected_path), &expected)
+        .keymap_from_bytes(&mut diagnostics, Some(&expected_path), &expected)
         .map_err(ResultError::ParsingExpectedFailed)?;
 
     if map_expected != map_actual {
@@ -324,7 +324,7 @@ fn test_rmlvo(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), 
     let groups: Vec<_> = input
         .groups
         .iter()
-        .map(|g| RmlvoGroup {
+        .map(|g| rmlvo::Group {
             layout: &g.layout,
             variant: &g.variant,
         })

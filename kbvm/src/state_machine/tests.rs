@@ -16,7 +16,7 @@ fn test() {
     let mut sink = vec![];
     let context = Context::builder()
         .build()
-        .parse_keymap(&mut sink, None, MAP.as_bytes())
+        .keymap_from_bytes(&mut sink, None, MAP.as_bytes())
         .unwrap();
     let builder = context.to_builder();
     let state_machine = builder.build_state_machine();

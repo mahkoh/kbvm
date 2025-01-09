@@ -165,11 +165,6 @@ impl ContextBuilder {
     }
 }
 
-pub struct RmlvoGroup<'a> {
-    pub layout: &'a str,
-    pub variant: &'a str,
-}
-
 impl Context {
     pub fn builder() -> ContextBuilder {
         ContextBuilder::default()
@@ -180,7 +175,7 @@ impl Context {
         mut diagnostics: impl DiagnosticHandler,
         rules: Option<&str>,
         model: Option<&str>,
-        groups: Option<&[RmlvoGroup<'_>]>,
+        groups: Option<&[rmlvo::Group<'_>]>,
         options: Option<&[&str]>,
     ) -> Keymap {
         self.keymap_from_names_(
@@ -197,7 +192,7 @@ impl Context {
         diagnostics: &mut DiagnosticSink,
         rules: Option<&str>,
         model: Option<&str>,
-        groups: Option<&[RmlvoGroup<'_>]>,
+        groups: Option<&[rmlvo::Group<'_>]>,
         options: Option<&[&str]>,
     ) -> Keymap {
         let mut map = CodeMap::default();
@@ -235,7 +230,7 @@ impl Context {
         mut diagnostics: impl DiagnosticHandler,
         rules: Option<&str>,
         model: Option<&str>,
-        groups: Option<&[RmlvoGroup<'_>]>,
+        groups: Option<&[rmlvo::Group<'_>]>,
         options: Option<&[&str]>,
     ) -> rmlvo::Expanded {
         self.expand_names_(
@@ -252,7 +247,7 @@ impl Context {
         diagnostics: &mut DiagnosticSink,
         rules: Option<&str>,
         model: Option<&str>,
-        groups: Option<&[RmlvoGroup<'_>]>,
+        groups: Option<&[rmlvo::Group<'_>]>,
         options: Option<&[&str]>,
     ) -> rmlvo::Expanded {
         let mut map = CodeMap::default();
@@ -302,7 +297,7 @@ impl Context {
         meaning_cache: &mut MeaningCache,
         rules: Option<&str>,
         model: Option<&str>,
-        groups: Option<&[RmlvoGroup<'_>]>,
+        groups: Option<&[rmlvo::Group<'_>]>,
         options: Option<&[&str]>,
         f: impl FnOnce(
             &mut CodeMap,
@@ -335,7 +330,7 @@ impl Context {
                 if layout.is_none() && variant.is_none() {
                     break;
                 }
-                default_groups.push(RmlvoGroup {
+                default_groups.push(rmlvo::Group {
                     layout: layout.unwrap_or_default(),
                     variant: variant.unwrap_or_default(),
                 });
@@ -381,16 +376,16 @@ impl Context {
         )
     }
 
-    pub fn parse_keymap(
+    pub fn keymap_from_bytes(
         &self,
         mut diagnostics: impl DiagnosticHandler,
         path: Option<&Path>,
         kccgst: &[u8],
     ) -> Result<Keymap, Diagnostic> {
-        self.parse_keymap_(&mut DiagnosticSink::new(&mut diagnostics), path, kccgst)
+        self.keymap_from_bytes_(&mut DiagnosticSink::new(&mut diagnostics), path, kccgst)
     }
 
-    fn parse_keymap_(
+    fn keymap_from_bytes_(
         &self,
         diagnostics: &mut DiagnosticSink,
         path: Option<&Path>,

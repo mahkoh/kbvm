@@ -200,7 +200,7 @@ fn test_case2(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), 
     context.append_path("./include");
     let context = context.build();
     let map = context
-        .parse_keymap(&mut diagnostics, Some(&map_path), &map)
+        .keymap_from_bytes(&mut diagnostics, Some(&map_path), &map)
         .map_err(ResultError::ParsingFailed)?;
 
     // println!("{:#}", map);

@@ -24,12 +24,12 @@ use {
 /// # use kbvm::state_machine::Keycode;
 /// fn get_string(
 ///     table: &LookupTable,
-///     effective_group: GroupIndex,
-///     effective_modifiers: ModifierMask,
+///     group: GroupIndex,
+///     modifiers: ModifierMask,
 ///     keycode: Keycode,
 /// ) -> String {
 ///     table
-///         .lookup(effective_group, effective_modifiers, keycode)
+///         .lookup(group, modifiers, keycode)
 ///         .into_iter()
 ///         .flat_map(|p| p.char())
 ///         .collect()
@@ -50,12 +50,12 @@ use {
 /// # use kbvm::state_machine::Keycode;
 /// fn need_key_repeat_events(
 ///     table: &LookupTable,
-///     effective_group: GroupIndex,
-///     effective_modifiers: ModifierMask,
+///     group: GroupIndex,
+///     modifiers: ModifierMask,
 ///     keycode: Keycode,
 /// ) -> String {
 ///     table
-///         .lookup(effective_group, effective_modifiers, keycode)
+///         .lookup(group, modifiers, keycode)
 ///         .repeats()
 /// }
 /// ```
@@ -75,11 +75,11 @@ use {
 /// # use kbvm::state_machine::Keycode;
 /// fn get_keysyms_for_shortcuts(
 ///     table: &LookupTable,
-///     effective_group: GroupIndex,
-///     effective_modifiers: ModifierMask,
+///     group: GroupIndex,
+///     modifiers: ModifierMask,
 ///     keycode: Keycode,
 /// ) -> impl Iterator<Item = (ModifierMask, Keysym)> {
-///     let lookup = table.lookup(effective_group, effective_modifiers, keycode);
+///     let lookup = table.lookup(group, modifiers, keycode);
 ///     lookup.into_iter().map(|p| (lookup.remaining_mods(), p.keysym()))
 /// }
 /// ```
@@ -102,12 +102,12 @@ use {
 /// # use kbvm::state_machine::Keycode;
 /// fn disable_caps_transform(
 ///     table: &LookupTable,
-///     effective_group: GroupIndex,
-///     effective_modifiers: ModifierMask,
+///     group: GroupIndex,
+///     modifiers: ModifierMask,
 ///     keycode: Keycode,
 /// ) -> impl Iterator<Item = KeysymProps> {
 ///     table
-///         .lookup(effective_group, effective_modifiers, keycode)
+///         .lookup(group, modifiers, keycode)
 ///         .with_caps_transform(false)
 ///         .into_iter()
 /// }
@@ -132,12 +132,12 @@ use {
 /// # use kbvm::state_machine::Keycode;
 /// fn disable_ctrl_transform(
 ///     table: &LookupTable,
-///     effective_group: GroupIndex,
-///     effective_modifiers: ModifierMask,
+///     group: GroupIndex,
+///     modifiers: ModifierMask,
 ///     keycode: Keycode,
 /// ) -> impl Iterator<Item = char> {
 ///     table
-///         .lookup(effective_group, effective_modifiers, keycode)
+///         .lookup(group, modifiers, keycode)
 ///         .with_ctrl_transform(false)
 ///         .into_iter()
 ///         .flat_map(|p| p.char())
@@ -183,12 +183,12 @@ use {
 /// # use kbvm::state_machine::Keycode;
 /// fn disable_ctrl_fallback(
 ///     table: &LookupTable,
-///     effective_group: GroupIndex,
-///     effective_modifiers: ModifierMask,
+///     group: GroupIndex,
+///     modifiers: ModifierMask,
 ///     keycode: Keycode,
 /// ) -> impl Iterator<Item = char> {
 ///     table
-///         .lookup(effective_group, effective_modifiers, keycode)
+///         .lookup(group, modifiers, keycode)
 ///         .with_ctrl_fallback(false)
 ///         .into_iter()
 ///         .flat_map(|p| p.char())

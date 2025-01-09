@@ -7,6 +7,11 @@ pub mod parser;
 pub mod resolver;
 mod token;
 
+pub struct Group<'a> {
+    pub layout: &'a str,
+    pub variant: &'a str,
+}
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum MergeMode {

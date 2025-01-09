@@ -39,7 +39,7 @@ use {
     std::fmt::Display,
 };
 
-/// A fully resolved XKB keymap.
+/// A fully-resolved XKB keymap.
 ///
 /// This object is usually created from a [`Context`] but can also be created via
 /// [`LookupTable::to_xkb_keymap`].
