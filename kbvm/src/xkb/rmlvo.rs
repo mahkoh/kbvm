@@ -1,5 +1,8 @@
 //! RMLVO helpers and types.
 
+#[expect(unused_imports)]
+use std::fmt::Display;
+
 #[macro_use]
 mod macros;
 #[cfg(test)]
@@ -52,27 +55,92 @@ impl<'a> Group<'a> {
     }
 }
 
+/// An include merge mode.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_symbols {
+///     override "pc"
+///     override "de(neo)"
+///     augment "inet(evdev)"
+/// };
+/// ```
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum MergeMode {
+    /// In case of conflict, the previous definition is retained.
     Augment,
+    /// In case of conflict, the new definition overrides the old one.
     Override,
 }
 
+/// An include statement in an XKB section.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_symbols {
+///     override "pc"
+///     override "de(neo)"
+///     augment "inet(evdev)"
+/// };
+/// ```
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct Element {
+    /// The merge mode.
     pub merge_mode: MergeMode,
+    /// The include string.
     pub include: String,
 }
 
+/// Expanded RMLVO names.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_keymap {
+///     xkb_keycodes {
+///         override "evdev"
+///         override "aliases(qwertz)"
+///     };
+///     xkb_types {
+///         override "complete"
+///     };
+///     xkb_compat {
+///         override "complete"
+///         override "caps(caps_lock)"
+///         override "misc(assign_shift_left_action)"
+///         override "level5(level5_lock)"
+///     };
+///     xkb_symbols {
+///         override "pc"
+///         override "de(neo)"
+///         override "inet(evdev)"
+///     };
+///     xkb_geometry {
+///         override "pc(pc105)"
+///     };
+/// };
+/// ```
+///
+/// # Formatting
+///
+/// This type implements [`Display`] which can be used to format the object as shown
+/// in the example.
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct Expanded {
+    /// The elements of the `xkb_keycodes` section.
     pub keycodes: Vec<Element>,
+    /// The elements of the `xkb_types` section.
     pub types: Vec<Element>,
+    /// The elements of the `xkb_compat` section.
     pub compat: Vec<Element>,
+    /// The elements of the `xkb_symbols` section.
     pub symbols: Vec<Element>,
+    /// The elements of the `xkb_geometry` section.
     pub geometry: Vec<Element>,
 }
 
