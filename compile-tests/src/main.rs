@@ -198,7 +198,7 @@ fn test_kccgst(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(),
     let input = std::fs::read(&input_path).map_err(ResultError::ReadInputFailed)?;
 
     let mut context = Context::builder();
-    context.enable_system_dirs(false);
+    context.enable_system_paths(false);
     context.append_path(case);
     context.append_path(&case.join("extra-includes"));
     context.append_path("./include");
@@ -332,7 +332,7 @@ fn test_rmlvo(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), 
     let options: Vec<_> = input.options.iter().map(|s| &**s).collect();
 
     let mut context = Context::builder();
-    context.enable_system_dirs(false);
+    context.enable_system_paths(false);
     context.append_path(case);
     context.append_path("./include");
     let context = context.build();

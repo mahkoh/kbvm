@@ -31,7 +31,56 @@ use {
     },
 };
 
+/// An XKB context.
 ///
+/// This type contains include paths, environment variables, and other setting related
+/// to the processing of XKB files.
+///
+/// While this type is relatively cheap to create, there is usually no reason for an
+/// application to create more than one of these objects.
+///
+/// # Environment Variables
+///
+/// If [enabled](ContextBuilder::enable_environment), this type makes use of the following
+/// environment variables.
+///
+/// | name                    | default                 | description            |
+/// | ----------------------- | ----------------------- | ---------------------- |
+/// | `HOME`                  |                         |                        |
+/// | `XDG_CONFIG_HOME`       |                         |                        |
+/// | `XKB_CONFIG_EXTRA_PATH` | `/etc/xkb`              | The first system path  |
+/// | `XKB_CONFIG_ROOT`       | `/usr/share/X11/xkb`    | The second system path |
+/// | `XLOCALEDIR`            | `/usr/share/X11/locale` |                        |
+/// | `XCOMPOSEFILE`          |                         |                        |
+/// | `XKB_DEFAULT_RULES`     | `evdev`                 | The fallback rules     |
+/// | `XKB_DEFAULT_MODEL`     | `pc105`                 | The fallback model     |
+/// | `XKB_DEFAULT_LAYOUT`    | `us`                    | The fallback layout    |
+/// | `XKB_DEFAULT_VARIANTS`  |                         | The fallback variant   |
+/// | `XKB_DEFAULT_OPTIONS`   |                         | The fallback options   |
+///
+/// The first and second system path are used as roots for relative include statements.
+///
+/// The fallback rules/model/layout/variants/options are used when the respective arguments
+/// are `None` in [`Context::keymap_from_names`] and [`Context::expand_names`].
+///
+/// If environment variables are enabled, the defaults are used if the environment
+/// variables are not set.
+///
+/// If environment variables are disabled, the defaults are used unconditionally.
+///
+/// # Include Paths
+///
+/// This type contains the following include paths:
+///
+/// - Paths added via [`ContextBuilder::prepend_path`] in reverse order.
+/// - If environment variables are [enabled](ContextBuilder::enable_environment):
+///   - `$XDG_CONFIG_HOME/xkb` if `$XDG_CONFIG_HOME` is set.
+///   - `$HOME/.config/xkb` if `$XDG_CONFIG_HOME` is not set and `$HOME` is set.
+///   - `$HOME/.xkb` if `$HOME` is set.
+/// - If system paths are [enabled](ContextBuilder::enable_system_paths):
+///   - The first system path.
+///   - The second system path.
+/// - Paths added via [`ContextBuilder::append_path`].
 #[derive(Clone, Debug)]
 pub struct Context {
     paths: Vec<Arc<PathBuf>>,
@@ -77,7 +126,7 @@ impl Default for ContextBuilder {
 }
 
 impl ContextBuilder {
-    pub fn enable_system_dirs(&mut self, val: bool) {
+    pub fn enable_system_paths(&mut self, val: bool) {
         self.enable_system_dirs = val;
     }
 

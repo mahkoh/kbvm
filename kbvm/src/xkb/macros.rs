@@ -26,6 +26,11 @@ macro_rules! keyed_bitfield {
                     };
                     Some(res)
                 }
+
+                #[allow(dead_code)]
+                pub(crate) fn contains(self, other: Self) -> bool {
+                    (self & other) == other
+                }
             }
 
             impl Display for $name {

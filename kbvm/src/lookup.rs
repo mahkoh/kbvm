@@ -53,7 +53,7 @@ use {
 ///     group: GroupIndex,
 ///     modifiers: ModifierMask,
 ///     keycode: Keycode,
-/// ) -> String {
+/// ) -> bool {
 ///     table
 ///         .lookup(group, modifiers, keycode)
 ///         .repeats()
@@ -78,9 +78,9 @@ use {
 ///     group: GroupIndex,
 ///     modifiers: ModifierMask,
 ///     keycode: Keycode,
-/// ) -> impl Iterator<Item = (ModifierMask, Keysym)> {
+/// ) -> impl Iterator<Item = (ModifierMask, Keysym)> + use<'_> {
 ///     let lookup = table.lookup(group, modifiers, keycode);
-///     lookup.into_iter().map(|p| (lookup.remaining_mods(), p.keysym()))
+///     lookup.into_iter().map(move |p| (lookup.remaining_mods(), p.keysym()))
 /// }
 /// ```
 ///
@@ -105,7 +105,7 @@ use {
 ///     group: GroupIndex,
 ///     modifiers: ModifierMask,
 ///     keycode: Keycode,
-/// ) -> impl Iterator<Item = KeysymProps> {
+/// ) -> impl Iterator<Item = KeysymProps> + use<'_> {
 ///     table
 ///         .lookup(group, modifiers, keycode)
 ///         .with_caps_transform(false)
@@ -135,7 +135,7 @@ use {
 ///     group: GroupIndex,
 ///     modifiers: ModifierMask,
 ///     keycode: Keycode,
-/// ) -> impl Iterator<Item = char> {
+/// ) -> impl Iterator<Item = char> + use<'_> {
 ///     table
 ///         .lookup(group, modifiers, keycode)
 ///         .with_ctrl_transform(false)
@@ -186,7 +186,7 @@ use {
 ///     group: GroupIndex,
 ///     modifiers: ModifierMask,
 ///     keycode: Keycode,
-/// ) -> impl Iterator<Item = char> {
+/// ) -> impl Iterator<Item = char> + use<'_> {
 ///     table
 ///         .lookup(group, modifiers, keycode)
 ///         .with_ctrl_fallback(false)

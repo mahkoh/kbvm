@@ -5,7 +5,7 @@ use crate::xkb::keymap::{KeyType, Keymap};
 use {
     crate::{
         state_machine,
-        xkb::keymap::{Key, KeyGroup, KeyLevel, KeyTypeMapping, VirtualModifier},
+        xkb::keymap::{Indicator, Key, KeyGroup, KeyLevel, KeyTypeMapping, VirtualModifier},
     },
     indexmap::map::Values,
     std::slice::Iter,
@@ -46,6 +46,13 @@ pub struct Mappings<'a> {
     pub(super) mappings: Iter<'a, KeyTypeMapping>,
 }
 
+/// An iterator over the indicators of a keymap.
+///
+/// Created using [`Keymap::keys`].
+pub struct Indicators<'a> {
+    pub(super) indicators: Iter<'a, Indicator>,
+}
+
 impl<'a> Iterator for Mappings<'a> {
     type Item = &'a KeyTypeMapping;
 
@@ -83,5 +90,13 @@ impl<'a> Iterator for Keys<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         self.keys.next()
+    }
+}
+
+impl<'a> Iterator for Indicators<'a> {
+    type Item = &'a Indicator;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.indicators.next()
     }
 }

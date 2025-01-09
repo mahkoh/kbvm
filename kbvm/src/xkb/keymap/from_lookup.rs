@@ -33,7 +33,7 @@ impl LookupTable {
     /// # Example
     ///
     /// ```
-    /// # use kbvm::builder::Builder;
+    /// # use kbvm::builder::{Builder, GroupBuilder, KeyBuilder, LayerBuilder};
     /// # use kbvm::group_type::GroupType;
     /// # use kbvm::syms;
     /// # use kbvm::modifier::ModifierMask;
@@ -43,17 +43,27 @@ impl LookupTable {
     ///     let gt = GroupType::builder(ModifierMask::SHIFT)
     ///         .map(ModifierMask::SHIFT, 1)
     ///         .build();
-    ///     let mut key = builder.add_key(Keycode::from_raw(9));
+    ///     let mut gb = GroupBuilder::new(0, &gt);
+    ///     let mut layer = LayerBuilder::new(0);
+    ///     layer.keysyms(&[syms::a]);
+    ///     gb.add_layer(layer);
+    ///     let mut layer = LayerBuilder::new(1);
+    ///     layer.keysyms(&[syms::A]);
+    ///     gb.add_layer(layer);
+    ///     let mut key = KeyBuilder::new(Keycode::from_raw(9));
     ///     key.repeats(true);
-    ///     let mut gb = key.add_group(0, &gt);
-    ///     gb.add_layer(0).keysyms(&[syms::a]);
-    ///     gb.add_layer(1).keysyms(&[syms::A]);
+    ///     key.add_group(gb);
+    ///     builder.add_key(key)
     /// }
     /// {
     ///     let gt = GroupType::builder(ModifierMask::NONE).build();
-    ///     let mut key = builder.add_key(Keycode::from_raw(10));
-    ///     let mut gb = key.add_group(0, &gt);
-    ///     gb.add_layer(0).keysyms(&[syms::Alt_L]);
+    ///     let mut layer = LayerBuilder::new(0);
+    ///     layer.keysyms(&[syms::Alt_L]);
+    ///     let mut gb = GroupBuilder::new(0, &gt);
+    ///     gb.add_layer(layer);
+    ///     let mut key = KeyBuilder::new(Keycode::from_raw(10));
+    ///     key.add_group(gb);
+    ///     builder.add_key(key)
     /// }
     /// let map = builder.build_lookup_table().to_xkb_keymap();
     /// println!("{:#}", map);

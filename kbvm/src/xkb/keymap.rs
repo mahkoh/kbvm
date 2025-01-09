@@ -25,12 +25,13 @@ use {
                     GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
                     ModsLockAction, ModsSetAction,
                 },
-                iterators::{Groups, Keys, Levels, Mappings, VirtualModifiers},
+                iterators::{Groups, Indicators, Keys, Levels, Mappings, VirtualModifiers},
             },
             level::Level,
             mod_component::ModComponentMask,
             resolved::GroupsRedirect,
         },
+        Components,
     },
     hashbrown::DefaultHashBuilder,
     indexmap::IndexMap,
@@ -101,8 +102,20 @@ pub(crate) struct ModMapValue {
     pub(crate) key_sym: Option<Keysym>,
 }
 
+/// An indicator.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_compat {
+///     indicator "Caps Lock" {
+///         modifiers = Lock;
+///         whichModState = Effective;
+///     };
+/// };
+/// ```
 #[derive(Debug, PartialEq)]
-pub(crate) struct Indicator {
+pub struct Indicator {
     pub(crate) virt: bool,
     pub(crate) index: IndicatorIdx,
     pub(crate) name: Arc<String>,
@@ -111,6 +124,20 @@ pub(crate) struct Indicator {
     pub(crate) controls: ControlMask,
     pub(crate) mod_components: ModComponentMask,
     pub(crate) group_components: GroupComponent,
+}
+
+/// An indicator matcher that determines if an indicator should be active.
+pub struct IndicatorMatcher {
+    mods_pressed: u32,
+    mods_latched: u32,
+    mods_locked: u32,
+    mods: u32,
+    group_pressed: bool,
+    group_not_pressed: bool,
+    group_latched: bool,
+    group_not_latched: bool,
+    group_locked: u32,
+    group: u32,
 }
 
 #[derive(Debug, PartialEq)]
@@ -455,6 +482,28 @@ impl Keymap {
     pub fn keys(&self) -> Keys<'_> {
         Keys {
             keys: self.keys.values(),
+        }
+    }
+
+    /// Returns an iterator over the indicators of this map.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_compat {
+    ///     indicator "Caps Lock" {
+    ///         modifiers = Lock;
+    ///     };
+    ///     indicator "Num Lock" {
+    ///         modifiers = Mod2;
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The iterator returns 2 elements, one for `Caps Lock` and one for `Num Lock`.
+    pub fn indicators(&self) -> Indicators<'_> {
+        Indicators {
+            indicators: self.indicators.iter(),
         }
     }
 }
@@ -1127,5 +1176,108 @@ impl GroupLockAction {
     /// The function returns `GroupChange::Relative(-1)`.
     pub fn group(&self) -> GroupChange {
         self.group.to_group_change()
+    }
+}
+
+impl Indicator {
+    /// The name of the `Num Lock` indicator.
+    pub const NUM_LOCK: &str = "Num Lock";
+    /// The name of the `Caps Lock` indicator.
+    pub const CAPS_LOCK: &str = "Caps Lock";
+    /// The name of the `Scroll Lock` indicator.
+    pub const SCROLL_LOCK: &str = "Scroll Lock";
+    /// The name of the `Compose` indicator.
+    pub const COMPOSE: &str = "Compose";
+    /// The name of the `Kana` indicator.
+    pub const KANA: &str = "Kana";
+
+    /// Returns the name of the indicator.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_compat {
+    ///     indicator "Caps Lock" {
+    ///         modifiers = Lock;
+    ///         whichModState = Effective;
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `"Caps Lock"`.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Returns the matcher for the indicator.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_compat {
+    ///     indicator "Caps Lock" {
+    ///         modifiers = Lock;
+    ///         whichModState = Effective;
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The matcher will match if the effective group contains the Lock modifier.
+    pub fn matcher(&self) -> IndicatorMatcher {
+        macro_rules! mods {
+            ($comp:ident) => {
+                self.mod_components
+                    .contains(ModComponentMask::$comp)
+                    .then_some(self.modifier_mask.0)
+                    .unwrap_or_default()
+            };
+        }
+        macro_rules! group_flag {
+            ($comp:ident, $tt:tt) => {
+                self.group_components == GroupComponent::$comp
+                && self.group_mask.0 $tt 0
+            };
+        }
+        macro_rules! group_mask {
+            ($comp:ident) => {
+                (self.group_components == GroupComponent::$comp)
+                    .then_some(self.group_mask.0)
+                    .unwrap_or_default()
+            };
+        }
+        IndicatorMatcher {
+            mods_pressed: mods!(BASE),
+            mods_latched: mods!(LATCHED),
+            mods_locked: mods!(LOCKED),
+            mods: mods!(EFFECTIVE),
+            group_pressed: group_flag!(Base, !=),
+            group_not_pressed: group_flag!(Base, ==),
+            group_latched: group_flag!(Latched, !=),
+            group_not_latched: group_flag!(Latched, ==),
+            group_locked: group_mask!(Locked),
+            group: group_mask!(Effective),
+        }
+    }
+}
+
+impl IndicatorMatcher {
+    /// Returns whether this indicator should be illuminated.
+    pub fn matches(&self, components: &Components) -> bool {
+        let mut res = 0;
+        res |= self.mods_pressed & components.mods_pressed.0;
+        res |= self.mods_latched & components.mods_latched.0;
+        res |= self.mods_locked & components.mods_locked.0;
+        res |= self.mods & components.mods.0;
+        res |= (self.group_pressed & (components.group_pressed.0 != 0)) as u32;
+        res |= (self.group_not_pressed & (components.group_pressed.0 == 0)) as u32;
+        res |= (self.group_latched & (components.group_latched.0 != 0)) as u32;
+        res |= (self.group_not_latched & (components.group_latched.0 == 0)) as u32;
+        if components.group_locked.0 < u32::BITS {
+            res |= self.group_locked & (1 << components.group_locked.0);
+        }
+        if components.group.0 < u32::BITS {
+            res |= self.group & (1 << components.group.0);
+        }
+        res != 0
     }
 }

@@ -1,3 +1,5 @@
+//! RMLVO helpers and types.
+
 #[macro_use]
 mod macros;
 #[cfg(test)]
@@ -7,9 +9,47 @@ pub(crate) mod parser;
 pub(crate) mod resolver;
 mod token;
 
+/// An RMLVO group consisting of a layout and a variant.
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct Group<'a> {
+    /// The layout of the group.
     pub layout: &'a str,
+    /// The variant of the group.
     pub variant: &'a str,
+}
+
+impl<'a> Group<'a> {
+    /// Creates a Group iterator from comma-separated lists of layouts and variants.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::xkb::rmlvo::Group;
+    /// let layout = "us,il,ru,de,jp";
+    /// let variant = ",,phonetic,neo";
+    /// let groups: Vec<_> = Group::from_layouts_and_variants(layout, variant).collect();
+    /// assert_eq!(
+    ///     groups,
+    ///     [
+    ///         Group { layout: "us", variant: "" },
+    ///         Group { layout: "il", variant: "" },
+    ///         Group { layout: "ru", variant: "phonetic" },
+    ///         Group { layout: "de", variant: "neo" },
+    ///         Group { layout: "jp", variant: "" },
+    ///     ],
+    /// );
+    /// ```
+    pub fn from_layouts_and_variants(
+        layout: &'a str,
+        variant: &'a str,
+    ) -> impl Iterator<Item = Self> {
+        let layouts = layout.split(',');
+        let mut variants = variant.split(',');
+        layouts.map(move |layout| Group {
+            layout: layout.trim(),
+            variant: variants.next().unwrap_or_default().trim(),
+        })
+    }
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
