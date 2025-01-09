@@ -2,8 +2,8 @@ use {
     crate::{
         from_bytes::FromBytes,
         keysym::Keysym,
-        syms,
         modifier::{ModifierIndex, ModifierMask},
+        syms,
         xkb::{
             code_map::CodeMap,
             controls::ControlMask,

@@ -2,6 +2,7 @@
 
 use {crate::phf::PhfHash, permutation::Permutation, std::fmt::Debug};
 
+mod evdev;
 mod keysyms;
 #[path = "../../kbvm/src/phf.rs"]
 mod phf;
@@ -13,6 +14,7 @@ fn main() {
     keysyms::main();
     xkb::main();
     type_tests::main();
+    evdev::main();
 }
 
 fn generate_map(

@@ -4,9 +4,9 @@ mod tests;
 use {
     crate::{
         keysym::Keysym,
-        syms,
         modifier::{ModifierIndex, ModifierMask},
         state_machine::Keycode,
+        syms,
         xkb::{
             code_map::CodeMap,
             diagnostic::{DiagnosticKind, DiagnosticSink},

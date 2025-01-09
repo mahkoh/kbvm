@@ -1,3 +1,7 @@
+//! XKB keymaps.
+//!
+//! This module contains types representing the components of an XKB keymap.
+
 mod format;
 mod from_lookup;
 mod from_resolved;

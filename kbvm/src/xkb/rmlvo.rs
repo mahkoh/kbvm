@@ -2,9 +2,9 @@
 mod macros;
 #[cfg(test)]
 mod formatter;
-pub mod lexer;
-pub mod parser;
-pub mod resolver;
+pub(crate) mod lexer;
+pub(crate) mod parser;
+pub(crate) mod resolver;
 mod token;
 
 pub struct Group<'a> {

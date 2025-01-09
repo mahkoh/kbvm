@@ -45,7 +45,7 @@ impl<'a> CodeSlice<'a> {
         CodeSlice::new_ref(code, range).to_owned()
     }
 
-    fn code(&self) -> &Code {
+    pub(crate) fn code(&self) -> &Code {
         match &self.code {
             OwnedOrBorrowed::Owned(c) => c,
             OwnedOrBorrowed::Borrowed(c) => c,

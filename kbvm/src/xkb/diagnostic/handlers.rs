@@ -57,7 +57,7 @@ pub(crate) mod log {
         log::Level,
     };
 
-    /// A simple diagnostic handler that forwards diagnostics to the `log` crate.
+    /// A simple [`DiagnosticHandler`] that forwards diagnostics to the `log` crate.
     ///
     /// Messages will be formatted using [`Diagnostic::with_code`] with a level based on
     /// the [`Severity`] and using `"kbvm"` as its target.

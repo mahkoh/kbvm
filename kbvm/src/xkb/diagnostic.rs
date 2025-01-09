@@ -1,3 +1,7 @@
+//! Diagnostic messages.
+//!
+//! This module contains types for diagnostic messages emitted by the XKB code.
+
 mod handlers;
 
 #[cfg(feature = "log")]
@@ -15,13 +19,54 @@ use {
         error::Error,
         fmt::{Debug, Display, Formatter, Write},
         ops::Deref,
-        path::PathBuf,
+        path::{Path, PathBuf},
         sync::Arc,
     },
 };
 
+/// A handler for diagnostic messages.
+///
+/// # Example
+///
+/// The following example forwards all diagnostic messages to the `log` crate.
+///
+/// ```
+/// # use kbvm::xkb::Context;
+/// # use kbvm::xkb::diagnostic::WriteToLog;
+/// let context = Context::builder().build();
+/// let handler = WriteToLog;
+/// let _ = context.keymap_from_names(handler, None, None, None, None);
+/// ```
+///
+/// # Pre-defined handlers
+///
+/// This crate implements the following handlers:
+///
+/// - `Vec<Diagnostic>`: The messages are appended to the vector.
+/// - [`WriteToLog`]: If the `log` feature is enabled, this handler passes messages to the
+///   `log` crate.
+/// - `(T, Severity) where T: DiagnosticHandler`: The messages are passed to `T` but only
+///   if their [`Severity`] is at least the given severity.
+/// - `(T, F) where T: DiagnosticHandler, F: Fn(DiagnosticKind, bool) -> bool`: The
+///   messages are passed to `T` but only if the filter, `F`, permits them.
 pub trait DiagnosticHandler {
-    fn filter(&self, kind: DiagnosticKind, is_fatal: bool) -> bool;
+    /// A filter for diagnostic messages.
+    ///
+    /// This filter can be used to skip messages. By default, all messages are passed
+    /// through.
+    ///
+    /// The function should return `true` if the message should be passed to the handler.
+    ///
+    /// The `is_fatal` argument is `true` if this message is a fatal error that will also
+    /// returned to the application via `Result::Err`. In this case the application might
+    /// want to only receive the diagnostic via one of the two mechanisms.
+    fn filter(&self, kind: DiagnosticKind, is_fatal: bool) -> bool {
+        let _ = kind;
+        let _ = is_fatal;
+        true
+    }
+
+    /// Asks the handler to handle a diagnostic message.
     fn handle(&mut self, diag: Diagnostic);
 }
 
@@ -29,14 +74,21 @@ pub(crate) struct DiagnosticSink<'a, 'b> {
     handler: &'a mut (dyn DiagnosticHandler + 'b),
 }
 
+/// The severity of a diagnostic message.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
 #[non_exhaustive]
 pub enum Severity {
+    /// Debug severity.
     Debug,
+    /// Warning severity.
     Warning,
+    /// Error severity.
+    ///
+    /// Note that such errors are usually not fatal.
     Error,
 }
 
+/// The type of a diagnostic message.
 #[diagnostic_kind]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 #[non_exhaustive]
@@ -1576,17 +1628,39 @@ pub enum DiagnosticKind {
 }
 
 impl DiagnosticKind {
+    /// Returns the severity of the message type.
     pub fn severity(&self) -> Severity {
         self.severity_()
     }
 }
 
+/// A diagnostic message.
+///
+/// Diagnostic messages are emitted when creating keymaps and usually indicate a
+/// less-than-ideal situation.
+///
+/// Each message has an associated type called [`DiagnosticKind`] that can be accessed
+/// with the [`Diagnostic::kind`] function.
+///
+/// Each message is associated with a chain of source-code locations. The first element of
+/// this chain can be accessed with the [`Diagnostic::location`] function.
+///
+/// This type implements the [`Error`] and [`Display`] traits that can be used to format
+/// this message as expected. If you also want to display code excerpts showing exactly
+/// where an error occurred, you can use the [`Diagnostic::with_code`] function.
 pub struct Diagnostic {
     kind: DiagnosticKind,
     location: DiagnosticLocation,
 }
 
-pub(crate) struct DiagnosticLocation {
+/// A location of a diagnostic message.
+///
+/// This location is part of a chain of locations. The next location can be accessed with
+/// the [`DiagnosticLocation::next`] function.
+///
+/// The message associated with this location can be accessed with the [`Display`]
+/// implementation of this type.
+pub struct DiagnosticLocation {
     message: Option<Box<dyn Display + Send + Sync>>,
     source_file: Option<Arc<PathBuf>>,
     line: CodeSlice<'static>,
@@ -1728,6 +1802,51 @@ impl DiagnosticLocation {
         }
         Ok(())
     }
+
+    /// Returns the next location in this chain of locations.
+    ///
+    /// Locations are chained from outermost to innermost. For example, if file `A`
+    /// includes file `B` and file `B` contains an error, then the location of the include
+    /// statement in `A` will appear first, with `next` returning the location in `B`.
+    pub fn next(&self) -> Option<&DiagnosticLocation> {
+        self.inner.as_deref()
+    }
+
+    /// Returns the path of the source file that this location points to.
+    ///
+    /// Returns `None` if this location is not associated with a source file.
+    pub fn source_file(&self) -> Option<&Path> {
+        self.source_file.as_deref().map(|v| &**v)
+    }
+
+    /// Returns the contents (excluding the terminating newline) of the line that this
+    /// location points to.
+    pub fn line_contents(&self) -> &[u8] {
+        &self.line
+    }
+
+    /// Return the entire contents of the file that this location points to.
+    pub fn file_contents(&self) -> &[u8] {
+        self.line.code()
+    }
+
+    /// Returns the 1-based line number that this location points to.
+    pub fn line(&self) -> usize {
+        self.line_num
+    }
+
+    /// Returns the 0-based column number that this location points to.
+    ///
+    /// This column is in terms of bytes. If the line contains non-ascii characters or
+    /// tabs, then it is up to the application to convert this value to something usable.
+    pub fn column(&self) -> usize {
+        self.in_line_offset
+    }
+
+    /// Returns the length, in bytes, of the contents that this location points to.
+    pub fn length(&self) -> usize {
+        self.in_line_len
+    }
 }
 
 impl Diagnostic {
@@ -1743,12 +1862,47 @@ impl Diagnostic {
         }
     }
 
+    /// Returns a [`Display`] type that can be used to format the diagnostic with code
+    /// excerpts.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use kbvm::xkb::diagnostic::Diagnostic;
+    ///
+    /// fn format_diagnostic(diag: &Diagnostic) {
+    ///     println!("{}", diag.with_code());
+    /// }
+    /// ```
+    ///
+    /// This might print something like
+    ///
+    /// ```txt
+    /// at <anonymous file> 4:32: while processing include:
+    /// >>         xkb_compat { include "complete" };
+    ///                                  ^~~~~~~~
+    /// at /usr/share/X11/xkb/compat/complete 2:13: while processing include:
+    /// >>     include "basic"
+    ///                 ^~~~~
+    /// at /usr/share/X11/xkb/compat/basic 40:13: while processing include:
+    /// >>     include "ledcaps"
+    ///                 ^~~~~~~
+    /// at /usr/share/X11/xkb/compat/ledcaps 6:2: unknown `indicator` field:
+    /// >>     !allowExplicit;
+    ///         ^~~~~~~~~~~~~
+    /// ```
     pub fn with_code(&self) -> impl Display + use<'_> {
         WithCode { diagnostic: self }
     }
 
+    /// Returns the type of this diagnostic message.
     pub fn kind(&self) -> DiagnosticKind {
         self.kind
+    }
+
+    /// Returns the source location of this diagnostic message.
+    pub fn location(&self) -> &DiagnosticLocation {
+        &self.location
     }
 }
 

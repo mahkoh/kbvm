@@ -2,9 +2,9 @@ use {
     crate::{
         builder::Redirect,
         group_type,
-        syms,
         lookup::LookupTable,
         modifier::ModifierIndex,
+        syms,
         xkb::{
             group::GroupIdx,
             keymap::{
