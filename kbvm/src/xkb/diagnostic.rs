@@ -1,3 +1,7 @@
+mod handlers;
+
+#[cfg(feature = "log")]
+pub use handlers::log::WriteToLog;
 use {
     crate::xkb::{
         code_map::CodeMap,
@@ -16,9 +20,13 @@ use {
     },
 };
 
-pub struct DiagnosticSink<'a, 'b> {
-    diagnostics: &'a mut Vec<Diagnostic>,
-    filter: Option<&'b mut dyn FnMut(DiagnosticKind) -> bool>,
+pub trait DiagnosticHandler {
+    fn filter(&self, kind: DiagnosticKind, is_fatal: bool) -> bool;
+    fn handle(&mut self, diag: Diagnostic);
+}
+
+pub(crate) struct DiagnosticSink<'a, 'b> {
+    handler: &'a mut (dyn DiagnosticHandler + 'b),
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
@@ -1593,15 +1601,22 @@ struct WithCode<'a> {
 }
 
 impl<'a, 'b> DiagnosticSink<'a, 'b> {
-    pub fn new(diagnostics: &'a mut Vec<Diagnostic>) -> Self {
-        Self {
-            diagnostics,
-            filter: None,
-        }
+    pub(crate) fn new(handler: &'a mut (dyn DiagnosticHandler + 'b)) -> Self {
+        Self { handler }
     }
 
-    pub fn set_filter(&mut self, filter: &'b mut dyn FnMut(DiagnosticKind) -> bool) {
-        self.filter = Some(filter);
+    fn push_(
+        &mut self,
+        map: &mut CodeMap,
+        kind: DiagnosticKind,
+        message: Spanned<impl Display + Send + Sync + 'static>,
+        is_fatal: bool,
+    ) {
+        if !self.handler.filter(kind, is_fatal) {
+            return;
+        }
+        let diagnostic = Diagnostic::new(map, kind, message.val, message.span);
+        self.handler.handle(diagnostic);
     }
 
     pub(crate) fn push(
@@ -1610,20 +1625,25 @@ impl<'a, 'b> DiagnosticSink<'a, 'b> {
         kind: DiagnosticKind,
         message: Spanned<impl Display + Send + Sync + 'static>,
     ) {
-        if let Some(filter) = self.filter.as_mut() {
-            if !filter(kind) {
-                return;
-            }
-        }
-        let diagnostic = Diagnostic::new(map, kind, message.val, message.span);
-        self.diagnostics.push(diagnostic);
+        self.push_(map, kind, message, false)
+    }
+
+    pub(crate) fn push_fatal(
+        &mut self,
+        map: &mut CodeMap,
+        kind: DiagnosticKind,
+        message: Spanned<impl Display + Send + Sync + 'static>,
+    ) -> Diagnostic {
+        let message = message.map(Arc::new);
+        self.push_(map, kind, message.clone(), true);
+        Diagnostic::new(map, kind, message.val, message.span)
     }
 }
 
 impl DiagnosticLocation {
     fn new(
         map: &mut CodeMap,
-        message: Option<Box<dyn Display + Send + Sync>>,
+        message: Option<Box<dyn Display + Send + Sync + 'static>>,
         span: Span,
         inner: Option<Box<DiagnosticLocation>>,
     ) -> Self {

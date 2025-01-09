@@ -2,7 +2,7 @@ use {
     error_reporter::Report,
     isnt::std_1::{primitive::IsntStrExt, vec::IsntVecExt},
     kbvm::xkb::{
-        diagnostic::{Diagnostic, DiagnosticSink},
+        diagnostic::Diagnostic,
         rmlvo::{Element, Expanded, MergeMode},
         Context, Keymap, RmlvoGroup,
     },
@@ -193,11 +193,10 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     }
 }
 
-fn test_kccgst(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {
+fn test_kccgst(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {
     let input_path = case.join("input.xkb");
     let input = std::fs::read(&input_path).map_err(ResultError::ReadInputFailed)?;
 
-    let mut diagnostics = DiagnosticSink::new(diagnostics);
     let mut context = Context::builder();
     context.enable_system_dirs(false);
     context.append_path(case);
@@ -317,7 +316,7 @@ impl From<Expanded> for RmlvoOutput {
     }
 }
 
-fn test_rmlvo(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {
+fn test_rmlvo(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {
     let input_path = case.join("input.toml");
     let input = std::fs::read_to_string(&input_path).map_err(ResultError::ReadInputFailed)?;
     let input: RmlvoInput = toml::from_str(&input).map_err(ResultError::DeserializeInputFailed)?;
@@ -332,13 +331,12 @@ fn test_rmlvo(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
         .collect();
     let options: Vec<_> = input.options.iter().map(|s| &**s).collect();
 
-    let mut diagnostics = DiagnosticSink::new(diagnostics);
     let mut context = Context::builder();
     context.enable_system_dirs(false);
     context.append_path(case);
     context.append_path("./include");
     let context = context.build();
-    let kccgst = context.rmlvo_to_kccgst(
+    let kccgst = context.expand_names(
         &mut diagnostics,
         Some(&input.rules),
         Some(&input.model),

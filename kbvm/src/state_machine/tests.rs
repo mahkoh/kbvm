@@ -2,7 +2,7 @@ use crate::{
     group::GroupIndex,
     modifier::ModifierMask,
     state_machine::{Keycode, LogicalEvent, State},
-    xkb::{diagnostic::DiagnosticSink, Context},
+    xkb::Context,
 };
 
 const KEY_SHIFT_L: Keycode = Keycode(50);
@@ -14,7 +14,6 @@ const KEY_Q: Keycode = Keycode(24);
 #[test]
 fn test() {
     let mut sink = vec![];
-    let mut sink = DiagnosticSink::new(&mut sink);
     let context = Context::builder()
         .build()
         .parse_keymap(&mut sink, None, MAP.as_bytes())

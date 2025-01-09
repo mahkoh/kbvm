@@ -13,10 +13,7 @@ use {
         group::GroupIndex,
         modifier::ModifierMask,
         state_machine::{Keycode, LogicalEvent, State},
-        xkb::{
-            diagnostic::{Diagnostic, DiagnosticSink},
-            Context,
-        },
+        xkb::{diagnostic::Diagnostic, Context},
     },
     parking_lot::Mutex,
     phf_map::PhfMap,
@@ -193,11 +190,10 @@ impl Display for NameOrKey {
     }
 }
 
-fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {
+fn test_case2(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {
     let map_path = case.join("map.xkb");
     let map = std::fs::read(&map_path).map_err(ResultError::ReadMapFailed)?;
 
-    let mut diagnostics = DiagnosticSink::new(diagnostics);
     let mut context = Context::builder();
     context.append_path(case);
     context.append_path(&case.join("extra-includes"));

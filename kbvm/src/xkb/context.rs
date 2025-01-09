@@ -5,7 +5,7 @@ use {
             code::Code,
             code_loader::CodeLoader,
             code_map::CodeMap,
-            diagnostic::{Diagnostic, DiagnosticSink},
+            diagnostic::{Diagnostic, DiagnosticHandler, DiagnosticSink},
             interner::{Interned, Interner},
             kccgst::{
                 self,
@@ -175,7 +175,24 @@ impl Context {
         ContextBuilder::default()
     }
 
-    pub fn create_keymap_from_rmlvo(
+    pub fn keymap_from_names(
+        &self,
+        mut diagnostics: impl DiagnosticHandler,
+        rules: Option<&str>,
+        model: Option<&str>,
+        groups: Option<&[RmlvoGroup<'_>]>,
+        options: Option<&[&str]>,
+    ) -> Keymap {
+        self.keymap_from_names_(
+            &mut DiagnosticSink::new(&mut diagnostics),
+            rules,
+            model,
+            groups,
+            options,
+        )
+    }
+
+    fn keymap_from_names_(
         &self,
         diagnostics: &mut DiagnosticSink,
         rules: Option<&str>,
@@ -213,7 +230,24 @@ impl Context {
         )
     }
 
-    pub fn rmlvo_to_kccgst(
+    pub fn expand_names(
+        &self,
+        mut diagnostics: impl DiagnosticHandler,
+        rules: Option<&str>,
+        model: Option<&str>,
+        groups: Option<&[RmlvoGroup<'_>]>,
+        options: Option<&[&str]>,
+    ) -> rmlvo::Expanded {
+        self.expand_names_(
+            &mut DiagnosticSink::new(&mut diagnostics),
+            rules,
+            model,
+            groups,
+            options,
+        )
+    }
+
+    fn expand_names_(
         &self,
         diagnostics: &mut DiagnosticSink,
         rules: Option<&str>,
@@ -349,6 +383,15 @@ impl Context {
 
     pub fn parse_keymap(
         &self,
+        mut diagnostics: impl DiagnosticHandler,
+        path: Option<&Path>,
+        kccgst: &[u8],
+    ) -> Result<Keymap, Diagnostic> {
+        self.parse_keymap_(&mut DiagnosticSink::new(&mut diagnostics), path, kccgst)
+    }
+
+    fn parse_keymap_(
+        &self,
         diagnostics: &mut DiagnosticSink,
         path: Option<&Path>,
         kccgst: &[u8],
@@ -368,12 +411,7 @@ impl Context {
         let mut lexer = kccgst::lexer::Lexer::new(None, &code, span.lo);
         let mut tokens = vec![];
         if let Err(e) = lexer.lex_item(&mut interner, &mut tokens) {
-            return Err(Diagnostic::new(
-                &mut map,
-                e.val.diagnostic_kind(),
-                e.val,
-                e.span,
-            ));
+            return Err(diagnostics.push_fatal(&mut map, e.val.diagnostic_kind(), e));
         }
         let parsed = parse_item(
             &mut map,
@@ -387,12 +425,7 @@ impl Context {
         let mut parsed = match parsed {
             Ok(p) => p,
             Err(e) => {
-                return Err(Diagnostic::new(
-                    &mut map,
-                    e.val.diagnostic_kind(),
-                    e.val,
-                    e.span,
-                ));
+                return Err(diagnostics.push_fatal(&mut map, e.val.diagnostic_kind(), e));
             }
         };
         Ok(self.handle_item(

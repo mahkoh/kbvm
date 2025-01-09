@@ -33,13 +33,22 @@ pub struct Expanded {
 
 #[cfg(test)]
 mod tests {
-    use crate::xkb::{diagnostic::DiagnosticSink, Context, RmlvoGroup};
+    use crate::xkb::{Context, RmlvoGroup};
 
     #[test]
     fn test() {
         let context = Context::builder().build();
         let mut diag = vec![];
-        let out = context.rmlvo_to_kccgst(&mut DiagnosticSink::new(&mut diag), "", "", &[], &[]);
+        let out = context.expand_names(
+            &mut diag,
+            None,
+            None,
+            Some(&[RmlvoGroup {
+                layout: "de",
+                variant: "neo",
+            }]),
+            None,
+        );
         println!("{:#}", out);
     }
 }

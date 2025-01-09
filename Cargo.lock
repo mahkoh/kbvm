@@ -349,6 +349,7 @@ dependencies = [
  "kbvm-proc",
  "libxkbcommon-test-linker",
  "linearize",
+ "log",
  "pkg-config",
  "smallvec",
  "thiserror",
