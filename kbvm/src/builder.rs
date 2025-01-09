@@ -17,6 +17,7 @@ use {
     hashbrown::HashMap,
     isnt::std_1::primitive::IsntSliceExt,
     smallvec::SmallVec,
+    std::iter,
 };
 
 /// A builder for compositor-side [`StateMachine`] and client-side [`LookupTable`].
@@ -436,6 +437,15 @@ impl Builder {
                 );
             }
         }
+        // let len = map
+        //     .keys()
+        //     .map(|k| k.0 as usize + 1)
+        //     .max()
+        //     .unwrap_or_default();
+        // let mut keys: Vec<_> = iter::repeat_with(|| None).take(len).collect();
+        // for (k, v) in map {
+        //     keys[k.0 as usize] = Some(v);
+        // }
         StateMachine {
             num_groups: (num_groups as u32).max(1),
             num_globals: self.next_global as usize,

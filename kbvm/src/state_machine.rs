@@ -25,6 +25,7 @@ pub struct StateMachine {
     pub(crate) num_groups: u32,
     pub(crate) num_globals: usize,
     pub(crate) keys: HashMap<Keycode, KeyGroups>,
+    // pub(crate) keys: Vec<Option<KeyGroups>>,
 }
 
 #[derive(Debug)]
@@ -46,7 +47,8 @@ pub(crate) struct KeyLayer {
 
 pub struct State {
     globals: Box<[u32]>,
-    active: Vec<ActiveKey>,
+    layer2: Vec<Layer2>,
+    layer3: Vec<Layer3>,
     mods_pressed_count: [u32; NUM_MODS],
     components: Components,
     actuation: u64,
@@ -84,20 +86,25 @@ impl Debug for LogicalEvent {
     }
 }
 
-struct LogHandler<'a> {
+struct Layer2Handler<'a> {
     num_groups: u32,
     mods_pressed_count: &'a mut [u32; NUM_MODS],
     pub_state: &'a mut Components,
     any_state_changed: bool,
     acc_state: Components,
     events: &'a mut Vec<LogicalEvent>,
+    layer3: &'a mut Vec<Layer3>,
 }
 
-impl LogHandler<'_> {
+impl Layer2Handler<'_> {
     fn flush_state(&mut self) {
         if !self.any_state_changed {
             return;
         }
+        self.flush_state_();
+    }
+
+    fn flush_state_(&mut self) {
         self.any_state_changed = false;
         let acs = &mut self.acc_state;
         acs.mods = acs.mods_pressed | acs.mods_latched | acs.mods_locked;
@@ -139,7 +146,7 @@ impl LogHandler<'_> {
     }
 }
 
-impl StateEventHandler for LogHandler<'_> {
+impl StateEventHandler for Layer2Handler<'_> {
     #[inline]
     fn mods_pressed_inc(&mut self, mods: ModifierMask) {
         let mut changed = false;
@@ -203,12 +210,38 @@ impl StateEventHandler for LogHandler<'_> {
 
     #[inline(always)]
     fn key_down(&mut self, keycode: Keycode) {
+        // println!("down {:?}", self.layer3);
+        for key in &mut *self.layer3 {
+            if key.key == keycode {
+                key.rc = key.rc.saturating_add(1);
+                return;
+            }
+        }
+        self.layer3.push(Layer3 {
+            key: keycode,
+            rc: 1,
+        });
         self.flush_state();
         self.events.push(LogicalEvent::KeyDown(keycode));
     }
 
     #[inline(always)]
     fn key_up(&mut self, keycode: Keycode) {
+        // println!("up   {:?}", self.layer3);
+        'find_key: {
+            for (idx, key) in self.layer3.iter_mut().enumerate() {
+                if key.key != keycode {
+                    continue;
+                }
+                key.rc -= 1;
+                if key.rc != 0 {
+                    return;
+                }
+                self.layer3.swap_remove(idx);
+                break 'find_key;
+            }
+            return;
+        }
         self.flush_state();
         self.events.push(LogicalEvent::KeyUp(keycode));
     }
@@ -239,14 +272,20 @@ impl Keycode {
     }
 }
 
-struct ActiveKey {
+struct Layer2 {
     actuation: u64,
     key: Keycode,
-    down_log: u32,
+    rc: u32,
     registers_log: StaticMap<Register, u32>,
     flags: StaticMap<Flag, u32>,
     on_release: Option<Arc<[Lo]>>,
     spill: Box<[u32]>,
+}
+
+#[derive(Debug)]
+struct Layer3 {
+    key: Keycode,
+    rc: u32,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
@@ -259,7 +298,8 @@ impl StateMachine {
     pub fn create_state(&self) -> State {
         State {
             globals: vec![0; self.num_globals].into_boxed_slice(),
-            active: Default::default(),
+            layer2: Default::default(),
+            layer3: Default::default(),
             mods_pressed_count: Default::default(),
             components: Default::default(),
             actuation: Default::default(),
@@ -288,29 +328,30 @@ impl StateMachine {
         key: Keycode,
         direction: Direction,
     ) {
-        for i in 0..state.active.len() {
-            let active = &mut state.active[i];
+        for i in 0..state.layer2.len() {
+            let active = &mut state.layer2[i];
             if active.key != key {
                 continue;
             }
             if direction == Direction::Down {
-                active.down_log = active.down_log.saturating_add(1);
+                active.rc = active.rc.saturating_add(1);
                 return;
             }
-            active.down_log -= 1;
-            if active.down_log != 0 {
+            active.rc -= 1;
+            if active.rc != 0 {
                 return;
             }
+            active.flags[Flag::LaterKeyActuated] = (active.actuation < state.actuation) as u32;
+            let mut handler = Layer2Handler {
+                num_groups: self.num_groups,
+                mods_pressed_count: &mut state.mods_pressed_count,
+                acc_state: state.components,
+                pub_state: &mut state.components,
+                events,
+                any_state_changed: false,
+                layer3: &mut state.layer3,
+            };
             if let Some(release) = &active.on_release {
-                active.flags[Flag::LaterKeyActuated] = (active.actuation < state.actuation) as u32;
-                let mut handler = LogHandler {
-                    num_groups: self.num_groups,
-                    mods_pressed_count: &mut state.mods_pressed_count,
-                    acc_state: state.components,
-                    pub_state: &mut state.components,
-                    events,
-                    any_state_changed: false,
-                };
                 run(
                     &mut handler,
                     release,
@@ -321,9 +362,9 @@ impl StateMachine {
                 );
                 handler.flush_state();
             } else {
-                events.push(LogicalEvent::KeyUp(key));
+                handler.key_up(key);
             }
-            state.active.swap_remove(i);
+            state.layer2.swap_remove(i);
             return;
         }
         if direction == Direction::Up {
@@ -352,22 +393,23 @@ impl StateMachine {
                 }
             }
         }
-        let mut active = ActiveKey {
+        let mut active = Layer2 {
             actuation: state.actuation + 1,
             key,
-            down_log: 1,
+            rc: 1,
             registers_log: Default::default(),
             flags: Default::default(),
             on_release,
             spill,
         };
-        let mut handler = LogHandler {
+        let mut handler = Layer2Handler {
             num_groups: self.num_groups,
             mods_pressed_count: &mut state.mods_pressed_count,
             acc_state: state.components,
             pub_state: &mut state.components,
             events,
             any_state_changed: false,
+            layer3: &mut state.layer3,
         };
         if let Some(on_press) = on_press {
             run(
@@ -384,7 +426,7 @@ impl StateMachine {
             handler.component_store(Component::GroupLatched, 0);
         }
         handler.flush_state();
-        state.active.push(active);
+        state.layer2.push(active);
     }
 }
 
