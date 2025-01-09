@@ -5,7 +5,7 @@ members = [
     "type-tests",
     "generator",
     "kbvm",
-    "kbvm-c",
     "kbvm-proc",
-    "libxkbcommon-test-linker", "kbvm-benches",
+    "libxkbcommon-test-linker",
+    "kbvm-benches",
 ]

@@ -12,7 +12,7 @@ use {
     kbvm::{
         group::GroupIndex,
         modifier::ModifierMask,
-        state_machine::{Keycode, LogicalEvent, State},
+        state_machine::{Direction, Keycode, LogicalEvent},
         xkb::{diagnostic::Diagnostic, Context},
     },
     parking_lot::Mutex,
@@ -281,16 +281,16 @@ fn test_case2(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), 
             Ok(Keycode::from_raw(kc))
         };
         events.clear();
-        let mut key = |down: bool| {
-            state_machine.handle_key(&mut state, &mut events, get_key()?, down);
+        let mut key = |direction: Direction| {
+            state_machine.handle_key(&mut state, &mut events, get_key()?, direction);
             Ok(())
         };
         match command {
-            "down" => key(true)?,
-            "up" => key(false)?,
+            "down" => key(Direction::Down)?,
+            "up" => key(Direction::Up)?,
             "both" => {
-                key(true)?;
-                key(false)?;
+                key(Direction::Down)?;
+                key(Direction::Up)?;
             }
             "repeat" => {
                 if let Some(kc) = repeating_key {

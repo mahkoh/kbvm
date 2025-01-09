@@ -368,13 +368,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kbvm-c"
-version = "0.1.0"
-dependencies = [
- "kbvm",
-]
-
-[[package]]
 name = "kbvm-proc"
 version = "0.1.0"
 dependencies = [
