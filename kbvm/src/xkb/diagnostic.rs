@@ -111,6 +111,14 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     UnknownEscapeSequence,
+    /// An error occurred while opening a file.
+    ///
+    /// This diagnostic is not emitted for missing files.
+    #[severity = Error]
+    FileOpenFailed,
+    /// An error occurred while deserializing a registry file.
+    #[severity = Error]
+    DeserializeRegistryFailed,
     /// An error occurred while reading a file.
     ///
     /// This diagnostic is not emitted for missing files.

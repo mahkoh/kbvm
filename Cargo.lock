@@ -343,6 +343,7 @@ dependencies = [
  "bstr",
  "cfg-if",
  "debug-fn",
+ "error_reporter",
  "hashbrown",
  "indexmap",
  "isnt",
@@ -351,7 +352,9 @@ dependencies = [
  "linearize",
  "log",
  "pkg-config",
+ "quick-xml",
  "secure-execution",
+ "serde",
  "smallvec",
  "thiserror",
  "walkdir",
@@ -531,6 +534,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37d3544b3f2748c54e147655edb5025752e2303145b5aefb3c3ea2c78b973bb0"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "quick-xml"
+version = "0.37.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "165859e9e55f79d67b96c5d96f4e88b6f2695a1972849c15a6a3f5c59fc2c003"
+dependencies = [
+ "memchr",
+ "serde",
 ]
 
 [[package]]

@@ -48,7 +48,7 @@ pub struct Mappings<'a> {
 
 /// An iterator over the indicators of a keymap.
 ///
-/// Created using [`Keymap::keys`].
+/// Created using [`Keymap::indicators`].
 pub struct Indicators<'a> {
     pub(super) indicators: Iter<'a, Indicator>,
 }

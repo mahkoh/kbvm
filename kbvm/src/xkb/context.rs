@@ -84,10 +84,12 @@ use {
 /// - Paths added via [`ContextBuilder::append_path`].
 #[derive(Clone, Debug)]
 pub struct Context {
-    paths: Vec<Arc<PathBuf>>,
-    max_includes: u64,
-    max_include_depth: u64,
-    env: Environment,
+    pub(crate) paths: Vec<Arc<PathBuf>>,
+    pub(crate) max_includes: u64,
+    pub(crate) max_include_depth: u64,
+    #[cfg_attr(not(feature = "registry"), expect(dead_code))]
+    pub(crate) load_extra_rules: bool,
+    pub(crate) env: Environment,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -109,6 +111,7 @@ pub(crate) struct Environment {
 pub struct ContextBuilder {
     enable_system_dirs: bool,
     enable_environment: bool,
+    load_extra_rules: bool,
     max_includes: u64,
     max_include_depth: u64,
     prefix: Vec<PathBuf>,
@@ -120,6 +123,7 @@ impl Default for ContextBuilder {
         Self {
             enable_system_dirs: true,
             enable_environment: !requires_secure_execution(),
+            load_extra_rules: false,
             max_includes: 1024,
             max_include_depth: 128,
             prefix: vec![],
@@ -155,6 +159,17 @@ impl ContextBuilder {
     /// cannot be parsed, its first line might get printed as a log message.
     pub fn enable_environment(&mut self, val: bool) {
         self.enable_environment = val;
+    }
+
+    #[allow(rustdoc::broken_intra_doc_links)]
+    /// Enables or disables the loading of `.extras.xml` rules.
+    ///
+    /// The default is `false`.
+    ///
+    /// This only affects [`Context::registry`] and [`Context::default_registry`] and has
+    /// no effect if the `registry` feature is not enabled.
+    pub fn load_extra_rules(&mut self, val: bool) {
+        self.load_extra_rules = val;
     }
 
     /// Prepends an include path.
@@ -249,6 +264,7 @@ impl ContextBuilder {
             paths,
             max_includes: self.max_includes,
             max_include_depth: self.max_include_depth,
+            load_extra_rules: self.load_extra_rules,
             env: Environment {
                 home,
                 xlocaledir: getenv!("XLOCALEDIR", "/usr/share/X11/locale"),

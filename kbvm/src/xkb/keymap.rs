@@ -724,6 +724,7 @@ impl KeyGroup {
     ///         [ a, A ],
     ///     };
     /// };
+    /// ```
     ///
     /// The iterator returns two elements, one for `a` and one for `A`.
     pub fn levels(&self) -> Levels<'_> {

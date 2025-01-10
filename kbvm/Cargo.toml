@@ -6,6 +6,7 @@ edition = "2021"
 [features]
 default = ["log"]
 log = ["dep:log"]
+registry = ["dep:serde", "dep:quick-xml", "dep:error_reporter"]
 
 [dependencies]
 kbvm-proc = { path = "../kbvm-proc" }
@@ -21,6 +22,9 @@ indexmap = { version = "2.7.0", default-features = false }
 cfg-if = { version = "1.0.0", default-features = false }
 secure-execution = { version = "0.1.0", default-features = false }
 log = { version = "0.4", default-features = false, optional = true }
+serde = { version = "1.0.217", default-features = false, features = ["derive"], optional = true }
+quick-xml = { version = "0.37.2", default-features = false, features = ["serde", "serialize"], optional = true }
+error_reporter = { version = "1.0.0", default-features = false, optional = true }
 
 [build-dependencies]
 pkg-config = "0.3.31"

@@ -24,6 +24,8 @@ mod level;
 mod meaning;
 mod mod_component;
 mod modmap;
+#[cfg(feature = "registry")]
+pub mod registry;
 mod resolved;
 pub mod rmlvo;
 mod span;
