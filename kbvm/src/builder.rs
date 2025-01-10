@@ -17,7 +17,6 @@ use {
     hashbrown::HashMap,
     isnt::std_1::primitive::IsntSliceExt,
     smallvec::SmallVec,
-    std::iter,
 };
 
 /// A builder for compositor-side [`StateMachine`] and client-side [`LookupTable`].

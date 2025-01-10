@@ -456,7 +456,6 @@ impl Debug for Routine {
     }
 }
 
-#[inline]
 pub(crate) fn run<H>(
     h: &mut H,
     ops: &[Lo],

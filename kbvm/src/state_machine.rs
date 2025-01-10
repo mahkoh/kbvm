@@ -52,7 +52,6 @@ pub struct State {
     mods_pressed_count: [u32; NUM_MODS],
     components: Components,
     actuation: u64,
-    press: u64,
 }
 
 #[derive(Copy, Clone)]
@@ -303,7 +302,6 @@ impl StateMachine {
             mods_pressed_count: Default::default(),
             components: Default::default(),
             actuation: Default::default(),
-            press: Default::default(),
         }
     }
 
@@ -316,9 +314,6 @@ impl StateMachine {
     ) {
         self.handle_key_(state, events, key, direction);
         state.actuation += 1;
-        if direction == Direction::Down {
-            state.press = state.actuation;
-        }
     }
 
     fn handle_key_(

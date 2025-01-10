@@ -351,6 +351,7 @@ dependencies = [
  "linearize",
  "log",
  "pkg-config",
+ "secure-execution",
  "smallvec",
  "thiserror",
  "walkdir",
@@ -649,6 +650,15 @@ name = "scopeguard"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
+
+[[package]]
+name = "secure-execution"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "23ceccce47e43305aa02a0d9182ad09364357d073447435d7ae2e219ce750e55"
+dependencies = [
+ "cfg-if",
+]
 
 [[package]]
 name = "serde"

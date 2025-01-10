@@ -19,6 +19,7 @@ debug-fn = { version = "1.0.0", default-features = false }
 smallvec = { version = "1.13.2", default-features = false, features = ["union"] }
 indexmap = { version = "2.7.0", default-features = false }
 cfg-if = { version = "1.0.0", default-features = false }
+secure-execution = { version = "0.1.0", default-features = false }
 log = { version = "0.4", default-features = false, optional = true }
 
 [build-dependencies]

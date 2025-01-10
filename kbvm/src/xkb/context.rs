@@ -25,6 +25,7 @@ use {
     },
     bstr::ByteSlice,
     isnt::std_1::primitive::IsntStrExt,
+    secure_execution::requires_secure_execution,
     std::{
         path::{Path, PathBuf},
         sync::Arc,
@@ -116,7 +117,7 @@ impl Default for ContextBuilder {
     fn default() -> Self {
         Self {
             enable_system_dirs: true,
-            enable_environment: false,
+            enable_environment: !requires_secure_execution(),
             max_includes: 1024,
             max_include_depth: 128,
             prefix: vec![],
