@@ -4,90 +4,90 @@ use {
 };
 
 #[derive(Deserialize)]
-pub struct Registry {
+pub(super) struct Registry {
     #[serde(rename = "modelList")]
     #[serde(deserialize_with = "model_list")]
-    pub models: Vec<Model>,
+    models: Vec<Model>,
     #[serde(rename = "layoutList")]
     #[serde(deserialize_with = "layout_list")]
-    pub layouts: Vec<Layout>,
+    layouts: Vec<Layout>,
     #[serde(rename = "optionList")]
     #[serde(deserialize_with = "option_list")]
-    pub options: Vec<OptionGroup>,
+    options: Vec<OptionGroup>,
 }
 
 #[derive(Deserialize, Default, Clone, Debug, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
-pub enum Popularity {
+enum Popularity {
     #[default]
     Standard,
     Exotic,
 }
 
 #[derive(Deserialize)]
-pub struct Model {
+struct Model {
     #[serde(rename = "configItem")]
-    pub config_item: ConfigItem,
+    config_item: ConfigItem,
 }
 
 #[derive(Deserialize)]
-pub struct Layout {
+struct Layout {
     #[serde(rename = "configItem")]
-    pub config_item: ConfigItem,
+    config_item: ConfigItem,
     #[serde(rename = "variantList")]
     #[serde(default)]
     #[serde(deserialize_with = "variant_list")]
-    pub variants: Vec<Variant>,
+    variants: Vec<Variant>,
 }
 
 #[derive(Deserialize)]
-pub struct Variant {
+struct Variant {
     #[serde(rename = "configItem")]
-    pub config_item: ConfigItem,
+    config_item: ConfigItem,
 }
 
 #[derive(Deserialize)]
-pub struct OptionGroup {
+struct OptionGroup {
     #[serde(rename = "@allowMultipleSelection")]
     #[serde(default)]
-    pub allow_multiple_selection: bool,
+    allow_multiple_selection: bool,
     #[serde(rename = "configItem")]
-    pub config_item: ConfigItem,
+    config_item: ConfigItem,
     #[serde(rename = "option")]
-    pub options: Vec<Option>,
+    options: Vec<Option>,
 }
 
 #[derive(Deserialize)]
-pub struct Option {
+struct Option {
     #[serde(rename = "configItem")]
-    pub config_item: ConfigItem,
+    config_item: ConfigItem,
 }
 
 #[derive(Deserialize)]
-pub struct ConfigItem {
+struct ConfigItem {
     #[serde(rename = "@popularity")]
     #[serde(default)]
-    pub popularity: Popularity,
-    pub name: String,
+    popularity: Popularity,
+    name: String,
     #[serde(rename = "shortDescription")]
     #[serde(default)]
-    pub short_description: option::Option<String>,
+    short_description: option::Option<String>,
     #[serde(default)]
-    pub description: option::Option<String>,
+    description: option::Option<String>,
     #[serde(default)]
-    pub vendor: option::Option<String>,
+    vendor: option::Option<String>,
     #[serde(rename = "countryList")]
     #[serde(deserialize_with = "country_list")]
     #[serde(default)]
-    pub countries: Vec<String>,
+    countries: Vec<String>,
     #[serde(rename = "languageList")]
     #[serde(deserialize_with = "language_list")]
     #[serde(default)]
-    pub languages: Vec<String>,
+    languages: Vec<String>,
     #[serde(rename = "hwList")]
     #[serde(deserialize_with = "hw_list")]
     #[serde(default)]
-    pub hw_ids: Vec<String>,
+    _hw_ids: Vec<String>,
 }
 
 macro_rules! nested_list {
