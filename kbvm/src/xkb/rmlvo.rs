@@ -146,22 +146,14 @@ pub struct Expanded {
 
 #[cfg(test)]
 mod tests {
-    use crate::xkb::{rmlvo, Context};
+    use crate::xkb::{diagnostic::WriteToLog, rmlvo::Group, Context};
 
     #[test]
     fn test() {
         let context = Context::builder().build();
-        let mut diag = vec![];
-        let out = context.expand_names(
-            &mut diag,
-            None,
-            None,
-            Some(&[rmlvo::Group {
-                layout: "de",
-                variant: "neo",
-            }]),
-            None,
-        );
+        let groups: Vec<_> =
+            Group::from_layouts_and_variants("us,il,ru,de", ",,phonetic,neo").collect();
+        let out = context.expand_names(WriteToLog, None, None, Some(&groups), None);
         println!("{:#}", out);
     }
 }

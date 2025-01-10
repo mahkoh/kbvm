@@ -104,6 +104,8 @@ pub(crate) struct Environment {
     pub(crate) xkb_config_root: String,
 }
 
+/// A builder for [`Context`] objects.
+#[derive(Clone)]
 pub struct ContextBuilder {
     enable_system_dirs: bool,
     enable_environment: bool,
@@ -127,30 +129,78 @@ impl Default for ContextBuilder {
 }
 
 impl ContextBuilder {
+    /// Enables or disables the use of system paths.
+    ///
+    /// The default is `true`.
+    ///
+    /// See the documentation of [`Context`] for the list of system paths.
     pub fn enable_system_paths(&mut self, val: bool) {
         self.enable_system_dirs = val;
     }
 
+    /// Enables or disables the use of environment variables.
+    ///
+    /// See the documentation of [`Context`] for the list of used environment variables.
+    ///
+    /// The default depends on whether the application requires
+    /// [secure execution](requires_secure_execution):
+    ///
+    /// - If the application requires secure execution, the default is `false`.
+    /// - Otherwise the default is `true`.
+    ///
+    /// # Security
+    ///
+    /// Enabling this in a set-user-ID program can lead to information disclosure. For
+    /// example, a file under `$HOME` might include `/etc/shadow`. Even if `/etc/shadow`
+    /// cannot be parsed, its first line might get printed as a log message.
     pub fn enable_environment(&mut self, val: bool) {
         self.enable_environment = val;
     }
 
+    /// Prepends an include path.
     pub fn prepend_path(&mut self, path: &(impl AsRef<Path> + ?Sized)) {
         self.prefix.push(path.as_ref().to_path_buf());
     }
 
+    /// Appends an include path.
     pub fn append_path(&mut self, path: &(impl AsRef<Path> + ?Sized)) {
         self.prefix.push(path.as_ref().to_path_buf());
     }
 
+    /// Sets the maximum number of includes that will be processed when by each function
+    /// call.
+    ///
+    /// The default is `1024`.
+    ///
+    /// For RMLVO, each include line counts as 1 include. For XKB, each component of an
+    /// include statement counts as 1 include.
+    ///
+    /// This setting exists to guard against the following situation where the total
+    /// number of includes grows exponentially while the include depth stays low.
+    ///
+    /// ```xkb
+    /// // file "1"
+    /// include "2"
+    /// include "2"
+    ///
+    /// // file "2"
+    /// include "3"
+    /// include "3"
+    ///
+    /// // ...
+    /// ```
     pub fn max_includes(&mut self, val: u64) {
         self.max_includes = val;
     }
 
+    /// Sets the maximum depth of processed includes.
+    ///
+    /// The default is `128`.
     pub fn max_include_depth(&mut self, val: u64) {
         self.max_include_depth = val;
     }
 
+    /// Builds the context.
     pub fn build(mut self) -> Context {
         macro_rules! getenv {
             ($env:expr) => {{
@@ -216,10 +266,35 @@ impl ContextBuilder {
 }
 
 impl Context {
+    /// Creates a builder for a new context.
     pub fn builder() -> ContextBuilder {
         ContextBuilder::default()
     }
 
+    /// Creates a keymap from RMLVO names.
+    ///
+    /// If a parameter is not given, a value from the environment or a default is used.
+    /// This is described in the [`Context`] documentation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::xkb::Context;
+    /// # use kbvm::xkb::diagnostic::WriteToLog;
+    /// # use kbvm::xkb::rmlvo::Group;
+    /// let context = Context::builder().build();
+    /// let groups: Vec<_> = Group::from_layouts_and_variants(
+    ///     "us,il,ru,de",
+    ///     ",,phonetic,neo",
+    /// ).collect();
+    /// let map = context.keymap_from_names(
+    ///     WriteToLog,
+    ///     None, // rules default to "evdev"
+    ///     None, // model default to "pc105"
+    ///     Some(&groups),
+    ///     None, // options default to &[],
+    /// );
+    /// ```
     pub fn keymap_from_names(
         &self,
         mut diagnostics: impl DiagnosticHandler,
@@ -275,6 +350,62 @@ impl Context {
         )
     }
 
+    /// Expands RMLVO names to an unresolved XKB map.
+    ///
+    /// This can be used to display the output of the RMLVO compilation process. Most of
+    /// the time, you want to use [`Self::keymap_from_names`] instead.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::xkb::Context;
+    /// # use kbvm::xkb::diagnostic::WriteToLog;
+    /// # use kbvm::xkb::rmlvo::Group;
+    /// let context = Context::builder().build();
+    /// let groups: Vec<_> = Group::from_layouts_and_variants(
+    ///     "us,il,ru,de",
+    ///     ",,phonetic,neo",
+    /// ).collect();
+    /// let map = context.expand_names(
+    ///     WriteToLog,
+    ///     None, // rules default to "evdev"
+    ///     None, // model default to "pc105"
+    ///     Some(&groups),
+    ///     None, // options default to &[],
+    /// );
+    /// println!("{:#}", map);
+    /// ```
+    ///
+    /// This might print
+    ///
+    /// ```xkb
+    /// xkb_keymap {
+    ///     xkb_keycodes {
+    ///         override "evdev"
+    ///         override "aliases(qwerty)"
+    ///     };
+    ///     xkb_types {
+    ///         override "complete"
+    ///     };
+    ///     xkb_compat {
+    ///         override "complete"
+    ///         override "caps(caps_lock):4"
+    ///         override "misc(assign_shift_left_action):4"
+    ///         override "level5(level5_lock):4"
+    ///     };
+    ///     xkb_symbols {
+    ///         override "pc"
+    ///         override "us"
+    ///         override "il:2"
+    ///         override "ru(phonetic):3"
+    ///         override "de(neo):4"
+    ///         override "inet(evdev)"
+    ///     };
+    ///     xkb_geometry {
+    ///         override "pc(pc105)"
+    ///     };
+    /// };
+    /// ```
     pub fn expand_names(
         &self,
         mut diagnostics: impl DiagnosticHandler,
@@ -426,6 +557,99 @@ impl Context {
         )
     }
 
+    /// Creates a keymap from an existing XKB map.
+    ///
+    /// # Security
+    ///
+    /// XKB maps can contain arbitrary include paths. If you are executing code in a
+    /// set-user-ID binary, care must be taken so that this does not lead to information
+    /// disclosure. The [`requires_secure_execution`] function might be useful for this.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::xkb::Context;
+    /// # use kbvm::xkb::diagnostic::WriteToLog;
+    /// const MAP: &str = r#"
+    ///     xkb_keymap {
+    ///         xkb_keycodes {
+    ///               <a>         = 38;
+    ///               <leftshift> = 50;
+    ///               <capslock>  = 66;
+    ///         };
+    ///         xkb_symbols {
+    ///             key <a>         { [ a, A ] };
+    ///             key <leftshift> { [ SetMods(modifiers=Shift) ] };
+    ///             key <capslock>  { [ LockMods(modifiers=Lock) ] };
+    ///         };
+    ///     };
+    /// "#;
+    /// let context = Context::builder().build();
+    /// let map = context
+    ///     .keymap_from_bytes(WriteToLog, None, MAP.as_bytes())
+    ///     .unwrap();
+    /// println!("{:#}", map);
+    /// ```
+    ///
+    /// This might print
+    ///
+    /// ```xkb
+    /// xkb_keymap {
+    ///     xkb_keycodes {
+    ///         minimum = 8;
+    ///         maximum = 255;
+    ///
+    ///         indicator 1 = "DUMMY";
+    ///
+    ///         <a> = 38;
+    ///         <capslock> = 66;
+    ///         <leftshift> = 50;
+    ///     };
+    ///
+    ///     xkb_types {
+    ///         virtual_modifiers Dummy;
+    ///
+    ///         type "ALPHABETIC" {
+    ///             modifiers = Shift+Lock;
+    ///             level_name[Level1] = "Base";
+    ///             level_name[Level2] = "Caps";
+    ///             map[Shift] = Level2;
+    ///             map[Lock] = Level2;
+    ///         };
+    ///
+    ///         type "ONE_LEVEL" {
+    ///             modifiers = None;
+    ///             level_name[Level1] = "Any";
+    ///             map[None] = Level1;
+    ///         };
+    ///     };
+    ///
+    ///     xkb_compat {
+    ///         interpret VoidSymbol {
+    ///             repeat = false;
+    ///         };
+    ///     };
+    ///
+    ///     xkb_symbols {
+    ///         key.repeat = true;
+    ///
+    ///         key <a> {
+    ///             type[Group1] = "ALPHABETIC",
+    ///             symbols[Group1] = [ a, A ]
+    ///         };
+    ///         key <capslock> {
+    ///             repeat = false,
+    ///             type[Group1] = "ONE_LEVEL",
+    ///             actions[Group1] = [ LockMods(modifiers = Lock) ]
+    ///         };
+    ///         key <leftshift> {
+    ///             repeat = false,
+    ///             type[Group1] = "ONE_LEVEL",
+    ///             actions[Group1] = [ SetMods(modifiers = Shift) ]
+    ///         };
+    ///     };
+    /// };
+    /// ```
     pub fn keymap_from_bytes(
         &self,
         mut diagnostics: impl DiagnosticHandler,

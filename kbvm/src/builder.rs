@@ -582,6 +582,7 @@ impl LayerBuilder {
     /// - On press:
     ///   - Emit a KeyDown event for the keycode of this layer.
     ///   - Set the latched modifiers to 0.
+    ///   - Set the latched group to 0.
     /// - On release:
     ///   - Emit a KeyUp event for the keycode of this layer.
     ///

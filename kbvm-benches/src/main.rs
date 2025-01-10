@@ -27,20 +27,10 @@ xkb_keymap {
           <leftshift> = 50;
           <capslock>  = 66;
     };
-    xkb_types {
-        type "one_layer" {
-            modifiers = none;
-        };
-        type "alphanumeric" {
-            modifiers  = Shift+Lock;
-            map[Shift] = Level2;
-            map[Lock]  = Level2;
-        };
-    };
-    xkb_compatibility { };
     xkb_symbols {
-        key <leftshift> { actions[Group1] = [ SetMods(modifiers=Shift)  ] };
-        key <capslock>  { actions[Group1] = [ LockMods(modifiers=Shift) ] };
+        key <a> { [ a, A ] };
+        key <leftshift> { [ SetMods(modifiers=Shift)  ] };
+        key <capslock> { [ LockMods(modifiers=Lock) ] };
     };
 };
 "#;
