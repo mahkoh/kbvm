@@ -7,6 +7,7 @@ use {
     },
     libxkbcommon_test_linker::XState,
 };
+use kbvm::evdev::{B, C};
 
 fn shift_press_release(c: &mut Criterion) {
     let builder = Context::builder()
@@ -19,6 +20,13 @@ fn shift_press_release(c: &mut Criterion) {
     let mut xkbc = XState::new(MAP);
     let mut events = vec![];
     c.bench_function("kbvm - press/release - a", |b| {
+        for k in [A, B, C] {
+            state_machine.handle_key(&mut state, &mut events, k, Direction::Down);
+        }
+        for k in [A, B, C] {
+            state_machine.handle_key(&mut state, &mut events, k, Direction::Up);
+        }
+        events.clear();
         b.iter(|| {
             for _ in 0..100 {
                 state_machine.handle_key(&mut state, &mut events, A, Direction::Down);
@@ -36,6 +44,13 @@ fn shift_press_release(c: &mut Criterion) {
         })
     });
     c.bench_function("kbvm - press/release - shift", |b| {
+        for k in [A, B, C] {
+            state_machine.handle_key(&mut state, &mut events, k, Direction::Down);
+        }
+        for k in [A, B, C] {
+            state_machine.handle_key(&mut state, &mut events, k, Direction::Up);
+        }
+        events.clear();
         b.iter(|| {
             for _ in 0..100 {
                 state_machine.handle_key(&mut state, &mut events, LEFTSHIFT, Direction::Down);
@@ -53,6 +68,13 @@ fn shift_press_release(c: &mut Criterion) {
         })
     });
     c.bench_function("kbvm - press/release - lock", |b| {
+        for k in [A, B, C] {
+            state_machine.handle_key(&mut state, &mut events, k, Direction::Down);
+        }
+        for k in [A, B, C] {
+            state_machine.handle_key(&mut state, &mut events, k, Direction::Up);
+        }
+        events.clear();
         b.iter(|| {
             state_machine.handle_key(&mut state, &mut events, CAPSLOCK, Direction::Down);
             state_machine.handle_key(&mut state, &mut events, CAPSLOCK, Direction::Up);
@@ -66,6 +88,13 @@ fn shift_press_release(c: &mut Criterion) {
         })
     });
     c.bench_function("kbvm - press/release - shift/a", |b| {
+        for k in [A, B, C] {
+            state_machine.handle_key(&mut state, &mut events, k, Direction::Down);
+        }
+        for k in [A, B, C] {
+            state_machine.handle_key(&mut state, &mut events, k, Direction::Up);
+        }
+        events.clear();
         b.iter(|| {
             state_machine.handle_key(&mut state, &mut events, LEFTSHIFT, Direction::Down);
             state_machine.handle_key(&mut state, &mut events, A, Direction::Down);
@@ -83,6 +112,13 @@ fn shift_press_release(c: &mut Criterion) {
         })
     });
     c.bench_function("kbvm - press/release - lock/a", |b| {
+        for k in [A, B, C] {
+            state_machine.handle_key(&mut state, &mut events, k, Direction::Down);
+        }
+        for k in [A, B, C] {
+            state_machine.handle_key(&mut state, &mut events, k, Direction::Up);
+        }
+        events.clear();
         b.iter(|| {
             state_machine.handle_key(&mut state, &mut events, CAPSLOCK, Direction::Down);
             state_machine.handle_key(&mut state, &mut events, CAPSLOCK, Direction::Up);
