@@ -5,7 +5,7 @@ macro_rules! keyed_bitfield {
     ) => {
         const _: () = {
             use std::fmt::{self, Display, Formatter, Debug};
-            use std::ops::{BitOr, Not, BitAnd};
+            use std::ops::{BitOr, Not, BitAnd, BitOrAssign};
             use crate::xkb::meaning::Meaning;
 
             impl $name {
@@ -64,6 +64,12 @@ macro_rules! keyed_bitfield {
 
                 fn bitor(self, rhs: Self) -> Self::Output {
                     Self(self.0 | rhs.0)
+                }
+            }
+
+            impl BitOrAssign for $name {
+                fn bitor_assign(&mut self, rhs: Self) {
+                    self.0 |= rhs.0;
                 }
             }
 

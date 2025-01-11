@@ -47,8 +47,9 @@ pub(crate) struct KeyLayer {
 
 pub struct State {
     globals: Box<[u32]>,
-    layer2: Vec<Layer2>,
+    layer2: Vec<Layer2Base>,
     layer3: Vec<Layer3>,
+    layer2_cache: Vec<Box<Layer2>>,
     mods_pressed_count: [u32; NUM_MODS],
     components: Components,
     actuation: u64,
@@ -246,7 +247,7 @@ impl StateEventHandler for Layer2Handler<'_> {
     }
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, CloneWithDelta)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, CloneWithDelta, Default)]
 pub struct Keycode(pub(crate) u32);
 
 impl Keycode {
@@ -271,9 +272,14 @@ impl Keycode {
     }
 }
 
+struct Layer2Base {
+    key: Keycode,
+    layer2: Box<Layer2>,
+}
+
+#[derive(Default)]
 struct Layer2 {
     actuation: u64,
-    key: Keycode,
     rc: u32,
     registers_log: StaticMap<Register, u32>,
     flags: StaticMap<Flag, u32>,
@@ -299,6 +305,7 @@ impl StateMachine {
             globals: vec![0; self.num_globals].into_boxed_slice(),
             layer2: Default::default(),
             layer3: Default::default(),
+            layer2_cache: Default::default(),
             mods_pressed_count: Default::default(),
             components: Default::default(),
             actuation: Default::default(),
@@ -328,6 +335,7 @@ impl StateMachine {
             if active.key != key {
                 continue;
             }
+            let active = &mut active.layer2;
             if direction == Direction::Down {
                 active.rc = active.rc.saturating_add(1);
                 return;
@@ -359,7 +367,7 @@ impl StateMachine {
             } else {
                 handler.key_up(key);
             }
-            state.layer2.swap_remove(i);
+            state.layer2_cache.push(state.layer2.swap_remove(i).layer2);
             return;
         }
         if direction == Direction::Up {
@@ -369,7 +377,7 @@ impl StateMachine {
         let mods = state.components.mods;
         let mut on_press = None;
         let mut on_release = None;
-        let mut spill = Box::new([]) as Box<[u32]>;
+        let mut spill = 0;
         if let Some(key_groups) = self.keys.get(&key) {
             if key_groups.groups.is_not_empty() {
                 let group = key_groups.redirect.apply(group, key_groups.groups.len());
@@ -380,23 +388,25 @@ impl StateMachine {
                         if let Some(routine) = &key_layer.routine {
                             on_press = Some(&routine.on_press);
                             on_release = Some(routine.on_release.clone());
-                            if routine.spill > 0 {
-                                spill = vec![0; routine.spill].into_boxed_slice();
-                            }
+                            spill = routine.spill;
                         }
                     }
                 }
             }
         }
-        let mut active = Layer2 {
-            actuation: state.actuation + 1,
-            key,
-            rc: 1,
-            registers_log: Default::default(),
-            flags: Default::default(),
-            on_release,
-            spill,
-        };
+        let mut active = state.layer2_cache.pop().unwrap_or_default();
+        active.rc = 1;
+        active.actuation = state.actuation + 1;
+        active.registers_log = Default::default();
+        active.flags = Default::default();
+        active.on_release = on_release;
+        if spill > 0 {
+            if spill <= active.spill.len() {
+                active.spill[..spill].fill(0);
+            } else {
+                active.spill = vec![0; spill].into_boxed_slice();
+            }
+        }
         let mut handler = Layer2Handler {
             num_groups: self.num_groups,
             mods_pressed_count: &mut state.mods_pressed_count,
@@ -421,7 +431,10 @@ impl StateMachine {
             handler.component_store(Component::GroupLatched, 0);
         }
         handler.flush_state();
-        state.layer2.push(active);
+        state.layer2.push(Layer2Base {
+            key,
+            layer2: active,
+        });
     }
 }
 

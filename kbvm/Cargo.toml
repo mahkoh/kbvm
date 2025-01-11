@@ -7,6 +7,7 @@ edition = "2021"
 default = ["log"]
 log = ["dep:log"]
 registry = ["dep:serde", "dep:quick-xml", "dep:error_reporter"]
+x11 = ["dep:x11rb"]
 
 [dependencies]
 kbvm-proc = { path = "../kbvm-proc" }
@@ -21,10 +22,14 @@ smallvec = { version = "1.13.2", default-features = false, features = ["union"] 
 indexmap = { version = "2.7.0", default-features = false }
 cfg-if = { version = "1.0.0", default-features = false }
 secure-execution = { version = "0.1.0", default-features = false }
+# for log feature:
 log = { version = "0.4", default-features = false, optional = true }
+# for registry feature:
 serde = { version = "1.0.217", default-features = false, features = ["derive"], optional = true }
 quick-xml = { version = "0.37.2", default-features = false, features = ["serde", "serialize"], optional = true }
 error_reporter = { version = "1.0.0", default-features = false, optional = true }
+# for x11 feature:
+x11rb = { version = "0.13.1", default-features = false, features = ["xkb"], optional = true }
 
 [build-dependencies]
 pkg-config = "0.3.31"
