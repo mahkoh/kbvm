@@ -400,15 +400,11 @@ impl StateMachine {
         let base = match slot {
             Some(slot) => slot,
             _ => {
-                // #[cold]
-                // fn allocate_layer(layer2: &mut Vec<Layer2Base>) -> &mut Layer2Base {
-                    state.layer2.push(Layer2Base {
-                        key: None,
-                        layer2: Default::default(),
-                    });
-                    state.layer2.last_mut().unwrap()
-                // }
-                // allocate_layer(&mut state.layer2)
+                state.layer2.push(Layer2Base {
+                    key: None,
+                    layer2: Default::default(),
+                });
+                state.layer2.last_mut().unwrap()
             }
         };
         base.key = Some(key);
@@ -422,10 +418,6 @@ impl StateMachine {
             if spill <= layer2.spill.len() {
                 layer2.spill[..spill].fill(0);
             } else {
-                // #[cold]
-                // fn allocate_spill(spill: usize) -> Box<[u32]> {
-                //     vec![0; spill].into_boxed_slice()
-                // }
                 layer2.spill = vec![0; spill].into_boxed_slice();
             }
         }
