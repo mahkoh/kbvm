@@ -47,9 +47,8 @@ pub(crate) struct KeyLayer {
 
 pub struct State {
     globals: Box<[u32]>,
-    layer2: Vec<Option<Layer2Base>>,
+    layer2: Vec<Layer2Base>,
     layer3: Vec<Layer3>,
-    layer2_cache: Vec<Box<Layer2>>,
     mods_pressed_count: [u32; NUM_MODS],
     components: Components,
     actuation: u64,
@@ -275,7 +274,7 @@ impl Keycode {
 }
 
 struct Layer2Base {
-    key: Keycode,
+    key: Option<Keycode>,
     layer2: Box<Layer2>,
 }
 
@@ -307,7 +306,6 @@ impl StateMachine {
             globals: vec![0; self.num_globals].into_boxed_slice(),
             layer2: Default::default(),
             layer3: Default::default(),
-            layer2_cache: Default::default(),
             mods_pressed_count: Default::default(),
             components: Default::default(),
             actuation: Default::default(),
@@ -333,24 +331,23 @@ impl StateMachine {
         direction: Direction,
     ) {
         let mut slot = None;
-        for active_opt in &mut state.layer2 {
-            let Some(active) = active_opt else {
-                slot = Some(active_opt);
-                continue;
-            };
-            if active.key != key {
+        for base in &mut state.layer2 {
+            if base.key != Some(key) {
+                if base.key.is_none() {
+                    slot = Some(base);
+                }
                 continue;
             }
-            let active = &mut active.layer2;
+            let layer2 = &mut base.layer2;
             if direction == Direction::Down {
-                active.rc = active.rc.saturating_add(1);
+                layer2.rc = layer2.rc.saturating_add(1);
                 return;
             }
-            active.rc -= 1;
-            if active.rc != 0 {
+            layer2.rc -= 1;
+            if layer2.rc != 0 {
                 return;
             }
-            active.flags[Flag::LaterKeyActuated] = (active.actuation < state.actuation) as u32;
+            layer2.flags[Flag::LaterKeyActuated] = (layer2.actuation < state.actuation) as u32;
             let mut handler = Layer2Handler {
                 num_groups: self.num_groups,
                 mods_pressed_count: &mut state.mods_pressed_count,
@@ -360,22 +357,20 @@ impl StateMachine {
                 any_state_changed: false,
                 layer3: &mut state.layer3,
             };
-            if let Some(release) = &active.on_release {
+            if let Some(release) = &layer2.on_release {
                 run(
                     &mut handler,
                     release,
-                    &mut active.registers_log,
+                    &mut layer2.registers_log,
                     &mut state.globals,
-                    &mut active.flags,
-                    &mut active.spill,
+                    &mut layer2.flags,
+                    &mut layer2.spill,
                 );
                 handler.flush_state();
             } else {
                 handler.key_up(key);
             }
-            if let Some(active) = active_opt.take() {
-                state.layer2_cache.push(active.layer2);
-            }
+            base.key = None;
             return;
         }
         if direction == Direction::Up {
@@ -402,17 +397,36 @@ impl StateMachine {
                 }
             }
         }
-        let mut active = state.layer2_cache.pop().unwrap_or_default();
-        active.rc = 1;
-        active.actuation = state.actuation + 1;
-        active.registers_log = Default::default();
-        active.flags = Default::default();
-        active.on_release = on_release;
+        let base = match slot {
+            Some(slot) => slot,
+            _ => {
+                // #[cold]
+                // fn allocate_layer(layer2: &mut Vec<Layer2Base>) -> &mut Layer2Base {
+                    state.layer2.push(Layer2Base {
+                        key: None,
+                        layer2: Default::default(),
+                    });
+                    state.layer2.last_mut().unwrap()
+                // }
+                // allocate_layer(&mut state.layer2)
+            }
+        };
+        base.key = Some(key);
+        let layer2 = &mut base.layer2;
+        layer2.rc = 1;
+        layer2.actuation = state.actuation + 1;
+        layer2.registers_log = Default::default();
+        layer2.flags = Default::default();
+        layer2.on_release = on_release;
         if spill > 0 {
-            if spill <= active.spill.len() {
-                active.spill[..spill].fill(0);
+            if spill <= layer2.spill.len() {
+                layer2.spill[..spill].fill(0);
             } else {
-                active.spill = vec![0; spill].into_boxed_slice();
+                // #[cold]
+                // fn allocate_spill(spill: usize) -> Box<[u32]> {
+                //     vec![0; spill].into_boxed_slice()
+                // }
+                layer2.spill = vec![0; spill].into_boxed_slice();
             }
         }
         let mut handler = Layer2Handler {
@@ -428,10 +442,10 @@ impl StateMachine {
             run(
                 &mut handler,
                 on_press,
-                &mut active.registers_log,
+                &mut layer2.registers_log,
                 &mut state.globals,
-                &mut active.flags,
-                &mut active.spill,
+                &mut layer2.flags,
+                &mut layer2.spill,
             );
         } else {
             handler.key_down(key);
@@ -439,15 +453,6 @@ impl StateMachine {
             handler.component_store(Component::GroupLatched, 0);
         }
         handler.flush_state();
-        let base = Layer2Base {
-            key,
-            layer2: active,
-        };
-        if let Some(slot) = slot {
-            *slot = Some(base);
-        } else {
-            state.layer2.push(Some(base));
-        }
     }
 }
 
