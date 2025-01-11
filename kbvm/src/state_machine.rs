@@ -448,8 +448,10 @@ impl StateMachine {
             );
         } else {
             handler.key_down(key);
-            handler.component_store(Component::ModsLatched, 0);
-            handler.component_store(Component::GroupLatched, 0);
+            if handler.acc_state.any_latched() {
+                handler.component_store(Component::ModsLatched, 0);
+                handler.component_store(Component::GroupLatched, 0);
+            }
         }
         handler.flush_state();
     }

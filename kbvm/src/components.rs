@@ -38,4 +38,8 @@ impl Components {
             _ => false,
         }
     }
+
+    pub(crate) fn any_latched(&self) -> bool {
+        self.group_latched.0 != 0 || self.mods_latched.0 != 0
+    }
 }
