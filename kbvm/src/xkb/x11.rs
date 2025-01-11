@@ -1,23 +1,32 @@
 use {
     crate::{
         group::{GroupDelta, GroupIndex},
+        keysym::Keysym,
         modifier::{ModifierIndex, ModifierMask},
-        state_machine,
         xkb::{
             controls::ControlMask,
-            group::{GroupIdx, GroupMask},
+            group::{GroupChange, GroupIdx, GroupMask},
             group_component::GroupComponent,
             indicator::IndicatorIdx,
-            keymap::{self, Indicator, Key, KeyType, KeyTypeMapping, ModMapValue, VirtualModifier},
+            keymap::{
+                self,
+                actions::{
+                    GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
+                    ModsLockAction, ModsSetAction,
+                },
+                Action, Indicator, Key, KeyGroup, KeyLevel, KeyType, KeyTypeMapping, ModMapValue,
+                VirtualModifier,
+            },
             level::Level,
             mod_component::ModComponentMask,
+            resolved::GroupsRedirect,
             x11::sealed::Sealed,
             Keymap,
         },
         Components, Keycode,
     },
     bstr::ByteSlice,
-    hashbrown::{hash_map::Entry, DefaultHashBuilder, HashMap},
+    hashbrown::{hash_map::Entry, DefaultHashBuilder, HashMap, HashSet},
     indexmap::IndexMap,
     std::sync::Arc,
     thiserror::Error,
@@ -27,9 +36,10 @@ use {
         errors::{ConnectionError, ReplyError},
         protocol::{
             xkb::{
-                self, BoolCtrl, ConnectionExt as E2, DeviceSpec, GetIndicatorMapReply, GetMapReply,
-                GetNamesReply, IDSpec, IMGroupsWhich, IMModsWhich, LedClass, MapPart, NameDetail,
-                SetOfGroup, VMod, XIFeature, ID,
+                self, BoolCtrl, ConnectionExt as E2, DeviceSpec, GetControlsReply,
+                GetIndicatorMapReply, GetMapReply, GetNamesReply, IDSpec, IMGroupsWhich,
+                IMModsWhich, LedClass, MapPart, NameDetail, SAIsoLockFlag, SAType, VMod, XIFeature,
+                ID, SA,
             },
             xproto::{Atom, ConnectionExt as E1, GetAtomNameReply},
         },
@@ -78,16 +88,6 @@ pub enum X11Error {
     GetAtomName(#[source] ConnectionError),
     #[error("could not retrieve get_atom_name reply")]
     GetAtomNameReply(#[source] ReplyError),
-    #[error("server-sent type names with an invalid length")]
-    TypeNamesLen,
-    #[error("server-sent per-type level count with an invalid length")]
-    LevelNamesCountLen,
-    #[error("server-sent level names with an invalid length")]
-    LevelNamesLen,
-    #[error("server-sent key-name list misses a key name")]
-    MissingKeyName,
-    #[error("server-sent group names have an invalid length")]
-    GroupNamesLen,
 }
 
 pub trait KbvmX11Ext: Sealed {
@@ -95,7 +95,7 @@ pub trait KbvmX11Ext: Sealed {
 
     fn get_xkb_core_device_id(&self) -> Result<DeviceSpec, X11Error>;
 
-    fn get_keymap(&self, device: DeviceSpec) -> Result<Keymap, X11Error>;
+    fn get_xkb_keymap(&self, device: DeviceSpec) -> Result<Keymap, X11Error>;
 
     fn get_xkb_components(&self, device: DeviceSpec) -> Result<Components, X11Error>;
 }
@@ -153,13 +153,16 @@ where
         Ok(reply.device_id as DeviceSpec)
     }
 
-    fn get_keymap(&self, device: DeviceSpec) -> Result<Keymap, X11Error> {
+    fn get_xkb_keymap(&self, device: DeviceSpec) -> Result<Keymap, X11Error> {
         get_keymap(self, device)
     }
 
     fn get_xkb_components(&self, device: DeviceSpec) -> Result<Components, X11Error> {
-        let cookie = self.xkb_get_state(device).map_err(X11Error::GetState)?;
-        let reply = cookie.reply().map_err(X11Error::GetStateReply)?;
+        let reply = self
+            .xkb_get_state(device)
+            .map_err(X11Error::GetState)?
+            .reply()
+            .map_err(X11Error::GetStateReply)?;
         Ok(Components {
             mods_pressed: ModifierMask(reply.base_mods.into()),
             mods_latched: ModifierMask(reply.latched_mods.into()),
@@ -221,29 +224,27 @@ where
     let indicator_map_cookie = c
         .xkb_get_indicator_map(device, !0)
         .map_err(X11Error::GetIndicatorMap)?;
-    let compat_map_cookie = c
-        .xkb_get_compat_map(device, SetOfGroup::default(), true, 0, 0)
-        .map_err(X11Error::GetCompatMap)?;
     let names_cookie = c.xkb_get_names(device, names).map_err(X11Error::GetNames)?;
+    let controls_cookie = c.xkb_get_controls(device).map_err(X11Error::GetControls)?;
 
     let map_reply = map_cookie.reply().map_err(X11Error::GetMapReply)?;
     let indicator_map_reply = indicator_map_cookie
         .reply()
         .map_err(X11Error::GetIndicatorMapReply)?;
-    let compat_map_reply = compat_map_cookie
-        .reply()
-        .map_err(X11Error::GetCompatMapReply)?;
     let names_reply = names_cookie.reply().map_err(X11Error::GetNamesReply)?;
+    let controls_reply = controls_cookie
+        .reply()
+        .map_err(X11Error::GetControlsReply)?;
 
     MapBuilder {
         atoms: Interner {
             atoms: Default::default(),
             c,
         },
-        c,
         names: names_reply,
         map: map_reply,
         indicator_map: indicator_map_reply,
+        controls: controls_reply,
         key_names: Default::default(),
         keycodes: Default::default(),
         indicators: Default::default(),
@@ -277,11 +278,11 @@ where
     C: RequestConnection,
 {
     atoms: Interner<'a, C>,
-    c: &'a C,
 
     names: GetNamesReply,
     map: GetMapReply,
     indicator_map: GetIndicatorMapReply,
+    controls: GetControlsReply,
 
     key_names: HashMap<Keycode, Arc<String>>,
 
@@ -372,6 +373,9 @@ where
                 if let Some(p) = name.iter().position(|n| *n == 0) {
                     name = &name[..p];
                 }
+                if name.is_empty() {
+                    continue;
+                }
                 self.key_names
                     .insert(keycode, Arc::new(name.as_bstr().to_string()));
             }
@@ -379,15 +383,11 @@ where
         Ok(())
     }
 
-    // fn map_keycodes(&mut self) -> Result<(), X11Error> {
-    //     // self.map.map
-    // }
-
-    fn map_modmap(&mut self) -> Result<(), X11Error> {
+    fn map_modmap(&mut self) {
         let mm = self.map.map.modmap_rtrn.as_deref().unwrap_or_default();
         for mm in mm {
             let Some(key_name) = self.key_names.get(&Keycode(mm.keycode as u32)) else {
-                return Err(X11Error::MissingKeyName);
+                continue;
             };
             for idx in ModifierMask(mm.mods.into()) {
                 self.modmap.push((
@@ -399,7 +399,6 @@ where
                 ));
             }
         }
-        Ok(())
     }
 
     fn map_virtual_modifiers(&mut self) -> Result<(), X11Error> {
@@ -427,42 +426,39 @@ where
             .type_names
             .as_deref()
             .unwrap_or_default();
-        if tys.len() != names.len() {
-            return Err(X11Error::TypeNamesLen);
-        }
-        let n_levels_per_type = self
+        let mut n_levels_per_type = self
             .names
             .value_list
             .kt_level_names
             .as_ref()
             .map(|n| &n.n_levels_per_type[..])
-            .unwrap_or_default();
-        let kt_level_names = self
+            .unwrap_or_default()
+            .into_iter()
+            .map(|n| *n as usize);
+        let mut kt_level_names = self
             .names
             .value_list
             .kt_level_names
             .as_ref()
             .map(|n| &n.kt_level_names[..])
-            .unwrap_or_default();
-        if n_levels_per_type.len() != tys.len() {
-            return Err(X11Error::LevelNamesCountLen);
-        }
-        if n_levels_per_type.iter().map(|n| *n as usize).sum::<usize>() != kt_level_names.len() {
-            return Err(X11Error::LevelNamesLen);
-        }
-        let mut lo = 0;
-        for (idx, (ty, name)) in tys.iter().zip(names.iter()).enumerate() {
-            let hi = lo + n_levels_per_type[idx] as usize;
+            .unwrap_or_default()
+            .into_iter()
+            .copied();
+        for (ty, name) in tys.iter().zip(names.iter()) {
             let mut names = vec![];
-            for (idx, name) in kt_level_names[lo..hi].iter().enumerate() {
-                names.push((Level::new(idx as u32 + 1).unwrap(), self.atoms.get(*name)?));
+            let names_of_type = kt_level_names
+                .by_ref()
+                .take(n_levels_per_type.next().unwrap_or_default())
+                .enumerate();
+            for (idx, name) in names_of_type {
+                names.push((Level::new(idx as u32 + 1).unwrap(), self.atoms.get(name)?));
             }
             let mut mappings = vec![];
             for (idx, m) in ty.map.iter().enumerate() {
                 if !m.active {
                     continue;
                 }
-                let mut preserved = ModifierMask::default();
+                let mut preserved = ModifierMask(0);
                 if let Some(p) = ty.preserve.get(idx) {
                     preserved.0 = p.mask.into();
                 }
@@ -479,18 +475,22 @@ where
                 level_names: names,
             };
             self.types.push(Arc::new(ret));
-            lo = hi;
         }
         Ok(())
     }
 
     fn map_group_names(&mut self) -> Result<(), X11Error> {
-        let names = self.names.value_list.groups.as_deref().unwrap_or_default();
-        let mut names = names.into_iter();
+        let mut names = self
+            .names
+            .value_list
+            .groups
+            .as_deref()
+            .unwrap_or_default()
+            .into_iter();
         for i in 0..4 {
             if self.names.group_names.contains(1 << i) {
                 let Some(name) = names.next() else {
-                    return Err(X11Error::GroupNamesLen);
+                    continue;
                 };
                 self.group_names
                     .push((GroupIdx::new(i + 1).unwrap(), self.atoms.get(*name)?));
@@ -558,7 +558,7 @@ where
                 IGNORE_GROUP_LOCK_MASK   => IGNORE_GROUP_LOCK,
             }
             self.indicators.push(Indicator {
-                virt: idx >= self.indicator_map.real_indicators as usize,
+                virt: (self.indicator_map.real_indicators & (1 << idx)) == 0,
                 index: IndicatorIdx::new(idx as u32 + 1).unwrap(),
                 name: self.atoms.get(*name)?,
                 modifier_mask: ModifierMask(map.mods.into()),
@@ -585,27 +585,121 @@ where
     }
 
     fn map_keys(&mut self) {
-        // for (&keycode, name) in &self.map.map.vmods_rtrn {
-        //     if name.is_empty() {
-        //         continue;
-        //     }
-        //     self.keycodes.push(keymap::Keycode {
-        //         name: name.clone(),
-        //         keycode,
-        //     });
-        // }
-        // self.keycodes.sort_by_key(|kc| kc.keycode);
+        let syms = self.map.map.syms_rtrn.as_deref().unwrap_or_default();
+        let mut actions_count = self
+            .map
+            .map
+            .key_actions
+            .as_ref()
+            .map(|a| &a.acts_rtrn_count[..])
+            .unwrap_or_default()
+            .into_iter()
+            .copied();
+        let mut actions = self
+            .map
+            .map
+            .key_actions
+            .as_ref()
+            .map(|a| &a.acts_rtrn_acts[..])
+            .unwrap_or_default()
+            .into_iter();
+        for (idx, sym) in syms.iter().enumerate() {
+            let mut groups = vec![];
+            let width = sym.width as usize;
+            let types = &sym.kt_index;
+            let num_groups = (sym.group_info as usize & 0xf).min(types.len());
+            let mut syms = sym.syms.iter();
+            let has_actions = actions_count.next().unwrap_or_default() > 0;
+            for i in 0..num_groups {
+                let mut levels = vec![];
+                for sym in syms.by_ref().take(width) {
+                    let mut level = KeyLevel::default();
+                    level.symbols.push(Keysym(*sym));
+                    if has_actions {
+                        if let Some(action) = actions.next() {
+                            level.actions.extend(map_action(action));
+                        }
+                    }
+                    levels.push(level);
+                }
+                while let Some(last) = levels.last() {
+                    if last.actions.is_empty() && last.symbols.is_empty() {
+                        levels.pop();
+                    } else {
+                        break;
+                    }
+                }
+                if levels.is_empty() {
+                    groups.push(None);
+                    continue;
+                }
+                let Some(ty) = self.types.get(types[i] as usize) else {
+                    continue;
+                };
+                groups.push(Some(KeyGroup {
+                    key_type: ty.clone(),
+                    levels,
+                }));
+            }
+            let kc = Keycode(idx as u32 + self.map.min_key_code as u32);
+            let Some(name) = self.key_names.get(&kc) else {
+                continue;
+            };
+            let repeat = {
+                let idx = kc.0 / 8;
+                let offset = kc.0 % 8;
+                match self.controls.per_key_repeat.get(idx as usize) {
+                    Some(r) => r & (1 << offset) != 0,
+                    _ => continue,
+                }
+            };
+            let redirect = if sym.group_info & (1 << 6) != 0 {
+                GroupsRedirect::Clamp
+            } else if sym.group_info & (1 << 7) != 0 {
+                let mut idx = GroupIdx::new(((sym.group_info & 0x30) >> 4) as u32).unwrap();
+                if idx.to_offset() >= groups.len() {
+                    idx = GroupIdx::ONE
+                };
+                GroupsRedirect::Redirect(idx)
+            } else {
+                GroupsRedirect::Wrap
+            };
+            self.keys.insert(
+                kc,
+                Key {
+                    key_name: name.clone(),
+                    key_code: kc,
+                    groups,
+                    repeat,
+                    redirect,
+                },
+            );
+        }
+    }
+
+    fn remove_unused(&mut self) {
+        self.keycodes
+            .retain(|kc| self.keys.contains_key(&kc.keycode));
+        let used_types: HashSet<_> = self
+            .keys
+            .values()
+            .flat_map(|k| k.groups.iter().flatten())
+            .map(|g| &*g.key_type as *const KeyType)
+            .collect();
+        self.types
+            .retain(|t| used_types.contains(&(&**t as *const KeyType)));
     }
 
     fn build_map(mut self) -> Result<Keymap, X11Error> {
         self.prefetch_atoms()?;
         self.map_types()?;
-        self.map_modmap()?;
+        self.map_modmap();
         self.map_virtual_modifiers()?;
         self.map_group_names()?;
         self.map_indicators()?;
         self.map_keycodes();
         self.map_keys();
+        self.remove_unused();
         let map = Keymap {
             name: None,
             max_keycode: 255,
@@ -630,7 +724,66 @@ mod tests {
         let (con, _) = x11rb::connect(None).unwrap();
         let _ = con.setup_xkb_extension().unwrap();
         let id = con.get_xkb_core_device_id().unwrap();
-        let map = con.get_keymap(id).unwrap();
+        let map = con.get_xkb_keymap(id).unwrap();
         println!("{:#}", map);
     }
+}
+
+fn map_action(action: &xkb::Action) -> Option<Action> {
+    macro_rules! map_group {
+        ($a:expr) => {
+            match $a.flags.contains(SA::GROUP_ABSOLUTE) {
+                true => GroupChange::Absolute(GroupIdx::new($a.group as u32 + 1).unwrap()),
+                false => GroupChange::Rel($a.group as i32),
+            }
+        };
+    }
+    let action = match action.as_type() {
+        SAType::SET_MODS => {
+            let a = action.as_setmods();
+            Action::ModsSet(ModsSetAction {
+                clear_locks: a.flags.contains(SA::CLEAR_LOCKS),
+                modifiers: ModifierMask(a.mask.into()),
+            })
+        }
+        SAType::LATCH_MODS => {
+            let a = action.as_latchmods();
+            Action::ModsLatch(ModsLatchAction {
+                clear_locks: a.flags.contains(SA::CLEAR_LOCKS),
+                latch_to_lock: a.flags.contains(SA::LATCH_TO_LOCK),
+                modifiers: ModifierMask(a.mask.into()),
+            })
+        }
+        SAType::LOCK_MODS => {
+            let a = action.as_lockmods();
+            Action::ModsLock(ModsLockAction {
+                modifiers: ModifierMask(a.mask.into()),
+                lock: !a.flags.contains(SAIsoLockFlag::NO_LOCK),
+                unlock: !a.flags.contains(SAIsoLockFlag::NO_UNLOCK),
+            })
+        }
+        SAType::SET_GROUP => {
+            let a = action.as_setgroup();
+            Action::GroupSet(GroupSetAction {
+                group: map_group!(a),
+                clear_locks: a.flags.contains(SA::CLEAR_LOCKS),
+            })
+        }
+        SAType::LATCH_GROUP => {
+            let a = action.as_latchgroup();
+            Action::GroupLatch(GroupLatchAction {
+                group: map_group!(a),
+                clear_locks: a.flags.contains(SA::CLEAR_LOCKS),
+                latch_to_lock: a.flags.contains(SA::LATCH_TO_LOCK),
+            })
+        }
+        SAType::LOCK_GROUP => {
+            let a = action.as_lockgroup();
+            Action::GroupLock(GroupLockAction {
+                group: map_group!(a),
+            })
+        }
+        _ => return None,
+    };
+    Some(action)
 }
