@@ -10,7 +10,6 @@ use {
         modifier::{ModifierMask, NUM_MODS, NUM_MODS_MASK},
         routine::{run, Component, Flag, Lo, Register, Routine, StateEventHandler},
     },
-    hashbrown::HashMap,
     isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::CloneWithDelta,
     linearize::StaticMap,
@@ -212,16 +211,24 @@ impl StateEventHandler for Layer2Handler<'_> {
     #[inline(always)]
     fn key_down(&mut self, keycode: Keycode) {
         // println!("down {:?}", self.layer3);
+        let mut slot = None;
         for key in &mut *self.layer3 {
-            if key.key == keycode {
+            if key.key == Some(keycode) {
                 key.rc = key.rc.saturating_add(1);
                 return;
+            } else if key.key.is_none() {
+                slot = Some(key);
             }
         }
-        self.layer3.push(Layer3 {
-            key: keycode,
-            rc: 1,
-        });
+        let layer3 = match slot {
+            Some(layer3) => layer3,
+            _ => {
+                self.layer3.push(Layer3 { key: None, rc: 0 });
+                self.layer3.last_mut().unwrap()
+            }
+        };
+        layer3.key = Some(keycode);
+        layer3.rc = 1;
         self.flush_state();
         self.events.push(LogicalEvent::KeyDown(keycode));
     }
@@ -230,15 +237,15 @@ impl StateEventHandler for Layer2Handler<'_> {
     fn key_up(&mut self, keycode: Keycode) {
         // println!("up   {:?}", self.layer3);
         'find_key: {
-            for (idx, key) in self.layer3.iter_mut().enumerate() {
-                if key.key != keycode {
+            for key in &mut *self.layer3 {
+                if key.key != Some(keycode) {
                     continue;
                 }
                 key.rc -= 1;
                 if key.rc != 0 {
                     return;
                 }
-                self.layer3.swap_remove(idx);
+                key.key = None;
                 break 'find_key;
             }
             return;
@@ -290,7 +297,7 @@ struct Layer2 {
 
 #[derive(Debug)]
 struct Layer3 {
-    key: Keycode,
+    key: Option<Keycode>,
     rc: u32,
 }
 
