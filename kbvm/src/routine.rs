@@ -467,8 +467,7 @@ pub(crate) fn run<H>(
     H: StateEventHandler,
 {
     let mut i = 0;
-    let len = ops.len();
-    while i < len {
+    while i < ops.len() {
         let op = ops[i];
         match op {
             Lo::Skip { n } => {
@@ -490,13 +489,20 @@ pub(crate) fn run<H>(
                 registers[rd] = registers[rs];
             }
             Lo::SpillMove { src, dst } => {
-                spill[dst] = spill[src];
+                let src = spill.get(src).copied().unwrap_or_default();
+                if let Some(dst) = spill.get_mut(dst) {
+                    *dst = src;
+                }
             }
             Lo::SpillLoad { rd, pos } => {
-                registers[rd] = spill[pos];
+                if let Some(src) = spill.get(pos) {
+                    registers[rd] = *src;
+                }
             }
             Lo::SpillStore { rs, pos } => {
-                spill[pos] = registers[rs];
+                if let Some(dst) = spill.get_mut(pos) {
+                    *dst = registers[rs];
+                }
             }
             Lo::RegLit { rd, lit } => {
                 registers[rd] = lit;
@@ -553,9 +559,9 @@ pub(crate) fn run<H>(
                             (l % r) as u32
                         }
                     }
-                    BinOp::Shl => l << r,
-                    BinOp::Lshr => l >> r,
-                    BinOp::Ashr => (l as i32 >> r) as u32,
+                    BinOp::Shl => l.wrapping_shl(r),
+                    BinOp::Lshr => l.wrapping_shr(r),
+                    BinOp::Ashr => (l as i32).wrapping_shr(r) as u32,
                     BinOp::BitNand => l & !r,
                     BinOp::BitAnd => l & r,
                     BinOp::BitOr => l | r,
