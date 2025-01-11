@@ -72,10 +72,6 @@ pub enum X11Error {
     GetIndicatorMap(#[source] ConnectionError),
     #[error("could not retrieve xkb_get_indicator_map reply")]
     GetIndicatorMapReply(#[source] ReplyError),
-    #[error("could not send xkb_get_compat_map request")]
-    GetCompatMap(#[source] ConnectionError),
-    #[error("could not retrieve xkb_get_compat_map reply")]
-    GetCompatMapReply(#[source] ReplyError),
     #[error("could not send xkb_get_names request")]
     GetNames(#[source] ConnectionError),
     #[error("could not retrieve xkb_get_names reply")]
