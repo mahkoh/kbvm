@@ -24,8 +24,8 @@ use {
 pub struct StateMachine {
     pub(crate) num_groups: u32,
     pub(crate) num_globals: usize,
-    pub(crate) keys: HashMap<Keycode, KeyGroups>,
-    // pub(crate) keys: Vec<Option<KeyGroups>>,
+    // pub(crate) keys: HashMap<Keycode, KeyGroups>,
+    pub(crate) keys: Vec<Option<KeyGroups>>,
 }
 
 #[derive(Debug)]
@@ -47,7 +47,7 @@ pub(crate) struct KeyLayer {
 
 pub struct State {
     globals: Box<[u32]>,
-    layer2: Vec<Layer2Base>,
+    layer2: Vec<Option<Layer2Base>>,
     layer3: Vec<Layer3>,
     layer2_cache: Vec<Box<Layer2>>,
     mods_pressed_count: [u32; NUM_MODS],
@@ -97,6 +97,7 @@ struct Layer2Handler<'a> {
 }
 
 impl Layer2Handler<'_> {
+    #[inline(always)]
     fn flush_state(&mut self) {
         if !self.any_state_changed {
             return;
@@ -104,6 +105,7 @@ impl Layer2Handler<'_> {
         self.flush_state_();
     }
 
+    #[inline(never)]
     fn flush_state_(&mut self) {
         self.any_state_changed = false;
         let acs = &mut self.acc_state;
@@ -330,8 +332,12 @@ impl StateMachine {
         key: Keycode,
         direction: Direction,
     ) {
-        for i in 0..state.layer2.len() {
-            let active = &mut state.layer2[i];
+        let mut slot = None;
+        for active_opt in &mut state.layer2 {
+            let Some(active) = active_opt else {
+                slot = Some(active_opt);
+                continue;
+            };
             if active.key != key {
                 continue;
             }
@@ -367,7 +373,9 @@ impl StateMachine {
             } else {
                 handler.key_up(key);
             }
-            state.layer2_cache.push(state.layer2.swap_remove(i).layer2);
+            if let Some(active) = active_opt.take() {
+                state.layer2_cache.push(active.layer2);
+            }
             return;
         }
         if direction == Direction::Up {
@@ -378,7 +386,7 @@ impl StateMachine {
         let mut on_press = None;
         let mut on_release = None;
         let mut spill = 0;
-        if let Some(key_groups) = self.keys.get(&key) {
+        if let Some(Some(key_groups)) = self.keys.get(key.0 as usize) {
             if key_groups.groups.is_not_empty() {
                 let group = key_groups.redirect.apply(group, key_groups.groups.len());
                 if let Some(key_group) = &key_groups.groups[group] {
@@ -431,10 +439,15 @@ impl StateMachine {
             handler.component_store(Component::GroupLatched, 0);
         }
         handler.flush_state();
-        state.layer2.push(Layer2Base {
+        let base = Layer2Base {
             key,
             layer2: active,
-        });
+        };
+        if let Some(slot) = slot {
+            *slot = Some(base);
+        } else {
+            state.layer2.push(Some(base));
+        }
     }
 }
 
