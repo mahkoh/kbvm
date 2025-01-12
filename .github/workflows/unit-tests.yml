@@ -21,7 +21,7 @@ jobs:
       - name: Build xkbcommon
         run: |
           cd libxkbcommon
-          meson build -Ddefault_library=static
+          meson build -Ddefault_library=static -Denable-x11=false
           cd build
           ninja
       - name: Test
