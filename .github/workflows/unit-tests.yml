@@ -25,4 +25,6 @@ jobs:
           cd build
           ninja
       - name: Test
-        run: cargo test --all-features --verbose
+        run: |
+          cd kbvm
+          cargo test --all-features --verbose
