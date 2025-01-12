@@ -66,7 +66,7 @@ impl LookupTable {
     ///     builder.add_key(key)
     /// }
     /// let map = builder.build_lookup_table().to_xkb_keymap();
-    /// println!("{:#}", map);
+    /// println!("{:#}", map.format());
     /// ```
     ///
     /// Outputs

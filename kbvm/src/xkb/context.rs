@@ -401,7 +401,7 @@ impl Context {
     ///     Some(&groups),
     ///     None, // options default to &[],
     /// );
-    /// println!("{:#}", map);
+    /// println!("{:#}", map.format());
     /// ```
     ///
     /// This might print
@@ -616,7 +616,7 @@ impl Context {
     /// let map = context
     ///     .keymap_from_bytes(WriteToLog, None, MAP.as_bytes())
     ///     .unwrap();
-    /// println!("{:#}", map);
+    /// println!("{:#}", map.format());
     /// ```
     ///
     /// This might print
