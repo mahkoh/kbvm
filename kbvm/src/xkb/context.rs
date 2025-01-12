@@ -215,6 +215,15 @@ impl ContextBuilder {
         self.max_include_depth = val;
     }
 
+    /// Removes all paths from the builder, disables the environment, and disables the
+    /// system paths.
+    pub fn clear(&mut self) {
+        self.enable_system_dirs = false;
+        self.enable_environment = false;
+        self.prefix.clear();
+        self.suffix.clear();
+    }
+
     /// Builds the context.
     pub fn build(mut self) -> Context {
         macro_rules! getenv {

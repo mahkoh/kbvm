@@ -1,6 +1,6 @@
 use {
     error_reporter::Report,
-    kbvm::xkb::x11::KbvmX11Ext,
+    kbvm::xkb::{diagnostic::WriteToLog, x11::KbvmX11Ext, Context},
     std::{
         fs::File,
         io::{Read, Write},
@@ -16,13 +16,31 @@ use {
 
 fn main() {
     let xvfb = Xvfb::launch();
-    println!("`{}`", xvfb.display);
     xvfb.set_keymap(include_str!("host.xkb"));
     xvfb.con.setup_xkb_extension().unwrap();
     let id = xvfb.con.get_xkb_core_device_id().unwrap();
     let map = xvfb.con.get_xkb_keymap(id).unwrap();
-    let expected = format!("{:#}", map.format());
-    std::fs::write("expected.xkb", expected).unwrap();
+    let actual = format!("{:#}\n", map.format());
+    if actual != include_str!("expected.xkb") {
+        let actual_path = env!("CARGO_MANIFEST_DIR").to_owned() + "/src/actual.xkb";
+        std::fs::write(&actual_path, actual).unwrap();
+        eprintln!("expected differs from actual");
+        std::process::exit(1);
+    }
+    let mut context = Context::builder();
+    context.clear();
+    let roundtrip = context
+        .build()
+        .keymap_from_bytes(WriteToLog, None, actual.as_bytes())
+        .unwrap();
+    if map != roundtrip {
+        let actual_path = env!("CARGO_MANIFEST_DIR").to_owned() + "/src/roundtrip.xkb";
+        std::fs::write(&actual_path, format!("{:#}\n", roundtrip.format())).unwrap();
+        eprintln!("roundtrip failed");
+        eprintln!("roundtrip: {roundtrip:#?}");
+        eprintln!("expected:  {map:#?}");
+        std::process::exit(1);
+    }
 }
 
 struct Xvfb {

@@ -45,7 +45,6 @@ use {
         },
     },
 };
-use crate::keysym::generated::syms;
 
 #[derive(Debug, Error)]
 pub enum X11Error {
@@ -452,6 +451,7 @@ where
                     level: Level::new(m.level as u32 + 1).unwrap(),
                 });
             }
+            mappings.sort_unstable_by_key(|k| (k.level, k.modifiers.0));
             let ret = KeyType {
                 name: self.atoms.get(*name)?,
                 modifiers: ModifierMask(ty.mods_mask.into()),
@@ -491,7 +491,9 @@ where
             .as_deref()
             .unwrap_or_default();
         for (idx, (map, name)) in self.indicator_map.maps.iter().zip(names.iter()).enumerate() {
+            let group_mask = GroupMask(map.groups.into());
             let group_components = match map.which_groups {
+                _ if group_mask.0 == 0 => GroupComponent::Effective,
                 _ if map.which_groups == IMGroupsWhich::default() => GroupComponent::None,
                 IMGroupsWhich::USE_BASE => GroupComponent::Base,
                 IMGroupsWhich::USE_LATCHED => GroupComponent::Latched,
@@ -515,14 +517,17 @@ where
                     )*
                 };
             }
+            let modifier_mask = ModifierMask(map.mods.into());
             let mut mod_components = ModComponentMask::default();
-            map_mask! {
-                which_mods, mod_components, IMModsWhich, ModComponentMask,
-                USE_BASE => BASE,
-                USE_LATCHED => LATCHED,
-                USE_LOCKED => LOCKED,
-                USE_EFFECTIVE => EFFECTIVE,
-                USE_COMPAT => EFFECTIVE,
+            if modifier_mask.0 != 0 {
+                map_mask! {
+                    which_mods, mod_components, IMModsWhich, ModComponentMask,
+                    USE_BASE => BASE,
+                    USE_LATCHED => LATCHED,
+                    USE_LOCKED => LOCKED,
+                    USE_EFFECTIVE => EFFECTIVE,
+                    USE_COMPAT => EFFECTIVE,
+                }
             }
             let mut controls = ControlMask::default();
             map_mask! {
@@ -545,8 +550,8 @@ where
                 virt: (self.indicator_map.real_indicators & (1 << idx)) == 0,
                 index: IndicatorIdx::new(idx as u32 + 1).unwrap(),
                 name: self.atoms.get(*name)?,
-                modifier_mask: ModifierMask(map.mods.into()),
-                group_mask: GroupMask(map.groups.into()),
+                modifier_mask,
+                group_mask,
                 controls,
                 mod_components,
                 group_components,
@@ -676,6 +681,16 @@ where
             .retain(|t| used_types.contains(&(&**t as *const KeyType)));
     }
 
+    fn sort(&mut self) {
+        self.types.sort_unstable_by_key(|t| t.name.clone());
+        self.keycodes.sort_unstable_by_key(|k| k.name.clone());
+        self.virtual_modifiers.sort_by_key(|k| k.name.clone());
+        let mut keys: Vec<_> = self.keys.drain(..).collect();
+        keys.sort_unstable_by_key(|k| k.1.key_name.clone());
+        self.keys = keys.into_iter().collect();
+        self.modmap.sort_unstable();
+    }
+
     fn build_map(mut self) -> Result<Keymap, X11Error> {
         self.prefetch_atoms()?;
         self.map_types()?;
@@ -686,6 +701,7 @@ where
         self.map_keycodes();
         self.map_keys();
         self.remove_unused();
+        self.sort();
         let map = Keymap {
             name: None,
             max_keycode: 255,
@@ -698,20 +714,6 @@ where
             keys: self.keys,
         };
         Ok(map)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::xkb::x11::KbvmX11Ext;
-
-    #[test]
-    fn test() {
-        let (con, _) = x11rb::connect(None).unwrap();
-        let _ = con.setup_xkb_extension().unwrap();
-        let id = con.get_xkb_core_device_id().unwrap();
-        let map = con.get_xkb_keymap(id).unwrap();
-        println!("{:#}", map);
     }
 }
 
