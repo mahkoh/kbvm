@@ -360,15 +360,15 @@ impl LookupTable {
         let mut repeats = true;
         if let Some(key) = self.keys.get(&keycode) {
             repeats = key.repeats;
+            groups = &key.groups;
             if key.groups.len() > 0 {
                 let group = key.redirect.apply(group, key.groups.len());
                 if let Some(group) = &key.groups[group] {
                     let mapping = group.ty.map(mods);
+                    consumed = mapping.consumed;
                     // println!("{:?}", group.ty);
                     // println!("{:?}", mapping);
                     if let Some(layer) = group.layers.get(mapping.layer) {
-                        consumed = mapping.consumed;
-                        groups = &key.groups;
                         syms = &layer.symbols;
                     }
                 }

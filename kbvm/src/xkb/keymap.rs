@@ -2,7 +2,7 @@
 //!
 //! This module contains types representing the components of an XKB keymap.
 
-mod format;
+pub(crate) mod format;
 mod from_lookup;
 mod from_resolved;
 pub mod iterators;
@@ -25,6 +25,7 @@ use {
                     GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
                     ModsLockAction, ModsSetAction,
                 },
+                format::FormatFormat,
                 iterators::{Groups, Indicators, Keys, Levels, Mappings, VirtualModifiers},
             },
             level::Level,
@@ -69,19 +70,6 @@ use {
 ///         };
 ///     };
 /// };
-/// ```
-///
-/// # Formatting
-///
-/// This type implements [`Display`] which will format the map in XKB text format. By
-/// default, the map will be formatted in a single line. You can enable multi-line
-/// formatting by using the alternate modifier `#`.
-///
-/// ```
-/// # use kbvm::xkb::Keymap;
-/// fn pretty_print_keymap(keymap: &Keymap) -> String {
-///     format!("{keymap:#}")
-/// }
 /// ```
 #[derive(Debug, PartialEq)]
 pub struct Keymap {
@@ -505,6 +493,23 @@ impl Keymap {
         Indicators {
             indicators: self.indicators.iter(),
         }
+    }
+
+    /// Returns a type that can be used to format the map in XKB text format.
+    ///
+    /// By default, the map will be formatted in a single line. You can enable multi-line
+    /// formatting by using the alternate modifier `#`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::xkb::Keymap;
+    /// fn pretty_print_keymap(keymap: &Keymap) -> String {
+    ///     format!("{:#}", keymap.format())
+    /// }
+    /// ```
+    pub fn format(&self) -> impl Display + use<'_> {
+        FormatFormat(self)
     }
 }
 

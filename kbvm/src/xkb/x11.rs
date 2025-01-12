@@ -45,6 +45,7 @@ use {
         },
     },
 };
+use crate::keysym::generated::syms;
 
 #[derive(Debug, Error)]
 pub enum X11Error {
@@ -331,18 +332,6 @@ where
 {
     fn prefetch_atoms(&mut self) -> Result<(), X11Error> {
         let vl = &self.names.value_list;
-        macro_rules! map_name {
-            ($name:ident) => {
-                if let Some(name) = &vl.$name {
-                    self.atoms.prefetch(*name)?;
-                }
-            };
-        }
-        map_name!(keycodes_name);
-        map_name!(symbols_name);
-        map_name!(phys_symbols_name);
-        map_name!(types_name);
-        map_name!(compat_name);
         macro_rules! prefetch_all {
             ($name:ident) => {
                 if let Some(els) = &vl.$name {
@@ -356,7 +345,6 @@ where
         prefetch_all!(indicator_names);
         prefetch_all!(virtual_mod_names);
         prefetch_all!(groups);
-        prefetch_all!(radio_group_names);
         if let Some(els) = &vl.kt_level_names {
             for el in &els.kt_level_names {
                 self.atoms.prefetch(*el)?;
@@ -610,7 +598,9 @@ where
                 let mut levels = vec![];
                 for sym in syms.by_ref().take(width) {
                     let mut level = KeyLevel::default();
-                    level.symbols.push(Keysym(*sym));
+                    if *sym != 0 {
+                        level.symbols.push(Keysym(*sym));
+                    }
                     if has_actions {
                         if let Some(action) = actions.next() {
                             level.actions.extend(map_action(action));

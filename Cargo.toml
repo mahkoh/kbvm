@@ -7,5 +7,5 @@ members = [
     "kbvm",
     "kbvm-proc",
     "libxkbcommon-test-linker",
-    "kbvm-benches",
+    "kbvm-benches", "x11-tests",
 ]

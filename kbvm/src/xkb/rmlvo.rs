@@ -1,7 +1,6 @@
 //! RMLVO helpers and types.
 
-#[expect(unused_imports)]
-use std::fmt::Display;
+use {crate::xkb::keymap::format::FormatFormat, std::fmt::Display};
 
 #[macro_use]
 mod macros;
@@ -124,11 +123,6 @@ pub struct Element {
 ///     };
 /// };
 /// ```
-///
-/// # Formatting
-///
-/// This type implements [`Display`] which can be used to format the object as shown
-/// in the example.
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct Expanded {
@@ -142,6 +136,18 @@ pub struct Expanded {
     pub symbols: Vec<Element>,
     /// The elements of the `xkb_geometry` section.
     pub geometry: Vec<Element>,
+}
+
+impl Expanded {
+    /// Returns a type that can be used to format the expanded map in XKB text format.
+    ///
+    /// See the type documentation for an example.
+    ///
+    /// By default, the map will be formatted in a single line. You can enable multi-line
+    /// formatting by using the alternate modifier `#`.
+    pub fn format(&self) -> impl Display + use<'_> {
+        FormatFormat(self)
+    }
 }
 
 #[cfg(test)]

@@ -1,0 +1,17 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_compat {
+        interpret Any+AnyOf(all) {
+            action = SetMods(mods = modmapmods);
+        };
+        interpret Alt_L {
+            action = SetMods(mods = Mod1);
+        };
+    };
+    xkb_symbols {
+        key <a> { [ { Shift_L, Alt_L } ] };
+        modmap Shift { <a> };
+    };
+};

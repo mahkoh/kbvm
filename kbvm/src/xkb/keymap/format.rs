@@ -25,7 +25,12 @@ use {
     },
 };
 
-impl Display for Keymap {
+pub(crate) struct FormatFormat<'a, T>(pub(crate) &'a T);
+
+impl<T> Display for FormatFormat<'_, T>
+where
+    T: Format,
+{
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let mut writer = Writer {
             nesting: 0,
@@ -36,7 +41,7 @@ impl Display for Keymap {
             },
             f,
         };
-        self.format(&mut writer)
+        self.0.format(&mut writer)
     }
 }
 
@@ -719,21 +724,6 @@ fn modifier_mask(mm: ModifierMask) -> impl Display {
             Ok(())
         }
     })
-}
-
-impl Display for rmlvo::Expanded {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let mut writer = Writer {
-            nesting: 0,
-            alternate: f.alternate(),
-            newline: match f.alternate() {
-                true => "\n",
-                false => " ",
-            },
-            f,
-        };
-        self.format(&mut writer)
-    }
 }
 
 impl Format for rmlvo::Expanded {

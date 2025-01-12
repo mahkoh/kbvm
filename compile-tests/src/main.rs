@@ -211,7 +211,7 @@ fn test_kccgst(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(),
     // let builder = map_actual.to_builder().build_state_machine();
     // println!("{:#?}", builder);
 
-    let map = format!("{:#}\n", map_actual);
+    let map = format!("{:#}\n", map_actual.format());
 
     let expected_path = case.join("expected.xkb");
     let expected = match std::fs::read(&expected_path) {
@@ -247,7 +247,7 @@ fn test_kccgst(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(),
         });
     }
 
-    let round_trip = format!("{:#}\n", map_expected);
+    let round_trip = format!("{:#}\n", map_expected.format());
     if round_trip.as_bytes() != expected {
         let rt = case.join("round_trip.xkb");
         std::fs::write(&rt, &round_trip).map_err(ResultError::WriteRoundTripFailed)?;

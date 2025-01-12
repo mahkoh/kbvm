@@ -1,0 +1,11 @@
+[package]
+name = "x11-tests"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+kbvm = { path = "../kbvm", features = ["x11"] }
+uapi = "0.2.13"
+error_reporter = "1.0.0"
+x11rb = "0.13.1"
