@@ -125,12 +125,16 @@ impl LookupTable {
         let mut keys = Vec::with_capacity(self.keys.len());
         let mut key_types = HashMap::<_, Arc<KeyType>>::new();
         let mut mod_maps = vec![];
-        for (kc, kg) in &self.keys {
+        for (kc, kg) in self.keys.iter().enumerate() {
+            let Some(kg) = kg else {
+                continue;
+            };
+            let kc = crate::Keycode(kc as u32);
             max_keycode = max_keycode.max(kc.0);
             let name = Arc::new(kc.0.to_string());
             keycodes.push(Keycode {
                 name: name.clone(),
-                keycode: *kc,
+                keycode: kc,
             });
             let mut groups = Vec::with_capacity(kg.groups.len());
             for group in kg.groups.iter() {
@@ -219,12 +223,12 @@ impl LookupTable {
             };
             let symbol = Key {
                 key_name: name.clone(),
-                key_code: *kc,
+                key_code: kc,
                 groups,
                 repeat: kg.repeats,
                 redirect,
             };
-            keys.push((*kc, symbol));
+            keys.push((kc, symbol));
         }
         let mut types: Vec<_> = key_types.into_values().collect();
         types.sort_unstable_by_key(|kt| kt.name.clone());

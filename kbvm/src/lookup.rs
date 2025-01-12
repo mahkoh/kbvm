@@ -5,7 +5,6 @@ use {
         builder::Redirect, group::GroupIndex, group_type::GroupType, keysym::Keysym,
         modifier::ModifierMask, state_machine::Keycode,
     },
-    hashbrown::HashMap,
     smallvec::SmallVec,
     std::fmt::{Debug, Formatter},
 };
@@ -198,7 +197,7 @@ use {
 pub struct LookupTable {
     pub(crate) ctrl: Option<ModifierMask>,
     pub(crate) caps: Option<ModifierMask>,
-    pub(crate) keys: HashMap<Keycode, KeyGroups>,
+    pub(crate) keys: Vec<Option<KeyGroups>>,
 }
 
 #[derive(Default, Clone, Debug)]
@@ -358,7 +357,7 @@ impl LookupTable {
         let mut groups = &[][..];
         let mut syms = &[][..];
         let mut repeats = true;
-        if let Some(key) = self.keys.get(&keycode) {
+        if let Some(Some(key)) = self.keys.get(keycode.0 as usize) {
             repeats = key.repeats;
             groups = &key.groups;
             if key.groups.len() > 0 {
@@ -388,7 +387,7 @@ impl LookupTable {
     }
 
     pub fn effective_layout(&self, group: GroupIndex, keycode: Keycode) -> Option<GroupIndex> {
-        if let Some(key) = self.keys.get(&keycode) {
+        if let Some(Some(key)) = self.keys.get(keycode.0 as usize) {
             if key.groups.len() > 0 {
                 let group = key.redirect.apply(group, key.groups.len());
                 return Some(GroupIndex(group as u32));

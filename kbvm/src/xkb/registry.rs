@@ -1,5 +1,7 @@
 //! Types for working with the RMLVO registry.
 
+#[cfg(test)]
+mod tests;
 mod xml;
 
 #[expect(unused_imports)]

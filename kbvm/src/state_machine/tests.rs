@@ -5,10 +5,7 @@ use crate::{
     xkb::Context,
 };
 
-const KEY_SHIFT_L: Keycode = Keycode(50);
 const KEY_CONTROL_L: Keycode = Keycode(37);
-const KEY_NUM_LOCK: Keycode = Keycode(77);
-const KEY_CAPS: Keycode = Keycode(66);
 const KEY_Q: Keycode = Keycode(24);
 
 #[test]

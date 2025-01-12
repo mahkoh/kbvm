@@ -436,20 +436,10 @@ impl Builder {
                 );
             }
         }
-        let len = map
-            .keys()
-            .map(|k| k.0 as usize + 1)
-            .max()
-            .unwrap_or_default();
-        let mut keys: Vec<_> = std::iter::repeat_with(|| None).take(len).collect();
-        for (k, v) in map {
-            keys[k.0 as usize] = Some(v);
-        }
         StateMachine {
             num_groups: (num_groups as u32).max(1),
             num_globals: self.next_global as usize,
-            // keys: map,
-            keys,
+            keys: map_to_vec(map),
         }
     }
 
@@ -498,9 +488,22 @@ impl Builder {
         LookupTable {
             ctrl: self.ctrl,
             caps: self.caps,
-            keys: map,
+            keys: map_to_vec(map),
         }
     }
+}
+
+fn map_to_vec<T>(map: HashMap<Keycode, T>) -> Vec<Option<T>> {
+    let len = map
+        .keys()
+        .map(|k| k.0 as usize + 1)
+        .max()
+        .unwrap_or_default();
+    let mut keys: Vec<_> = std::iter::repeat_with(|| None).take(len).collect();
+    for (k, v) in map {
+        keys[k.0 as usize] = Some(v);
+    }
+    keys
 }
 
 impl KeyBuilder {
