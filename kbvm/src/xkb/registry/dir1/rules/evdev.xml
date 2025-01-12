@@ -1,0 +1,11 @@
+<xkbConfigRegistry>
+  <modelList>
+    <model>
+      <configItem>
+	<name>abcd</name>
+      </configItem>
+    </model>
+  </modelList>
+  <layoutList/>
+  <optionList/>
+</xkbConfigRegistry>

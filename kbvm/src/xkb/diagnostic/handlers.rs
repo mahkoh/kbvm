@@ -92,3 +92,27 @@ pub(crate) mod log {
         }
     }
 }
+
+pub(crate) mod stderr {
+    use crate::xkb::diagnostic::{Diagnostic, DiagnosticHandler};
+
+    /// A simple [`DiagnosticHandler`] that forwards diagnostics to STDERR.
+    ///
+    /// Messages will be formatted using [`Diagnostic::with_code`].
+    ///
+    /// # Example
+    ///
+    /// ```txt
+    /// at <anonymous file> 335:8: unknown action:
+    /// >>         invalid statement;
+    ///            ^~~~~~~~~~~~~~~~~~
+    /// ```
+    #[derive(Copy, Clone, Debug)]
+    pub struct WriteToStderr;
+
+    impl DiagnosticHandler for WriteToStderr {
+        fn handle(&mut self, diag: Diagnostic) {
+            eprintln!("{}", diag.with_code());
+        }
+    }
+}

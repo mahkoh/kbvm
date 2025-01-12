@@ -1,0 +1,11 @@
+<xkbConfigRegistry>
+  <modelList>
+    <model>
+      <configItem>
+	<name>ijkl</name>
+      </configItem>
+    </model>
+  </modelList>
+  <layoutList/>
+  <optionList/>
+</xkbConfigRegistry>

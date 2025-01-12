@@ -6,6 +6,7 @@ mod handlers;
 
 #[cfg(feature = "log")]
 pub use handlers::log::WriteToLog;
+pub use handlers::stderr::WriteToStderr;
 use {
     crate::xkb::{
         code_map::CodeMap,

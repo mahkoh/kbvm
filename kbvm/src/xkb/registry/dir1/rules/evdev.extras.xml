@@ -1,0 +1,63 @@
+<xkbConfigRegistry>
+  <modelList>
+    <model>
+      <configItem popularity="exotic">
+	<name>pc86</name>
+	<description>Generic 86-key PC</description>
+	<vendor>Generic</vendor>
+      </configItem>
+    </model>
+  </modelList>
+  <layoutList>
+    <layout>
+      <configItem popularity="standard">
+	<name>al</name>
+	<shortDescription>sq</shortDescription>
+	<description>Albanian</description>
+	<countryList>
+	  <iso3166Id>AL</iso3166Id>
+	  <iso3166Id>XX</iso3166Id>
+	</countryList>
+	<languageList>
+	  <iso639Id>sqi</iso639Id>
+	  <iso639Id>yyy</iso639Id>
+	</languageList>
+      </configItem>
+      <variantList>
+	<variant>
+	  <configItem>
+	    <name>plisi</name>
+	    <shortDescription>aoeu</shortDescription>
+	    <description>Albanian (Plisi)</description>
+	  </configItem>
+	</variant>
+	<variant>
+	  <configItem popularity="exotic">
+	    <name>veqilharxhi</name>
+	    <description>Albanian (Veqilharxhi)</description>
+	    <languageList>
+	      <iso639Id>a</iso639Id>
+	    </languageList>
+	    <countryList>
+	      <iso3166Id>b</iso3166Id>
+	    </countryList>
+	  </configItem>
+	</variant>
+      </variantList>
+    </layout>
+  </layoutList>
+  <optionList>
+    <group allowMultipleSelection="true">
+      <configItem>
+	<name>grp</name>
+	<description>Switching to another layout</description>
+      </configItem>
+      <option>
+	<configItem>
+	  <name>grp:switch</name>
+	  <description>Right Alt (while pressed)</description>
+	</configItem>
+      </option>
+    </group>
+  </optionList>
+</xkbConfigRegistry>
