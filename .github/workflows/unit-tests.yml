@@ -14,5 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Build xkbcommon
+        run: |
+          cd libxkbcommon
+          meson build -Ddefault_library=static
+          cd build
+          ninja
       - name: Test
         run: cargo test --all-features --verbose

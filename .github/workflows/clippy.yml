@@ -17,4 +17,6 @@ jobs:
       - name: Build
         run: cargo build --all-features --verbose
       - name: Run clippy
-        run: cargo clippy --all-features --verbose -- -Dwarnings
+        run: |
+          cd kbvm
+          cargo clippy --all-features --verbose -- -Dwarnings

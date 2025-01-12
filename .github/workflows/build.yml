@@ -15,4 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build
-        run: cargo build --verbose
+        run: |
+          cd kbvm
+          cargo build --all-features --verbose
