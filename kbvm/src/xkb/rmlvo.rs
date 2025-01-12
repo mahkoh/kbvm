@@ -149,17 +149,3 @@ impl Expanded {
         FormatFormat(self)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::xkb::{diagnostic::WriteToLog, rmlvo::Group, Context};
-
-    #[test]
-    fn test() {
-        let context = Context::builder().build();
-        let groups: Vec<_> =
-            Group::from_layouts_and_variants("us,il,ru,de", ",,phonetic,neo").collect();
-        let out = context.expand_names(WriteToLog, None, None, Some(&groups), None);
-        println!("{:#}", out);
-    }
-}

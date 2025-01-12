@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 use {
     crate::{
         config::DEFAULT_INCLUDE_DIR,
@@ -87,7 +90,7 @@ pub struct Context {
     pub(crate) paths: Vec<Arc<PathBuf>>,
     pub(crate) max_includes: u64,
     pub(crate) max_include_depth: u64,
-    #[cfg_attr(not(feature = "registry"), expect(dead_code))]
+    #[cfg_attr(not(feature = "registry"), allow(dead_code))]
     pub(crate) load_extra_rules: bool,
     pub(crate) env: Environment,
 }
@@ -179,7 +182,7 @@ impl ContextBuilder {
 
     /// Appends an include path.
     pub fn append_path(&mut self, path: &(impl AsRef<Path> + ?Sized)) {
-        self.prefix.push(path.as_ref().to_path_buf());
+        self.suffix.push(path.as_ref().to_path_buf());
     }
 
     /// Sets the maximum number of includes that will be processed when by each function

@@ -14,11 +14,13 @@ const KEY_Q: Keycode = Keycode(24);
 #[test]
 fn test() {
     let mut sink = vec![];
-    let context = Context::builder()
+    let mut context = Context::builder();
+    context.clear();
+    let keymap = context
         .build()
         .keymap_from_bytes(&mut sink, None, MAP.as_bytes())
         .unwrap();
-    let builder = context.to_builder();
+    let builder = keymap.to_builder();
     let state_machine = builder.build_state_machine();
     let lookup = builder.build_lookup_table();
     let mut state = state_machine.create_state();

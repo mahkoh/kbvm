@@ -150,7 +150,7 @@ fn test() {
             &parsed.val,
         );
         // println!("{:#?}", resolved);
-        println!("{:#}", Keymap::from_resolved(&interner, &resolved));
+        println!("{:#}", Keymap::from_resolved(&interner, &resolved).format());
     }
     for d in diag {
         println!("{}", d.with_code());
