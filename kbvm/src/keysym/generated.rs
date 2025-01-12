@@ -1,7 +1,7 @@
 use super::*;
 
 #[cfg(test)]
-pub(super) const LEN: usize = 2450;
+pub(super) const LEN: usize = 2449;
 
 pub(super) const LONGEST_NAME: usize = 27;
 
