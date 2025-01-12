@@ -19,4 +19,4 @@ jobs:
       - name: Generate
         run: |
           cargo run -p generator
-          git diff
+          git diff --exit-code
