@@ -317,7 +317,7 @@ impl From<Expanded> for RmlvoOutput {
     }
 }
 
-fn test_rmlvo(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {
+fn test_rmlvo(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {
     let input_path = case.join("input.toml");
     let input = std::fs::read_to_string(&input_path).map_err(ResultError::ReadInputFailed)?;
     let input: RmlvoInput = toml::from_str(&input).map_err(ResultError::DeserializeInputFailed)?;
@@ -339,7 +339,7 @@ fn test_rmlvo(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), 
     context.append_path("./include");
     let context = context.build();
     let kccgst = context.expand_names(
-        &mut diagnostics,
+        diagnostics,
         Some(&input.rules),
         Some(&input.model),
         Some(&groups),

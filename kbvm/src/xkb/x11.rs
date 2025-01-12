@@ -416,7 +416,7 @@ where
             .as_ref()
             .map(|n| &n.n_levels_per_type[..])
             .unwrap_or_default()
-            .into_iter()
+            .iter()
             .map(|n| *n as usize);
         let mut kt_level_names = self
             .names
@@ -425,7 +425,7 @@ where
             .as_ref()
             .map(|n| &n.kt_level_names[..])
             .unwrap_or_default()
-            .into_iter()
+            .iter()
             .copied();
         for (ty, name) in tys.iter().zip(names.iter()) {
             let mut names = vec![];
@@ -470,7 +470,7 @@ where
             .groups
             .as_deref()
             .unwrap_or_default()
-            .into_iter();
+            .iter();
         for i in 0..4 {
             if self.names.group_names.contains(1 << i) {
                 let Some(name) = names.next() else {
@@ -582,7 +582,7 @@ where
             .as_ref()
             .map(|a| &a.acts_rtrn_count[..])
             .unwrap_or_default()
-            .into_iter()
+            .iter()
             .copied();
         let mut actions = self
             .map
@@ -591,7 +591,7 @@ where
             .as_ref()
             .map(|a| &a.acts_rtrn_acts[..])
             .unwrap_or_default()
-            .into_iter();
+            .iter();
         for (idx, sym) in syms.iter().enumerate() {
             let mut groups = vec![];
             let width = sym.width as usize;
@@ -599,6 +599,7 @@ where
             let num_groups = (sym.group_info as usize & 0xf).min(types.len());
             let mut syms = sym.syms.iter();
             let has_actions = actions_count.next().unwrap_or_default() > 0;
+            #[expect(clippy::needless_range_loop)]
             for i in 0..num_groups {
                 let mut levels = vec![];
                 for sym in syms.by_ref().take(width) {

@@ -190,7 +190,7 @@ impl Display for NameOrKey {
     }
 }
 
-fn test_case2(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {
+fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {
     let map_path = case.join("map.xkb");
     let map = std::fs::read(&map_path).map_err(ResultError::ReadMapFailed)?;
 
@@ -200,7 +200,7 @@ fn test_case2(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), 
     context.append_path("./include");
     let context = context.build();
     let map = context
-        .keymap_from_bytes(&mut diagnostics, Some(&map_path), &map)
+        .keymap_from_bytes(diagnostics, Some(&map_path), &map)
         .map_err(ResultError::ParsingFailed)?;
 
     // println!("{:#}", map);
