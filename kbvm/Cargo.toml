@@ -7,6 +7,7 @@ edition = "2021"
 default = ["log"]
 log = ["dep:log"]
 registry = ["dep:serde", "dep:quick-xml", "dep:error_reporter"]
+compose = []
 x11 = ["dep:x11rb"]
 
 [package.metadata.docs.rs]

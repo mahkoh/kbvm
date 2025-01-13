@@ -7,8 +7,11 @@ use {
             group::GroupChange,
             group_component::GroupComponent,
             keymap::{
-                Action, GroupLatchAction, GroupLockAction, GroupSetAction, Indicator, KeyGroup,
-                KeyLevel, KeyType, ModsLatchAction, ModsLockAction, ModsSetAction,
+                actions::{
+                    GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
+                    ModsLockAction, ModsSetAction,
+                },
+                Action, Indicator, KeyGroup, KeyLevel, KeyType,
             },
             mod_component::ModComponentMask,
             resolved::GroupsRedirect,
@@ -73,6 +76,7 @@ impl Writer<'_, '_> {
                 '\n' => self.write(r"\n")?,
                 '\r' => self.write(r"\r")?,
                 '\t' => self.write(r"\t")?,
+                '"' => self.write(r#"\""#)?,
                 _ if (c as u32) < 0x20 || c == '\x7f' => write!(self.f, r"\{:03o}", c as u32)?,
                 _ => self.f.write_char(c)?,
             }
@@ -769,5 +773,89 @@ impl Format for RmlvoIncludes<'_> {
             f.write_newline()?;
         }
         Ok(())
+    }
+}
+
+#[cfg(feature = "compose")]
+mod compose {
+    use std::fmt::{Debug};
+    use crate::{
+        modifier::{ModifierIndex, ModifierMask},
+        xkb::{
+            compose::{ComposeTable, MatchRule, MatchStep},
+            format::{Format, Writer},
+        },
+    };
+
+    impl Format for MatchStep<'_> {
+        fn format(&self, f: &mut Writer<'_, '_>) -> std::fmt::Result {
+            let step = self;
+            if step.node.mask == !0 && step.node.mods == 0 {
+                f.write("None ")?
+            } else {
+                let mods = ModifierMask(step.node.mods as u32);
+                let write_mod = |f: &mut Writer<'_, '_>, m: ModifierIndex| match m {
+                    ModifierIndex::SHIFT => f.write("Shift "),
+                    ModifierIndex::LOCK => f.write("Lock "),
+                    ModifierIndex::CONTROL => f.write("Control "),
+                    ModifierIndex::MOD1 => f.write("Alt "),
+                    _ => Ok(()),
+                };
+                if step.node.mask == !0 {
+                    f.write("! ")?;
+                    for m in mods {
+                        write_mod(f, m)?;
+                    }
+                } else {
+                    let mask = ModifierMask(step.node.mask as u32);
+                    for m in mask {
+                        if !mods.contains(m.to_mask()) {
+                            f.write("~ ")?;
+                        }
+                        write_mod(f, m)?;
+                    }
+                }
+            }
+            f.write("<")?;
+            step.node.keysym.format(f)?;
+            f.write(">")?;
+            Ok(())
+        }
+    }
+
+    impl Format for MatchRule<'_, '_> {
+        fn format(&self, f: &mut Writer<'_, '_>) -> std::fmt::Result {
+            for (idx, step) in self.steps.iter().enumerate() {
+                if idx > 0 {
+                    f.write(" ")?;
+                }
+                step.format(f)?;
+            }
+            f.write(":")?;
+            if let Some(s) = &self.payload.string {
+                f.write(" ")?;
+                f.write_string(s)?;
+            }
+            if let Some(s) = self.payload.keysym {
+                f.write(" ")?;
+                s.format(f)?;
+            }
+            Ok(())
+        }
+    }
+
+    impl Format for ComposeTable {
+        fn format(&self, f: &mut Writer<'_, '_>) -> std::fmt::Result {
+            let mut iter = self.iter();
+            let mut first = true;
+            while let Some(rule) = iter.next() {
+                if !first {
+                    f.write("\n")?;
+                }
+                first = false;
+                rule.format(f)?;
+            }
+            Ok(())
+        }
     }
 }

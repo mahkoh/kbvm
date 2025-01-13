@@ -1,6 +1,6 @@
 //! RMLVO helpers and types.
 
-use {crate::xkb::keymap::format::FormatFormat, std::fmt::Display};
+use {crate::xkb::format::FormatFormat, std::fmt::Display};
 
 #[macro_use]
 mod macros;

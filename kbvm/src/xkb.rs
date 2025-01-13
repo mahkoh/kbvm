@@ -10,9 +10,12 @@ mod code;
 mod code_loader;
 mod code_map;
 mod code_slice;
+#[cfg(feature = "compose")]
+pub mod compose;
 mod context;
 mod controls;
 pub mod diagnostic;
+pub(crate) mod format;
 mod group;
 mod group_component;
 mod include;

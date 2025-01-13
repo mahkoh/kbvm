@@ -1634,6 +1634,62 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     VirtualModifierHasRealName,
+    /// A keysym is not terminated with a `>`.
+    ///
+    /// # Example
+    ///
+    /// ```compose
+    /// <Multi_key> <a : "@"
+    /// ```
+    #[severity = Error]
+    UnterminatedKeysym,
+    /// Compose include contains an unknown escape sequence.
+    ///
+    /// # Example
+    ///
+    /// ```rmlvo
+    /// include "%U"
+    /// ```
+    #[severity = Error]
+    UnknownComposeIncludeEscape,
+    /// The locale compose file, %L, could not be resolved.
+    ///
+    /// # Example
+    ///
+    /// ```rmlvo
+    /// include "%L"
+    /// ```
+    #[severity = Error]
+    LocaleComposeFileNotResolved,
+    /// A compose file contains duplicate entries.
+    ///
+    /// # Example 1
+    ///
+    /// ```rmlvo
+    /// <a>: "A"
+    /// <a>: "B"
+    /// ```
+    ///
+    /// # Example 2
+    ///
+    /// ```rmlvo
+    /// <a>: "A"
+    /// <a> <b>: "B"
+    /// ```
+    ///
+    /// The first entry is ignored because it is a prefix of the second entry.
+    #[severity = Debug]
+    IgnoringDuplicateComposeEntry,
+    /// A compose file contains an entry that is a prefix of another entry.
+    ///
+    /// # Example
+    ///
+    /// ```rmlvo
+    /// <a>: "A"
+    /// <a> <b>: "B"
+    /// ```
+    #[severity = Debug]
+    IgnoringComposePrefix,
 }
 
 impl DiagnosticKind {

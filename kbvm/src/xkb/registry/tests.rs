@@ -1,9 +1,9 @@
 use {
     crate::xkb::{
-        diagnostic::{WriteToLog, WriteToStderr},
+        diagnostic::WriteToStderr,
         registry::{
             Layout, Model, Opt, OptGroup,
-            Popularity::{self, Exotic, Standard},
+            Popularity::{Exotic, Standard},
             Registry, Variant,
         },
         Context,

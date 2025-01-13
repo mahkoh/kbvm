@@ -2,7 +2,6 @@
 //!
 //! This module contains types representing the components of an XKB keymap.
 
-pub(crate) mod format;
 mod from_lookup;
 mod from_resolved;
 pub mod iterators;
@@ -17,6 +16,7 @@ use {
         state_machine,
         xkb::{
             controls::ControlMask,
+            format::FormatFormat,
             group::{GroupIdx, GroupMask},
             group_component::GroupComponent,
             indicator::IndicatorIdx,
@@ -25,7 +25,6 @@ use {
                     GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
                     ModsLockAction, ModsSetAction,
                 },
-                format::FormatFormat,
                 iterators::{Groups, Indicators, Keys, Levels, Mappings, VirtualModifiers},
             },
             level::Level,

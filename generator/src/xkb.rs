@@ -14,7 +14,7 @@ pub fn main() {
     std::fs::write("kbvm/src/xkb/meaning/generated.rs", output).unwrap();
 }
 
-const STRINGS: [&str; 220] = [
+const STRINGS: [&str; 224] = [
     "accel",
     "accelerate",
     "AccessXFeedback",
@@ -31,6 +31,7 @@ const STRINGS: [&str; 220] = [
     "allownone",
     "ALPHABETIC",
     "alphanumeric_keys",
+    "Alt",
     "alternate",
     "alternate_group",
     "any",
@@ -44,6 +45,7 @@ const STRINGS: [&str; 220] = [
     "both",
     "BounceKeys",
     "button",
+    "Caps",
     "clampgroups",
     "clearLocks",
     "clearmodifiers",
@@ -52,6 +54,7 @@ const STRINGS: [&str; 220] = [
     "Control",
     "controls",
     "count",
+    "ctrl",
     "ctrls",
     "data",
     "default",
@@ -133,6 +136,7 @@ const STRINGS: [&str; 220] = [
     "maximum",
     "Message",
     "MessageAction",
+    "Meta",
     "minimum",
     "Mod1",
     "Mod2",
