@@ -8,7 +8,7 @@ use {
         group::{GroupDelta, GroupIndex},
         group_type::GroupType,
         modifier::{ModifierMask, NUM_MODS, NUM_MODS_MASK},
-        routine::{run, Component, Flag, Lo, Register, Routine, StateEventHandler},
+        routine::{run, Flag, Lo, Register, Routine, StateEventHandler},
     },
     isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::CloneWithDelta,
@@ -184,28 +184,69 @@ impl StateEventHandler for Layer2Handler<'_> {
     }
 
     #[inline]
-    fn component_load(&self, component: Component) -> u32 {
-        match component {
-            Component::ModsPressed => self.acc_state.mods_pressed.0,
-            Component::ModsLatched => self.acc_state.mods_latched.0,
-            Component::ModsLocked => self.acc_state.mods_locked.0,
-            Component::GroupPressed => self.acc_state.group_pressed.0,
-            Component::GroupLatched => self.acc_state.group_latched.0,
-            Component::GroupLocked => self.acc_state.group_locked.0,
-        }
+    fn mods_pressed_load(&self) -> u32 {
+        self.acc_state.mods_pressed.0
     }
 
     #[inline]
-    fn component_store(&mut self, component: Component, val: u32) {
+    fn mods_pressed_store(&mut self, val: u32) {
         self.any_state_changed = true;
-        match component {
-            Component::ModsPressed => self.acc_state.mods_pressed.0 = val,
-            Component::ModsLatched => self.acc_state.mods_latched.0 = val,
-            Component::ModsLocked => self.acc_state.mods_locked.0 = val,
-            Component::GroupPressed => self.acc_state.group_pressed.0 = val,
-            Component::GroupLatched => self.acc_state.group_latched.0 = val,
-            Component::GroupLocked => self.acc_state.group_locked.0 = val,
-        }
+        self.acc_state.mods_pressed.0 = val;
+    }
+
+    #[inline]
+    fn mods_latched_load(&self) -> u32 {
+        self.acc_state.mods_latched.0
+    }
+
+    #[inline]
+    fn mods_latched_store(&mut self, val: u32) {
+        self.any_state_changed = true;
+        self.acc_state.mods_latched.0 = val;
+    }
+
+    #[inline]
+    fn mods_locked_load(&self) -> u32 {
+        self.acc_state.mods_locked.0
+    }
+
+    #[inline]
+    fn mods_locked_store(&mut self, val: u32) {
+        self.any_state_changed = true;
+        self.acc_state.mods_locked.0 = val;
+    }
+
+    #[inline]
+    fn group_pressed_load(&self) -> u32 {
+        self.acc_state.group_pressed.0
+    }
+
+    #[inline]
+    fn group_pressed_store(&mut self, val: u32) {
+        self.any_state_changed = true;
+        self.acc_state.group_pressed.0 = val;
+    }
+
+    #[inline]
+    fn group_latched_load(&self) -> u32 {
+        self.acc_state.group_latched.0
+    }
+
+    #[inline]
+    fn group_latched_store(&mut self, val: u32) {
+        self.any_state_changed = true;
+        self.acc_state.group_latched.0 = val;
+    }
+
+    #[inline]
+    fn group_locked_load(&self) -> u32 {
+        self.acc_state.group_locked.0
+    }
+
+    #[inline]
+    fn group_locked_store(&mut self, val: u32) {
+        self.any_state_changed = true;
+        self.acc_state.group_locked.0 = val;
     }
 
     #[inline(always)]
@@ -449,8 +490,8 @@ impl StateMachine {
         } else {
             handler.key_down(key);
             if handler.acc_state.any_latched() {
-                handler.component_store(Component::ModsLatched, 0);
-                handler.component_store(Component::GroupLatched, 0);
+                handler.mods_latched_store(0);
+                handler.group_latched_store(0);
             }
         }
         handler.flush_state();

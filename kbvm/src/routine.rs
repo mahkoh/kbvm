@@ -130,7 +130,7 @@ impl Debug for Flag {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
-pub(crate) enum Component {
+enum Component {
     ModsPressed,
     ModsLatched,
     ModsLocked,
@@ -254,149 +254,179 @@ impl Debug for Hi {
     }
 }
 
-impl Debug for Lo {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Lo::Skip { n } => {
-                write!(f, "skip {n}")
-            }
-            Lo::SkipIf { rs, n } => {
-                write!(f, "skip_if {rs:?}, {n}")
-            }
-            Lo::SkipIfNot { rs, n } => {
-                write!(f, "skip_if_not {rs:?}, {n}")
-            }
-            Lo::Move { rd, rs } => {
-                write!(f, "{rd:?} = {rs:?}")
-            }
-            Lo::SpillLoad { rd, pos } => {
-                write!(f, "{rd:?} = spill[{pos}]")
-            }
-            Lo::SpillStore { rs, pos } => {
-                write!(f, "spill[{pos}] = {rs:?}")
-            }
-            Lo::SpillMove { src, dst } => {
-                write!(f, "spill[{dst}] = spill[{src}]")
-            }
-            Lo::RegLit { rd, lit } => {
-                write!(f, "{rd:?} = 0x{lit:x}")
-            }
-            Lo::GlobalLoad { rd, g } => {
-                write!(f, "{rd:?} = {g:?}")
-            }
-            Lo::GlobalStore { rs, g } => {
-                write!(f, "{g:?} = {rs:?}")
-            }
-            Lo::BinOp { op, rd, rl, rr } => {
-                write!(f, "{rd:?} = {op:?} {rl:?}, {rr:?}")
-            }
-            Lo::UnOp { op, rd, rs } => {
-                write!(f, "{rd:?} = {op:?} {rs:?}")
-            }
-            Lo::PressedModsInc { rs } => {
-                write!(f, "{:?} += {rs:?}", Component::ModsPressed)
-            }
-            Lo::PressedModsDec { rs } => {
-                write!(f, "{:?} -= {rs:?}", Component::ModsPressed)
-            }
-            Lo::ComponentLoad { rd, component } => {
-                write!(f, "{rd:?} = {component:?}")
-            }
-            Lo::ComponentStore { rs, component } => {
-                write!(f, "{component:?} = {rs:?}")
-            }
-            Lo::FlagLoad { rd, flag } => {
-                write!(f, "{rd:?} = {flag:?}")
-            }
-            Lo::KeyDown { rs } => {
-                write!(f, "key_down {rs:?}")
-            }
-            Lo::KeyUp { rs } => {
-                write!(f, "key_up {rs:?}")
+macro_rules! lo {
+    (
+        binops:
+            $($binop:ident,)*;
+        unops:
+            $($unop:ident,)*;
+        components:
+            $($component:ident = $load:ident, $store:ident,)*;
+    ) => {
+        #[derive(Copy, Clone, Eq, PartialEq, Hash)]
+        pub(crate) enum Lo {
+            // Generics ops
+            Skip {
+                n: usize,
+            },
+            SkipIf {
+                rs: Register,
+                n: usize,
+            },
+            SkipIfNot {
+                rs: Register,
+                n: usize,
+            },
+            SpillLoad {
+                rd: Register,
+                pos: usize,
+            },
+            SpillStore {
+                rs: Register,
+                pos: usize,
+            },
+            SpillMove {
+                src: usize,
+                dst: usize,
+            },
+            RegLit {
+                rd: Register,
+                lit: u32,
+            },
+            GlobalLoad {
+                rd: Register,
+                g: Global,
+            },
+            GlobalStore {
+                rs: Register,
+                g: Global,
+            },
+            $(
+                $binop {
+                    rd: Register,
+                    rl: Register,
+                    rr: Register,
+                },
+            )*
+            $(
+                $unop {
+                    rd: Register,
+                    rs: Register,
+                },
+            )*
+            // State machine ops
+            FlagLoad {
+                rd: Register,
+                flag: Flag,
+            },
+            PressedModsInc {
+                rs: Register,
+            },
+            PressedModsDec {
+                rs: Register,
+            },
+            $(
+                $load {
+                    rd: Register,
+                },
+                $store {
+                    rs: Register,
+                },
+            )*
+            KeyDown {
+                rs: Register,
+            },
+            KeyUp {
+                rs: Register,
+            },
+        }
+
+        impl Debug for Lo {
+            fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+                match self {
+                    Lo::Skip { n } => {
+                        write!(f, "skip {n}")
+                    }
+                    Lo::SkipIf { rs, n } => {
+                        write!(f, "skip_if {rs:?}, {n}")
+                    }
+                    Lo::SkipIfNot { rs, n } => {
+                        write!(f, "skip_if_not {rs:?}, {n}")
+                    }
+                    Lo::SpillLoad { rd, pos } => {
+                        write!(f, "{rd:?} = spill[{pos}]")
+                    }
+                    Lo::SpillStore { rs, pos } => {
+                        write!(f, "spill[{pos}] = {rs:?}")
+                    }
+                    Lo::SpillMove { src, dst } => {
+                        write!(f, "spill[{dst}] = spill[{src}]")
+                    }
+                    Lo::RegLit { rd, lit } => {
+                        write!(f, "{rd:?} = 0x{lit:x}")
+                    }
+                    Lo::GlobalLoad { rd, g } => {
+                        write!(f, "{rd:?} = {g:?}")
+                    }
+                    Lo::GlobalStore { rs, g } => {
+                        write!(f, "{g:?} = {rs:?}")
+                    }
+                    $(
+                        Lo::$binop { rd, rl, rr } => {
+                            write!(f, "{rd:?} = {:?} {rl:?}, {rr:?}", BinOp::$binop)
+                        },
+                    )*
+                    $(
+                        Lo::$unop { rd, rs } => {
+                            write!(f, "{rd:?} = {:?} {rs:?}", UnOp::$unop)
+                        },
+                    )*
+                    Lo::PressedModsInc { rs } => {
+                        write!(f, "{:?} += {rs:?}", Component::ModsPressed)
+                    }
+                    Lo::PressedModsDec { rs } => {
+                        write!(f, "{:?} -= {rs:?}", Component::ModsPressed)
+                    }
+                    $(
+                        Lo::$load { rd } => {
+                            write!(f, "{rd:?} = {:?}", Component::$component)
+                        }
+                        Lo::$store { rs } => {
+                            write!(f, "{:?} = {rs:?}", Component::$component)
+                        }
+                    )*
+                    Lo::FlagLoad { rd, flag } => {
+                        write!(f, "{rd:?} = {flag:?}")
+                    }
+                    Lo::KeyDown { rs } => {
+                        write!(f, "key_down {rs:?}")
+                    }
+                    Lo::KeyUp { rs } => {
+                        write!(f, "key_up {rs:?}")
+                    }
+                }
             }
         }
-    }
+    };
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash)]
-pub(crate) enum Lo {
-    // Generics ops
-    Skip {
-        n: usize,
-    },
-    SkipIf {
-        rs: Register,
-        n: usize,
-    },
-    SkipIfNot {
-        rs: Register,
-        n: usize,
-    },
-    Move {
-        rd: Register,
-        rs: Register,
-    },
-    SpillLoad {
-        rd: Register,
-        pos: usize,
-    },
-    SpillStore {
-        rs: Register,
-        pos: usize,
-    },
-    SpillMove {
-        src: usize,
-        dst: usize,
-    },
-    RegLit {
-        rd: Register,
-        lit: u32,
-    },
-    GlobalLoad {
-        rd: Register,
-        g: Global,
-    },
-    GlobalStore {
-        rs: Register,
-        g: Global,
-    },
-    BinOp {
-        op: BinOp,
-        rd: Register,
-        rl: Register,
-        rr: Register,
-    },
-    UnOp {
-        op: UnOp,
-        rd: Register,
-        rs: Register,
-    },
-    // State machine ops
-    FlagLoad {
-        rd: Register,
-        flag: Flag,
-    },
-    PressedModsInc {
-        rs: Register,
-    },
-    PressedModsDec {
-        rs: Register,
-    },
-    ComponentLoad {
-        rd: Register,
-        component: Component,
-    },
-    ComponentStore {
-        rs: Register,
-        component: Component,
-    },
-    KeyDown {
-        rs: Register,
-    },
-    KeyUp {
-        rs: Register,
-    },
-}
+lo!(
+    binops:
+        Add, Sub, Mul, Udiv, Idiv, Urem, Irem, Shl, Lshr, Ashr, BitNand, BitAnd, BitOr,
+        BitXor, LogNand, LogAnd, LogOr, LogXor, Eq, Ne, Ult, Ilt, Ule, Ile,
+        ;
+    unops:
+        Move, Neg, BitNot, LogNot,
+        ;
+    components:
+        ModsPressed = ModsPressedLoad, ModsPressedStore,
+        ModsLatched = ModsLatchedLoad, ModsLatchedStore,
+        ModsLocked = ModsLockedLoad, ModsLockedStore,
+        GroupPressed = GroupPressedLoad, GroupPressedStore,
+        GroupLatched = GroupLatchedLoad, GroupLatchedStore,
+        GroupLocked = GroupLockedLoad, GroupLockedStore,
+        ;
+);
 
 pub(crate) trait StateEventHandler {
     fn mods_pressed_inc(&mut self, mods: ModifierMask) {
@@ -407,13 +437,51 @@ pub(crate) trait StateEventHandler {
         let _ = mods;
     }
 
-    fn component_load(&self, component: Component) -> u32 {
-        let _ = component;
+    fn mods_pressed_load(&self) -> u32 {
         0
     }
 
-    fn component_store(&mut self, component: Component, val: u32) {
-        let _ = component;
+    fn mods_pressed_store(&mut self, val: u32) {
+        let _ = val;
+    }
+
+    fn mods_latched_load(&self) -> u32 {
+        0
+    }
+
+    fn mods_latched_store(&mut self, val: u32) {
+        let _ = val;
+    }
+
+    fn mods_locked_load(&self) -> u32 {
+        0
+    }
+
+    fn mods_locked_store(&mut self, val: u32) {
+        let _ = val;
+    }
+
+    fn group_pressed_load(&self) -> u32 {
+        0
+    }
+
+    fn group_pressed_store(&mut self, val: u32) {
+        let _ = val;
+    }
+
+    fn group_latched_load(&self) -> u32 {
+        0
+    }
+
+    fn group_latched_store(&mut self, val: u32) {
+        let _ = val;
+    }
+
+    fn group_locked_load(&self) -> u32 {
+        0
+    }
+
+    fn group_locked_store(&mut self, val: u32) {
         let _ = val;
     }
 
@@ -469,6 +537,19 @@ pub(crate) fn run<H>(
     let mut i = 0;
     while i < ops.len() {
         let op = ops[i];
+        macro_rules! binop {
+            ($rd:ident, $rl:ident, $rr:ident, $v:expr) => {{
+                let $rl = registers[$rl];
+                let $rr = registers[$rr];
+                registers[$rd] = $v;
+            }};
+        }
+        macro_rules! unop {
+            ($rd:ident, $rs:ident, $v:expr) => {{
+                let $rs = registers[$rs];
+                registers[$rd] = $v;
+            }};
+        }
         match op {
             Lo::Skip { n } => {
                 i = i.saturating_add(n);
@@ -484,9 +565,6 @@ pub(crate) fn run<H>(
                 if s == 0 {
                     i = i.saturating_add(n);
                 }
-            }
-            Lo::Move { rd, rs } => {
-                registers[rd] = registers[rs];
             }
             Lo::SpillMove { src, dst } => {
                 let src = spill.get(src).copied().unwrap_or_default();
@@ -518,75 +596,64 @@ pub(crate) fn run<H>(
                     *v = registers[rs];
                 }
             }
-            Lo::BinOp { op, rd, rl, rr } => {
-                let l = registers[rl];
-                let r = registers[rr];
-                registers[rd] = match op {
-                    BinOp::Add => l.wrapping_add(r),
-                    BinOp::Sub => l.wrapping_sub(r),
-                    BinOp::Mul => l.wrapping_mul(r),
-                    BinOp::Udiv => {
-                        if r == 0 {
-                            0
-                        } else {
-                            l / r
-                        }
-                    }
-                    BinOp::Idiv => {
-                        let l = l as i32;
-                        let r = r as i32;
-                        if r == 0 {
-                            0
-                        } else if r == -1 {
-                            l.wrapping_neg() as u32
-                        } else {
-                            (l / r) as u32
-                        }
-                    }
-                    BinOp::Urem => {
-                        if r == 0 {
-                            0
-                        } else {
-                            l % r
-                        }
-                    }
-                    BinOp::Irem => {
-                        let l = l as i32;
-                        let r = r as i32;
-                        if r == 0 || r == -1 {
-                            0
-                        } else {
-                            (l % r) as u32
-                        }
-                    }
-                    BinOp::Shl => l.wrapping_shl(r),
-                    BinOp::Lshr => l.wrapping_shr(r),
-                    BinOp::Ashr => (l as i32).wrapping_shr(r) as u32,
-                    BinOp::BitNand => l & !r,
-                    BinOp::BitAnd => l & r,
-                    BinOp::BitOr => l | r,
-                    BinOp::BitXor => l ^ r,
-                    BinOp::LogNand => ((l != 0) && (r == 0)) as u32,
-                    BinOp::LogAnd => ((l != 0) && (r != 0)) as u32,
-                    BinOp::LogOr => ((l != 0) || (r != 0)) as u32,
-                    BinOp::LogXor => ((l != 0) ^ (r != 0)) as u32,
-                    BinOp::Eq => (l == r) as u32,
-                    BinOp::Ne => (l != r) as u32,
-                    BinOp::Ult => (l < r) as u32,
-                    BinOp::Ilt => ((l as i32) < (r as i32)) as u32,
-                    BinOp::Ule => (l <= r) as u32,
-                    BinOp::Ile => ((l as i32) <= (r as i32)) as u32,
-                };
-            }
-            Lo::UnOp { op, rd, rs } => {
-                let s = registers[rs];
-                registers[rd] = match op {
-                    UnOp::Move => s,
-                    UnOp::Neg => s.wrapping_neg(),
-                    UnOp::BitNot => !s,
-                    UnOp::LogNot => (s == 0) as u32,
+            Lo::Add { rd, rl, rr } => binop!(rd, rl, rr, rl.wrapping_add(rr)),
+            Lo::Sub { rd, rl, rr } => binop!(rd, rl, rr, rl.wrapping_sub(rr)),
+            Lo::Mul { rd, rl, rr } => binop!(rd, rl, rr, rl.wrapping_mul(rr)),
+            Lo::Udiv { rd, rl, rr } => binop!(rd, rl, rr, {
+                if rr == 0 {
+                    0
+                } else {
+                    rl / rr
                 }
-            }
+            }),
+            Lo::Idiv { rd, rl, rr } => binop!(rd, rl, rr, {
+                let rl = rl as i32;
+                let rr = rr as i32;
+                if rr == 0 {
+                    0
+                } else if rr == -1 {
+                    rl.wrapping_neg() as u32
+                } else {
+                    (rl / rr) as u32
+                }
+            }),
+            Lo::Urem { rd, rl, rr } => binop!(rd, rl, rr, {
+                if rr == 0 {
+                    0
+                } else {
+                    rl % rr
+                }
+            }),
+            Lo::Irem { rd, rl, rr } => binop!(rd, rl, rr, {
+                let rl = rl as i32;
+                let rr = rr as i32;
+                if rr == 0 || rr == -1 {
+                    0
+                } else {
+                    (rl % rr) as u32
+                }
+            }),
+            Lo::Shl { rd, rl, rr } => binop!(rd, rl, rr, rl.wrapping_shl(rr)),
+            Lo::Lshr { rd, rl, rr } => binop!(rd, rl, rr, rl.wrapping_shr(rr)),
+            Lo::Ashr { rd, rl, rr } => binop!(rd, rl, rr, (rl as i32).wrapping_shr(rr) as u32),
+            Lo::BitNand { rd, rl, rr } => binop!(rd, rl, rr, rl & !rr),
+            Lo::BitAnd { rd, rl, rr } => binop!(rd, rl, rr, rl & rr),
+            Lo::BitOr { rd, rl, rr } => binop!(rd, rl, rr, rl | rr),
+            Lo::BitXor { rd, rl, rr } => binop!(rd, rl, rr, rl ^ rr),
+            Lo::LogNand { rd, rl, rr } => binop!(rd, rl, rr, ((rl != 0) && (rr == 0)) as u32),
+            Lo::LogAnd { rd, rl, rr } => binop!(rd, rl, rr, ((rl != 0) && (rr != 0)) as u32),
+            Lo::LogOr { rd, rl, rr } => binop!(rd, rl, rr, ((rl != 0) || (rr != 0)) as u32),
+            Lo::LogXor { rd, rl, rr } => binop!(rd, rl, rr, ((rl != 0) ^ (rr != 0)) as u32),
+            Lo::Eq { rd, rl, rr } => binop!(rd, rl, rr, (rl == rr) as u32),
+            Lo::Ne { rd, rl, rr } => binop!(rd, rl, rr, (rl != rr) as u32),
+            Lo::Ult { rd, rl, rr } => binop!(rd, rl, rr, (rl < rr) as u32),
+            Lo::Ilt { rd, rl, rr } => binop!(rd, rl, rr, ((rl as i32) < (rr as i32)) as u32),
+            Lo::Ule { rd, rl, rr } => binop!(rd, rl, rr, (rl <= rr) as u32),
+            Lo::Ile { rd, rl, rr } => binop!(rd, rl, rr, ((rl as i32) <= (rr as i32)) as u32),
+            Lo::Move { rd, rs } => unop!(rd, rs, rs),
+            Lo::Neg { rd, rs } => unop!(rd, rs, rs.wrapping_neg()),
+            Lo::BitNot { rd, rs } => unop!(rd, rs, !rs),
+            Lo::LogNot { rd, rs } => unop!(rd, rs, (rs == 0) as u32),
             Lo::PressedModsInc { rs } => {
                 let s = registers[rs];
                 h.mods_pressed_inc(ModifierMask(s));
@@ -594,13 +661,6 @@ pub(crate) fn run<H>(
             Lo::PressedModsDec { rs } => {
                 let s = registers[rs];
                 h.mods_pressed_dec(ModifierMask(s));
-            }
-            Lo::ComponentLoad { rd, component } => {
-                registers[rd] = h.component_load(component);
-            }
-            Lo::ComponentStore { rs, component } => {
-                let s = registers[rs];
-                h.component_store(component, s);
             }
             Lo::FlagLoad { rd, flag } => {
                 registers[rd] = flags[flag];
@@ -613,6 +673,18 @@ pub(crate) fn run<H>(
                 let s = registers[rs];
                 h.key_up(Keycode(s));
             }
+            Lo::ModsPressedLoad { rd } => registers[rd] = h.mods_pressed_load(),
+            Lo::ModsPressedStore { rs } => h.mods_pressed_store(registers[rs]),
+            Lo::ModsLatchedLoad { rd } => registers[rd] = h.mods_latched_load(),
+            Lo::ModsLatchedStore { rs } => h.mods_latched_store(registers[rs]),
+            Lo::ModsLockedLoad { rd } => registers[rd] = h.mods_locked_load(),
+            Lo::ModsLockedStore { rs } => h.mods_locked_store(registers[rs]),
+            Lo::GroupPressedLoad { rd } => registers[rd] = h.group_pressed_load(),
+            Lo::GroupPressedStore { rs } => h.group_pressed_store(registers[rs]),
+            Lo::GroupLatchedLoad { rd } => registers[rd] = h.group_latched_load(),
+            Lo::GroupLatchedStore { rs } => h.group_latched_store(registers[rs]),
+            Lo::GroupLockedLoad { rd } => registers[rd] = h.group_locked_load(),
+            Lo::GroupLockedStore { rs } => h.group_locked_store(registers[rs]),
         }
         i = i.saturating_add(1);
     }
@@ -1508,23 +1580,37 @@ impl RegisterAllocator {
                     let rd = self.get_write_register(idx, rd);
                     let rl = self.get_read_register(idx, rl);
                     let rr = self.get_read_register(idx, rr);
-                    self.out.push_front(Lo::BinOp {
-                        rd,
-                        rl,
-                        rr,
-                        op: *op,
-                    });
+                    macro_rules! ops {
+                        ($($name:ident,)*) => {
+                            match op {
+                                $(
+                                    BinOp::$name => Lo::$name { rd, rl, rr },
+                                )*
+                            }
+                        };
+                    }
+                    let lo = ops! {
+                        Add, Sub, Mul, Udiv, Idiv, Urem, Irem, Shl, Lshr, Ashr, BitNand, BitAnd, BitOr,
+                        BitXor, LogNand, LogAnd, LogOr, LogXor, Eq, Ne, Ult, Ilt, Ule, Ile,
+                    };
+                    self.out.push_front(lo);
                 }
                 Hi::UnOp { rd, rs, op } => {
                     let rd = self.get_write_register(idx, rd);
                     let rs = self.get_read_register(idx, rs);
-                    if *op == UnOp::Move {
-                        if rd != rs {
-                            self.out.push_front(Lo::Move { rd, rs });
-                        }
-                    } else {
-                        self.out.push_front(Lo::UnOp { rd, rs, op: *op });
+                    macro_rules! ops {
+                        ($($name:ident,)*) => {
+                            match op {
+                                $(
+                                    UnOp::$name => Lo::$name { rd, rs },
+                                )*
+                            }
+                        };
                     }
+                    let lo = ops! {
+                        Move, Neg, BitNot, LogNot,
+                    };
+                    self.out.push_front(lo);
                 }
                 Hi::PressedModsInc { rs } => {
                     let rs = self.get_read_register(idx, rs);
@@ -1536,17 +1622,45 @@ impl RegisterAllocator {
                 }
                 Hi::ComponentLoad { rd, component } => {
                     let rd = self.get_write_register(idx, rd);
-                    self.out.push_front(Lo::ComponentLoad {
-                        rd,
-                        component: *component,
-                    });
+                    macro_rules! comp {
+                        ($($name:ident => $f:ident,)*) => {
+                            match component {
+                                $(
+                                    Component::$name => Lo::$f { rd },
+                                )*
+                            }
+                        };
+                    }
+                    let lo = comp! {
+                        ModsPressed => ModsPressedLoad,
+                        ModsLatched => ModsLatchedLoad,
+                        ModsLocked => ModsLockedLoad,
+                        GroupPressed => GroupPressedLoad,
+                        GroupLatched => GroupLatchedLoad,
+                        GroupLocked => GroupLockedLoad,
+                    };
+                    self.out.push_front(lo);
                 }
                 Hi::ComponentStore { rs, component } => {
                     let rs = self.get_read_register(idx, rs);
-                    self.out.push_front(Lo::ComponentStore {
-                        rs,
-                        component: *component,
-                    });
+                    macro_rules! comp {
+                        ($($name:ident => $f:ident,)*) => {
+                            match component {
+                                $(
+                                    Component::$name => Lo::$f { rs },
+                                )*
+                            }
+                        };
+                    }
+                    let lo = comp! {
+                        ModsPressed => ModsPressedStore,
+                        ModsLatched => ModsLatchedStore,
+                        ModsLocked => ModsLockedStore,
+                        GroupPressed => GroupPressedStore,
+                        GroupLatched => GroupLatchedStore,
+                        GroupLocked => GroupLockedStore,
+                    };
+                    self.out.push_front(lo);
                 }
                 Hi::FlagLoad { rd, flag } => {
                     let rd = self.get_write_register(idx, rd);
