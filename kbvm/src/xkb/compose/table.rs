@@ -288,13 +288,11 @@ impl ComposeTable {
     ///
     /// - If the keysym/modifiers combination matches no candidate,
     ///   [`FeedResult::Aborted`] is returned and the state is reset to the initial state.
-    /// - Otherwise, the matching candidate with the highest priority is chosen. Note that
-    ///   there can only be multiple matching candidates if they only differ by modifiers.
-    ///
-    ///   - If this candidate completes the compose sequence, [`FeedResult::Composed`] is
-    ///     returned with the output and `state` is reset to the initial state.
-    ///   - Otherwise, [`FeedResult::Pending`] is returned and `state` is updated to match
-    ///     the new pending state.
+    /// - Otherwise, if the candidate completes the compose sequence,
+    ///   [`FeedResult::Composed`] is returned with the output and `state` is reset to the
+    ///   initial state.
+    /// - Otherwise, [`FeedResult::Pending`] is returned and `state` is updated to match
+    ///   the new pending state.
     pub fn feed(&self, state: &mut State, sym: Keysym) -> Option<FeedResult<'_>> {
         if sym >= syms::Shift_L && sym <= syms::Hyper_R {
             return None;
