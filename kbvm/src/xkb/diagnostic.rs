@@ -23,6 +23,7 @@ use {
         path::{Path, PathBuf},
         sync::Arc,
     },
+    unicode_width::UnicodeWidthChar,
 };
 
 /// A handler for diagnostic messages.
@@ -1663,21 +1664,12 @@ pub enum DiagnosticKind {
     LocaleComposeFileNotResolved,
     /// A compose file contains duplicate entries.
     ///
-    /// # Example 1
+    /// # Example
     ///
     /// ```rmlvo
     /// <a>: "A"
     /// <a>: "B"
     /// ```
-    ///
-    /// # Example 2
-    ///
-    /// ```rmlvo
-    /// <a>: "A"
-    /// <a> <b>: "B"
-    /// ```
-    ///
-    /// The first entry is ignored because it is a prefix of the second entry.
     #[severity = Debug]
     IgnoringDuplicateComposeEntry,
     /// A compose file contains an entry that is a prefix of another entry.
@@ -1690,6 +1682,24 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Debug]
     IgnoringComposePrefix,
+    /// A file path is not valid UTF-8.
+    ///
+    /// # Example
+    ///
+    /// ```compose
+    /// include "\xFF"
+    /// ```
+    #[severity = Error]
+    NonUTF8Path,
+    /// A compose rule has no conditions.
+    ///
+    /// # Example
+    ///
+    /// ```compose
+    /// : "a"
+    /// ```
+    #[severity = Error]
+    ComposeRuleWithoutConditions,
 }
 
 impl DiagnosticKind {
@@ -1837,27 +1847,36 @@ impl DiagnosticLocation {
         if with_code {
             f.write_str(":\n")?;
             write!(f, ">> ")?;
-            let mut extra_offset = 0;
             let (prefix, suffix) = self.line.split_at(self.in_line_offset);
-            if prefix.contains(&b'\t') {
-                for c in prefix.as_bstr().chars() {
-                    if c == '\t' {
-                        extra_offset += 3;
-                        f.write_str("    ")?;
-                    } else {
-                        f.write_char(c)?;
+            let (content, suffix) = suffix.split_at(self.in_line_len);
+            let mut send = |s: &[u8]| {
+                let mut counter = s.len();
+                if s.iter().any(|c| !matches!(*c, 0x20..=0x7E)) {
+                    for c in s.as_bstr().chars() {
+                        if c == '\t' {
+                            counter += 3;
+                            f.write_str("    ")?;
+                        } else {
+                            counter -= c.len_utf8();
+                            if let Some(w) = c.width() {
+                                counter += w;
+                                f.write_char(c)?;
+                            }
+                        }
                     }
+                } else {
+                    write!(f, "{}", s.as_bstr())?;
                 }
-                write!(f, "{}", suffix.as_bstr())?;
-            } else {
-                write!(f, "{}", self.line.as_bstr())?;
-            }
-            write!(f, "\n   ")?;
-            for _ in 0..(self.in_line_offset + extra_offset) {
+                Ok(counter)
+            };
+            let offset = send(prefix)?;
+            let len = send(content)?;
+            write!(f, "{}\n   ", suffix.as_bstr())?;
+            for _ in 0..offset {
                 f.write_str(" ")?
             }
             f.write_str("^")?;
-            for _ in 1..self.in_line_len {
+            for _ in 1..len {
                 f.write_str("~")?;
             }
             if let Some(inner) = &self.inner {

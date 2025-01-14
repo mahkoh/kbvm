@@ -1,13 +1,13 @@
-use std::fmt::Display;
 use {
     crate::{
         keysym::Keysym,
-        modifier::{ModifierIndex, ModifierMask},
+        modifier::ModifierMask,
         syms,
         xkb::{
             code_map::CodeMap,
             compose::parser::{Production, Step},
             diagnostic::{DiagnosticKind, DiagnosticSink},
+            format::FormatFormat,
             span::{SpanExt, Spanned},
         },
     },
@@ -15,14 +15,13 @@ use {
     kbvm_proc::ad_hoc_display,
     std::{
         cell::Cell,
-        fmt::{Debug, Formatter, Write},
+        fmt::{Debug, Display, Formatter},
         ops::Range,
     },
 };
-use crate::xkb::format::FormatFormat;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct Payload {
+pub struct Payload {
     pub(crate) string: Option<String>,
     pub(crate) keysym: Option<Keysym>,
 }
@@ -142,7 +141,7 @@ impl ComposeTable {
         let mut stack: Vec<u32> = vec![];
         let mut prev_step = None;
         let mut prev_len = 0;
-        let mut prev_had_payload = false;
+        let mut prev_payload = None::<Spanned<u32>>;
 
         for pre_data in pre_datas {
             let step = steps[pre_data.step_range.end - 1];
@@ -150,12 +149,15 @@ impl ComposeTable {
             let is_duplicate = (Some(step), len) == (prev_step, prev_len);
             if is_duplicate {
                 if let Some(pl) = pre_data.payload {
-                    if prev_had_payload {
-                        diagnostics.push(
-                            map,
-                            DiagnosticKind::IgnoringDuplicateComposeEntry,
-                            ad_hoc_display!("ignoring duplicate compose entry").spanned2(pl.span),
-                        );
+                    if let Some(prev) = prev_payload {
+                        if payloads[prev.val as usize] != payloads[pl.val as usize] {
+                            diagnostics.push(
+                                map,
+                                DiagnosticKind::IgnoringDuplicateComposeEntry,
+                                ad_hoc_display!("ignoring duplicate compose entry")
+                                    .spanned2(pl.span),
+                            );
+                        }
                     } else {
                         diagnostics.push(
                             map,
@@ -166,7 +168,7 @@ impl ComposeTable {
                 }
                 continue;
             }
-            prev_had_payload = pre_data.payload.is_some();
+            prev_payload = pre_data.payload;
             if len <= prev_len {
                 for _ in 0..prev_len - len + 1 {
                     assert!(stack.pop().is_some());

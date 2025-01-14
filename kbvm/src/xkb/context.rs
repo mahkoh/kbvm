@@ -61,6 +61,9 @@ use {
 /// | `XKB_DEFAULT_LAYOUT`    | `us`                    | The fallback layout    |
 /// | `XKB_DEFAULT_VARIANTS`  |                         | The fallback variant   |
 /// | `XKB_DEFAULT_OPTIONS`   |                         | The fallback options   |
+/// | `LC_ALL`                | `$LC_CTYPE`             | First locale choice    |
+/// | `LC_CTYPE`              | `$LANG`                 | Second locale choice   |
+/// | `LANG`                  | `C`                     | Third locale choice    |
 ///
 /// The first and second system path are used as roots for relative include statements.
 ///
@@ -98,6 +101,8 @@ pub struct Context {
 #[derive(Clone, Debug, Default)]
 pub(crate) struct Environment {
     pub(crate) home: Option<String>,
+    pub(crate) xdg_config_home: Option<String>,
+    pub(crate) locale: String,
     pub(crate) xlocaledir: String,
     pub(crate) xcomposefile: Option<String>,
     pub(crate) xkb_default_rules: String,
@@ -272,6 +277,16 @@ impl ContextBuilder {
         for p in self.suffix.drain(..) {
             push!(p);
         }
+        let mut locale = String::new();
+        for var in ["LC_ALL", "LC_CTYPE", "LANG"] {
+            locale = getenv!(var, "");
+            if locale.is_not_empty() {
+                break;
+            }
+        }
+        if locale.is_empty() {
+            locale = "C".to_string();
+        }
         Context {
             paths,
             max_includes: self.max_includes,
@@ -279,6 +294,8 @@ impl ContextBuilder {
             load_extra_rules: self.load_extra_rules,
             env: Environment {
                 home,
+                xdg_config_home,
+                locale,
                 xlocaledir: getenv!("XLOCALEDIR", "/usr/share/X11/locale"),
                 xcomposefile: getenv!("XCOMPOSEFILE"),
                 xkb_default_rules: getenv!("XKB_DEFAULT_RULES", "evdev"),
@@ -763,5 +780,20 @@ impl Context {
         embed(item);
         let resolved = resolve(map, diagnostics, interner, meaning_cache, cooker, item);
         Keymap::from_resolved(interner, &resolved)
+    }
+
+    /// Returns the locale of this context.
+    ///
+    /// If environment variables are [enabled](ContextBuilder::enable_environment), the
+    /// locale is determined according to the POSIX rules for `LC_CTYPE`:
+    ///
+    /// - If `$LC_ALL` is set and non-empty, its value is used.
+    /// - Otherwise, if `$LC_CTYPE` is set and non-empty, its value is used.
+    /// - Otherwise, if `$LANG` is set and non-empty, its value is used.
+    /// - Otherwise, the value is `"C"`.
+    ///
+    /// If environment variables are disabled, the value is always `"C"`.
+    pub fn locale(&self) -> &str {
+        &self.env.locale
     }
 }

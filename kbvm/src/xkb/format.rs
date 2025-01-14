@@ -778,7 +778,6 @@ impl Format for RmlvoIncludes<'_> {
 
 #[cfg(feature = "compose")]
 mod compose {
-    use std::fmt::{Debug};
     use crate::{
         modifier::{ModifierIndex, ModifierMask},
         xkb::{

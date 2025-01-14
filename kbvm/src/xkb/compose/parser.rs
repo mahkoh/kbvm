@@ -16,13 +16,13 @@ use {
             },
             context::Environment,
             diagnostic::{DiagnosticKind, DiagnosticSink},
-            interner::{Interned, Interner},
+            interner::Interner,
             meaning::{Meaning, MeaningCache},
             span::{SpanExt, Spanned},
         },
     },
     kbvm_proc::ad_hoc_display,
-    std::{cmp::Ordering, sync::Arc},
+    std::sync::Arc,
 };
 
 struct Parser<'a, 'b, 'c> {
@@ -33,7 +33,7 @@ struct Parser<'a, 'b, 'c> {
     meaning_cache: &'a mut MeaningCache,
     pos: usize,
     env: &'a Environment,
-    locale_dir: Option<&'a str>,
+    locale_file: Option<&'a str>,
 }
 
 #[derive(Debug)]
@@ -63,8 +63,8 @@ pub(crate) fn parse_line(
     meaning_cache: &mut MeaningCache,
     tokens: &[Spanned<Token>],
     env: &Environment,
-    locale_dir: Option<&str>,
-) -> Result<Spanned<Line>, Spanned<ParserError>> {
+    locale_file: Option<&str>,
+) -> Result<Option<Spanned<Line>>, Spanned<ParserError>> {
     let line = Parser {
         map,
         diagnostics,
@@ -73,12 +73,12 @@ pub(crate) fn parse_line(
         meaning_cache,
         pos: 0,
         env,
-        locale_dir,
+        locale_file,
     }
     .parse_line()?;
     let lo = tokens.first().map(|t| t.span.lo).unwrap_or_default();
     let hi = tokens.last().map(|t| t.span.hi).unwrap_or_default();
-    Ok(line.spanned(lo, hi))
+    Ok(line.map(|l| l.spanned(lo, hi)))
 }
 
 impl Parser<'_, '_, '_> {
@@ -108,7 +108,7 @@ impl Parser<'_, '_, '_> {
         Ok(self.tokens[self.pos])
     }
 
-    fn parse_line(&mut self) -> Result<Line, Spanned<ParserError>> {
+    fn parse_line(&mut self) -> Result<Option<Line>, Spanned<ParserError>> {
         let t = self.peek(LHS)?;
         if let Token::Ident(i) = t.val {
             let meaning = self.meaning_cache.get_case_insensitive(self.interner, i);
@@ -120,9 +120,9 @@ impl Parser<'_, '_, '_> {
         self.parse_production()
     }
 
-    fn parse_include(&mut self) -> Result<Line, Spanned<ParserError>> {
+    fn parse_include(&mut self) -> Result<Option<Line>, Spanned<ParserError>> {
         let t = self.next(&[Expected::AnyString])?;
-        let Token::String(mut s) = t.val else {
+        let Token::String(s) = t.val else {
             return Err(self.unexpected_token(&[Expected::AnyString], t));
         };
         let mut bytes = self.interner.get(s).to_owned();
@@ -144,12 +144,11 @@ impl Parser<'_, '_, '_> {
                                     DiagnosticKind::HomeNotSet,
                                     ad_hoc_display!("$HOME is not set").spanned(lo, hi),
                                 );
+                                return Ok(None);
                             }
                         }
                         b'L' => {
-                            if let Some(dir) = &self.locale_dir {
-                                out.extend_from_slice(self.env.xlocaledir.as_bytes());
-                                out.push(b'/');
+                            if let Some(dir) = &self.locale_file {
                                 out.extend_from_slice(dir.as_bytes());
                             } else {
                                 self.diagnostics.push(
@@ -157,6 +156,7 @@ impl Parser<'_, '_, '_> {
                                     DiagnosticKind::LocaleComposeFileNotResolved,
                                     ad_hoc_display!("%L could not be resolved").spanned(lo, hi),
                                 );
+                                return Ok(None);
                             }
                         }
                         b'S' => {
@@ -169,8 +169,7 @@ impl Parser<'_, '_, '_> {
                                 ad_hoc_display!("unknown escape sequence %{}", b as char => char)
                                     .spanned(lo, hi),
                             );
-                            out.push(b'%');
-                            out.push(b);
+                            return Ok(None);
                         }
                     }
                 } else if b == b'%' {
@@ -179,30 +178,29 @@ impl Parser<'_, '_, '_> {
                     out.push(b);
                 }
             }
-            let code = Code::new(&Arc::new(out));
-            bytes.code().to_slice().to_owned();
+            bytes = Code::new(&Arc::new(out)).to_slice().to_owned();
         }
         if let Some(next) = self.try_peek() {
             return Err(self.expected_eol(next));
         }
-        Ok(Line::Include(bytes))
+        Ok(Some(Line::Include(bytes)))
     }
 
-    fn parse_production(&mut self) -> Result<Line, Spanned<ParserError>> {
+    fn parse_production(&mut self) -> Result<Option<Line>, Spanned<ParserError>> {
         let mut steps = vec![];
-        loop {
+        let span = loop {
             let (mask, mods) = self.parse_modifiers()?;
             let token = self.peek(LHS)?;
             if token.val == token![:] && mask.0 == 0 {
                 self.pos += 1;
-                break;
+                break token.span;
             }
             let Token::Keysym(ks) = token.val else {
                 return Err(self.unexpected_token(&[Expected::AnyKeysym], token));
             };
             let ks = self.interner.get(ks);
             let Some(ks) = Keysym::from_str(ks) else {
-                return Err(todo!());
+                return Err(self.unknown_keysym(ks, token.span));
             };
             self.pos += 1;
             steps.push(Step {
@@ -210,9 +208,9 @@ impl Parser<'_, '_, '_> {
                 mods: mods.0 as u8,
                 keysym: ks,
             });
-        }
+        };
         if steps.is_empty() {
-            return Err(todo!());
+            return Err(self.no_steps(span));
         }
         let mut string = None;
         let mut keysym = None;
@@ -231,7 +229,7 @@ impl Parser<'_, '_, '_> {
             if let Token::Ident(ks) = t.val {
                 let ks = self.interner.get(ks);
                 let Some(ks) = Keysym::from_str(ks) else {
-                    return Err(todo!());
+                    return Err(self.unknown_keysym(ks, t.span));
                 };
                 keysym = Some(ks);
             }
@@ -239,11 +237,11 @@ impl Parser<'_, '_, '_> {
         if let Some(next) = self.try_peek() {
             return Err(self.expected_eol(next));
         }
-        Ok(Line::Production(Production {
+        Ok(Some(Line::Production(Production {
             steps,
             string,
             keysym,
-        }))
+        })))
     }
 
     fn parse_modifiers(&mut self) -> Result<(ModifierMask, ModifierMask), Spanned<ParserError>> {

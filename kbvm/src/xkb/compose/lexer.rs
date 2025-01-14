@@ -12,13 +12,12 @@ use {
         span::{SpanExt, Spanned},
     },
     kbvm_proc::ad_hoc_display,
-    std::{path::PathBuf, sync::Arc},
+    std::sync::Arc,
     thiserror::Error,
 };
 
 #[derive(Debug)]
 pub(crate) struct Lexer {
-    path: Arc<PathBuf>,
     code: Code,
     span_lo: u64,
     pos: usize,
@@ -62,9 +61,8 @@ enum One {
 }
 
 impl Lexer {
-    pub(crate) fn new(path: &Arc<PathBuf>, code: &Code, span_lo: u64) -> Self {
+    pub(crate) fn new(code: &Code, span_lo: u64) -> Self {
         Self {
-            path: path.clone(),
             code: code.clone(),
             span_lo,
             pos: 0,
@@ -91,10 +89,6 @@ impl Lexer {
         lexer.lex_line(output)?;
         self.pos = lexer.pos;
         Ok(())
-    }
-
-    pub(crate) fn path(&self) -> &Arc<PathBuf> {
-        &self.path
     }
 }
 

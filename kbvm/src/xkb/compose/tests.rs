@@ -1,7 +1,8 @@
-use crate::xkb::Context;
+use crate::xkb::{diagnostic::WriteToStderr, Context};
 
 #[test]
 fn test() {
     let context = Context::builder().build();
-    context.compose_from_locale("en_US");
+    let table = context.compose_table_builder().build(WriteToStderr);
+    println!("{}", table.unwrap().format());
 }

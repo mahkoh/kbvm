@@ -6,7 +6,6 @@ use {
             token::{Punctuation, Token},
         },
         diagnostic::DiagnosticKind,
-        interner::Interned,
         span::{Span, SpanExt, Spanned},
     },
     bstr::ByteSlice,
@@ -34,20 +33,12 @@ pub(crate) enum ParserError {
     )]
     ExpectedEol(ActualToken),
     #[error(
-        "expected `[` but found `{}`",
-        *.0 as char,
+        "unknown keysym {}",
+        .0.as_bstr(),
     )]
-    IndexStart(u8),
-    #[error(
-        "expected `]` but found `{}`",
-        *.0 as char,
-    )]
-    IndexEnd(u8),
-    #[error(
-        "expected `single`, `first`, `later`, `any`, or a group index, but found `{}`",
-        .0.as_bytes().as_bstr()
-    )]
-    Index(CodeSlice<'static>),
+    UnknownKeysym(CodeSlice<'static>),
+    #[error("rule has no conditions")]
+    NoSteps,
 }
 
 impl ParserError {
@@ -56,9 +47,8 @@ impl ParserError {
             ParserError::ExpectedButEof(_) => DiagnosticKind::UnexpectedEof,
             ParserError::UnexpectedToken(_) => DiagnosticKind::UnexpectedToken,
             ParserError::ExpectedEol(_) => DiagnosticKind::ExpectedEol,
-            ParserError::IndexStart(_) => DiagnosticKind::ExpectedIndexStart,
-            ParserError::IndexEnd(_) => DiagnosticKind::ExpectedIndexEnd,
-            ParserError::Index(_) => DiagnosticKind::InvalidMatcherIndex,
+            ParserError::UnknownKeysym(_) => DiagnosticKind::UnknownKeysym,
+            ParserError::NoSteps => DiagnosticKind::ComposeRuleWithoutConditions,
         }
     }
 }
@@ -79,7 +69,7 @@ fn write_actual(f: &mut Formatter<'_>, actual: &ActualToken) -> fmt::Result {
 
 fn write_expected(f: &mut Formatter<'_>, expected: &[Expected]) -> fmt::Result {
     if let Some(e) = get_unique_expected(expected) {
-        return write_single_expected(f, e, false);
+        return write_single_expected(f, e);
     }
     write_expected_(f, expected, true)
 }
@@ -90,17 +80,10 @@ fn write_expected_(f: &mut Formatter<'_>, expected: &[Expected], or_prefix: bool
         if idx > 0 {
             f.write_str(", ")?;
         }
-        if let Expected::Nested(n) = e {
-            if idx == last {
-                write_expected_(f, n, or_prefix)?;
-                continue;
-            }
-        } else {
-            if or_prefix && idx == last {
-                f.write_str("or ")?;
-            }
+        if or_prefix && idx == last {
+            f.write_str("or ")?;
         }
-        write_single_expected(f, e, false)?;
+        write_single_expected(f, e)?;
     }
     Ok(())
 }
@@ -109,22 +92,12 @@ fn get_unique_expected(expected: &[Expected]) -> Option<&Expected> {
     if expected.len() != 1 {
         return None;
     }
-    if let Expected::Nested(e) = &expected[0] {
-        return get_unique_expected(e);
-    }
     Some(&expected[0])
 }
 
-fn write_single_expected(
-    f: &mut Formatter<'_>,
-    expected: &Expected,
-    or_prefix: bool,
-) -> fmt::Result {
+fn write_single_expected(f: &mut Formatter<'_>, expected: &Expected) -> fmt::Result {
     match expected {
-        Expected::Nested(n) => write_expected_(f, n, or_prefix),
-        Expected::Ident(i) => write!(f, "`{}`", i),
         Expected::AnyIdent => f.write_str("an identifier"),
-        Expected::AnyGroupName => f.write_str("a group name"),
         Expected::AnyString => f.write_str("a string"),
         Expected::AnyModifier => f.write_str("a modifier"),
         Expected::AnyKeysym => f.write_str("a keysym"),
@@ -155,13 +128,10 @@ pub(crate) struct UnexpectedToken {
 
 #[derive(Debug)]
 pub(crate) enum Expected {
-    Nested(&'static [Expected]),
-    Ident(&'static str),
     AnyIdent,
     AnyString,
     AnyModifier,
     AnyKeysym,
-    AnyGroupName,
     Punctuation(Punctuation),
 }
 
@@ -205,28 +175,12 @@ impl Parser<'_, '_, '_> {
         ParserError::UnexpectedToken(UnexpectedToken { expected, actual }).spanned2(token.span)
     }
 
-    pub(super) fn index_start(
-        &self,
-        ident: Spanned<Interned>,
-        offset: usize,
-    ) -> Spanned<ParserError> {
-        let slice = self.interner.get(ident.val).to_owned();
-        let lo = ident.span.lo + offset as u64;
-        ParserError::IndexStart(slice[offset]).spanned(lo, lo + 1)
+    pub(super) fn unknown_keysym(&self, code: &CodeSlice<'_>, span: Span) -> Spanned<ParserError> {
+        ParserError::UnknownKeysym(code.to_owned()).spanned2(span)
     }
 
-    pub(super) fn index_end(&self, ident: Spanned<Interned>) -> Spanned<ParserError> {
-        let slice = self.interner.get(ident.val).to_owned();
-        let hi = ident.span.hi;
-        ParserError::IndexEnd(*slice.last().unwrap()).spanned(hi - 1, hi)
-    }
-
-    pub(super) fn index(&self, ident: Spanned<Interned>, offset: usize) -> Spanned<ParserError> {
-        let actual = self.interner.get(ident.val);
-        let actual = actual.slice(offset + 1..actual.len() - 1);
-        let lo = ident.span.lo + offset as u64 + 1;
-        let hi = ident.span.hi - 1;
-        ParserError::Index(actual.to_owned()).spanned(lo, hi)
+    pub(super) fn no_steps(&self, span: Span) -> Spanned<ParserError> {
+        ParserError::NoSteps.spanned2(span)
     }
 }
 
@@ -235,38 +189,5 @@ pub(super) const LHS: &[Expected] = &[
     Expected::Punctuation(punctuation![~]),
     Expected::Punctuation(punctuation![:]),
     Expected::AnyKeysym,
-    Expected::AnyIdent,
+    Expected::AnyModifier,
 ];
-
-// pub(super) const AFTER_EXCLAM: &[Expected] = &[
-//     Expected::Ident("include"),
-//     Expected::Punctuation(punctuation![*]),
-//     Expected::Nested(MLVO),
-// ];
-//
-// pub(super) const RULE_KEY: &[Expected] = &[
-//     Expected::Punctuation(punctuation![*]),
-//     Expected::Punctuation(punctuation![=]),
-//     Expected::AnyIdent,
-//     Expected::AnyGroupName,
-// ];
-//
-// pub(super) const MLVO: &[Expected] = &[
-//     Expected::Ident("model"),
-//     Expected::Ident("layout"),
-//     Expected::Ident("variant"),
-//     Expected::Ident("option"),
-// ];
-//
-// pub(super) const MAPPING_KEY: &[Expected] = &[
-//     Expected::Nested(MLVO),
-//     Expected::Punctuation(punctuation![=]),
-// ];
-//
-// pub(super) const MAPPING_VALUE: &[Expected] = &[
-//     Expected::Ident("keycodes"),
-//     Expected::Ident("symbols"),
-//     Expected::Ident("types"),
-//     Expected::Ident("compat"),
-//     Expected::Ident("geometry"),
-// ];

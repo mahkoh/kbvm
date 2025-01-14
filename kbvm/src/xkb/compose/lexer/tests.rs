@@ -1,21 +1,14 @@
-use {
-    crate::xkb::{
-        code::Code,
-        code_map::CodeMap,
-        compose::{
-            lexer::{Lexer, LexerError},
-            token::Token,
-        },
-        diagnostic::{DiagnosticSink, WriteToStderr},
-        interner::{Interned, Interner},
-        span::{SpanExt, Spanned},
+use crate::xkb::{
+    code::Code,
+    code_map::CodeMap,
+    compose::{
+        lexer::{Lexer, LexerError},
+        token::Token,
     },
-    std::{path::PathBuf, sync::Arc},
+    diagnostic::{DiagnosticSink, WriteToStderr},
+    interner::{Interned, Interner},
+    span::{SpanExt, Spanned},
 };
-
-fn empty_path() -> Arc<PathBuf> {
-    Arc::new(PathBuf::from(""))
-}
 
 fn l_(interner: &mut Interner, input: &str) -> Result<Vec<Spanned<Token>>, Spanned<LexerError>> {
     let mut output = vec![];
@@ -24,12 +17,7 @@ fn l_(interner: &mut Interner, input: &str) -> Result<Vec<Spanned<Token>>, Spann
     let span = map.add(None, None, &code);
     let mut handler = WriteToStderr;
     let mut sink = DiagnosticSink::new(&mut handler);
-    Lexer::new(&empty_path(), &code, span.lo).lex_line(
-        &mut map,
-        &mut sink,
-        interner,
-        &mut output,
-    )?;
+    Lexer::new(&code, span.lo).lex_line(&mut map, &mut sink, interner, &mut output)?;
     Ok(output)
 }
 
