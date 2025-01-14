@@ -4,7 +4,6 @@ use {
     isnt::std_1::vec::IsntVecExt,
     kbvm::{
         keysym::Keysym,
-        modifier::ModifierMask,
         xkb::{compose::FeedResult, diagnostic::Diagnostic, Context},
     },
     std::{
@@ -67,8 +66,6 @@ enum ResultError {
     ReadExpectedFailed(#[source] io::Error),
     #[error("unknown keysym `{0}`")]
     UnknownKeysym(String),
-    #[error("unknown modifier `{0}`")]
-    UnknownModifier(String),
     #[error("could not write expected file")]
     WriteExpectedFailed(#[source] io::Error),
     #[error("text comparison failed")]
@@ -116,32 +113,13 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
             line = pre;
         }
         line = line.trim();
-        let mut components = line
-            .split(' ')
-            .map(|c| c.trim())
-            .filter(|c| !c.is_empty())
-            .collect::<Vec<_>>();
-        let Some(keysym) = components.pop() else {
+        if line.is_empty() {
             continue;
-        };
-        let mut mods = ModifierMask(0);
-        for m in components {
-            mods |= match m.to_lowercase().as_str() {
-                "shift" => ModifierMask::SHIFT,
-                "lock" => ModifierMask::LOCK,
-                "control" => ModifierMask::CONTROL,
-                "alt" => ModifierMask::MOD1,
-                "mod2" => ModifierMask::MOD2,
-                "mod3" => ModifierMask::MOD3,
-                "mod4" => ModifierMask::MOD4,
-                "mod5" => ModifierMask::MOD5,
-                _ => return Err(ResultError::UnknownModifier(m.to_string())),
-            };
         }
-        let Some(keysym) = Keysym::from_str(keysym) else {
-            return Err(ResultError::UnknownKeysym(keysym.to_string()));
+        let Some(keysym) = Keysym::from_str(line) else {
+            return Err(ResultError::UnknownKeysym(line.to_string()));
         };
-        let Some(res) = table.feed(&mut state, mods, keysym) else {
+        let Some(res) = table.feed(&mut state, keysym) else {
             continue;
         };
         match res {

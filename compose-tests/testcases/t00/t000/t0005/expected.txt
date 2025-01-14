@@ -1,10 +1,10 @@
 Multi_key
     pending
 Shift_L
-Shift A
+A
     pending
 Caps_Lock
-Lock Control_L
-Shift Control T
+Control_L
+T
     composed
         @ at

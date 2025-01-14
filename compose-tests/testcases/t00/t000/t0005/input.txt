@@ -1,6 +1,6 @@
 Multi_key
 Shift_L
-Shift A
+A
 Caps_Lock
-Lock Control_L
-Shift Control T
+Control_L
+T

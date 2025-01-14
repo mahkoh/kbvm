@@ -52,8 +52,6 @@ pub(crate) struct Production {
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) struct Step {
     pub(crate) keysym: Keysym,
-    pub(crate) mask: u8,
-    pub(crate) mods: u8,
 }
 
 pub(crate) fn parse_line(
@@ -190,7 +188,7 @@ impl Parser<'_, '_, '_> {
     fn parse_production(&mut self) -> Result<Option<Line>, Spanned<ParserError>> {
         let mut steps = vec![];
         let span = loop {
-            let (mask, mods) = self.parse_modifiers()?;
+            let (mask, _mods) = self.parse_modifiers()?;
             let token = self.peek(LHS)?;
             if token.val == token![:] && mask.0 == 0 {
                 self.pos += 1;
@@ -204,11 +202,7 @@ impl Parser<'_, '_, '_> {
                 return Err(self.unknown_keysym(ks, token.span));
             };
             self.pos += 1;
-            steps.push(Step {
-                mask: mask.0 as u8,
-                mods: mods.0 as u8,
-                keysym: ks,
-            });
+            steps.push(Step { keysym: ks });
         };
         if steps.is_empty() {
             return Err(self.no_steps(span));

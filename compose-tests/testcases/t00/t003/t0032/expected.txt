@@ -1,7 +1,3 @@
 a
-Shift a
-Control a
-Shift Control Alt Lock a
     composed
         a
-Shift Control a

@@ -778,45 +778,15 @@ impl Format for RmlvoIncludes<'_> {
 
 #[cfg(feature = "compose")]
 mod compose {
-    use crate::{
-        modifier::{ModifierIndex, ModifierMask},
-        xkb::{
-            compose::{ComposeTable, MatchRule, MatchStep},
-            format::{Format, Writer},
-        },
+    use crate::xkb::{
+        compose::{ComposeTable, MatchRule, MatchStep},
+        format::{Format, Writer},
     };
 
     impl Format for MatchStep<'_> {
         fn format(&self, f: &mut Writer<'_, '_>) -> std::fmt::Result {
-            let step = self;
-            if step.node.mask == !0 && step.node.mods == 0 {
-                f.write("None ")?
-            } else {
-                let mods = ModifierMask(step.node.mods as u32);
-                let write_mod = |f: &mut Writer<'_, '_>, m: ModifierIndex| match m {
-                    ModifierIndex::SHIFT => f.write("Shift "),
-                    ModifierIndex::LOCK => f.write("Lock "),
-                    ModifierIndex::CONTROL => f.write("Control "),
-                    ModifierIndex::MOD1 => f.write("Alt "),
-                    _ => Ok(()),
-                };
-                if step.node.mask == !0 {
-                    f.write("! ")?;
-                    for m in mods {
-                        write_mod(f, m)?;
-                    }
-                } else {
-                    let mask = ModifierMask(step.node.mask as u32);
-                    for m in mask {
-                        if !mods.contains(m.to_mask()) {
-                            f.write("~ ")?;
-                        }
-                        write_mod(f, m)?;
-                    }
-                }
-            }
             f.write("<")?;
-            step.node.keysym.format(f)?;
+            self.node.keysym.format(f)?;
             f.write(">")?;
             Ok(())
         }

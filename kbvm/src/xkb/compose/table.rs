@@ -1,7 +1,6 @@
 use {
     crate::{
         keysym::Keysym,
-        modifier::ModifierMask,
         syms,
         xkb::{
             code_map::CodeMap,
@@ -29,8 +28,6 @@ pub struct Payload {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Node {
     pub(crate) keysym: Keysym,
-    pub(crate) mask: u8,
-    pub(crate) mods: u8,
     data: [u32; 2],
 }
 
@@ -226,8 +223,6 @@ impl ComposeTable {
         let mut nodes = Vec::with_capacity(datas.len() + 1);
         nodes.push(Node {
             keysym: Default::default(),
-            mask: 0,
-            mods: 0,
             data: NodeType::Intermediate {
                 range: 1..1 + num_root,
             }
@@ -257,8 +252,6 @@ impl ComposeTable {
             };
             nodes.push(Node {
                 keysym: data.step.keysym,
-                mask: data.step.mask,
-                mods: data.step.mods,
                 data: ty.serialize(),
             });
         }
@@ -281,9 +274,6 @@ impl ComposeTable {
 
     /// Advance the compose state.
     ///
-    /// The modifiers should be the effective modifiers at the time the keysym was
-    /// generated.
-    ///
     /// The `state` should have been created by [`Self::state`]. Otherwise this function
     /// might panic.
     ///
@@ -305,12 +295,7 @@ impl ComposeTable {
     ///     returned with the output and `state` is reset to the initial state.
     ///   - Otherwise, [`FeedResult::Pending`] is returned and `state` is updated to match
     ///     the new pending state.
-    pub fn feed(
-        &self,
-        state: &mut State,
-        mods: ModifierMask,
-        sym: Keysym,
-    ) -> Option<FeedResult<'_>> {
+    pub fn feed(&self, state: &mut State, sym: Keysym) -> Option<FeedResult<'_>> {
         if sym >= syms::Shift_L && sym <= syms::Hyper_R {
             return None;
         }
@@ -321,27 +306,22 @@ impl ComposeTable {
             return None;
         }
         let range = &self.nodes[state.range.clone()];
-        let range = find_candidates(range, sym);
-        for n in range {
-            let mask = ModifierMask(n.mask as i8 as u32); // force sign extension
-            let expected = ModifierMask(n.mods as u32);
-            if mods & mask == expected {
-                let res = match n.deserialize() {
-                    NodeType::Intermediate { range } => {
-                        state.range = range;
-                        FeedResult::Pending
+        if let Some(node) = find_match(range, sym) {
+            let res = match node.deserialize() {
+                NodeType::Intermediate { range } => {
+                    state.range = range;
+                    FeedResult::Pending
+                }
+                NodeType::Leaf { payload } => {
+                    *state = self.state();
+                    let payload = &self.payloads[payload];
+                    FeedResult::Composed {
+                        string: payload.string.as_deref(),
+                        keysym: payload.keysym,
                     }
-                    NodeType::Leaf { payload } => {
-                        *state = self.state();
-                        let payload = &self.payloads[payload];
-                        FeedResult::Composed {
-                            string: payload.string.as_deref(),
-                            keysym: payload.keysym,
-                        }
-                    }
-                };
-                return Some(res);
-            }
+                }
+            };
+            return Some(res);
         }
         if state.range.start == 1 {
             return None;
@@ -363,37 +343,23 @@ impl ComposeTable {
     }
 }
 
-fn find_candidates(range: &[Node], sym: Keysym) -> &[Node] {
+fn find_match(range: &[Node], sym: Keysym) -> Option<&Node> {
     const MAX_LINEAR: usize = 64;
     if range.len() <= MAX_LINEAR {
-        let mut iter = range.iter().enumerate();
-        for (lo, n) in iter.by_ref() {
-            if n.keysym > sym {
-                return &[];
-            }
+        for n in range {
             if n.keysym == sym {
-                for (hi, n) in iter {
-                    if n.keysym > sym {
-                        return &range[lo..hi];
-                    }
-                }
-                return &range[lo..];
+                return Some(n);
+            }
+            if n.keysym > sym {
+                return None;
             }
         }
-        return &[];
+        return None;
     }
     let Ok(pos) = range.binary_search_by_key(&sym, |n| n.keysym) else {
-        return &[];
+        return None;
     };
-    let mut lo = pos;
-    while lo > 0 && range[lo - 1].keysym == sym {
-        lo -= 1;
-    }
-    let mut hi = pos + 1;
-    while hi < range.len() && range[hi].keysym == sym {
-        hi += 1;
-    }
-    &range[lo..hi]
+    Some(&range[pos])
 }
 
 pub struct MatchStep<'a> {
