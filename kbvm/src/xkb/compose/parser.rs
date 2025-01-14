@@ -131,6 +131,7 @@ impl Parser<'_, '_, '_> {
             let mut last_was_percent = false;
             for (offset, &b) in bytes.as_bytes().iter().enumerate() {
                 if last_was_percent {
+                    last_was_percent = false;
                     let lo = t.span.lo + offset as u64;
                     let hi = lo + 2;
                     match b {

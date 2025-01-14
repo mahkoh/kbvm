@@ -1,0 +1,14 @@
+A
+    pending
+C
+    aborted
+D
+A
+    pending
+C
+    aborted
+C
+    pending
+D
+    composed
+        Y

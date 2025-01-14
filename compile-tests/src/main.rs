@@ -1,22 +1,16 @@
 use {
     error_reporter::Report,
+    integration_test_utils::run,
     isnt::std_1::{primitive::IsntStrExt, vec::IsntVecExt},
     kbvm::xkb::{
         diagnostic::Diagnostic,
         rmlvo::{self, Element, Expanded, MergeMode},
         Context, Keymap,
     },
-    parking_lot::Mutex,
     serde::{Deserialize, Serialize},
     std::{
-        fs::read_dir,
         io::{self, ErrorKind},
-        path::{Path, PathBuf},
-        sync::{
-            atomic::{AtomicUsize, Ordering::Relaxed},
-            Arc,
-        },
-        thread::available_parallelism,
+        path::Path,
     },
     thiserror::Error,
 };
@@ -30,43 +24,7 @@ const SHOW_ALL_DIAGNOSTICS: bool = false;
 
 fn main() {
     std::env::set_current_dir(env!("CARGO_MANIFEST_DIR")).unwrap();
-    let path = Path::new("./testcases");
-    let mut cases = vec![];
-    for f in read_dir(path).unwrap() {
-        let f = f.unwrap();
-        if !f.metadata().unwrap().is_dir() {
-            continue;
-        }
-        for f in read_dir(f.path()).unwrap() {
-            let f = f.unwrap();
-            if !f.metadata().unwrap().is_dir() {
-                continue;
-            }
-            for f in read_dir(f.path()).unwrap() {
-                let f = f.unwrap();
-                if let Some(s) = SINGLE {
-                    if f.file_name() != s {
-                        continue;
-                    }
-                }
-                cases.push(f.path());
-            }
-        }
-    }
-    let results = Arc::new(Results {
-        idx: Default::default(),
-        cases,
-        results: Default::default(),
-    });
-    let mut threads = vec![];
-    for _ in 0..available_parallelism().unwrap().get() {
-        let results = results.clone();
-        threads.push(std::thread::spawn(move || test_thread(results)));
-    }
-    for t in threads {
-        t.join().unwrap();
-    }
-    let results = &mut *results.results.lock();
+    let mut results = run(SINGLE, test_case2);
     results.sort_unstable_by(|l, r| l.case.cmp(&r.case));
     let mut any_failed = false;
     for result in results {
@@ -111,18 +69,6 @@ fn main() {
     }
 }
 
-struct Results {
-    idx: AtomicUsize,
-    cases: Vec<PathBuf>,
-    results: Mutex<Vec<TestResult>>,
-}
-
-struct TestResult {
-    case: PathBuf,
-    diagnostics: Vec<Diagnostic>,
-    result: Result<(), ResultError>,
-}
-
 #[derive(Debug, Error)]
 enum ResultError {
     #[error("could not read input file")]
@@ -154,34 +100,6 @@ enum ResultError {
     WriteActualFailed(#[source] io::Error),
     #[error("could not write round-trip file")]
     WriteRoundTripFailed(#[source] io::Error),
-}
-
-fn test_thread(results: Arc<Results>) {
-    let digits = (results.cases.len() as f64 + 1.0).log10().ceil() as usize;
-    loop {
-        let idx = results.idx.fetch_add(1, Relaxed);
-        if idx >= results.cases.len() {
-            return;
-        }
-        let path = &results.cases[idx];
-        eprintln!(
-            "testing {:0digits$}/{}: {}",
-            idx + 1,
-            results.cases.len(),
-            Path::new(path.file_name().unwrap()).display(),
-        );
-        test_case(&results, path)
-    }
-}
-
-fn test_case(results: &Results, case: &Path) {
-    let mut diagnostics = Vec::new();
-    let result = TestResult {
-        result: test_case2(&mut diagnostics, case),
-        diagnostics,
-        case: case.to_path_buf(),
-    };
-    results.results.lock().push(result);
 }
 
 fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {

@@ -1,0 +1,6 @@
+A
+    pending
+B
+    composed
+        bar B
+C

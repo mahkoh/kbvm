@@ -1,0 +1,5 @@
+dead_acute
+    pending
+A
+    composed
+        Á Aacute

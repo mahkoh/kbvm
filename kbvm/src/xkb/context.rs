@@ -115,7 +115,6 @@ pub(crate) struct Environment {
 }
 
 /// A builder for [`Context`] objects.
-#[derive(Clone)]
 pub struct ContextBuilder {
     enable_system_dirs: bool,
     enable_environment: bool,
@@ -124,6 +123,7 @@ pub struct ContextBuilder {
     max_include_depth: u64,
     prefix: Vec<PathBuf>,
     suffix: Vec<PathBuf>,
+    environment_accessor: Option<Box<dyn FnMut(&str) -> Option<String>>>,
 }
 
 impl Default for ContextBuilder {
@@ -136,6 +136,7 @@ impl Default for ContextBuilder {
             max_include_depth: 128,
             prefix: vec![],
             suffix: vec![],
+            environment_accessor: None,
         }
     }
 }
@@ -167,6 +168,16 @@ impl ContextBuilder {
     /// cannot be parsed, its first line might get printed as a log message.
     pub fn enable_environment(&mut self, val: bool) {
         self.enable_environment = val;
+    }
+
+    /// Sets the function used to access environment variables.
+    ///
+    /// By default, the builder uses [`std::env::var`].
+    ///
+    /// If the environment is [disabled](Self::enable_environment), then this function
+    /// will never be called.
+    pub fn environment_accessor(&mut self, accessor: impl FnMut(&str) -> Option<String> + 'static) {
+        self.environment_accessor = Some(Box::new(accessor));
     }
 
     #[allow(rustdoc::broken_intra_doc_links)]
@@ -230,6 +241,7 @@ impl ContextBuilder {
         self.enable_environment = false;
         self.prefix.clear();
         self.suffix.clear();
+        self.environment_accessor = None;
     }
 
     /// Builds the context.
@@ -238,7 +250,10 @@ impl ContextBuilder {
             ($env:expr) => {{
                 let mut tmp = None;
                 if self.enable_environment {
-                    tmp = std::env::var($env).ok();
+                    tmp = match &mut self.environment_accessor {
+                        Some(f) => f($env),
+                        _ => std::env::var($env).ok(),
+                    }
                 }
                 tmp
             }};

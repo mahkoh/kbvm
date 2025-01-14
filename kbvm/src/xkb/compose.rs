@@ -305,13 +305,16 @@ impl ComposeTableBuilder<'_> {
         Some(table)
     }
 
-    fn get_compose_file(&self, resolved_locale: &str) -> Option<String> {
+    fn get_compose_file(&self, mut resolved_locale: &str) -> Option<String> {
+        if resolved_locale == "C" {
+            resolved_locale = "en_US.UTF-8";
+        }
         let Some(mut ll) = self.read_locale_lines("compose.dir") else {
             return None;
         };
         while let Some((l, r)) = ll.next() {
-            if r == resolved_locale {
-                return Some(format!("{}/{}", self.context.env.xlocaledir, l));
+            if r == resolved_locale.as_bytes() {
+                return Some(format!("{}/{}", self.context.env.xlocaledir, l.as_bstr()));
             }
         }
         None
@@ -322,8 +325,8 @@ impl ComposeTableBuilder<'_> {
             return locale.to_string();
         };
         while let Some((l, r)) = ll.next() {
-            if l == locale {
-                return r.to_string();
+            if l == locale.as_bytes() {
+                return r.as_bstr().to_string();
             }
         }
         locale.to_string()
@@ -333,39 +336,39 @@ impl ComposeTableBuilder<'_> {
         let path = Path::new(&self.context.env.xlocaledir).join(filename);
         let file = File::open(&path).ok()?;
         Some(LocaleLines {
-            buf: String::new(),
+            buf: Vec::new(),
             reader: BufReader::new(file),
         })
     }
 }
 
 struct LocaleLines {
-    buf: String,
+    buf: Vec<u8>,
     reader: BufReader<File>,
 }
 
 impl LocaleLines {
-    fn next<'a>(&'a mut self) -> Option<(&'a str, &'a str)> {
+    fn next<'a>(&'a mut self) -> Option<(&'a [u8], &'a [u8])> {
         loop {
             self.buf.clear();
-            if self.reader.read_line(&mut self.buf).ok()? == 0 {
+            if self.reader.read_until(b'\n', &mut self.buf).ok()? == 0 {
                 return None;
             }
-            let mut buf = self.buf.as_str();
-            if let Some((l, _)) = buf.split_once('#') {
+            let mut buf = self.buf.as_bytes();
+            if let Some((l, _)) = buf.split_once_str(b"#") {
                 buf = l;
             }
-            let (l, r) = if let Some((l, r)) = buf.split_once(':') {
+            let (l, r) = if let Some((l, r)) = buf.split_once_str(b":") {
                 (l, r)
-            } else if let Some((l, r)) = buf.split_once([' ', '\t']) {
-                (l, r)
+            } else if let Some(idx) = buf.find_byteset([b' ', b'\t']) {
+                buf.split_at(idx)
             } else {
                 continue;
             };
             unsafe {
-                type Ret<'b> = Option<(&'b str, &'b str)>;
+                type Ret<'b> = Option<(&'b [u8], &'b [u8])>;
                 // SAFETY: This is a compiler bug that will never be fixed.
-                return mem::transmute::<Ret<'_>, Ret<'a>>(Some((l.trim(), r.trim())));
+                return mem::transmute::<Ret<'_>, Ret<'a>>(Some((l.trim_ascii(), r.trim_ascii())));
             }
         }
     }

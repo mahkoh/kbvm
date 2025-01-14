@@ -1,0 +1,387 @@
+<Multi_key> <apostrophe> <apostrophe> 	: "´"   acute # ACUTE ACCENT
+<Multi_key> <apostrophe> <space> 	: "'"   apostrophe # APOSTROPHE
+<Multi_key> <space> <apostrophe> 	: "'"   apostrophe # APOSTROPHE
+<Multi_key> <less> <apostrophe>  	: "‘"   U2018 # LEFT SINGLE QUOTATION MARK
+<Multi_key> <apostrophe> <less>  	: "‘"   U2018 # LEFT SINGLE QUOTATION MARK
+<Multi_key> <greater> <apostrophe> 	: "’"   U2019 # RIGHT SINGLE QUOTATION MARK
+<Multi_key> <apostrophe> <greater> 	: "’"   U2019 # RIGHT SINGLE QUOTATION MARK
+<Multi_key> <comma> <apostrophe> 	: "‚"   U201a # SINGLE LOW-9 QUOTATION MARK
+<Multi_key> <apostrophe> <comma> 	: "‚"   U201a # SINGLE LOW-9 QUOTATION MARK
+<Multi_key> <apostrophe> <A>     	: "Á"   Aacute # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <A> <apostrophe> 		: "Á"   Aacute # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <apostrophe> <E>     	: "É"   Eacute # LATIN CAPITAL LETTER E WITH ACUTE
+<Multi_key> <E> <apostrophe> 		: "É"   Eacute # LATIN CAPITAL LETTER E WITH ACUTE
+<Multi_key> <apostrophe> <I>     	: "Í"   Iacute # LATIN CAPITAL LETTER I WITH ACUTE
+<Multi_key> <I> <apostrophe> 		: "Í"   Iacute # LATIN CAPITAL LETTER I WITH ACUTE
+<Multi_key> <apostrophe> <J> 		: "J́"    # LATIN CAPITAL LETTER J U004A with COMBINING ACUTE ACCENT U0301
+<Multi_key> <J> <apostrophe> 		: "J́"    # LATIN CAPITAL LETTER J U004A with COMBINING ACUTE ACCENT U0301
+<Multi_key> <apostrophe> <O>     	: "Ó"   Oacute # LATIN CAPITAL LETTER O WITH ACUTE
+<Multi_key> <O> <apostrophe>     	: "Ó"   Oacute # LATIN CAPITAL LETTER O WITH ACUTE
+<Multi_key> <apostrophe> <U>     	: "Ú"   Uacute # LATIN CAPITAL LETTER U WITH ACUTE
+<Multi_key> <U> <apostrophe> 		: "Ú"   Uacute # LATIN CAPITAL LETTER U WITH ACUTE
+<Multi_key> <apostrophe> <Y>     	: "Ý"   Yacute # LATIN CAPITAL LETTER Y WITH ACUTE
+<Multi_key> <Y> <apostrophe> 		: "Ý"   Yacute # LATIN CAPITAL LETTER Y WITH ACUTE
+<Multi_key> <apostrophe> <a>     	: "á"   aacute # LATIN SMALL LETTER A WITH ACUTE
+<Multi_key> <a> <apostrophe> 		: "á"   aacute # LATIN SMALL LETTER A WITH ACUTE
+<Multi_key> <apostrophe> <e>     	: "é"   eacute # LATIN SMALL LETTER E WITH ACUTE
+<Multi_key> <e> <apostrophe> 		: "é"   eacute # LATIN SMALL LETTER E WITH ACUTE
+<Multi_key> <apostrophe> <i>     	: "í"   iacute # LATIN SMALL LETTER I WITH ACUTE
+<Multi_key> <i> <apostrophe> 		: "í"   iacute # LATIN SMALL LETTER I WITH ACUTE
+<Multi_key> <apostrophe> <j> 		: "j́"    # LATIN SMALL LETTER J U006A with COMBINING ACUTE ACCENT U0301
+<Multi_key> <j> <apostrophe> 		: "j́"    # LATIN SMALL LETTER J U006A with COMBINING ACUTE ACCENT U0301
+<Multi_key> <apostrophe> <o>     	: "ó"   oacute # LATIN SMALL LETTER O WITH ACUTE
+<Multi_key> <o> <apostrophe>     	: "ó"   oacute # LATIN SMALL LETTER O WITH ACUTE
+<Multi_key> <apostrophe> <u>     	: "ú"   uacute # LATIN SMALL LETTER U WITH ACUTE
+<Multi_key> <u> <apostrophe> 		: "ú"   uacute # LATIN SMALL LETTER U WITH ACUTE
+<Multi_key> <apostrophe> <y>     	: "ý"   yacute # LATIN SMALL LETTER Y WITH ACUTE
+<Multi_key> <y> <apostrophe> 		: "ý"   yacute # LATIN SMALL LETTER Y WITH ACUTE
+<Multi_key> <apostrophe> <C>     	: "Ć"   U0106 # LATIN CAPITAL LETTER C WITH ACUTE
+<Multi_key> <C> <apostrophe> 		: "Ć"   U0106 # LATIN CAPITAL LETTER C WITH ACUTE
+<Multi_key> <apostrophe> <c>     	: "ć"   U0107 # LATIN SMALL LETTER C WITH ACUTE
+<Multi_key> <c> <apostrophe> 		: "ć"   U0107 # LATIN SMALL LETTER C WITH ACUTE
+<Multi_key> <apostrophe> <L>     	: "Ĺ"   U0139 # LATIN CAPITAL LETTER L WITH ACUTE
+<Multi_key> <L> <apostrophe> 		: "Ĺ"   U0139 # LATIN CAPITAL LETTER L WITH ACUTE
+<Multi_key> <apostrophe> <l>     	: "ĺ"   U013A # LATIN SMALL LETTER L WITH ACUTE
+<Multi_key> <l> <apostrophe> 		: "ĺ"   U013A # LATIN SMALL LETTER L WITH ACUTE
+<Multi_key> <apostrophe> <N>     	: "Ń"   U0143 # LATIN CAPITAL LETTER N WITH ACUTE
+<Multi_key> <N> <apostrophe> 		: "Ń"   U0143 # LATIN CAPITAL LETTER N WITH ACUTE
+<Multi_key> <apostrophe> <n>     	: "ń"   U0144 # LATIN SMALL LETTER N WITH ACUTE
+<Multi_key> <n> <apostrophe> 		: "ń"   U0144 # LATIN SMALL LETTER N WITH ACUTE
+<Multi_key> <apostrophe> <R>     	: "Ŕ"   U0154 # LATIN CAPITAL LETTER R WITH ACUTE
+<Multi_key> <R> <apostrophe> 		: "Ŕ"   U0154 # LATIN CAPITAL LETTER R WITH ACUTE
+<Multi_key> <apostrophe> <r>     	: "ŕ"   U0155 # LATIN SMALL LETTER R WITH ACUTE
+<Multi_key> <r> <apostrophe> 		: "ŕ"   U0155 # LATIN SMALL LETTER R WITH ACUTE
+<Multi_key> <apostrophe> <S>     	: "Ś"   U015A # LATIN CAPITAL LETTER S WITH ACUTE
+<Multi_key> <S> <apostrophe> 		: "Ś"   U015A # LATIN CAPITAL LETTER S WITH ACUTE
+<Multi_key> <apostrophe> <s>     	: "ś"   U015B # LATIN SMALL LETTER S WITH ACUTE
+<Multi_key> <s> <apostrophe> 		: "ś"   U015B # LATIN SMALL LETTER S WITH ACUTE
+<Multi_key> <apostrophe> <Z>     	: "Ź"   U0179 # LATIN CAPITAL LETTER Z WITH ACUTE
+<Multi_key> <Z> <apostrophe>		: "Ź"   U0179 # LATIN CAPITAL LETTER Z WITH ACUTE
+<Multi_key> <apostrophe> <z>     	: "ź"   U017A # LATIN SMALL LETTER Z WITH ACUTE
+<Multi_key> <z> <apostrophe>		: "ź"   U017A # LATIN SMALL LETTER Z WITH ACUTE
+<Multi_key> <apostrophe> <Udiaeresis> 	: "Ǘ"   U01D7 # LATIN CAPITAL LETTER U WITH DIAERESIS AND ACUTE
+<Multi_key> <apostrophe> <dead_diaeresis> <U> 	: "Ǘ"   U01D7 # LATIN CAPITAL LETTER U WITH DIAERESIS AND ACUTE
+<Multi_key> <apostrophe> <quotedbl> <U> 	: "Ǘ"   U01D7 # LATIN CAPITAL LETTER U WITH DIAERESIS AND ACUTE
+<Multi_key> <apostrophe> <udiaeresis> 	: "ǘ"   U01D8 # LATIN SMALL LETTER U WITH DIAERESIS AND ACUTE
+<Multi_key> <apostrophe> <dead_diaeresis> <u> 	: "ǘ"   U01D8 # LATIN SMALL LETTER U WITH DIAERESIS AND ACUTE
+<Multi_key> <apostrophe> <quotedbl> <u> 	: "ǘ"   U01D8 # LATIN SMALL LETTER U WITH DIAERESIS AND ACUTE
+<Multi_key> <apostrophe> <G>     	: "Ǵ"   U01F4 # LATIN CAPITAL LETTER G WITH ACUTE
+<Multi_key> <apostrophe> <g>     	: "ǵ"   U01F5 # LATIN SMALL LETTER G WITH ACUTE
+<Multi_key> <apostrophe> <Aring> 	: "Ǻ"   U01FA # LATIN CAPITAL LETTER A WITH RING ABOVE AND ACUTE
+<Multi_key> <apostrophe> <dead_abovering> <A> 	: "Ǻ"   U01FA # LATIN CAPITAL LETTER A WITH RING ABOVE AND ACUTE
+<Multi_key> <asterisk> <apostrophe> <A> 	: "Ǻ"   U01FA # LATIN CAPITAL LETTER A WITH RING ABOVE AND ACUTE
+<Multi_key> <apostrophe> <aring> 	: "ǻ"   U01FB # LATIN SMALL LETTER A WITH RING ABOVE AND ACUTE
+<Multi_key> <apostrophe> <dead_abovering> <a> 	: "ǻ"   U01FB # LATIN SMALL LETTER A WITH RING ABOVE AND ACUTE
+<Multi_key> <asterisk> <apostrophe> <a> 	: "ǻ"   U01FB # LATIN SMALL LETTER A WITH RING ABOVE AND ACUTE
+<Multi_key> <apostrophe> <AE>    	: "Ǽ"   U01FC # LATIN CAPITAL LETTER AE WITH ACUTE
+<Multi_key> <apostrophe> <ae>    	: "ǽ"   U01FD # LATIN SMALL LETTER AE WITH ACUTE
+<Multi_key> <apostrophe> <Ooblique> 	: "Ǿ"   U01FE # LATIN CAPITAL LETTER O WITH STROKE AND ACUTE
+<Multi_key> <apostrophe> <slash> <O> 	: "Ǿ"   U01FE # LATIN CAPITAL LETTER O WITH STROKE AND ACUTE
+<Multi_key> <apostrophe> <KP_Divide> <O> 	: "Ǿ"   U01FE # LATIN CAPITAL LETTER O WITH STROKE AND ACUTE
+<Multi_key> <apostrophe> <oslash> 	: "ǿ"   U01FF # LATIN SMALL LETTER O WITH STROKE AND ACUTE
+<Multi_key> <apostrophe> <slash> <o> 	: "ǿ"   U01FF # LATIN SMALL LETTER O WITH STROKE AND ACUTE
+<Multi_key> <apostrophe> <KP_Divide> <o> 	: "ǿ"   U01FF # LATIN SMALL LETTER O WITH STROKE AND ACUTE
+<Multi_key> <quotedbl> <apostrophe> 	: "̈́"   U0344 # COMBINING GREEK DIALYTIKA TONOS
+<Multi_key> <diaeresis> <apostrophe> 	: "΅"   U0385 # GREEK DIALYTIKA TONOS
+<Multi_key> <apostrophe> <quotedbl> <space>	: "΅"   U0385 # GREEK DIALYTIKA TONOS
+<Multi_key> <apostrophe> <Greek_ALPHA> 	: "Ά"   U0386 # GREEK CAPITAL LETTER ALPHA WITH TONOS
+<Multi_key> <Greek_ALPHA> <apostrophe> 	: "Ά"   U0386 # GREEK CAPITAL LETTER ALPHA WITH TONOS
+<Multi_key> <apostrophe> <Greek_EPSILON> 	: "Έ"   U0388 # GREEK CAPITAL LETTER EPSILON WITH TONOS
+<Multi_key> <Greek_EPSILON> <apostrophe> 	: "Έ"   U0388 # GREEK CAPITAL LETTER EPSILON WITH TONOS
+<Multi_key> <apostrophe> <Greek_ETA> 	: "Ή"   U0389 # GREEK CAPITAL LETTER ETA WITH TONOS
+<Multi_key> <Greek_ETA> <apostrophe> 	: "Ή"   U0389 # GREEK CAPITAL LETTER ETA WITH TONOS
+<Multi_key> <apostrophe> <Greek_IOTA> 	: "Ί"   U038A # GREEK CAPITAL LETTER IOTA WITH TONOS
+<Multi_key> <Greek_IOTA> <apostrophe> 	: "Ί"   U038A # GREEK CAPITAL LETTER IOTA WITH TONOS
+<Multi_key> <apostrophe> <Greek_OMICRON> 	: "Ό"   U038C # GREEK CAPITAL LETTER OMICRON WITH TONOS
+<Multi_key> <Greek_OMICRON> <apostrophe> 	: "Ό"   U038C # GREEK CAPITAL LETTER OMICRON WITH TONOS
+<Multi_key> <apostrophe> <Greek_UPSILON> 	: "Ύ"   U038E # GREEK CAPITAL LETTER UPSILON WITH TONOS
+<Multi_key> <Greek_UPSILON> <apostrophe> 	: "Ύ"   U038E # GREEK CAPITAL LETTER UPSILON WITH TONOS
+<Multi_key> <apostrophe> <Greek_OMEGA> 	: "Ώ"   U038F # GREEK CAPITAL LETTER OMEGA WITH TONOS
+<Multi_key> <Greek_OMEGA> <apostrophe> 	: "Ώ"   U038F # GREEK CAPITAL LETTER OMEGA WITH TONOS
+<Multi_key> <apostrophe> <Greek_iotadieresis> 	: "ΐ"   U0390 # GREEK SMALL LETTER IOTA WITH DIALYTIKA AND TONOS
+<Multi_key> <apostrophe> <dead_diaeresis> <Greek_iota> 	: "ΐ"   U0390 # GREEK SMALL LETTER IOTA WITH DIALYTIKA AND TONOS
+<Multi_key> <apostrophe> <quotedbl> <Greek_iota> 	: "ΐ"   U0390 # GREEK SMALL LETTER IOTA WITH DIALYTIKA AND TONOS
+<Multi_key> <apostrophe> <Greek_alpha> 	: "ά"   U03AC # GREEK SMALL LETTER ALPHA WITH TONOS
+<Multi_key> <Greek_alpha> <apostrophe> 	: "ά"   U03AC # GREEK SMALL LETTER ALPHA WITH TONOS
+<Multi_key> <apostrophe> <Greek_epsilon> 	: "έ"   U03AD # GREEK SMALL LETTER EPSILON WITH TONOS
+<Multi_key> <Greek_epsilon> <apostrophe> 	: "έ"   U03AD # GREEK SMALL LETTER EPSILON WITH TONOS
+<Multi_key> <apostrophe> <Greek_eta> 	: "ή"   U03AE # GREEK SMALL LETTER ETA WITH TONOS
+<Multi_key> <Greek_eta> <apostrophe> 	: "ή"   U03AE # GREEK SMALL LETTER ETA WITH TONOS
+<Multi_key> <apostrophe> <Greek_iota> 	: "ί"   U03AF # GREEK SMALL LETTER IOTA WITH TONOS
+<Multi_key> <apostrophe> <Greek_upsilondieresis> 	: "ΰ"   U03B0 # GREEK SMALL LETTER UPSILON WITH DIALYTIKA AND TONOS
+<Multi_key> <apostrophe> <dead_diaeresis> <Greek_upsilon> 	: "ΰ"   U03B0 # GREEK SMALL LETTER UPSILON WITH DIALYTIKA AND TONOS
+<Multi_key> <apostrophe> <quotedbl> <Greek_upsilon> 	: "ΰ"   U03B0 # GREEK SMALL LETTER UPSILON WITH DIALYTIKA AND TONOS
+<Multi_key> <apostrophe> <Greek_omicron> 	: "ό"   U03CC # GREEK SMALL LETTER OMICRON WITH TONOS
+<Multi_key> <Greek_omicron> <apostrophe> 	: "ό"   U03CC # GREEK SMALL LETTER OMICRON WITH TONOS
+<Multi_key> <apostrophe> <Greek_upsilon> 	: "ύ"   U03CD # GREEK SMALL LETTER UPSILON WITH TONOS
+<Multi_key> <Greek_upsilon> <apostrophe> 	: "ύ"   U03CD # GREEK SMALL LETTER UPSILON WITH TONOS
+<Multi_key> <apostrophe> <Greek_omega> 	: "ώ"   U03CE # GREEK SMALL LETTER OMEGA WITH TONOS
+<Multi_key> <Greek_omega> <apostrophe> 	: "ώ"   U03CE # GREEK SMALL LETTER OMEGA WITH TONOS
+<Multi_key> <apostrophe> <Cyrillic_GHE> 	: "Ѓ"   U0403 # CYRILLIC CAPITAL LETTER GJE
+<Multi_key> <apostrophe> <Cyrillic_KA> 	: "Ќ"   U040C # CYRILLIC CAPITAL LETTER KJE
+<Multi_key> <apostrophe> <Cyrillic_ghe> 	: "ѓ"   U0453 # CYRILLIC SMALL LETTER GJE
+<Multi_key> <apostrophe> <Cyrillic_ka> 	: "ќ"   U045C # CYRILLIC SMALL LETTER KJE
+<Multi_key> <apostrophe> <Ccedilla> 	: "Ḉ"   U1E08 # LATIN CAPITAL LETTER C WITH CEDILLA AND ACUTE
+<Multi_key> <apostrophe> <dead_cedilla> <C> 	: "Ḉ"   U1E08 # LATIN CAPITAL LETTER C WITH CEDILLA AND ACUTE
+<Multi_key> <apostrophe> <cedilla> <C>	: "Ḉ" U1E08 # LATIN CAPITAL LETTER C WITH CEDILLA AND ACUTE
+<Multi_key> <apostrophe> <ccedilla> 	: "ḉ"   U1E09 # LATIN SMALL LETTER C WITH CEDILLA AND ACUTE
+<Multi_key> <apostrophe> <dead_cedilla> <c> 	: "ḉ"   U1E09 # LATIN SMALL LETTER C WITH CEDILLA AND ACUTE
+<Multi_key> <apostrophe> <cedilla> <c>	: "ḉ" U1E09 # LATIN SMALL LETTER C WITH CEDILLA AND ACUTE
+<Multi_key> <apostrophe> <Emacron> 	: "Ḗ"   U1E16 # LATIN CAPITAL LETTER E WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <dead_macron> <E> 	: "Ḗ"   U1E16 # LATIN CAPITAL LETTER E WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <macron> <E> 	: "Ḗ"   U1E16 # LATIN CAPITAL LETTER E WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <underscore> <E> 	: "Ḗ"   U1E16 # LATIN CAPITAL LETTER E WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <emacron> 	: "ḗ"   U1E17 # LATIN SMALL LETTER E WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <dead_macron> <e> 	: "ḗ"   U1E17 # LATIN SMALL LETTER E WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <macron> <e> 	: "ḗ"   U1E17 # LATIN SMALL LETTER E WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <underscore> <e> 	: "ḗ"   U1E17 # LATIN SMALL LETTER E WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <Idiaeresis> 	: "Ḯ"   U1E2E # LATIN CAPITAL LETTER I WITH DIAERESIS AND ACUTE
+<Multi_key> <apostrophe> <dead_diaeresis> <I> 	: "Ḯ"   U1E2E # LATIN CAPITAL LETTER I WITH DIAERESIS AND ACUTE
+<Multi_key> <apostrophe> <quotedbl> <I> 	: "Ḯ"   U1E2E # LATIN CAPITAL LETTER I WITH DIAERESIS AND ACUTE
+<Multi_key> <apostrophe> <idiaeresis> 	: "ḯ"   U1E2F # LATIN SMALL LETTER I WITH DIAERESIS AND ACUTE
+<Multi_key> <apostrophe> <dead_diaeresis> <i> 	: "ḯ"   U1E2F # LATIN SMALL LETTER I WITH DIAERESIS AND ACUTE
+<Multi_key> <apostrophe> <quotedbl> <i> 	: "ḯ"   U1E2F # LATIN SMALL LETTER I WITH DIAERESIS AND ACUTE
+<Multi_key> <apostrophe> <K>     	: "Ḱ"   U1E30 # LATIN CAPITAL LETTER K WITH ACUTE
+<Multi_key> <apostrophe> <k>     	: "ḱ"   U1E31 # LATIN SMALL LETTER K WITH ACUTE
+<Multi_key> <apostrophe> <M>     	: "Ḿ"   U1E3E # LATIN CAPITAL LETTER M WITH ACUTE
+<Multi_key> <apostrophe> <m>     	: "ḿ"   U1E3F # LATIN SMALL LETTER M WITH ACUTE
+<Multi_key> <apostrophe> <Otilde> 	: "Ṍ"   U1E4C # LATIN CAPITAL LETTER O WITH TILDE AND ACUTE
+<Multi_key> <apostrophe> <dead_tilde> <O> 	: "Ṍ"   U1E4C # LATIN CAPITAL LETTER O WITH TILDE AND ACUTE
+<Multi_key> <apostrophe> <asciitilde> <O> 	: "Ṍ"   U1E4C # LATIN CAPITAL LETTER O WITH TILDE AND ACUTE
+<Multi_key> <apostrophe> <otilde> 	: "ṍ"   U1E4D # LATIN SMALL LETTER O WITH TILDE AND ACUTE
+<Multi_key> <apostrophe> <dead_tilde> <o> 	: "ṍ"   U1E4D # LATIN SMALL LETTER O WITH TILDE AND ACUTE
+<Multi_key> <apostrophe> <asciitilde> <o> 	: "ṍ"   U1E4D # LATIN SMALL LETTER O WITH TILDE AND ACUTE
+<Multi_key> <apostrophe> <Omacron> 	: "Ṓ"   U1E52 # LATIN CAPITAL LETTER O WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <dead_macron> <O> 	: "Ṓ"   U1E52 # LATIN CAPITAL LETTER O WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <macron> <O> 	: "Ṓ"   U1E52 # LATIN CAPITAL LETTER O WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <underscore> <O> 	: "Ṓ"   U1E52 # LATIN CAPITAL LETTER O WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <omacron> 	: "ṓ"   U1E53 # LATIN SMALL LETTER O WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <dead_macron> <o> 	: "ṓ"   U1E53 # LATIN SMALL LETTER O WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <macron> <o> 	: "ṓ"   U1E53 # LATIN SMALL LETTER O WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <underscore> <o> 	: "ṓ"   U1E53 # LATIN SMALL LETTER O WITH MACRON AND ACUTE
+<Multi_key> <apostrophe> <P>     	: "Ṕ"   U1E54 # LATIN CAPITAL LETTER P WITH ACUTE
+<Multi_key> <apostrophe> <p>     	: "ṕ"   U1E55 # LATIN SMALL LETTER P WITH ACUTE
+<dead_abovedot> <Multi_key> <apostrophe> <S> 	: "Ṥ"   U1E64 # LATIN CAPITAL LETTER S WITH ACUTE AND DOT ABOVE
+<Multi_key> <period> <apostrophe> <S> 	: "Ṥ"   U1E64 # LATIN CAPITAL LETTER S WITH ACUTE AND DOT ABOVE
+<dead_abovedot> <Multi_key> <apostrophe> <s> 	: "ṥ"   U1E65 # LATIN SMALL LETTER S WITH ACUTE AND DOT ABOVE
+<Multi_key> <period> <apostrophe> <s> 	: "ṥ"   U1E65 # LATIN SMALL LETTER S WITH ACUTE AND DOT ABOVE
+<Multi_key> <apostrophe> <Utilde> 	: "Ṹ"   U1E78 # LATIN CAPITAL LETTER U WITH TILDE AND ACUTE
+<Multi_key> <apostrophe> <dead_tilde> <U> 	: "Ṹ"   U1E78 # LATIN CAPITAL LETTER U WITH TILDE AND ACUTE
+<Multi_key> <apostrophe> <asciitilde> <U> 	: "Ṹ"   U1E78 # LATIN CAPITAL LETTER U WITH TILDE AND ACUTE
+<Multi_key> <apostrophe> <utilde> 	: "ṹ"   U1E79 # LATIN SMALL LETTER U WITH TILDE AND ACUTE
+<Multi_key> <apostrophe> <dead_tilde> <u> 	: "ṹ"   U1E79 # LATIN SMALL LETTER U WITH TILDE AND ACUTE
+<Multi_key> <apostrophe> <asciitilde> <u> 	: "ṹ"   U1E79 # LATIN SMALL LETTER U WITH TILDE AND ACUTE
+<Multi_key> <apostrophe> <W>     	: "Ẃ"   U1E82 # LATIN CAPITAL LETTER W WITH ACUTE
+<Multi_key> <apostrophe> <w>     	: "ẃ"   U1E83 # LATIN SMALL LETTER W WITH ACUTE
+<Multi_key> <apostrophe> <Acircumflex> 	: "Ấ"   U1EA4 # LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <dead_circumflex> <A> 	: "Ấ"   U1EA4 # LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <asciicircum> <A> 	: "Ấ"   U1EA4 # LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <acircumflex> 	: "ấ"   U1EA5 # LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <dead_circumflex> <a> 	: "ấ"   U1EA5 # LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <asciicircum> <a> 	: "ấ"   U1EA5 # LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <Abreve> 	: "Ắ"   U1EAE # LATIN CAPITAL LETTER A WITH BREVE AND ACUTE
+<Multi_key> <apostrophe> <dead_breve> <A> 	: "Ắ"   U1EAE # LATIN CAPITAL LETTER A WITH BREVE AND ACUTE
+<Multi_key> <apostrophe> <b> <A> 	: "Ắ"   U1EAE # LATIN CAPITAL LETTER A WITH BREVE AND ACUTE
+<Multi_key> <apostrophe> <abreve> 	: "ắ"   U1EAF # LATIN SMALL LETTER A WITH BREVE AND ACUTE
+<Multi_key> <apostrophe> <dead_breve> <a> 	: "ắ"   U1EAF # LATIN SMALL LETTER A WITH BREVE AND ACUTE
+<Multi_key> <apostrophe> <b> <a> 	: "ắ"   U1EAF # LATIN SMALL LETTER A WITH BREVE AND ACUTE
+<Multi_key> <apostrophe> <Ecircumflex> 	: "Ế"   U1EBE # LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <dead_circumflex> <E> 	: "Ế"   U1EBE # LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <asciicircum> <E> 	: "Ế"   U1EBE # LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <ecircumflex> 	: "ế"   U1EBF # LATIN SMALL LETTER E WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <dead_circumflex> <e> 	: "ế"   U1EBF # LATIN SMALL LETTER E WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <asciicircum> <e> 	: "ế"   U1EBF # LATIN SMALL LETTER E WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <Ocircumflex> 	: "Ố"   U1ED0 # LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <dead_circumflex> <O> 	: "Ố"   U1ED0 # LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <asciicircum> <O> 	: "Ố"   U1ED0 # LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <ocircumflex> 	: "ố"   U1ED1 # LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <dead_circumflex> <o> 	: "ố"   U1ED1 # LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <asciicircum> <o> 	: "ố"   U1ED1 # LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE
+<Multi_key> <apostrophe> <Ohorn> 	: "Ớ"   U1EDA # LATIN CAPITAL LETTER O WITH HORN AND ACUTE
+<Multi_key> <apostrophe> <dead_horn> <O> 	: "Ớ"   U1EDA # LATIN CAPITAL LETTER O WITH HORN AND ACUTE
+<Multi_key> <apostrophe> <plus> <O> 	: "Ớ"   U1EDA # LATIN CAPITAL LETTER O WITH HORN AND ACUTE
+<Multi_key> <apostrophe> <ohorn> 	: "ớ"   U1EDB # LATIN SMALL LETTER O WITH HORN AND ACUTE
+<Multi_key> <apostrophe> <dead_horn> <o> 	: "ớ"   U1EDB # LATIN SMALL LETTER O WITH HORN AND ACUTE
+<Multi_key> <apostrophe> <plus> <o> 	: "ớ"   U1EDB # LATIN SMALL LETTER O WITH HORN AND ACUTE
+<Multi_key> <apostrophe> <Uhorn> 	: "Ứ"   U1EE8 # LATIN CAPITAL LETTER U WITH HORN AND ACUTE
+<Multi_key> <apostrophe> <dead_horn> <U> 	: "Ứ"   U1EE8 # LATIN CAPITAL LETTER U WITH HORN AND ACUTE
+<Multi_key> <apostrophe> <plus> <U> 	: "Ứ"   U1EE8 # LATIN CAPITAL LETTER U WITH HORN AND ACUTE
+<Multi_key> <apostrophe> <uhorn> 	: "ứ"   U1EE9 # LATIN SMALL LETTER U WITH HORN AND ACUTE
+<Multi_key> <apostrophe> <dead_horn> <u> 	: "ứ"   U1EE9 # LATIN SMALL LETTER U WITH HORN AND ACUTE
+<Multi_key> <apostrophe> <plus> <u> 	: "ứ"   U1EE9 # LATIN SMALL LETTER U WITH HORN AND ACUTE
+<Multi_key> <apostrophe> <U1F00> 	: "ἄ"   U1F04 # GREEK SMALL LETTER ALPHA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_alpha> 	: "ἄ"   U1F04 # GREEK SMALL LETTER ALPHA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_alpha> 	: "ἄ"   U1F04 # GREEK SMALL LETTER ALPHA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F01> 	: "ἅ"   U1F05 # GREEK SMALL LETTER ALPHA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_alpha> 	: "ἅ"   U1F05 # GREEK SMALL LETTER ALPHA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_alpha> 	: "ἅ"   U1F05 # GREEK SMALL LETTER ALPHA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F08> 	: "Ἄ"   U1F0C # GREEK CAPITAL LETTER ALPHA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_ALPHA> 	: "Ἄ"   U1F0C # GREEK CAPITAL LETTER ALPHA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_ALPHA> 	: "Ἄ"   U1F0C # GREEK CAPITAL LETTER ALPHA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F09> 	: "Ἅ"   U1F0D # GREEK CAPITAL LETTER ALPHA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_ALPHA> 	: "Ἅ"   U1F0D # GREEK CAPITAL LETTER ALPHA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_ALPHA> 	: "Ἅ"   U1F0D # GREEK CAPITAL LETTER ALPHA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F10> 	: "ἔ"   U1F14 # GREEK SMALL LETTER EPSILON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_epsilon> 	: "ἔ"   U1F14 # GREEK SMALL LETTER EPSILON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_epsilon> 	: "ἔ"   U1F14 # GREEK SMALL LETTER EPSILON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F11> 	: "ἕ"   U1F15 # GREEK SMALL LETTER EPSILON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_epsilon> 	: "ἕ"   U1F15 # GREEK SMALL LETTER EPSILON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_epsilon> 	: "ἕ"   U1F15 # GREEK SMALL LETTER EPSILON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F18> 	: "Ἔ"   U1F1C # GREEK CAPITAL LETTER EPSILON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_EPSILON> 	: "Ἔ"   U1F1C # GREEK CAPITAL LETTER EPSILON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_EPSILON> 	: "Ἔ"   U1F1C # GREEK CAPITAL LETTER EPSILON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F19> 	: "Ἕ"   U1F1D # GREEK CAPITAL LETTER EPSILON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_EPSILON> 	: "Ἕ"   U1F1D # GREEK CAPITAL LETTER EPSILON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_EPSILON> 	: "Ἕ"   U1F1D # GREEK CAPITAL LETTER EPSILON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F20> 	: "ἤ"   U1F24 # GREEK SMALL LETTER ETA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_eta> 	: "ἤ"   U1F24 # GREEK SMALL LETTER ETA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_eta> 	: "ἤ"   U1F24 # GREEK SMALL LETTER ETA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F21> 	: "ἥ"   U1F25 # GREEK SMALL LETTER ETA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_eta> 	: "ἥ"   U1F25 # GREEK SMALL LETTER ETA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_eta> 	: "ἥ"   U1F25 # GREEK SMALL LETTER ETA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F28> 	: "Ἤ"   U1F2C # GREEK CAPITAL LETTER ETA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_ETA> 	: "Ἤ"   U1F2C # GREEK CAPITAL LETTER ETA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_ETA> 	: "Ἤ"   U1F2C # GREEK CAPITAL LETTER ETA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F29> 	: "Ἥ"   U1F2D # GREEK CAPITAL LETTER ETA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_ETA> 	: "Ἥ"   U1F2D # GREEK CAPITAL LETTER ETA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_ETA> 	: "Ἥ"   U1F2D # GREEK CAPITAL LETTER ETA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F30> 	: "ἴ"   U1F34 # GREEK SMALL LETTER IOTA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_iota> 	: "ἴ"   U1F34 # GREEK SMALL LETTER IOTA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_iota> 	: "ἴ"   U1F34 # GREEK SMALL LETTER IOTA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F31> 	: "ἵ"   U1F35 # GREEK SMALL LETTER IOTA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_iota> 	: "ἵ"   U1F35 # GREEK SMALL LETTER IOTA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_iota> 	: "ἵ"   U1F35 # GREEK SMALL LETTER IOTA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F38> 	: "Ἴ"   U1F3C # GREEK CAPITAL LETTER IOTA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_IOTA> 	: "Ἴ"   U1F3C # GREEK CAPITAL LETTER IOTA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_IOTA> 	: "Ἴ"   U1F3C # GREEK CAPITAL LETTER IOTA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F39> 	: "Ἵ"   U1F3D # GREEK CAPITAL LETTER IOTA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_IOTA> 	: "Ἵ"   U1F3D # GREEK CAPITAL LETTER IOTA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_IOTA> 	: "Ἵ"   U1F3D # GREEK CAPITAL LETTER IOTA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F40> 	: "ὄ"   U1F44 # GREEK SMALL LETTER OMICRON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_omicron> 	: "ὄ"   U1F44 # GREEK SMALL LETTER OMICRON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_omicron> 	: "ὄ"   U1F44 # GREEK SMALL LETTER OMICRON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F41> 	: "ὅ"   U1F45 # GREEK SMALL LETTER OMICRON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_omicron> 	: "ὅ"   U1F45 # GREEK SMALL LETTER OMICRON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_omicron> 	: "ὅ"   U1F45 # GREEK SMALL LETTER OMICRON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F48> 	: "Ὄ"   U1F4C # GREEK CAPITAL LETTER OMICRON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_OMICRON> 	: "Ὄ"   U1F4C # GREEK CAPITAL LETTER OMICRON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_OMICRON> 	: "Ὄ"   U1F4C # GREEK CAPITAL LETTER OMICRON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F49> 	: "Ὅ"   U1F4D # GREEK CAPITAL LETTER OMICRON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_OMICRON> 	: "Ὅ"   U1F4D # GREEK CAPITAL LETTER OMICRON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_OMICRON> 	: "Ὅ"   U1F4D # GREEK CAPITAL LETTER OMICRON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F50> 	: "ὔ"   U1F54 # GREEK SMALL LETTER UPSILON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_upsilon> 	: "ὔ"   U1F54 # GREEK SMALL LETTER UPSILON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_upsilon> 	: "ὔ"   U1F54 # GREEK SMALL LETTER UPSILON WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F51> 	: "ὕ"   U1F55 # GREEK SMALL LETTER UPSILON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_upsilon> 	: "ὕ"   U1F55 # GREEK SMALL LETTER UPSILON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_upsilon> 	: "ὕ"   U1F55 # GREEK SMALL LETTER UPSILON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F59> 	: "Ὕ"   U1F5D # GREEK CAPITAL LETTER UPSILON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_UPSILON> 	: "Ὕ"   U1F5D # GREEK CAPITAL LETTER UPSILON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_UPSILON> 	: "Ὕ"   U1F5D # GREEK CAPITAL LETTER UPSILON WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F60> 	: "ὤ"   U1F64 # GREEK SMALL LETTER OMEGA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_omega> 	: "ὤ"   U1F64 # GREEK SMALL LETTER OMEGA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_omega> 	: "ὤ"   U1F64 # GREEK SMALL LETTER OMEGA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F61> 	: "ὥ"   U1F65 # GREEK SMALL LETTER OMEGA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_omega> 	: "ὥ"   U1F65 # GREEK SMALL LETTER OMEGA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_omega> 	: "ὥ"   U1F65 # GREEK SMALL LETTER OMEGA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <U1F68> 	: "Ὤ"   U1F6C # GREEK CAPITAL LETTER OMEGA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <dead_psili> <Greek_OMEGA> 	: "Ὤ"   U1F6C # GREEK CAPITAL LETTER OMEGA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <parenright> <Greek_OMEGA> 	: "Ὤ"   U1F6C # GREEK CAPITAL LETTER OMEGA WITH PSILI AND OXIA
+<Multi_key> <apostrophe> <U1F69> 	: "Ὥ"   U1F6D # GREEK CAPITAL LETTER OMEGA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <dead_dasia> <Greek_OMEGA> 	: "Ὥ"   U1F6D # GREEK CAPITAL LETTER OMEGA WITH DASIA AND OXIA
+<Multi_key> <apostrophe> <parenleft> <Greek_OMEGA> 	: "Ὥ"   U1F6D # GREEK CAPITAL LETTER OMEGA WITH DASIA AND OXIA
+<dead_iota> <Multi_key> <apostrophe> <U1F00> 	: "ᾄ"   U1F84 # GREEK SMALL LETTER ALPHA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <U1F00> 	: "ᾄ"   U1F84 # GREEK SMALL LETTER ALPHA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <dead_psili> <Greek_alpha> 	: "ᾄ"   U1F84 # GREEK SMALL LETTER ALPHA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <parenright> <Greek_alpha> 	: "ᾄ"   U1F84 # GREEK SMALL LETTER ALPHA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <dead_psili> <Greek_alpha> 	: "ᾄ"   U1F84 # GREEK SMALL LETTER ALPHA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <parenright> <Greek_alpha> 	: "ᾄ"   U1F84 # GREEK SMALL LETTER ALPHA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <U1F01> 	: "ᾅ"   U1F85 # GREEK SMALL LETTER ALPHA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <U1F01> 	: "ᾅ"   U1F85 # GREEK SMALL LETTER ALPHA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <dead_dasia> <Greek_alpha> 	: "ᾅ"   U1F85 # GREEK SMALL LETTER ALPHA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <parenleft> <Greek_alpha> 	: "ᾅ"   U1F85 # GREEK SMALL LETTER ALPHA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <dead_dasia> <Greek_alpha> 	: "ᾅ"   U1F85 # GREEK SMALL LETTER ALPHA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <parenleft> <Greek_alpha> 	: "ᾅ"   U1F85 # GREEK SMALL LETTER ALPHA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <U1F08> 	: "ᾌ"   U1F8C # GREEK CAPITAL LETTER ALPHA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <U1F08> 	: "ᾌ"   U1F8C # GREEK CAPITAL LETTER ALPHA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <dead_psili> <Greek_ALPHA> 	: "ᾌ"   U1F8C # GREEK CAPITAL LETTER ALPHA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <parenright> <Greek_ALPHA> 	: "ᾌ"   U1F8C # GREEK CAPITAL LETTER ALPHA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <dead_psili> <Greek_ALPHA> 	: "ᾌ"   U1F8C # GREEK CAPITAL LETTER ALPHA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <parenright> <Greek_ALPHA> 	: "ᾌ"   U1F8C # GREEK CAPITAL LETTER ALPHA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <U1F09> 	: "ᾍ"   U1F8D # GREEK CAPITAL LETTER ALPHA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <U1F09> 	: "ᾍ"   U1F8D # GREEK CAPITAL LETTER ALPHA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <dead_dasia> <Greek_ALPHA> 	: "ᾍ"   U1F8D # GREEK CAPITAL LETTER ALPHA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <parenleft> <Greek_ALPHA> 	: "ᾍ"   U1F8D # GREEK CAPITAL LETTER ALPHA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <dead_dasia> <Greek_ALPHA> 	: "ᾍ"   U1F8D # GREEK CAPITAL LETTER ALPHA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <parenleft> <Greek_ALPHA> 	: "ᾍ"   U1F8D # GREEK CAPITAL LETTER ALPHA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <U1F20> 	: "ᾔ"   U1F94 # GREEK SMALL LETTER ETA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <U1F20> 	: "ᾔ"   U1F94 # GREEK SMALL LETTER ETA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <dead_psili> <Greek_eta> 	: "ᾔ"   U1F94 # GREEK SMALL LETTER ETA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <parenright> <Greek_eta> 	: "ᾔ"   U1F94 # GREEK SMALL LETTER ETA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <dead_psili> <Greek_eta> 	: "ᾔ"   U1F94 # GREEK SMALL LETTER ETA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <parenright> <Greek_eta> 	: "ᾔ"   U1F94 # GREEK SMALL LETTER ETA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <U1F21> 	: "ᾕ"   U1F95 # GREEK SMALL LETTER ETA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <U1F21> 	: "ᾕ"   U1F95 # GREEK SMALL LETTER ETA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <dead_dasia> <Greek_eta> 	: "ᾕ"   U1F95 # GREEK SMALL LETTER ETA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <parenleft> <Greek_eta> 	: "ᾕ"   U1F95 # GREEK SMALL LETTER ETA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <dead_dasia> <Greek_eta> 	: "ᾕ"   U1F95 # GREEK SMALL LETTER ETA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <parenleft> <Greek_eta> 	: "ᾕ"   U1F95 # GREEK SMALL LETTER ETA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <U1F28> 	: "ᾜ"   U1F9C # GREEK CAPITAL LETTER ETA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <U1F28> 	: "ᾜ"   U1F9C # GREEK CAPITAL LETTER ETA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <dead_psili> <Greek_ETA> 	: "ᾜ"   U1F9C # GREEK CAPITAL LETTER ETA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <parenright> <Greek_ETA> 	: "ᾜ"   U1F9C # GREEK CAPITAL LETTER ETA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <dead_psili> <Greek_ETA> 	: "ᾜ"   U1F9C # GREEK CAPITAL LETTER ETA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <parenright> <Greek_ETA> 	: "ᾜ"   U1F9C # GREEK CAPITAL LETTER ETA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <U1F29> 	: "ᾝ"   U1F9D # GREEK CAPITAL LETTER ETA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <U1F29> 	: "ᾝ"   U1F9D # GREEK CAPITAL LETTER ETA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <dead_dasia> <Greek_ETA> 	: "ᾝ"   U1F9D # GREEK CAPITAL LETTER ETA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <parenleft> <Greek_ETA> 	: "ᾝ"   U1F9D # GREEK CAPITAL LETTER ETA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <dead_dasia> <Greek_ETA> 	: "ᾝ"   U1F9D # GREEK CAPITAL LETTER ETA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <parenleft> <Greek_ETA> 	: "ᾝ"   U1F9D # GREEK CAPITAL LETTER ETA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <U1F60> 	: "ᾤ"   U1FA4 # GREEK SMALL LETTER OMEGA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <U1F60> 	: "ᾤ"   U1FA4 # GREEK SMALL LETTER OMEGA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <dead_psili> <Greek_omega> 	: "ᾤ"   U1FA4 # GREEK SMALL LETTER OMEGA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <parenright> <Greek_omega> 	: "ᾤ"   U1FA4 # GREEK SMALL LETTER OMEGA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <dead_psili> <Greek_omega> 	: "ᾤ"   U1FA4 # GREEK SMALL LETTER OMEGA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <parenright> <Greek_omega> 	: "ᾤ"   U1FA4 # GREEK SMALL LETTER OMEGA WITH PSILI AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <U1F61> 	: "ᾥ"   U1FA5 # GREEK SMALL LETTER OMEGA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <U1F61> 	: "ᾥ"   U1FA5 # GREEK SMALL LETTER OMEGA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <dead_dasia> <Greek_omega> 	: "ᾥ"   U1FA5 # GREEK SMALL LETTER OMEGA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <parenleft> <Greek_omega> 	: "ᾥ"   U1FA5 # GREEK SMALL LETTER OMEGA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <dead_dasia> <Greek_omega> 	: "ᾥ"   U1FA5 # GREEK SMALL LETTER OMEGA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <parenleft> <Greek_omega> 	: "ᾥ"   U1FA5 # GREEK SMALL LETTER OMEGA WITH DASIA AND OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <U1F68> 	: "ᾬ"   U1FAC # GREEK CAPITAL LETTER OMEGA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <U1F68> 	: "ᾬ"   U1FAC # GREEK CAPITAL LETTER OMEGA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <dead_psili> <Greek_OMEGA> 	: "ᾬ"   U1FAC # GREEK CAPITAL LETTER OMEGA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <parenright> <Greek_OMEGA> 	: "ᾬ"   U1FAC # GREEK CAPITAL LETTER OMEGA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <dead_psili> <Greek_OMEGA> 	: "ᾬ"   U1FAC # GREEK CAPITAL LETTER OMEGA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <parenright> <Greek_OMEGA> 	: "ᾬ"   U1FAC # GREEK CAPITAL LETTER OMEGA WITH PSILI AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <U1F69> 	: "ᾭ"   U1FAD # GREEK CAPITAL LETTER OMEGA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <U1F69> 	: "ᾭ"   U1FAD # GREEK CAPITAL LETTER OMEGA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <dead_dasia> <Greek_OMEGA> 	: "ᾭ"   U1FAD # GREEK CAPITAL LETTER OMEGA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <parenleft> <Greek_OMEGA> 	: "ᾭ"   U1FAD # GREEK CAPITAL LETTER OMEGA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <dead_dasia> <Greek_OMEGA> 	: "ᾭ"   U1FAD # GREEK CAPITAL LETTER OMEGA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <parenleft> <Greek_OMEGA> 	: "ᾭ"   U1FAD # GREEK CAPITAL LETTER OMEGA WITH DASIA AND OXIA AND PROSGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <Greek_alpha> 	: "ᾴ"   U1FB4 # GREEK SMALL LETTER ALPHA WITH OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <Greek_alpha> 	: "ᾴ"   U1FB4 # GREEK SMALL LETTER ALPHA WITH OXIA AND YPOGEGRAMMENI
+<dead_iota> <Multi_key> <apostrophe> <Greek_eta> 	: "ῄ"   U1FC4 # GREEK SMALL LETTER ETA WITH OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <Greek_eta> 	: "ῄ"   U1FC4 # GREEK SMALL LETTER ETA WITH OXIA AND YPOGEGRAMMENI
+<Multi_key> <U1FBF> <apostrophe> 	: "῎"   U1FCE # GREEK PSILI AND OXIA
+<Multi_key> <U1FFE> <apostrophe> 	: "῞"   U1FDE # GREEK DASIA AND OXIA
+<dead_iota> <Multi_key> <apostrophe> <Greek_omega> 	: "ῴ"   U1FF4 # GREEK SMALL LETTER OMEGA WITH OXIA AND YPOGEGRAMMENI
+<Multi_key> <Greek_iota> <apostrophe> <Greek_omega> 	: "ῴ"   U1FF4 # GREEK SMALL LETTER OMEGA WITH OXIA AND YPOGEGRAMMENI
+<Multi_key> <apostrophe> <Cyrillic_a>		: "а́"		# CYRILLIC SMALL LETTER A WITH COMBINING ACUTE ACCENT
+<Multi_key> <apostrophe> <Cyrillic_A>		: "А́"		# CYRILLIC CAPITAL LETTER A WITH COMBINING ACUTE ACCENT
+<Multi_key> <apostrophe> <Cyrillic_ie>		: "е́"		# CYRILLIC SMALL LETTER IE WITH COMBINING ACUTE ACCENT
+<Multi_key> <apostrophe> <Cyrillic_IE>		: "Е́"		# CYRILLIC CAPITAL LETTER IE WITH COMBINING ACUTE ACCENT
+<Multi_key> <apostrophe> <Cyrillic_i>		: "и́"		# CYRILLIC SMALL LETTER I WITH COMBINING ACUTE ACCENT
+<Multi_key> <apostrophe> <Cyrillic_I>		: "И́"		# CYRILLIC CAPITAL LETTER I WITH COMBINING ACUTE ACCENT
+<Multi_key> <apostrophe> <Cyrillic_o>		: "о́"		# CYRILLIC SMALL LETTER O WITH COMBINING ACUTE ACCENT
+<Multi_key> <apostrophe> <Cyrillic_O>		: "О́"		# CYRILLIC CAPITAL LETTER O WITH COMBINING ACUTE ACCENT
+<Multi_key> <apostrophe> <Cyrillic_u>		: "у́"		# CYRILLIC SMALL LETTER U WITH COMBINING ACUTE ACCENT
+<Multi_key> <apostrophe> <Cyrillic_U>		: "У́"		# CYRILLIC CAPITAL LETTER U WITH COMBINING ACUTE ACCENT
+<Multi_key> <apostrophe> <Cyrillic_er>		: "р́"		# CYRILLIC SMALL LETTER ER WITH COMBINING ACUTE ACCENT
+<Multi_key> <apostrophe> <Cyrillic_ER>		: "Р́"		# CYRILLIC CAPITAL LETTER ER WITH COMBINING ACUTE ACCENT
+<Multi_key> <underscore> <apostrophe>           : "⍘"   U2358   # _ ' APL FUNCTIONAL SYMBOL QUOTE UNDERBAR
+<Multi_key> <U2395> <apostrophe>                : "⍞"   U235e   # * ¨ APL FUNCTIONAL SYMBOL QUOTE QUAD
+<Multi_key> <apostrophe> <U2395>                : "⍞"   U235e   # ¨ * APL FUNCTIONAL SYMBOL QUOTE QUAD

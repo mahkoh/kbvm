@@ -1,0 +1,5 @@
+A
+    pending
+B
+    composed
+        foo B

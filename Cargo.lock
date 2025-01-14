@@ -141,12 +141,24 @@ name = "compile-tests"
 version = "0.1.0"
 dependencies = [
  "error_reporter",
+ "integration-test-utils",
  "isnt",
  "kbvm",
- "parking_lot",
  "serde",
  "thiserror",
  "toml",
+]
+
+[[package]]
+name = "compose-tests"
+version = "0.1.0"
+dependencies = [
+ "error_reporter",
+ "integration-test-utils",
+ "isnt",
+ "kbvm",
+ "parking_lot",
+ "thiserror",
 ]
 
 [[package]]
@@ -320,6 +332,14 @@ checksum = "62f822373a4fe84d4bb149bf54e584a7f4abec90e072ed49cda0edea5b95471f"
 dependencies = [
  "equivalent",
  "hashbrown",
+]
+
+[[package]]
+name = "integration-test-utils"
+version = "0.1.0"
+dependencies = [
+ "kbvm",
+ "parking_lot",
 ]
 
 [[package]]
@@ -873,9 +893,9 @@ name = "type-tests"
 version = "0.1.0"
 dependencies = [
  "error_reporter",
+ "integration-test-utils",
  "isnt",
  "kbvm",
- "parking_lot",
  "thiserror",
 ]
 
