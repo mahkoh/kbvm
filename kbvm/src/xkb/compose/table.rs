@@ -34,7 +34,7 @@ pub(crate) struct Node {
     data: [u32; 2],
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 enum NodeType {
     Intermediate { range: Range<usize> },
     Leaf { payload: usize },
@@ -91,14 +91,13 @@ impl ComposeTable {
     ) -> Self {
         struct PreData {
             step_range: Range<usize>,
-            payload: Option<Spanned<u32>>,
+            production: Option<usize>,
         }
 
-        let mut payloads = Vec::with_capacity(productions.len());
         let mut steps = vec![];
         let mut pre_datas = vec![];
 
-        for production in productions.iter().rev() {
+        for (idx, production) in productions.iter().enumerate().rev() {
             let start = steps.len();
             if u32::MAX as usize - steps.len() - 1 <= production.val.steps.len() {
                 // ensure that the maximum number of nodes fits into u32
@@ -108,26 +107,17 @@ impl ComposeTable {
                 steps.push(*step);
                 pre_datas.push(PreData {
                     step_range: start..steps.len(),
-                    payload: None,
+                    production: None,
                 });
             }
-            pre_datas.last_mut().unwrap().payload =
-                Some((payloads.len() as u32).spanned2(production.span));
-            payloads.push(Payload {
-                string: production
-                    .val
-                    .string
-                    .as_ref()
-                    .map(|s| s.as_bstr().to_string()),
-                keysym: production.val.keysym,
-            });
+            pre_datas.last_mut().unwrap().production = Some(idx);
         }
 
         pre_datas.sort_by_key(|k| &steps[k.step_range.clone()]);
 
         struct Data {
             step: Step,
-            payload: Option<Spanned<u32>>,
+            production: Option<usize>,
             num_children: u32,
             parent: Option<u32>,
             heap_pos: Cell<u32>,
@@ -141,16 +131,18 @@ impl ComposeTable {
         let mut stack: Vec<u32> = vec![];
         let mut prev_step = None;
         let mut prev_len = 0;
-        let mut prev_payload = None::<Spanned<u32>>;
+        let mut prev_production = None::<usize>;
 
         for pre_data in pre_datas {
             let step = steps[pre_data.step_range.end - 1];
             let len = pre_data.step_range.len();
             let is_duplicate = (Some(step), len) == (prev_step, prev_len);
             if is_duplicate {
-                if let Some(pl) = pre_data.payload {
-                    if let Some(prev) = prev_payload {
-                        if payloads[prev.val as usize] != payloads[pl.val as usize] {
+                if let Some(pl) = pre_data.production {
+                    let pl = &productions[pl];
+                    if let Some(prev) = prev_production {
+                        let prev = &productions[prev];
+                        if (&pl.val.string, pl.val.keysym) != (&prev.val.string, prev.val.keysym) {
                             diagnostics.push(
                                 map,
                                 DiagnosticKind::IgnoringDuplicateComposeEntry,
@@ -168,7 +160,7 @@ impl ComposeTable {
                 }
                 continue;
             }
-            prev_payload = pre_data.payload;
+            prev_production = pre_data.production;
             if len <= prev_len {
                 for _ in 0..prev_len - len + 1 {
                     assert!(stack.pop().is_some());
@@ -178,7 +170,8 @@ impl ComposeTable {
                 Some(&idx) => {
                     let data = &mut datas[idx as usize];
                     data.num_children += 1;
-                    if let Some(pl) = data.payload.take() {
+                    if let Some(pl) = data.production.take() {
+                        let pl = &productions[pl];
                         diagnostics.push(
                             map,
                             DiagnosticKind::IgnoringComposePrefix,
@@ -197,7 +190,7 @@ impl ComposeTable {
             stack.push(datas.len() as u32);
             datas.push(Data {
                 step,
-                payload: pre_data.payload,
+                production: pre_data.production,
                 num_children: 0,
                 parent,
                 heap_pos: Cell::new(0),
@@ -229,6 +222,7 @@ impl ComposeTable {
 
         datas.sort_by_key(|d| d.heap_pos.get());
 
+        let mut payloads = vec![];
         let mut nodes = Vec::with_capacity(datas.len() + 1);
         nodes.push(Node {
             keysym: Default::default(),
@@ -241,10 +235,20 @@ impl ComposeTable {
         });
 
         for data in datas {
-            let ty = match data.payload {
-                Some(payload) => NodeType::Leaf {
-                    payload: payload.val as usize,
-                },
+            let ty = match data.production {
+                Some(idx) => {
+                    let production = &productions[idx];
+                    let pos = payloads.len();
+                    payloads.push(Payload {
+                        string: production
+                            .val
+                            .string
+                            .as_ref()
+                            .map(|s| s.as_bstr().to_string()),
+                        keysym: production.val.keysym,
+                    });
+                    NodeType::Leaf { payload: pos }
+                }
                 _ => {
                     let lo = data.children_heap_pos.get() as usize;
                     let hi = lo + data.num_children as usize;

@@ -193,6 +193,7 @@ impl ComposeTableBuilder<'_> {
                 _ => return None,
             },
         };
+        // println!("{}", buffer.as_bstr());
         let mut map = CodeMap::default();
         let mut interner = Interner::default();
         let path = toplevel_path.map(Arc::new);
