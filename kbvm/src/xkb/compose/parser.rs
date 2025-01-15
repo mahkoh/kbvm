@@ -267,8 +267,7 @@ impl Parser<'_, '_, '_> {
                     Meaning::Caps | Meaning::Lock => ModifierMask::LOCK,
                     Meaning::Shift => ModifierMask::SHIFT,
                     Meaning::Alt | Meaning::Meta => ModifierMask::MOD1,
-                    _ if tilde => return Err(self.unexpected_token(&[Expected::AnyModifier], t)),
-                    _ => break,
+                    _ => return Err(self.unexpected_token(&[Expected::AnyModifier], t)),
                 };
                 mask |= mm;
                 if tilde {
