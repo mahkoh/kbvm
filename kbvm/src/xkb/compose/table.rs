@@ -21,7 +21,7 @@ use {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Payload {
-    pub(crate) string: Option<String>,
+    pub(crate) string: Option<Box<str>>,
     pub(crate) keysym: Option<Keysym>,
 }
 
@@ -310,7 +310,7 @@ impl ComposeTable {
                             .val
                             .string
                             .as_ref()
-                            .map(|s| s.as_bstr().to_string()),
+                            .map(|s| s.as_bstr().to_string().into_boxed_str()),
                         keysym: production.val.keysym,
                     });
                     NodeType::Leaf { payload: pos }
