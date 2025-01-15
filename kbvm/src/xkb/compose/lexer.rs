@@ -155,13 +155,14 @@ impl LineLexer<'_, '_, '_> {
             start += 1;
             while self.pos < self.code.len() {
                 b = self.code[self.pos];
-                let hi = self.span_lo + self.pos as u64;
                 self.pos += 1;
                 match b {
                     b'\n' => {
+                        let hi = self.span_lo + self.pos as u64 - 1;
                         return Err(UnterminatedKeysym.spanned(lo, hi));
                     }
                     b'>' => {
+                        let hi = self.span_lo + self.pos as u64;
                         let end = self.pos - 1;
                         let value = self.interner.intern(&self.code.slice(start..end));
                         return Ok(One::Token(Token::Keysym(value).spanned(lo, hi)));

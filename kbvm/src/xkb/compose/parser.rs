@@ -217,13 +217,14 @@ impl Parser<'_, '_, '_> {
                     _ => break 'rhs,
                 }
             }
-            if let Token::Ident(ks) = t.val {
-                let ks = self.interner.get(ks);
-                let Some(ks) = Keysym::from_str(ks) else {
-                    return Err(self.unknown_keysym(ks, t.span));
-                };
-                keysym = Some(ks);
-            }
+            let Token::Ident(ks) = t.val else {
+                return Err(self.unexpected_token(&[Expected::AnyIdent], t));
+            };
+            let ks = self.interner.get(ks);
+            let Some(ks) = Keysym::from_str(ks) else {
+                return Err(self.unknown_keysym(ks, t.span));
+            };
+            keysym = Some(ks);
         }
         if let Some(next) = self.try_peek() {
             return Err(self.expected_eol(next));
