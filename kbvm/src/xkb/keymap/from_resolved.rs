@@ -1,6 +1,5 @@
 use {
     crate::{
-        modifier::ModifierMask,
         xkb::{
             group::GroupIdx,
             interner::{Interned, Interner},
@@ -18,6 +17,7 @@ use {
             span::{Despan, Spanned},
             Keymap,
         },
+        ModifierMask,
     },
     arrayvec::ArrayVec,
     bstr::ByteSlice,

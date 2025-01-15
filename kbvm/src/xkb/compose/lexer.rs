@@ -111,32 +111,27 @@ impl LineLexer<'_, '_, '_> {
 
     fn lex_one(&mut self) -> Result<One, Spanned<LexerError>> {
         use LexerError::*;
-        let mut b;
-        loop {
-            while self.pos < self.code.len() {
-                if matches!(self.code[self.pos], b' ' | b'\t' | b'\r') {
-                    self.pos += 1;
-                } else {
-                    break;
-                }
-            }
-            b = match self.code.get(self.pos) {
-                Some(c) => *c,
-                _ => return Ok(One::Eof),
-            };
-            if b == b'#' {
+        while self.pos < self.code.len() {
+            if matches!(self.code[self.pos], b' ' | b'\t' | b'\r') {
                 self.pos += 1;
-                while self.pos < self.code.len() {
-                    b = self.code[self.pos];
-                    self.pos += 1;
-                    if b == b'\n' {
-                        break;
-                    }
-                }
-                return Ok(One::Eol);
             } else {
                 break;
             }
+        }
+        let mut b = match self.code.get(self.pos) {
+            Some(c) => *c,
+            _ => return Ok(One::Eof),
+        };
+        if b == b'#' {
+            self.pos += 1;
+            while self.pos < self.code.len() {
+                b = self.code[self.pos];
+                self.pos += 1;
+                if b == b'\n' {
+                    break;
+                }
+            }
+            return Ok(One::Eol);
         }
         let mut start = self.pos;
         self.pos += 1;
@@ -229,7 +224,7 @@ impl LineLexer<'_, '_, '_> {
                                 if c > u8::MAX as u16 {
                                     let hi = self.span_lo + self.pos as u64;
                                     self.diagnostics.push(
-                                        &mut self.map,
+                                        self.map,
                                         DiagnosticKind::OctalStringEscapeOverflow,
                                         ad_hoc_display!("octal string escape overflow")
                                             .spanned(lo, hi),
@@ -242,7 +237,7 @@ impl LineLexer<'_, '_, '_> {
                                 let lo = self.span_lo + self.pos as u64 - 2;
                                 let hi = self.span_lo + self.pos as u64;
                                 self.diagnostics.push(
-                                    &mut self.map,
+                                    self.map,
                                     DiagnosticKind::UnknownEscapeSequence,
                                     ad_hoc_display!("unknown escape sequence").spanned(lo, hi),
                                 );

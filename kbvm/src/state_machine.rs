@@ -7,11 +7,12 @@ use {
         components::Components,
         group::{GroupDelta, GroupIndex},
         group_type::GroupType,
-        modifier::{ModifierMask, NUM_MODS, NUM_MODS_MASK},
+        modifier::{NUM_MODS, NUM_MODS_MASK},
         routine::{run, Flag, Lo, Register, Routine, StateEventHandler},
+        state_machine::hidden::Keycode,
+        ModifierMask,
     },
     isnt::std_1::primitive::IsntSliceExt,
-    kbvm_proc::CloneWithDelta,
     linearize::StaticMap,
     std::{
         fmt::{Debug, Formatter},
@@ -296,8 +297,12 @@ impl StateEventHandler for Layer2Handler<'_> {
     }
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, CloneWithDelta, Default)]
-pub struct Keycode(pub(crate) u32);
+pub(crate) mod hidden {
+    use kbvm_proc::CloneWithDelta;
+
+    #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, CloneWithDelta, Default)]
+    pub struct Keycode(pub(crate) u32);
+}
 
 impl Keycode {
     #[inline]

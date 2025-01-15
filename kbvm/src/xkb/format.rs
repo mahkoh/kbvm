@@ -1,7 +1,5 @@
 use {
     crate::{
-        keysym::Keysym,
-        modifier::ModifierMask,
         xkb::{
             controls::ControlMask,
             group::GroupChange,
@@ -18,6 +16,7 @@ use {
             rmlvo::{self, MergeMode},
             Keymap,
         },
+        Keysym, ModifierMask,
     },
     debug_fn::debug_fn,
     isnt::std_1::vec::IsntVecExt,

@@ -1,4 +1,4 @@
-use {crate::modifier::ModifierMask, hashbrown::HashMap, std::sync::Arc};
+use {crate::ModifierMask, hashbrown::HashMap, std::sync::Arc};
 
 #[derive(Clone, Debug)]
 pub struct GroupType {

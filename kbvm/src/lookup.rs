@@ -2,8 +2,7 @@
 use crate::builder::Builder;
 use {
     crate::{
-        builder::Redirect, group::GroupIndex, group_type::GroupType, keysym::Keysym,
-        modifier::ModifierMask, state_machine::Keycode,
+        builder::Redirect, group::GroupIndex, group_type::GroupType, Keycode, Keysym, ModifierMask,
     },
     smallvec::SmallVec,
     std::fmt::{Debug, Formatter},
@@ -17,10 +16,10 @@ use {
 /// # Example
 ///
 /// ```
-/// # use kbvm::group::GroupIndex;
+/// # use kbvm::GroupIndex;
 /// # use kbvm::lookup::LookupTable;
-/// # use kbvm::modifier::ModifierMask;
-/// # use kbvm::state_machine::Keycode;
+/// # use kbvm::ModifierMask;
+/// # use kbvm::Keycode;
 /// fn get_string(
 ///     table: &LookupTable,
 ///     group: GroupIndex,
@@ -43,10 +42,10 @@ use {
 /// This property can be accessed with the [`Lookup::repeats`] function.
 ///
 /// ```
-/// # use kbvm::group::GroupIndex;
+/// # use kbvm::GroupIndex;
 /// # use kbvm::lookup::LookupTable;
-/// # use kbvm::modifier::ModifierMask;
-/// # use kbvm::state_machine::Keycode;
+/// # use kbvm::ModifierMask;
+/// # use kbvm::Keycode;
 /// fn need_key_repeat_events(
 ///     table: &LookupTable,
 ///     group: GroupIndex,
@@ -67,11 +66,11 @@ use {
 /// This remaining modifiers can be accessed with the [`Lookup::remaining_mods`] function.
 ///
 /// ```
-/// # use kbvm::group::GroupIndex;
-/// # use kbvm::keysym::Keysym;
+/// # use kbvm::GroupIndex;
+/// # use kbvm::Keysym;
 /// # use kbvm::lookup::LookupTable;
-/// # use kbvm::modifier::ModifierMask;
-/// # use kbvm::state_machine::Keycode;
+/// # use kbvm::ModifierMask;
+/// # use kbvm::Keycode;
 /// fn get_keysyms_for_shortcuts(
 ///     table: &LookupTable,
 ///     group: GroupIndex,
@@ -94,11 +93,11 @@ use {
 /// Caps transformation is applied before ctrl transformation.
 ///
 /// ```
-/// # use kbvm::group::GroupIndex;
-/// # use kbvm::keysym::Keysym;
+/// # use kbvm::GroupIndex;
+/// # use kbvm::Keysym;
 /// # use kbvm::lookup::{KeysymProps, LookupTable};
-/// # use kbvm::modifier::ModifierMask;
-/// # use kbvm::state_machine::Keycode;
+/// # use kbvm::ModifierMask;
+/// # use kbvm::Keycode;
 /// fn disable_caps_transform(
 ///     table: &LookupTable,
 ///     group: GroupIndex,
@@ -124,11 +123,11 @@ use {
 /// Caps transformation is applied before ctrl transformation.
 ///
 /// ```
-/// # use kbvm::group::GroupIndex;
-/// # use kbvm::keysym::Keysym;
+/// # use kbvm::GroupIndex;
+/// # use kbvm::Keysym;
 /// # use kbvm::lookup::{KeysymProps, LookupTable};
-/// # use kbvm::modifier::ModifierMask;
-/// # use kbvm::state_machine::Keycode;
+/// # use kbvm::ModifierMask;
+/// # use kbvm::Keycode;
 /// fn disable_ctrl_transform(
 ///     table: &LookupTable,
 ///     group: GroupIndex,
@@ -175,11 +174,11 @@ use {
 /// [`Lookup::set_ctrl_fallback`].
 ///
 /// ```
-/// # use kbvm::group::GroupIndex;
-/// # use kbvm::keysym::Keysym;
+/// # use kbvm::GroupIndex;
+/// # use kbvm::Keysym;
 /// # use kbvm::lookup::{KeysymProps, LookupTable};
-/// # use kbvm::modifier::ModifierMask;
-/// # use kbvm::state_machine::Keycode;
+/// # use kbvm::ModifierMask;
+/// # use kbvm::Keycode;
 /// fn disable_ctrl_fallback(
 ///     table: &LookupTable,
 ///     group: GroupIndex,

@@ -4,14 +4,13 @@ use {
     crate::{
         builder::{Builder, GroupBuilder, KeyBuilder, LayerBuilder},
         group_type::GroupType,
-        modifier::ModifierIndex,
         routine::{Routine, RoutineBuilder, SkipAnchor, Var},
-        state_machine::Keycode,
         xkb::{
             group::GroupChange,
             keymap::{Action, KeyType},
             Keymap,
         },
+        Keycode, ModifierIndex,
     },
     hashbrown::HashMap,
     isnt::std_1::primitive::IsntSliceExt,

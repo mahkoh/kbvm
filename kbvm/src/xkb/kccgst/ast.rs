@@ -1,12 +1,12 @@
 use {
     crate::{
-        state_machine::Keycode,
         xkb::{
             include::IncludeGroup,
             interner::Interned,
             kccgst::token::Token,
             span::{Span, Spanned},
         },
+        Keycode,
     },
     kbvm_proc::CloneWithDelta,
     std::fmt::Debug,

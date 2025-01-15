@@ -2,7 +2,7 @@ use {
     crate::{
         keysym::{
             generated::{LEN, LONGEST_NAME},
-            keysyms, Keysym,
+            Keysym,
         },
         syms,
     },
@@ -15,7 +15,7 @@ use {
 
 #[test]
 fn keysyms_len() {
-    assert_eq!(keysyms().count(), LEN);
+    assert_eq!(Keysym::all().count(), LEN);
 }
 
 #[test]
@@ -41,7 +41,7 @@ fn from_char() {
 
 #[test]
 fn to_char() {
-    for sym in keysyms() {
+    for sym in Keysym::all() {
         assert_eq!(
             sym.char().unwrap_or(0 as char) as u32,
             xkb_keysym_to_utf32(sym.0),
@@ -55,7 +55,7 @@ fn to_char() {
 #[test]
 fn name() {
     let mut buf = [0; LONGEST_NAME + 1];
-    for sym in keysyms() {
+    for sym in Keysym::all() {
         let res = unsafe { xkb_keysym_get_name(sym.0, buf.as_mut_ptr(), buf.len()) };
         if res < 0 {
             panic!("xkb_keysym_get_name doesn't know about {:?}", sym);
@@ -74,7 +74,7 @@ fn name() {
 #[test]
 fn from_name() {
     let mut buf = [0; LONGEST_NAME + 1];
-    for sym in keysyms() {
+    for sym in Keysym::all() {
         assert_eq!(
             Keysym::from_str(sym.name().unwrap()).unwrap(),
             sym,
@@ -93,7 +93,7 @@ fn from_name() {
 #[test]
 fn from_name_xf86() {
     let mut buf = [0; LONGEST_NAME + 2];
-    for sym in keysyms() {
+    for sym in Keysym::all() {
         let Some(suffix) = sym.name().unwrap().strip_prefix("XF86") else {
             continue;
         };
@@ -115,7 +115,7 @@ fn from_name_xf86() {
 #[test]
 fn from_name_insensitive() {
     let mut buf = [0; LONGEST_NAME + 1];
-    for sym in keysyms() {
+    for sym in Keysym::all() {
         let name = sym.name().unwrap().to_ascii_uppercase();
         let l = Keysym::from_str_insensitive(&name).expect(&name);
         buf[..name.len()].copy_from_slice(name.as_bytes());
@@ -149,7 +149,7 @@ fn from_name_numbers() {
 
 #[test]
 fn to_upper() {
-    for sym in keysyms() {
+    for sym in Keysym::all() {
         assert_eq!(
             sym.to_uppercase().0,
             xkb_keysym_to_upper(sym.0),
@@ -162,7 +162,7 @@ fn to_upper() {
 
 #[test]
 fn to_lower() {
-    for sym in keysyms() {
+    for sym in Keysym::all() {
         assert_eq!(
             sym.to_lowercase().0,
             xkb_keysym_to_lower(sym.0),

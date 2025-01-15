@@ -1,16 +1,20 @@
 use {
-    kbvm_proc::CloneWithDelta,
+    crate::modifier::hidden::{ModifierIndex, ModifierMask},
     std::{
         fmt::{Debug, Formatter},
         ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not},
     },
 };
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Default, CloneWithDelta)]
-pub struct ModifierMask(pub u32);
+pub(crate) mod hidden {
+    use kbvm_proc::CloneWithDelta;
 
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, CloneWithDelta, Ord, PartialOrd)]
-pub struct ModifierIndex(u32);
+    #[derive(Copy, Clone, Eq, PartialEq, Hash, Default, CloneWithDelta)]
+    pub struct ModifierMask(pub u32);
+
+    #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, CloneWithDelta, Ord, PartialOrd)]
+    pub struct ModifierIndex(pub(super) u32);
+}
 
 #[derive(Clone)]
 pub struct ModifierMaskIter(u32);
@@ -137,5 +141,5 @@ impl Debug for ModifierMask {
     }
 }
 
-pub const NUM_MODS: usize = u32::BITS as usize;
-pub const NUM_MODS_MASK: usize = NUM_MODS - 1;
+pub(crate) const NUM_MODS: usize = u32::BITS as usize;
+pub(crate) const NUM_MODS_MASK: usize = NUM_MODS - 1;

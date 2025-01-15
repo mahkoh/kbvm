@@ -1,7 +1,7 @@
+#[allow(unused_imports)]
+use crate::xkb::Context;
 use {
     crate::{
-        keysym::Keysym,
-        syms,
         xkb::{
             code_map::CodeMap,
             compose::parser::{Production, Step},
@@ -9,6 +9,7 @@ use {
             format::FormatFormat,
             span::{SpanExt, Spanned},
         },
+        Keysym,
     },
     bstr::ByteSlice,
     kbvm_proc::ad_hoc_display,
@@ -20,7 +21,7 @@ use {
 };
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Payload {
+pub(crate) struct Payload {
     pub(crate) string: Option<Box<str>>,
     pub(crate) keysym: Option<Keysym>,
 }
@@ -46,20 +47,60 @@ enum NodeType {
     Leaf { payload: usize },
 }
 
+/// A compose table.
+///
+/// This table contains the logic necessary to handle compose sequences. It is created via
+/// [`Context::compose_table_builder`].
+///
+/// # Example
+///
+/// ```
+/// # use kbvm::syms;
+/// # use kbvm::xkb::Context;
+/// # use kbvm::xkb::diagnostic::WriteToLog;
+/// let context = Context::default();
+/// let table = context.compose_table_builder().build(WriteToLog).unwrap();
+/// let mut state = table.state();
+/// let res = table.feed(&mut state, syms::dead_acute);
+/// println!("{:?}", res);
+/// let res = table.feed(&mut state, syms::dead_acute);
+/// println!("{:?}", res);
+/// ```
+///
+/// This might print
+///
+/// ```txt
+/// Some(Pending)
+/// Some(Composed { string: Some("´"), keysym: Some(acute) })
+/// ```
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ComposeTable {
     nodes: Box<[Node]>,
     payloads: Box<[Payload]>,
 }
 
+/// The state of a compose operation.
+///
+/// This object is created via [`ComposeTable::state`] and should only be used with the
+/// table that it was created from.
+///
+/// This object is essentially a pointer into the compose table and cheap to clone.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct State {
     range: Range<usize>,
 }
 
+/// The result of a [`ComposeTable::feed`] call.
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum FeedResult<'a> {
+    /// The call started or continued a compose sequence and the sequence is not yet
+    /// completed.
     Pending,
+    /// The call caused the compose sequence to be aborted because the keysym was not a
+    /// valid continuation.
     Aborted,
+    /// The call completed a compose sequence. The `string` and `keysym` fields contain
+    /// the generated output. At least one of them is not `None`.
     Composed {
         string: Option<&'a str>,
         keysym: Option<Keysym>,
@@ -365,13 +406,7 @@ impl ComposeTable {
     /// - Otherwise, [`FeedResult::Pending`] is returned and `state` is updated to match
     ///   the new pending state.
     pub fn feed(&self, state: &mut State, sym: Keysym) -> Option<FeedResult<'_>> {
-        if sym >= syms::Shift_L && sym <= syms::Hyper_R {
-            return None;
-        }
-        if sym >= syms::ISO_Lock && sym <= syms::ISO_Level5_Lock {
-            return None;
-        }
-        if sym == syms::Mode_switch || sym == syms::Num_Lock {
+        if sym.is_modifier() {
             return None;
         }
         let range = &self.nodes[state.range.clone()];
@@ -438,22 +473,95 @@ impl ComposeTable {
     }
 }
 
+/// A matching step in a [`MatchRule`].
+///
+/// # Example
+///
+/// ```xcompose
+/// <a> <b> <c>: asciitilde
+/// ```
+///
+/// This step might correspond to `<a>`, `<b>`, or `<c>`.
+#[derive(Copy, Clone)]
 pub struct MatchStep<'a> {
     pub(crate) node: &'a Node,
 }
 
+impl MatchStep<'_> {
+    /// Returns the keysym required by this step.
+    ///
+    /// # Example
+    ///
+    /// ```xcompose
+    /// <a>: asciitilde
+    /// ```
+    ///
+    /// This function returns [`syms::a`].
+    pub fn keysym(&self) -> Keysym {
+        self.node.keysym
+    }
+}
+
+/// A rule from an `XCompose` file.
+///
+/// # Example
+///
+/// ```xcompose
+/// <Multi_key> <a>: at
+/// <Multi_key> <c>: copyright
+/// ```
+///
+/// This rule might correspond to `<Multi_key> <a>` or `<Multi_key> <c>`.
+#[derive(Copy, Clone)]
 pub struct MatchRule<'a, 'b> {
     pub(crate) steps: &'a [MatchStep<'b>],
     pub(crate) payload: &'b Payload,
 }
 
 impl<'b> MatchRule<'_, 'b> {
+    /// Returns the inputs required to match this rule.
+    ///
+    /// # Example
+    ///
+    /// ```xcompose
+    /// <a> <b> <c>: asciitilde
+    /// ```
+    ///
+    /// This function returns three steps, one each for `<a>`, `<b>`, and `<c>`.
     pub fn steps(&self) -> &[MatchStep<'b>] {
         self.steps
     }
 
-    pub fn payload(&self) -> &'b Payload {
-        self.payload
+    /// Returns the string produced by this rule if it matches.
+    ///
+    /// # Example
+    ///
+    /// ```xcompose
+    /// <a>: "hello" asciitilde
+    /// <b>: asciitilde
+    /// <c>: "hello"
+    /// ```
+    ///
+    /// If this rule corresponds to `<a>` or `<c>`, this function returns `Some("hello")`.
+    /// Otherwise this function returns `None`.
+    pub fn string(&self) -> Option<&'b str> {
+        self.payload.string.as_deref()
+    }
+
+    /// Returns the keysym produced by this rule if it matches.
+    ///
+    /// # Example
+    ///
+    /// ```xcompose
+    /// <a>: "hello" asciitilde
+    /// <b>: asciitilde
+    /// <c>: "hello"
+    /// ```
+    ///
+    /// If this rule corresponds to `<a>` or `<b>`, this function returns
+    /// `Some(asciitilde)`. Otherwise this function returns `None`.
+    pub fn keysym(&self) -> Option<Keysym> {
+        self.payload.keysym
     }
 }
 
@@ -469,6 +577,23 @@ impl Debug for MatchStep<'_> {
     }
 }
 
+/// An iterator over the [`MatchRule`] in a table.
+///
+/// This type is created using [`ComposeTable::iter`].
+///
+/// This type does not implement `Iterator` because the returned values borrow from the
+/// iterator. Call [`Iter::next`] manually instead.
+///
+/// # Example
+///
+/// ```xcompose
+/// <Multi_key> <a>: at
+/// <Multi_key> <c>: copyright
+/// ```
+///
+/// This rule returns two elements, one for `<Multi_key> <a>` and one for
+/// `<Multi_key> <c>`.
+#[derive(Clone, Debug)]
 pub struct Iter<'a> {
     table: &'a ComposeTable,
     stack: Vec<MatchStep<'a>>,
@@ -476,6 +601,7 @@ pub struct Iter<'a> {
 }
 
 impl<'a> Iter<'a> {
+    /// Returns the next element of the iterator.
     pub fn next(&mut self) -> Option<MatchRule<'_, 'a>> {
         self.stack.pop();
         loop {

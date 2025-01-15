@@ -8,15 +8,22 @@
     clippy::manual_range_contains
 )]
 
-pub use {components::Components, state_machine::Keycode};
+pub use {
+    components::Components,
+    group::{GroupDelta, GroupIndex},
+    group_type::GroupType,
+    keysym::hidden::Keysym,
+    modifier::hidden::{ModifierIndex, ModifierMask},
+    state_machine::hidden::Keycode,
+};
 
 pub mod builder;
-pub mod components;
+mod components;
 mod config;
 pub mod evdev;
 mod from_bytes;
-pub mod group;
-pub mod group_type;
+mod group;
+mod group_type;
 pub mod keysym;
 pub mod lookup;
 pub mod modifier;

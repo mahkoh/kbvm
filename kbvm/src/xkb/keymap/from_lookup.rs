@@ -3,7 +3,6 @@ use {
         builder::Redirect,
         group_type,
         lookup::LookupTable,
-        modifier::ModifierIndex,
         syms,
         xkb::{
             group::GroupIdx,
@@ -15,6 +14,7 @@ use {
             resolved::GroupsRedirect,
             Keymap,
         },
+        ModifierIndex,
     },
     hashbrown::{hash_map::Entry, HashMap},
     std::sync::Arc,
@@ -34,10 +34,10 @@ impl LookupTable {
     ///
     /// ```
     /// # use kbvm::builder::{Builder, GroupBuilder, KeyBuilder, LayerBuilder};
-    /// # use kbvm::group_type::GroupType;
+    /// # use kbvm::GroupType;
     /// # use kbvm::syms;
-    /// # use kbvm::modifier::ModifierMask;
-    /// # use kbvm::state_machine::Keycode;
+    /// # use kbvm::ModifierMask;
+    /// # use kbvm::Keycode;
     /// let mut builder = Builder::default();
     /// {
     ///     let gt = GroupType::builder(ModifierMask::SHIFT)

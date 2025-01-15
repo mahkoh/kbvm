@@ -2,7 +2,7 @@
 mod tests;
 
 use {
-    crate::{modifier::ModifierMask, state_machine::Keycode},
+    crate::{Keycode, ModifierMask},
     debug_fn::debug_fn,
     hashbrown::{hash_map::Entry, HashMap, HashSet},
     isnt::std_1::primitive::IsntSliceExt,

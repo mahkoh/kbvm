@@ -1,6 +1,8 @@
 //! XKB keymaps.
 //!
 //! This module contains types representing the components of an XKB keymap.
+//!
+//! The entry point to this module is the [`Keymap`].
 
 mod from_lookup;
 mod from_resolved;
@@ -11,9 +13,6 @@ use {
     crate::{
         builder::Redirect,
         group::{GroupDelta, GroupIndex},
-        keysym::Keysym,
-        modifier::{ModifierIndex, ModifierMask},
-        state_machine,
         xkb::{
             controls::ControlMask,
             format::FormatFormat,
@@ -31,7 +30,7 @@ use {
             mod_component::ModComponentMask,
             resolved::GroupsRedirect,
         },
-        Components,
+        Components, Keysym, ModifierIndex, ModifierMask,
     },
     hashbrown::DefaultHashBuilder,
     indexmap::IndexMap,
@@ -49,7 +48,7 @@ use {
 /// This object is usually created from a [`Context`] but can also be created via
 /// [`LookupTable::to_xkb_keymap`].
 ///
-/// # Example
+/// # Creating a keymap from XKB source
 ///
 /// ```xkb
 /// xkb_keymap {
@@ -70,6 +69,33 @@ use {
 ///     };
 /// };
 /// ```
+///
+/// ```no_run
+/// # use kbvm::xkb::Context;
+/// # use kbvm::xkb::diagnostic::WriteToLog;
+/// # const MAP: &str = "...";
+/// let context = Context::default();
+/// let keymap = context.keymap_from_bytes(WriteToLog, None, MAP.as_bytes()).unwrap();
+/// ```
+///
+/// # Creating a keymap from RMLVO names
+///
+/// ```
+/// # use kbvm::xkb::Context;
+/// # use kbvm::xkb::diagnostic::WriteToLog;
+/// # use kbvm::xkb::rmlvo::Group;
+/// let context = Context::default();
+/// let keymap = context.keymap_from_names(
+///     WriteToLog,
+///     None,
+///     None,
+///     Some(&[Group {
+///         layout: "de",
+///         variant: "neo",
+///     }]),
+///     None,
+/// );
+/// ```
 #[derive(Debug, PartialEq)]
 pub struct Keymap {
     pub(crate) name: Option<Arc<String>>,
@@ -80,7 +106,7 @@ pub struct Keymap {
     pub(crate) virtual_modifiers: Vec<VirtualModifier>,
     pub(crate) mod_maps: Vec<(ModifierIndex, ModMapValue)>,
     pub(crate) group_names: Vec<(GroupIdx, Arc<String>)>,
-    pub(crate) keys: IndexMap<state_machine::Keycode, Key, DefaultHashBuilder>,
+    pub(crate) keys: IndexMap<crate::Keycode, Key, DefaultHashBuilder>,
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -130,7 +156,7 @@ pub struct IndicatorMatcher {
 #[derive(Debug, PartialEq)]
 pub(crate) struct Keycode {
     pub(crate) name: Arc<String>,
-    pub(crate) keycode: state_machine::Keycode,
+    pub(crate) keycode: crate::Keycode,
 }
 
 /// A virtual modifier.
@@ -221,7 +247,7 @@ pub enum Action {
 
 /// The XKB actions supported by KBVM.
 pub mod actions {
-    use crate::{modifier::ModifierMask, xkb::group};
+    use crate::{xkb::group, ModifierMask};
 
     /// A `SetMods` action.
     ///
@@ -368,7 +394,7 @@ pub enum GroupChange {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Key {
     pub(crate) key_name: Arc<String>,
-    pub(crate) key_code: state_machine::Keycode,
+    pub(crate) key_code: crate::Keycode,
     pub(crate) groups: Vec<Option<KeyGroup>>,
     pub(crate) repeat: bool,
     pub(crate) redirect: GroupsRedirect,
@@ -615,7 +641,7 @@ impl Key {
     /// ```
     ///
     /// The function returns `38`.
-    pub fn keycode(&self) -> state_machine::Keycode {
+    pub fn keycode(&self) -> crate::Keycode {
         self.key_code
     }
 

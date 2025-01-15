@@ -1,9 +1,6 @@
 use {
     crate::{
         builder::Redirect,
-        keysym::Keysym,
-        modifier::{ModifierIndex, ModifierMask},
-        state_machine::Keycode,
         xkb::{
             controls::ControlMask,
             group::{GroupChange, GroupIdx, GroupMask},
@@ -15,6 +12,7 @@ use {
             modmap::Vmodmap,
             span::{Span, Spanned},
         },
+        Keycode, Keysym, ModifierIndex, ModifierMask,
     },
     hashbrown::{DefaultHashBuilder, HashMap},
     indexmap::IndexMap,

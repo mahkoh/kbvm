@@ -1,4 +1,8 @@
-pub use table::{ComposeTable, FeedResult, Iter, MatchRule, MatchStep, Payload, State};
+//! XCompose helpers and types.
+//!
+//! The entry point to this module is the [`ComposeTable`].
+
+pub use table::{ComposeTable, FeedResult, Iter, MatchRule, MatchStep, State};
 #[expect(unused_imports)]
 use {crate::xkb::ContextBuilder, secure_execution::requires_secure_execution};
 use {
@@ -44,6 +48,9 @@ enum TopLevel {
     Buffer(Vec<u8>),
 }
 
+/// A builder for a compose table.
+///
+/// This type is created using [`Context::compose_table_builder`].
 #[derive(Clone)]
 pub struct ComposeTableBuilder<'a> {
     context: &'a Context,
@@ -52,6 +59,9 @@ pub struct ComposeTableBuilder<'a> {
 }
 
 impl Context {
+    /// Creates a builder for compose table.
+    ///
+    /// This function is only available when the `compose` feature is enabled.
     pub fn compose_table_builder(&self) -> ComposeTableBuilder<'_> {
         ComposeTableBuilder {
             context: self,
@@ -175,7 +185,7 @@ impl ComposeTableBuilder<'_> {
                             None => continue,
                         },
                     };
-                    if let Some(c) = std::fs::read(&path).ok() {
+                    if let Ok(c) = std::fs::read(&path) {
                         toplevel_path = Some(PathBuf::from(path));
                         break 'toplevel TopLevel::Buffer(c);
                     }
@@ -310,9 +320,7 @@ impl ComposeTableBuilder<'_> {
         if resolved_locale == "C" {
             resolved_locale = "en_US.UTF-8";
         }
-        let Some(mut ll) = self.read_locale_lines("compose.dir") else {
-            return None;
-        };
+        let mut ll = self.read_locale_lines("compose.dir")?;
         while let Some((l, r)) = ll.next() {
             if r == resolved_locale.as_bytes() {
                 return Some(format!("{}/{}", self.context.env.xlocaledir, l.as_bstr()));

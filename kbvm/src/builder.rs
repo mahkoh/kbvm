@@ -8,11 +8,10 @@ use {
     crate::{
         group::GroupIndex,
         group_type::GroupType,
-        keysym::Keysym,
         lookup::{self, LookupTable},
-        modifier::{ModifierIndex, ModifierMask},
         routine::{Global, Routine},
-        state_machine::{self, Keycode, StateMachine},
+        state_machine::{self, StateMachine},
+        Keycode, Keysym, ModifierIndex, ModifierMask,
     },
     hashbrown::HashMap,
     isnt::std_1::primitive::IsntSliceExt,
@@ -67,7 +66,7 @@ use {
 /// "#;
 ///
 /// // Create an XKB context.
-/// let context = Context::builder().build();
+/// let context = Context::default();
 /// // Parse the keymap.
 /// let keymap = context
 ///     .keymap_from_bytes(WriteToLog, None, KEYMAP.as_bytes())
@@ -119,13 +118,14 @@ use {
 /// # use {
 /// #     kbvm::{
 /// #         builder::{Builder, GroupBuilder, KeyBuilder, LayerBuilder},
-/// #         group_type::GroupType,
+/// #         GroupType,
 /// #         syms,
 /// #         evdev,
-/// #         modifier::ModifierMask,
+/// #         ModifierMask,
 /// #         routine::Routine,
-/// #         state_machine::{Direction::{Up, Down}, Keycode, LogicalEvent},
+/// #         state_machine::{Direction::{Up, Down}, LogicalEvent},
 /// #         Components,
+/// #         Keycode,
 /// #     },
 /// # };
 /// let mut builder = Builder::default();
@@ -297,8 +297,8 @@ struct BuilderLayer {
 /// ```
 /// # use kbvm::builder::{GroupBuilder, KeyBuilder, LayerBuilder};
 /// # use kbvm::{evdev, syms};
-/// # use kbvm::group_type::GroupType;
-/// # use kbvm::modifier::ModifierMask;
+/// # use kbvm::GroupType;
+/// # use kbvm::ModifierMask;
 /// let group_type = GroupType::builder(ModifierMask::NONE).build();
 /// let mut layer = LayerBuilder::new(0);
 /// layer.keysyms(&[syms::A]);
@@ -320,8 +320,8 @@ pub struct KeyBuilder {
 /// ```
 /// # use kbvm::builder::{GroupBuilder, LayerBuilder};
 /// # use kbvm::{syms};
-/// # use kbvm::group_type::GroupType;
-/// # use kbvm::modifier::ModifierMask;
+/// # use kbvm::GroupType;
+/// # use kbvm::ModifierMask;
 /// let group_type = GroupType::builder(ModifierMask::NONE).build();
 /// let mut layer = LayerBuilder::new(0);
 /// layer.keysyms(&[syms::A]);

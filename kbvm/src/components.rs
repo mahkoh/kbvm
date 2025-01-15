@@ -1,7 +1,7 @@
 use crate::{
     group::{GroupDelta, GroupIndex},
-    modifier::ModifierMask,
     state_machine::LogicalEvent,
+    ModifierMask,
 };
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Default)]

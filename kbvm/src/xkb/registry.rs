@@ -1,4 +1,6 @@
 //! Types for working with the RMLVO registry.
+//!
+//! The entry point to this module is the [`Registry`].
 
 #[cfg(test)]
 mod tests;

@@ -7,7 +7,7 @@ use {
 };
 
 fn shift_press_release(c: &mut Criterion) {
-    let context = Context::builder().build();
+    let context = Context::default();
     let mut builder = context.compose_table_builder();
     builder.buffer(COMPOSE);
     let table = builder.build(WriteToStderr).unwrap();

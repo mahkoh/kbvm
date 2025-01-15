@@ -1,10 +1,12 @@
+#![allow(clippy::single_char_add_str)]
+
 use {
     error_reporter::Report,
     integration_test_utils::run,
     isnt::std_1::vec::IsntVecExt,
     kbvm::{
-        keysym::Keysym,
         xkb::{compose::FeedResult, diagnostic::Diagnostic, Context},
+        Keysym,
     },
     std::{
         fmt::Write,
@@ -23,7 +25,7 @@ const SHOW_ALL_DIAGNOSTICS: bool = false;
 
 fn main() {
     std::env::set_current_dir(env!("CARGO_MANIFEST_DIR")).unwrap();
-    let mut results = run(SINGLE, |d, case| test_case2(d, case));
+    let mut results = run(SINGLE, test_case2);
     results.sort_unstable_by(|l, r| l.case.cmp(&r.case));
     let mut any_failed = false;
     for result in results {

@@ -1,8 +1,11 @@
+//! Integration with the `x11rb` crate.
+//!
+//! This module provides the extension trait [`KbvmX11Ext`] that can be used to create
+//! keymaps from [`RequestConnection`] objects.
+
 use {
     crate::{
         group::{GroupDelta, GroupIndex},
-        keysym::Keysym,
-        modifier::{ModifierIndex, ModifierMask},
         xkb::{
             controls::ControlMask,
             group::{GroupChange, GroupIdx, GroupMask},
@@ -23,7 +26,7 @@ use {
             x11::sealed::Sealed,
             Keymap,
         },
-        Components, Keycode,
+        Components, Keycode, Keysym, ModifierIndex, ModifierMask,
     },
     bstr::ByteSlice,
     hashbrown::{hash_map::Entry, DefaultHashBuilder, HashMap, HashSet},
@@ -46,53 +49,101 @@ use {
     },
 };
 
+/// An error produced by one of the [`KbvmX11Ext`] functions.
 #[derive(Debug, Error)]
 pub enum X11Error {
+    /// Could not send `xkb_get_state` request.
     #[error("could not send xkb_get_state request")]
     GetState(#[source] ConnectionError),
+    /// Could not retrieve `xkb_get_state` reply.
     #[error("could not retrieve xkb_get_state reply")]
     GetStateReply(#[source] ReplyError),
+    /// Could not fetch XKB extension info.
     #[error("could not fetch XKB extension info")]
     ExtensionInfo(#[source] ConnectionError),
+    /// The XKB extension is not available.
     #[error("the XKB extension is not available")]
     Unavailable,
+    /// Could not send `xkb_use_extension` request.
     #[error("could not send xkb_use_extension request")]
     UseExtension(#[source] ConnectionError),
+    /// Could not retrieve `xkb_use_extension` reply.
     #[error("could not retrieve xkb_use_extension reply")]
     UseExtensionReply(#[source] ReplyError),
+    /// Could not send `xkb_get_device_info` request.
     #[error("could not send xkb_get_device_info request")]
     GetDeviceInfo(#[source] ConnectionError),
+    /// Could not retrieve `xkb_get_device_info` reply.
     #[error("could not retrieve xkb_get_device_info reply")]
     GetDeviceInfoReply(#[source] ReplyError),
+    /// Could not send `xkb_get_map` request.
     #[error("could not send xkb_get_map request")]
     GetMap(#[source] ConnectionError),
+    /// Could not retrieve `xkb_get_map` reply.
     #[error("could not retrieve xkb_get_map reply")]
     GetMapReply(#[source] ReplyError),
+    /// Could not send `xkb_get_indicator_map` request.
     #[error("could not send xkb_get_indicator_map request")]
     GetIndicatorMap(#[source] ConnectionError),
+    /// Could not retrieve `xkb_get_indicator_map` reply.
     #[error("could not retrieve xkb_get_indicator_map reply")]
     GetIndicatorMapReply(#[source] ReplyError),
+    /// Could not send `xkb_get_names` request.
     #[error("could not send xkb_get_names request")]
     GetNames(#[source] ConnectionError),
+    /// Could not retrieve `xkb_get_names` reply.
     #[error("could not retrieve xkb_get_names reply")]
     GetNamesReply(#[source] ReplyError),
+    /// Could not send `xkb_get_controls` request.
     #[error("could not send xkb_get_controls request")]
     GetControls(#[source] ConnectionError),
+    /// Could not retrieve `xkb_get_controls` reply.
     #[error("could not retrieve xkb_get_controls reply")]
     GetControlsReply(#[source] ReplyError),
+    /// Could not send `get_atom_name` request.
     #[error("could not send get_atom_name request")]
     GetAtomName(#[source] ConnectionError),
+    /// Could not retrieve `get_atom_name` reply.
     #[error("could not retrieve get_atom_name reply")]
     GetAtomNameReply(#[source] ReplyError),
 }
 
+/// A [`RequestConnection`] extension to create keymaps and fetch components.
+///
+/// This trait is automatically implemented for all types that implement
+/// [`RequestConnection`].
+///
+/// # Example
+///
+/// ```no_run
+/// # use x11rb::rust_connection::RustConnection;
+/// # use kbvm::xkb::x11::KbvmX11Ext;
+/// let (con, _) = RustConnection::connect(None).unwrap();
+/// // You must call this function before using any of the other functions.
+/// con.setup_xkb_extension().unwrap();
+/// let core_device_id = con.get_xkb_core_device_id().unwrap();
+/// let keymap = con.get_xkb_keymap(core_device_id).unwrap();
+/// ```
 pub trait KbvmX11Ext: Sealed {
+    /// Initializes the XKB extension for this connection.
+    ///
+    /// You must call this function before calling any of the other functions of this
+    /// trait.
     fn setup_xkb_extension(&self) -> Result<ExtensionInfo, X11Error>;
 
+    /// Returns the core keyboard device ID.
+    ///
+    /// You must call [`Self::setup_xkb_extension`] before calling this function.
     fn get_xkb_core_device_id(&self) -> Result<DeviceSpec, X11Error>;
 
+    /// Returns [`Keymap`] of the given device.
+    ///
+    /// You must call [`Self::setup_xkb_extension`] before calling this function.
     fn get_xkb_keymap(&self, device: DeviceSpec) -> Result<Keymap, X11Error>;
 
+    /// Returns the current [`Components`] of the given device.
+    ///
+    /// You must call [`Self::setup_xkb_extension`] before calling this function.
     fn get_xkb_components(&self, device: DeviceSpec) -> Result<Components, X11Error>;
 }
 
@@ -100,16 +151,20 @@ mod sealed {
     pub trait Sealed {}
 }
 
-impl<T> Sealed for T where T: RequestConnection {}
+impl<T> Sealed for T where T: RequestConnection + ?Sized {}
 
+/// Information about the XKB extension.
+#[derive(Copy, Clone, Debug)]
 pub struct ExtensionInfo {
+    /// The first event code of the extension.
     pub first_event: u8,
+    /// The first error code of the extension.
     pub first_error: u8,
 }
 
 impl<T> KbvmX11Ext for T
 where
-    T: RequestConnection,
+    T: RequestConnection + ?Sized,
 {
     fn setup_xkb_extension(&self) -> Result<ExtensionInfo, X11Error> {
         let Some(info) = self
@@ -174,7 +229,7 @@ where
 
 fn get_keymap<C>(c: &C, device: DeviceSpec) -> Result<Keymap, X11Error>
 where
-    C: RequestConnection,
+    C: RequestConnection + ?Sized,
 {
     let map_components = MapPart::KEY_TYPES
         | MapPart::KEY_SYMS
@@ -255,7 +310,7 @@ where
 
 enum AtomState<'a, C>
 where
-    C: RequestConnection,
+    C: RequestConnection + ?Sized,
 {
     Pending(Cookie<'a, C, GetAtomNameReply>),
     Present(Arc<String>),
@@ -263,7 +318,7 @@ where
 
 struct Interner<'a, C>
 where
-    C: RequestConnection,
+    C: RequestConnection + ?Sized,
 {
     atoms: HashMap<Atom, AtomState<'a, C>>,
     c: &'a C,
@@ -271,7 +326,7 @@ where
 
 struct MapBuilder<'a, C>
 where
-    C: RequestConnection,
+    C: RequestConnection + ?Sized,
 {
     atoms: Interner<'a, C>,
 
@@ -293,7 +348,7 @@ where
 
 impl<C> Interner<'_, C>
 where
-    C: RequestConnection,
+    C: RequestConnection + ?Sized,
 {
     fn prefetch(&mut self, atom: Atom) -> Result<(), X11Error> {
         if let Entry::Vacant(e) = self.atoms.entry(atom) {
@@ -327,7 +382,7 @@ where
 
 impl<C> MapBuilder<'_, C>
 where
-    C: RequestConnection,
+    C: RequestConnection + ?Sized,
 {
     fn prefetch_atoms(&mut self) -> Result<(), X11Error> {
         let vl = &self.names.value_list;

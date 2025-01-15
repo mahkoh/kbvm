@@ -1,3 +1,5 @@
+//! [`Keysym`] helpers.
+
 #[rustfmt::skip]
 #[allow(clippy::identity_op)]
 pub(crate) mod generated;
@@ -7,9 +9,12 @@ mod tests;
 use {
     crate::{
         from_bytes::FromBytes,
-        keysym::generated::{
-            CHAR_TO_BESPOKE_IDX, DATAS, KEYSYM_TO_CHAR, KEYSYM_TO_IDX, KEYSYM_TO_LOWER_KEYSYM,
-            KEYSYM_TO_UPPER_KEYSYM, LONGEST_NAME, LOWER_NAME_TO_IDX, NAMES,
+        keysym::{
+            generated::{
+                CHAR_TO_BESPOKE_IDX, DATAS, KEYSYM_TO_CHAR, KEYSYM_TO_IDX, KEYSYM_TO_LOWER_KEYSYM,
+                KEYSYM_TO_UPPER_KEYSYM, LONGEST_NAME, LOWER_NAME_TO_IDX, NAMES,
+            },
+            hidden::Keysym,
         },
         phf_map::PhfMap,
         syms,
@@ -17,21 +22,66 @@ use {
     arrayvec::ArrayVec,
     generated::NAME_TO_IDX,
     std::{
-        fmt::{Debug, Formatter},
+        fmt::{Debug, Display, Formatter},
         ops::Range,
         str::FromStr,
     },
     thiserror::Error,
 };
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Default)]
-#[repr(transparent)]
-pub struct Keysym(pub u32);
+pub(crate) mod hidden {
+    #[allow(unused_imports)]
+    use std::fmt::{Debug, Display};
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub struct KeysymInfo {
-    idx: u16,
-    data: &'static KeysymData,
+    /// A keysym.
+    ///
+    /// Keysyms are usually generated when a physical key is pressed. In KBVM, the process
+    /// of converting key presses to keysyms is handled by the
+    /// [`LookupTable`](crate::lookup::LookupTable) type.
+    ///
+    /// A keysym represents the logical output of a key press. For example,
+    ///
+    /// - [`syms::a`](crate::syms::a) - the lowercase letter `a`, usually generated when
+    ///   pressing the physical `A` key.
+    /// - [`syms::A`](crate::syms::A) - the uppercase letter `A`, usually generated when
+    ///   pressing the physical `A` key while holding the physical `Shift` key.
+    /// - [`syms::BackSpace`](crate::syms::BackSpace)
+    /// - [`syms::Return`](crate::syms::Return)
+    ///
+    /// The [`syms`](crate::syms) module contains pre-defined constants for all well-known
+    /// keysyms. These keysyms all have a name assigned that can be accessed by calling
+    /// [`Keysym::name`]. This name is identical to the name of the constant (except that
+    /// constants for keysyms that start with a digit have a `_` prefix).
+    ///
+    /// In addition to the keysyms from the `syms` module, all `char`s can be encoded as
+    /// keysyms by calling [`Keysym::from_char`]. Most of these keysyms do not have names
+    /// assigned and [`Keysym::name`] returns `None`.
+    ///
+    /// # Formatting and Parsing
+    ///
+    /// Keysyms can be created from strings by calling [`Keysym::from_str`] or
+    /// [`Keysym::from_str_insensitive`]. The keysym can be turned back into a string
+    /// by using the [`Display`] implementation.
+    ///
+    /// The `Display` implementation guarantees that the output can once again be parsed
+    /// by calling [`Keysym::from_str`]. It produces 3 kinds of outputs:
+    ///
+    /// - If the keysym has a name, that name is printed.
+    /// - Otherwise, if the keysym encodes a Unicode code point, it prints `Uxxxx` where
+    ///   `xxxx` is the hexadecimal representation of the code point and not necessarily
+    ///   4 characters long.
+    /// - Otherwise, it prints `0xXXXXXXXX` where `XXXXXXXX` is simply the hexadecimal
+    ///   representation of the `u32`.
+    ///
+    /// This type additionally implements [`Debug`]. It produces 3 kinds of outputs:
+    ///
+    /// - If the keysym has a name, that name is printed.
+    /// - Otherwise, if the keysym can be converted to a char via [`Keysym::char`], that
+    ///   char is printed with `Debug::format`.
+    /// - Otherwise, it prints `0xXXXXXXXX` as for the `Display` implementation.
+    #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Default)]
+    #[repr(transparent)]
+    pub struct Keysym(pub u32);
 }
 
 const HAS_CHAR: u8 = 1 << 0;
@@ -63,10 +113,18 @@ struct KeysymCaseMapping {
     other: u32,
 }
 
+/// The error returned by [`Keysym::from_str`](FromStr::from_str).
 #[derive(Debug, Error)]
 #[error("The keysym name is unknown")]
 pub struct UnknownKeysymName;
 
+/// An iterator over all well-known keysyms.
+///
+/// You can create this iterator via [`Keysym::all`].
+///
+/// This iterator returns those keysyms that have an assigned name. This does not include
+/// all valid keysyms. In particular, all 150 thousand Unicode code points have valid
+/// keysym representations but this iterator only returns around 2500 keysyms.
 #[derive(Clone)]
 pub struct Keysyms {
     idx: Range<u16>,
@@ -78,10 +136,6 @@ impl KeysymData {
         let end = start + self.name_len as usize;
         &NAMES[start..end]
     }
-}
-
-pub fn keysyms() -> Keysyms {
-    Keysym::all()
 }
 
 impl Iterator for Keysyms {
@@ -153,12 +207,25 @@ macro_rules! case_change {
 }
 
 impl Keysym {
+    /// Returns an iterator over all well-known keysyms.
+    ///
+    /// See the documentation of [`Keysyms`] for more details.
     pub fn all() -> Keysyms {
         Keysyms {
             idx: 0..DATAS.len() as u16,
         }
     }
 
+    /// Creates a keysym from a `char`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::Keysym;
+    /// let keysym = Keysym::from_char('ァ');
+    /// assert_eq!(keysym.name().unwrap(), "kana_a");
+    /// assert_eq!(keysym.char().unwrap(), 'ァ');
+    /// ```
     pub fn from_char(char: char) -> Self {
         let c = char as u32;
         if matches!(c, 0x20..=0x7e | 0xa0..=0xff) {
@@ -203,10 +270,26 @@ impl Keysym {
         (data.keysym_or_definitive_idx == self.0).then_some(data)
     }
 
+    /// Returns the name of the keysym if the keysym is a well-known keysym.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::syms;
+    /// assert_eq!(syms::kana_a.name().unwrap(), "kana_a");
+    /// ```
     pub fn name(self) -> Option<&'static str> {
         self.data().map(|i| i.name())
     }
 
+    /// Returns the `char` corresponding to this keysym.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::syms;
+    /// assert_eq!(syms::kana_a.char().unwrap(), 'ァ');
+    /// ```
     pub fn char(self) -> Option<char> {
         let c = self.0;
         if matches!(c, 0x20..=0x7e | 0xa0..=0xff) {
@@ -237,14 +320,59 @@ impl Keysym {
         Some(KEYSYM_TO_CHAR[pos].char)
     }
 
+    /// Creates a keysym from a case-sensitive string.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::{syms, Keysym};
+    /// assert_eq!(Keysym::from_str("kana_a").unwrap(), syms::kana_a);
+    /// ```
     pub fn from_str(name: &(impl AsRef<[u8]> + ?Sized)) -> Option<Self> {
         from_str::<false>(name.as_ref())
     }
 
+    /// Creates a keysym from a case-insensitive string.
+    ///
+    /// If the well-known names of two keysyms differ only by casing, the keysym with the
+    /// larger name is returned. Here, *larger* is defined in terms of `str::cmp`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::{syms, Keysym};
+    /// assert_eq!(Keysym::from_str_insensitive("A").unwrap(), syms::a);
+    /// assert_eq!(Keysym::from_str("A").unwrap(), syms::A);
+    /// ```
     pub fn from_str_insensitive(name: &(impl AsRef<[u8]> + ?Sized)) -> Option<Self> {
         from_str::<true>(name.as_ref())
     }
 
+    /// Returns the uppercase variant of this keysym.
+    ///
+    /// If this keysym does not have an uppercase variant or if it already uppercase,
+    /// `self` is returned.
+    ///
+    /// Note that some Unicode code points have uppercase variants that cannot be
+    /// represented as a single Unicode code point. In these cases this function also
+    /// returns `self`. If you only about the text representation, consider first
+    /// converting to `char` via [`Self::char`] and then using the standard library
+    /// functions to do the case conversion.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use kbvm::{syms, Keysym};
+    /// assert_eq!(syms::a.to_uppercase(), syms::A);
+    /// ```
+    ///
+    /// ```
+    /// # use kbvm::{syms, Keysym};
+    /// let u1f80 = '\u{1f80}';
+    /// assert_eq!(u1f80.to_uppercase().collect::<String>(), "\u{1f08}\u{399}");
+    /// let sym = Keysym::from_char(u1f80);
+    /// assert_eq!(sym.to_uppercase(), sym);
+    /// ```
     pub fn to_uppercase(self) -> Self {
         case_change!(
             self,
@@ -254,6 +382,20 @@ impl Keysym {
         )
     }
 
+    /// Returns the lowercase variant of this keysym.
+    ///
+    /// If this keysym does not have an lowercase variant or if it already lowercase,
+    /// `self` is returned.
+    ///
+    /// The warning about Unicode code points from [`Self::to_uppercase`] also applies to
+    /// this function.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use kbvm::{syms, Keysym};
+    /// assert_eq!(syms::A.to_lowercase(), syms::a);
+    /// ```
     pub fn to_lowercase(self) -> Self {
         case_change!(
             self,
@@ -267,22 +409,66 @@ impl Keysym {
         char::from_u32(self.0 & 0xff_ff_ff)
     }
 
+    /// Returns whether this keysym is in the Unicode range.
+    ///
+    /// Keysyms encode Unicode code points in the range by setting the most significant
+    /// byte to `0x01`. This function returns whether the most significant byte is `0x01`.
+    ///
+    /// Note that this function does not always return `true` if the keysym was created
+    /// with [`Self::from_char`]. Many Unicode code points are represented by well-known
+    /// keysyms outside of the Unicode range.
+    ///
+    /// Even if this function returns true, that does not mean that [`Self::char`] returns
+    /// `Some`. For example `Keysym(0x01_ff_ff_ff).is_in_unicode_range()` returns true but
+    /// `0xff_ff_ff` is not a valid Unicode code point.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use kbvm::{syms, Keysym};
+    /// assert!(!syms::A.is_in_unicode_range());
+    /// assert!(Keysym(0x01_00_00_41).is_in_unicode_range());
+    /// ```
     pub fn is_in_unicode_range(self) -> bool {
         self.0 >> 24 == 0x01
     }
 
+    /// Returns the negation of [`Self::is_in_unicode_range`].
     pub fn is_not_in_unicode_range(self) -> bool {
         !self.is_in_unicode_range()
     }
 
+    /// Returns whether this keysym is well-known.
+    ///
+    /// This is equivalent to [`Self::name`] returning `Some`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use kbvm::{syms, Keysym};
+    /// assert!(syms::A.is_well_known());
+    /// ```
     pub fn is_well_known(self) -> bool {
         self.data().is_some()
     }
 
+    /// Returns the negation of [`Self::is_well_known`].
     pub fn is_not_well_known(self) -> bool {
         !self.is_well_known()
     }
 
+    /// Returns whether this keysym is valid.
+    ///
+    /// A keysym is valid if it is well-known or if is in the Unicode range and represents
+    /// a valid Unicode code point.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use kbvm::{syms, Keysym};
+    /// assert!(syms::A.is_valid());
+    /// assert!(!Keysym(0x01_ff_ff_ff).is_valid());
+    /// ```
     pub fn is_valid(self) -> bool {
         if self.is_in_unicode_range() {
             self.unicode_char().is_some()
@@ -291,10 +477,21 @@ impl Keysym {
         }
     }
 
+    /// Returns the negation of [`Self::is_valid`].
     pub fn is_invalid(self) -> bool {
         !self.is_valid()
     }
 
+    /// Returns whether this is a lowercase keysym.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::syms;
+    /// assert!(syms::a.is_lowercase());
+    /// assert!(!syms::A.is_lowercase());
+    /// assert!(!syms::Return.is_lowercase());
+    /// ```
     pub fn is_lowercase(self) -> bool {
         if self.is_in_unicode_range() {
             match self.unicode_char() {
@@ -309,6 +506,16 @@ impl Keysym {
         }
     }
 
+    /// Returns whether this is an uppercase keysym.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::syms;
+    /// assert!(syms::A.is_uppercase());
+    /// assert!(!syms::a.is_uppercase());
+    /// assert!(!syms::Return.is_uppercase());
+    /// ```
     pub fn is_uppercase(self) -> bool {
         if self.is_in_unicode_range() {
             match self.unicode_char() {
@@ -323,10 +530,28 @@ impl Keysym {
         }
     }
 
+    /// Returns whether this is a keypad keysym.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::syms;
+    /// assert!(syms::KP_0.is_keypad());
+    /// assert!(!syms::a.is_keypad());
+    /// ```
     pub fn is_keypad(self) -> bool {
         self >= syms::KP_Space && self <= syms::KP_Equal
     }
 
+    /// Returns whether this is a modifier keysym.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::syms;
+    /// assert!(syms::Shift_L.is_modifier());
+    /// assert!(!syms::a.is_modifier());
+    /// ```
     pub fn is_modifier(self) -> bool {
         (self >= syms::Shift_L && self <= syms::Hyper_R)
             || (self >= syms::ISO_Lock && self <= syms::ISO_Level5_Lock)
@@ -420,6 +645,19 @@ impl Debug for Keysym {
         }
         if let Some(char) = self.char() {
             return Debug::fmt(&char, f);
+        }
+        write!(f, "0x{:08x}", self.0)
+    }
+}
+
+impl Display for Keysym {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        if let Some(name) = self.name() {
+            return f.write_str(name);
+        }
+        if self.is_in_unicode_range() {
+            let d = self.0 & 0xff_ff_ff;
+            return write!(f, "U{d:x}");
         }
         write!(f, "0x{:08x}", self.0)
     }

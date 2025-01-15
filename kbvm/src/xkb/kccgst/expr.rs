@@ -1,8 +1,6 @@
 use {
     crate::{
         from_bytes::FromBytes,
-        keysym::Keysym,
-        modifier::{ModifierIndex, ModifierMask},
         syms,
         xkb::{
             code_map::CodeMap,
@@ -28,6 +26,7 @@ use {
             span::{Span, SpanExt, SpanResult1, SpanResult2, Spanned},
             string_cooker::StringCooker,
         },
+        Keysym, ModifierIndex, ModifierMask,
     },
     isnt::std_1::primitive::IsntU8SliceExt,
     smallvec::SmallVec,

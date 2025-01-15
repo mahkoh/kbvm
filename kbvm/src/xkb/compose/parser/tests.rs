@@ -2,7 +2,7 @@ use crate::xkb::{diagnostic::WriteToStderr, Context};
 
 #[test]
 fn round_trip() {
-    let context = Context::builder().build();
+    let context = Context::default();
     let mut builder = context.compose_table_builder();
     builder.file(format!(
         "{}/../compose-tests/xlocaledir/en_US.UTF-8/Compose",

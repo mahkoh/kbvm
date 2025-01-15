@@ -4,8 +4,6 @@ mod tests;
 
 use {
     crate::{
-        keysym::Keysym,
-        modifier::ModifierMask,
         xkb::{
             code::Code,
             code_map::CodeMap,
@@ -20,6 +18,7 @@ use {
             meaning::{Meaning, MeaningCache},
             span::{SpanExt, Spanned},
         },
+        Keysym, ModifierMask,
     },
     isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::ad_hoc_display,

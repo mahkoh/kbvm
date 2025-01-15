@@ -117,6 +117,8 @@ pub(crate) struct Environment {
     pub(crate) xkb_config_root: String,
 }
 
+type EnvironmentAccessor = Box<dyn FnMut(&str) -> Option<String>>;
+
 /// A builder for [`Context`] objects.
 pub struct ContextBuilder {
     enable_system_dirs: bool,
@@ -126,7 +128,7 @@ pub struct ContextBuilder {
     max_include_depth: u64,
     prefix: Vec<PathBuf>,
     suffix: Vec<PathBuf>,
-    environment_accessor: Option<Box<dyn FnMut(&str) -> Option<String>>>,
+    environment_accessor: Option<EnvironmentAccessor>,
 }
 
 impl Default for ContextBuilder {
@@ -141,6 +143,12 @@ impl Default for ContextBuilder {
             suffix: vec![],
             environment_accessor: None,
         }
+    }
+}
+
+impl Default for Context {
+    fn default() -> Self {
+        Self::builder().build()
     }
 }
 
@@ -345,7 +353,7 @@ impl Context {
     /// # use kbvm::xkb::Context;
     /// # use kbvm::xkb::diagnostic::WriteToLog;
     /// # use kbvm::xkb::rmlvo::Group;
-    /// let context = Context::builder().build();
+    /// let context = Context::default();
     /// let groups: Vec<_> = Group::from_layouts_and_variants(
     ///     "us,il,ru,de",
     ///     ",,phonetic,neo",
@@ -424,7 +432,7 @@ impl Context {
     /// # use kbvm::xkb::Context;
     /// # use kbvm::xkb::diagnostic::WriteToLog;
     /// # use kbvm::xkb::rmlvo::Group;
-    /// let context = Context::builder().build();
+    /// let context = Context::default();
     /// let groups: Vec<_> = Group::from_layouts_and_variants(
     ///     "us,il,ru,de",
     ///     ",,phonetic,neo",
@@ -647,7 +655,7 @@ impl Context {
     ///         };
     ///     };
     /// "#;
-    /// let context = Context::builder().build();
+    /// let context = Context::default();
     /// let map = context
     ///     .keymap_from_bytes(WriteToLog, None, MAP.as_bytes())
     ///     .unwrap();
@@ -717,9 +725,13 @@ impl Context {
         &self,
         mut diagnostics: impl DiagnosticHandler,
         path: Option<&Path>,
-        kccgst: &[u8],
+        kccgst: impl AsRef<[u8]>,
     ) -> Result<Keymap, Diagnostic> {
-        self.keymap_from_bytes_(&mut DiagnosticSink::new(&mut diagnostics), path, kccgst)
+        self.keymap_from_bytes_(
+            &mut DiagnosticSink::new(&mut diagnostics),
+            path,
+            kccgst.as_ref(),
+        )
     }
 
     fn keymap_from_bytes_(

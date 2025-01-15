@@ -4,7 +4,6 @@ mod tests;
 
 use {
     crate::{
-        state_machine::Keycode,
         xkb::{
             code_loader::CodeType,
             code_map::CodeMap,
@@ -38,6 +37,7 @@ use {
             meaning::{Meaning, MeaningCache},
             span::{Span, SpanExt, SpanResult1, Spanned},
         },
+        Keycode,
     },
     std::fmt::Debug,
     Punctuation::{Cbrace, Obrace, Obracket},

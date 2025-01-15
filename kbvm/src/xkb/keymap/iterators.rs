@@ -3,10 +3,7 @@
 #[expect(unused_imports)]
 use crate::xkb::keymap::{KeyType, Keymap};
 use {
-    crate::{
-        state_machine,
-        xkb::keymap::{Indicator, Key, KeyGroup, KeyLevel, KeyTypeMapping, VirtualModifier},
-    },
+    crate::xkb::keymap::{Indicator, Key, KeyGroup, KeyLevel, KeyTypeMapping, VirtualModifier},
     indexmap::map::Values,
     std::slice::Iter,
 };
@@ -22,7 +19,7 @@ pub struct VirtualModifiers<'a> {
 ///
 /// Created using [`Keymap::keys`].
 pub struct Keys<'a> {
-    pub(super) keys: Values<'a, state_machine::Keycode, Key>,
+    pub(super) keys: Values<'a, crate::Keycode, Key>,
 }
 
 /// An iterator over the groups of a key.

@@ -3,9 +3,6 @@ mod tests;
 
 use {
     crate::{
-        keysym::Keysym,
-        modifier::{ModifierIndex, ModifierMask},
-        state_machine::Keycode,
         syms,
         xkb::{
             code_map::CodeMap,
@@ -41,6 +38,7 @@ use {
             span::{Span, SpanExt, Spanned},
             string_cooker::StringCooker,
         },
+        Keycode, Keysym, ModifierIndex, ModifierMask,
     },
     hashbrown::{hash_map::Entry, DefaultHashBuilder},
     indexmap::IndexMap,

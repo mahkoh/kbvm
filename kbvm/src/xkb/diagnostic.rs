@@ -35,7 +35,7 @@ use {
 /// ```
 /// # use kbvm::xkb::Context;
 /// # use kbvm::xkb::diagnostic::WriteToLog;
-/// let context = Context::builder().build();
+/// let context = Context::default();
 /// let handler = WriteToLog;
 /// let _ = context.keymap_from_names(handler, None, None, None, None);
 /// ```
@@ -45,6 +45,7 @@ use {
 /// This crate implements the following handlers:
 ///
 /// - `Vec<Diagnostic>`: The messages are appended to the vector.
+/// - [`WriteToStderr`]: This handler writes messages to STDERR.
 /// - [`WriteToLog`]: If the `log` feature is enabled, this handler passes messages to the
 ///   `log` crate.
 /// - `(T, Severity) where T: DiagnosticHandler`: The messages are passed to `T` but only
