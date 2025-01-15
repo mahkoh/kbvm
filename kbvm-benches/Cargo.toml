@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-kbvm = { path = "../kbvm" }
+kbvm = { path = "../kbvm", features = ["compose"] }
 
 [dev-dependencies]
 libxkbcommon-test-linker = { path = "../libxkbcommon-test-linker" }
@@ -18,4 +18,8 @@ harness = false
 
 [[bench]]
 name = "state_machine"
+harness = false
+
+[[bench]]
+name = "compose"
 harness = false

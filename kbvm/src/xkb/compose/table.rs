@@ -375,7 +375,8 @@ impl ComposeTable {
             return None;
         }
         let range = &self.nodes[state.range.clone()];
-        if let Some(node) = find_match(range, sym) {
+        if let Ok(node) = range.binary_search_by_key(&sym, |n| n.keysym) {
+            let node = &range[node];
             let res = match node.deserialize() {
                 NodeType::Intermediate { range } => {
                     state.range = range;
@@ -435,25 +436,6 @@ impl ComposeTable {
     pub fn format(&self) -> impl Display + use<'_> {
         FormatFormat(self)
     }
-}
-
-fn find_match(range: &[Node], sym: Keysym) -> Option<&Node> {
-    const MAX_LINEAR: usize = 64;
-    if range.len() <= MAX_LINEAR {
-        for n in range {
-            if n.keysym == sym {
-                return Some(n);
-            }
-            if n.keysym > sym {
-                return None;
-            }
-        }
-        return None;
-    }
-    let Ok(pos) = range.binary_search_by_key(&sym, |n| n.keysym) else {
-        return None;
-    };
-    Some(&range[pos])
 }
 
 pub struct MatchStep<'a> {

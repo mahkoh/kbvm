@@ -5,7 +5,6 @@ use {
         xkb_keysym_from_name, xkb_keysym_get_name, xkb_keysym_to_upper, xkb_keysym_to_utf32,
         xkb_utf32_to_keysym,
     },
-    std::str::FromStr,
 };
 
 const CHARS: [char; 4] = ['a', 'ァ', '字', 'Ü'];
