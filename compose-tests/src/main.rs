@@ -88,6 +88,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     context.enable_environment(true);
     context.environment_accessor(move |s| match s {
         "XLOCALEDIR" => Some("xlocaledir".to_string()),
+        "HOME" => Some("home".to_string()),
         "XCOMPOSEFILE" => xcomposefile.clone(),
         _ => None,
     });
