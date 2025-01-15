@@ -399,6 +399,12 @@ impl ComposeTable {
         Some(FeedResult::Aborted)
     }
 
+    /// Creates an iterator over the rules in this table.
+    ///
+    /// Due to the data structure used by this table, the iterator must allocate and
+    /// returns references to the allocated memory. Since this memory is re-used for each
+    /// returned rule, the iterator cannot implement the `Iterator` trait. Instead, you
+    /// have to call [`Iter::next`] manually.
     pub fn iter(&self) -> Iter<'_> {
         Iter {
             table: self,
@@ -407,6 +413,25 @@ impl ComposeTable {
         }
     }
 
+    /// Returns a [`Display`] type that can be used to format the table in XCompose format.
+    ///
+    /// # Example
+    ///
+    /// If the input was
+    ///
+    /// ```xcompose
+    /// <b>: B
+    /// <a> <d>: D
+    /// <a> <c>: C
+    /// ```
+    ///
+    /// then the output would look like this:
+    ///
+    /// ```xcompose
+    /// <a> <c>: C
+    /// <a> <d>: D
+    /// <b>: B
+    /// ```
     pub fn format(&self) -> impl Display + use<'_> {
         FormatFormat(self)
     }
