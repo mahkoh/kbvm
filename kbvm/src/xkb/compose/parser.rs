@@ -21,6 +21,7 @@ use {
             span::{SpanExt, Spanned},
         },
     },
+    isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::ad_hoc_display,
     std::sync::Arc,
 };
@@ -187,12 +188,11 @@ impl Parser<'_, '_, '_> {
 
     fn parse_production(&mut self) -> Result<Option<Line>, Spanned<ParserError>> {
         let mut steps = vec![];
-        let span = loop {
+        loop {
             let (mask, _mods) = self.parse_modifiers()?;
-            let token = self.peek(LHS)?;
-            if token.val == token![:] && mask.0 == 0 {
-                self.pos += 1;
-                break token.span;
+            let token = self.next(LHS)?;
+            if token.val == token![:] && mask.0 == 0 && steps.is_not_empty() {
+                break;
             }
             let Token::Keysym(ks) = token.val else {
                 return Err(self.unexpected_token(&[Expected::AnyKeysym], token));
@@ -201,11 +201,7 @@ impl Parser<'_, '_, '_> {
             let Some(ks) = Keysym::from_str(ks) else {
                 return Err(self.unknown_keysym(ks, token.span));
             };
-            self.pos += 1;
             steps.push(Step { keysym: ks });
-        };
-        if steps.is_empty() {
-            return Err(self.no_steps(span));
         }
         let mut string = None;
         let mut keysym = None;

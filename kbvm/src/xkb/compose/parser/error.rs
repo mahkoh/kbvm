@@ -37,8 +37,6 @@ pub(crate) enum ParserError {
         .0.as_bstr(),
     )]
     UnknownKeysym(CodeSlice<'static>),
-    #[error("rule has no conditions")]
-    NoSteps,
 }
 
 impl ParserError {
@@ -48,7 +46,6 @@ impl ParserError {
             ParserError::UnexpectedToken(_) => DiagnosticKind::UnexpectedToken,
             ParserError::ExpectedEol(_) => DiagnosticKind::ExpectedEol,
             ParserError::UnknownKeysym(_) => DiagnosticKind::UnknownKeysym,
-            ParserError::NoSteps => DiagnosticKind::ComposeRuleWithoutConditions,
         }
     }
 }
@@ -177,10 +174,6 @@ impl Parser<'_, '_, '_> {
 
     pub(super) fn unknown_keysym(&self, code: &CodeSlice<'_>, span: Span) -> Spanned<ParserError> {
         ParserError::UnknownKeysym(code.to_owned()).spanned2(span)
-    }
-
-    pub(super) fn no_steps(&self, span: Span) -> Spanned<ParserError> {
-        ParserError::NoSteps.spanned2(span)
     }
 }
 
