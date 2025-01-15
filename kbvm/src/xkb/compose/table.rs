@@ -25,6 +25,13 @@ pub struct Payload {
     pub(crate) keysym: Option<Keysym>,
 }
 
+/// A node in the table.
+///
+/// Except for the root node, keysym is the keysym that must be fed for this node to
+/// match.
+///
+/// This node is either an intermediate node or a leaf node. The type is determined by the
+/// contents of `data`. See [`Node::deserialize`].
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Node {
     pub(crate) keysym: Keysym,
@@ -33,7 +40,9 @@ pub(crate) struct Node {
 
 #[derive(Clone, PartialEq)]
 enum NodeType {
+    /// The range is the range of the children of this node in the table.
     Intermediate { range: Range<usize> },
+    /// The payload is the index of the payload in the table.
     Leaf { payload: usize },
 }
 
@@ -59,6 +68,8 @@ pub enum FeedResult<'a> {
 
 impl NodeType {
     fn serialize(self) -> [u32; 2] {
+        // This is fine because we ensure that there are no more than u32::MAX nodes in
+        // the table and we generally assume that usize >= u32.
         match self {
             NodeType::Intermediate { range } => [range.start as u32, range.end as u32],
             NodeType::Leaf { payload } => [!0, payload as u32],
@@ -91,13 +102,32 @@ impl ComposeTable {
             production: Option<usize>,
         }
 
+        // the next step will add all prefixes of all productions to these vectors.
+        // for example, given the input
+        //
+        //     <Multi_key> <a> <b>: X
+        //     <Multi_key> <c>:     Y
+        //     <Multi_key> <c>:     Z
+        //
+        // these vectors will the contain
+        //
+        //     <Multi_key>:         (no production)
+        //     <Multi_key> <c>:     Z
+        //     <Multi_key>:         (no production)
+        //     <Multi_key> <c>:     Y
+        //     <Multi_key>:         (no production)
+        //     <Multi_key> <a>:     (no production)
+        //     <Multi_key> <a> <b>: X
+        //
+        // note that the order of productions has been reversed
         let mut steps = vec![];
         let mut pre_datas = vec![];
 
         for (idx, production) in productions.iter().enumerate().rev() {
             let start = steps.len();
             if u32::MAX as usize - steps.len() - 1 <= production.val.steps.len() {
-                // ensure that the maximum number of nodes fits into u32
+                // ensure that the maximum number of nodes fits into u32 with 1 node to
+                // spare for the root node.
                 break;
             }
             for step in production.val.steps.iter() {
@@ -107,9 +137,25 @@ impl ComposeTable {
                     production: None,
                 });
             }
+            // unwrap is fine because the parser guarantees that each production has at
+            // least 1 step.
             pre_datas.last_mut().unwrap().production = Some(idx);
         }
 
+        // this sort is stable and therefore preserves the order of compose rules that
+        // have the same set of steps. note that above we inserted into pre_datas in
+        // reverse order, meaning that later rules overwrite earlier rules.
+        //
+        // after this step, pre_datas has the following form in our example
+        //
+        //     <Multi_key>:         (no production)
+        //     <Multi_key>:         (no production)
+        //     <Multi_key> <a>:     (no production)
+        //     <Multi_key> <a> <b>: X
+        //     <Multi_key> <c>:     Z
+        //     <Multi_key> <c>:     Y
+        //
+        // the duplicates are removed by hte next step
         pre_datas.sort_by_key(|k| &steps[k.step_range.clone()]);
 
         struct Data {
@@ -122,6 +168,14 @@ impl ComposeTable {
             next_child_pos: Cell<u32>,
         }
 
+        // the next steps deduplicates the contents of pre_datas and counts for each entry
+        // how many children it has. in our example
+        //
+        //     root node:           1 child
+        //     <Multi_key>:         2 children
+        //     <Multi_key> <a>:     1 child
+        //     <Multi_key> <a> <b>: 0 children (production = X)
+        //     <Multi_key> <c>:     0 children (production = Z, the Y production was discarded)
         let mut datas: Vec<Data> = vec![];
         let mut num_root = 0;
 
@@ -135,6 +189,7 @@ impl ComposeTable {
             let len = pre_data.step_range.len();
             let is_duplicate = (Some(step), len) == (prev_step, prev_len);
             if is_duplicate {
+                // this block contains no business logic, only diagnostics
                 if let Some(pl) = pre_data.production {
                     let pl = &productions[pl];
                     if let Some(prev) = prev_production {
@@ -159,6 +214,7 @@ impl ComposeTable {
             }
             prev_production = pre_data.production;
             if len <= prev_len {
+                // pop siblings, nephews, etc. off the stack
                 for _ in 0..prev_len - len + 1 {
                     assert!(stack.pop().is_some());
                 }
@@ -196,6 +252,13 @@ impl ComposeTable {
             });
         }
 
+        // the next steps assigns each node a position in the heap and tells it where its
+        // children will be positioned in the heap. in our example
+        //
+        //     <Multi_key>:         pos 1, children start at pos 2
+        //     <Multi_key> <a>:     pos 2, children start at pos 4
+        //     <Multi_key> <a> <b>: pos 4
+        //     <Multi_key> <c>:     pos 3
         let mut next_free_node_position = num_root as u32 + 1;
         let mut next_root_pos = 1;
 
@@ -217,10 +280,18 @@ impl ComposeTable {
             next_free_node_position += data.num_children;
         }
 
+        // sort the nodes by their position in the heap. in our example
+        //
+        //     <Multi_key>:         pos 1, children start at pos 2
+        //     <Multi_key> <a>:     pos 2, children start at pos 4
+        //     <Multi_key> <c>:     pos 3
+        //     <Multi_key> <a> <b>: pos 4
         datas.sort_by_key(|d| d.heap_pos.get());
 
+        // the next step converts the datas to the final node structure
         let mut payloads = vec![];
         let mut nodes = Vec::with_capacity(datas.len() + 1);
+        // the root node
         nodes.push(Node {
             keysym: Default::default(),
             data: NodeType::Intermediate {
