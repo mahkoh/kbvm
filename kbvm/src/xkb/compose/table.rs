@@ -286,7 +286,7 @@ impl ComposeTable {
         //     <Multi_key> <a>:     pos 2, children start at pos 4
         //     <Multi_key> <c>:     pos 3
         //     <Multi_key> <a> <b>: pos 4
-        datas.sort_by_key(|d| d.heap_pos.get());
+        datas.sort_unstable_by_key(|d| d.heap_pos.get());
 
         // the next step converts the datas to the final node structure
         let mut payloads = vec![];
