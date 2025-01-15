@@ -1,0 +1,9 @@
+xkb_Keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        key <a> { symbols=[NoSymbol, NoSymbol] };
+        augment key <a> { symbols=[Greek_alpha, NoSymbol], actions=[SetGroup(group=3), NoAction()] };
+    };
+};

@@ -1,0 +1,975 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <T001> = 9;
+        <T002> = 10;
+        <T003> = 11;
+        <T004> = 12;
+        <T005> = 13;
+        <T006> = 14;
+        <T007> = 15;
+        <T008> = 16;
+        <T009> = 17;
+        <T010> = 18;
+        <T011> = 19;
+        <T012> = 20;
+        <T013> = 21;
+        <T014> = 22;
+        <T015> = 23;
+        <T016> = 24;
+        <T017> = 25;
+        <T018> = 26;
+        <T020> = 28;
+        <T021> = 29;
+        <T022> = 30;
+        <T023> = 31;
+        <T024> = 32;
+        <T025> = 33;
+        <T026> = 34;
+        <T027> = 35;
+        <T028> = 36;
+        <T029> = 37;
+        <T030> = 38;
+        <T031> = 39;
+        <T032> = 40;
+        <T033> = 41;
+        <T034> = 42;
+        <T035> = 43;
+        <T036> = 44;
+        <T037> = 45;
+        <T038> = 46;
+        <T039> = 47;
+        <T043> = 51;
+        <T044> = 52;
+        <T045> = 53;
+        <T046> = 54;
+        <T047> = 55;
+        <T048> = 56;
+        <T049> = 57;
+        <T050> = 58;
+        <T051> = 59;
+        <T052> = 60;
+        <T053> = 61;
+        <T054> = 62;
+        <T055> = 63;
+        <T056> = 64;
+        <T057> = 65;
+        <T060> = 68;
+        <T061> = 69;
+        <T062> = 70;
+        <T063> = 71;
+        <T064> = 72;
+        <T065> = 73;
+        <T066> = 74;
+        <T067> = 75;
+        <T068> = 76;
+        <T069> = 77;
+        <T070> = 78;
+        <T071> = 79;
+        <T072> = 80;
+        <T073> = 81;
+        <T074> = 82;
+        <T075> = 83;
+        <T076> = 84;
+        <T077> = 85;
+        <T078> = 86;
+        <T079> = 87;
+        <T080> = 88;
+        <T081> = 89;
+        <T085> = 93;
+        <T086> = 94;
+        <T087> = 95;
+        <T088> = 96;
+        <T089> = 97;
+        <T090> = 98;
+        <T091> = 99;
+        <T092> = 100;
+        <T093> = 101;
+        <T094> = 102;
+        <T095> = 103;
+        <T096> = 104;
+        <T097> = 105;
+        <T098> = 106;
+        <T099> = 107;
+        <T103> = 111;
+        <T104> = 112;
+        <T105> = 113;
+        <T106> = 114;
+        <T107> = 115;
+        <T108> = 116;
+        <T109> = 117;
+        <T110> = 118;
+        <T111> = 119;
+        <T112> = 120;
+        <T113> = 121;
+        <T114> = 122;
+        <T115> = 123;
+        <T116> = 124;
+        <T117> = 125;
+        <T118> = 126;
+        <T119> = 127;
+        <T120> = 128;
+        <T121> = 129;
+        <T122> = 130;
+        <T123> = 131;
+        <T124> = 132;
+        <T125> = 133;
+        <T126> = 134;
+        <T127> = 135;
+        <T128> = 136;
+        <T129> = 137;
+        <T130> = 138;
+        <T131> = 139;
+        <T132> = 140;
+        <T133> = 141;
+        <T134> = 142;
+        <T135> = 143;
+        <T136> = 144;
+        <T137> = 145;
+        <T138> = 146;
+        <T139> = 147;
+        <T140> = 148;
+        <T141> = 149;
+        <T142> = 150;
+        <T143> = 151;
+        <T144> = 152;
+        <T145> = 153;
+        <T146> = 154;
+        <T147> = 155;
+        <T150> = 158;
+        <T153> = 161;
+        <T156> = 164;
+        <T159> = 167;
+        <T162> = 170;
+        <T165> = 173;
+        <T168> = 176;
+        <T171> = 179;
+        <T174> = 182;
+        <T177> = 185;
+        <T180> = 188;
+        <T183> = 191;
+        <T186> = 194;
+        <T189> = 197;
+        <T192> = 200;
+        <T204> = 212;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+
+        type "ALPHABETIC" {
+            modifiers = Shift+Lock;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Caps";
+            map[Shift] = Level2;
+            map[Lock] = Level2;
+        };
+
+        type "FOUR_LEVEL" {
+            modifiers = Shift;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            level_name[Level3] = "AltGr";
+            level_name[Level4] = "Shift AltGr";
+            map[None] = Level1;
+            map[Shift] = Level2;
+        };
+
+        type "FOUR_LEVEL_SEMIALPHABETIC" {
+            modifiers = Shift+Lock;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            level_name[Level3] = "AltGr";
+            level_name[Level4] = "Shift AltGr";
+            map[None] = Level1;
+            map[Shift+Lock] = Level1;
+            map[Shift] = Level2;
+            map[Lock] = Level2;
+        };
+
+        type "ONE_LEVEL" {
+            modifiers = None;
+            level_name[Level1] = "Any";
+            map[None] = Level1;
+        };
+
+        type "TWO_LEVEL" {
+            modifiers = Shift;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            map[Shift] = Level2;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        key.repeat = true;
+
+        key <T001> {
+            repeat = false
+        };
+        key <T002> {
+            repeat = false
+        };
+        key <T003> {
+            repeat = false
+        };
+        key <T004> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ Greek_alpha ]
+        };
+        key <T005> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group3) ]
+        };
+        key <T006> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ Greek_alpha ],
+            actions[Group1] = [ SetGroup(group = Group3) ]
+        };
+        key <T007> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ a ]
+        };
+        key <T008> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2) ]
+        };
+        key <T009> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ a ],
+            actions[Group1] = [ SetGroup(group = Group2) ]
+        };
+        key <T010> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ a ]
+        };
+        key <T011> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2) ]
+        };
+        key <T012> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ a ],
+            actions[Group1] = [ SetGroup(group = Group2) ]
+        };
+        key <T013> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, { A, Y } ]
+        };
+        key <T014> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T015> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, { A, Y } ],
+            actions[Group1] = [ SetGroup(group = Group2), { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T016> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, A ]
+        };
+        key <T017> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group2) ]
+        };
+        key <T018> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, A ],
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group2) ]
+        };
+        key <T020> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group2) ]
+        };
+        key <T021> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, A ],
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group2) ]
+        };
+        key <T022> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, A ]
+        };
+        key <T023> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group2) ]
+        };
+        key <T024> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, A ],
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group2) ]
+        };
+        key <T025> {
+            type[Group1] = "FOUR_LEVEL_SEMIALPHABETIC",
+            symbols[Group1] = [ a, A, Greek_alpha ]
+        };
+        key <T026> {
+            repeat = false,
+            type[Group1] = "FOUR_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2), SetGroup(group = Group3) ]
+        };
+        key <T027> {
+            repeat = false,
+            type[Group1] = "FOUR_LEVEL_SEMIALPHABETIC",
+            symbols[Group1] = [ a, A, Greek_alpha ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2), SetGroup(group = Group3) ]
+        };
+        key <T028> {
+            type[Group1] = "FOUR_LEVEL_SEMIALPHABETIC",
+            symbols[Group1] = [ a, A, a ]
+        };
+        key <T029> {
+            repeat = false,
+            type[Group1] = "FOUR_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T030> {
+            repeat = false,
+            type[Group1] = "FOUR_LEVEL_SEMIALPHABETIC",
+            symbols[Group1] = [ a, A, a ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T031> {
+            repeat = false
+        };
+        key <T032> {
+            repeat = false
+        };
+        key <T033> {
+            repeat = false
+        };
+        key <T034> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ Greek_alpha ]
+        };
+        key <T035> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group3) ]
+        };
+        key <T036> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ Greek_alpha ],
+            actions[Group1] = [ SetGroup(group = Group3) ]
+        };
+        key <T037> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ NoSymbol, Greek_ALPHA ]
+        };
+        key <T038> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ NoAction(), SetGroup(group = Group3) ]
+        };
+        key <T039> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ NoSymbol, Greek_ALPHA ],
+            actions[Group1] = [ NoAction(), SetGroup(group = Group3) ]
+        };
+        key <T043> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, Greek_ALPHA ]
+        };
+        key <T044> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group3) ]
+        };
+        key <T045> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, Greek_ALPHA ],
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group3) ]
+        };
+        key <T046> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ]
+        };
+        key <T047> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T048> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T049> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ]
+        };
+        key <T050> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T051> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T052> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ]
+        };
+        key <T053> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T054> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T055> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ]
+        };
+        key <T056> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T057> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T060> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, X ],
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group2) ]
+        };
+        key <T061> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ Greek_alpha ]
+        };
+        key <T062> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group3) ]
+        };
+        key <T063> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ Greek_alpha ],
+            actions[Group1] = [ SetGroup(group = Group3) ]
+        };
+        key <T064> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ Greek_alpha ]
+        };
+        key <T065> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group3) ]
+        };
+        key <T066> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ Greek_alpha ],
+            actions[Group1] = [ SetGroup(group = Group3) ]
+        };
+        key <T067> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ NoSymbol, Greek_ALPHA ]
+        };
+        key <T068> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ NoAction(), SetGroup(group = Group3) ]
+        };
+        key <T069> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ NoSymbol, Greek_ALPHA ],
+            actions[Group1] = [ NoAction(), SetGroup(group = Group3) ]
+        };
+        key <T070> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ NoSymbol, Greek_ALPHA ]
+        };
+        key <T071> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ NoAction(), SetGroup(group = Group3) ]
+        };
+        key <T072> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ NoSymbol, Greek_ALPHA ],
+            actions[Group1] = [ NoAction(), SetGroup(group = Group3) ]
+        };
+        key <T073> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, Greek_ALPHA ]
+        };
+        key <T074> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group3) ]
+        };
+        key <T075> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, Greek_ALPHA ],
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group3) ]
+        };
+        key <T076> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { Greek_alpha, Greek_upsilon }, { Greek_ALPHA, Greek_UPSILON } ]
+        };
+        key <T077> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ { SetGroup(group = Group3), SetMods(modifiers = Mod5) }, { SetGroup(group = Group3), SetMods(modifiers = Mod5) } ]
+        };
+        key <T078> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { Greek_alpha, Greek_upsilon }, { Greek_ALPHA, Greek_UPSILON } ],
+            actions[Group1] = [ { SetGroup(group = Group3), SetMods(modifiers = Mod5) }, { SetGroup(group = Group3), SetMods(modifiers = Mod5) } ]
+        };
+        key <T079> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ]
+        };
+        key <T080> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T081> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T085> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ]
+        };
+        key <T086> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T087> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T088> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ]
+        };
+        key <T089> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T090> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T091> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ]
+        };
+        key <T092> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T093> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T094> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ]
+        };
+        key <T095> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T096> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T097> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ]
+        };
+        key <T098> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T099> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, A ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T103> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ NoSymbol, { Greek_ALPHA, Greek_UPSILON } ]
+        };
+        key <T104> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ NoAction(), { SetGroup(group = Group3), SetMods(modifiers = Mod5) } ]
+        };
+        key <T105> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ NoSymbol, { Greek_ALPHA, Greek_UPSILON } ],
+            actions[Group1] = [ NoAction(), { SetGroup(group = Group3), SetMods(modifiers = Mod5) } ]
+        };
+        key <T106> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, Greek_BETA ]
+        };
+        key <T107> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group3) ]
+        };
+        key <T108> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, Greek_BETA ],
+            actions[Group1] = [ SetGroup(group = Group3), SetGroup(group = Group3) ]
+        };
+        key <T109> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { Greek_alpha, Greek_upsilon }, { A, Y } ]
+        };
+        key <T110> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ { SetGroup(group = Group3), SetMods(modifiers = Mod5) }, { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T111> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { Greek_alpha, Greek_upsilon }, { A, Y } ],
+            actions[Group1] = [ { SetGroup(group = Group3), SetMods(modifiers = Mod5) }, { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T112> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, B ]
+        };
+        key <T113> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T114> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, B ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T115> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, B ]
+        };
+        key <T116> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T117> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, B ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T118> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, y }, { A, Y } ]
+        };
+        key <T119> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ { SetGroup(group = Group2), SetMods(modifiers = Control) }, { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T120> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, y }, { A, Y } ],
+            actions[Group1] = [ { SetGroup(group = Group2), SetMods(modifiers = Control) }, { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T121> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, y }, { X, B } ]
+        };
+        key <T122> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ { SetGroup(group = Group2), SetMods(modifiers = Control) }, { SetMods(modifiers = Control), SetGroup(group = Group2) } ]
+        };
+        key <T123> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, y }, { X, B } ],
+            actions[Group1] = [ { SetGroup(group = Group2), SetMods(modifiers = Control) }, { SetMods(modifiers = Control), SetGroup(group = Group2) } ]
+        };
+        key <T124> {
+            repeat = false
+        };
+        key <T125> {
+            repeat = false
+        };
+        key <T126> {
+            repeat = false
+        };
+        key <T127> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { Greek_alpha, Greek_xi }, { Greek_XI, Greek_BETA } ]
+        };
+        key <T128> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ { SetGroup(group = Group3), SetMods(modifiers = Mod5) }, { SetMods(modifiers = Mod5), SetGroup(group = Group3) } ]
+        };
+        key <T129> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { Greek_alpha, Greek_xi }, { Greek_XI, Greek_BETA } ],
+            actions[Group1] = [ { SetGroup(group = Group3), SetMods(modifiers = Mod5) }, { SetMods(modifiers = Mod5), SetGroup(group = Group3) } ]
+        };
+        key <T130> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, y }, { X, A } ]
+        };
+        key <T131> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ { SetGroup(group = Group2), SetMods(modifiers = Control) }, { SetMods(modifiers = Control), SetGroup(group = Group2) } ]
+        };
+        key <T132> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, y }, { X, A } ],
+            actions[Group1] = [ { SetGroup(group = Group2), SetMods(modifiers = Control) }, { SetMods(modifiers = Control), SetGroup(group = Group2) } ]
+        };
+        key <T133> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, y }, { X, A } ]
+        };
+        key <T134> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ { SetGroup(group = Group2), SetMods(modifiers = Control) }, { SetMods(modifiers = Control), SetGroup(group = Group2) } ]
+        };
+        key <T135> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, y }, { X, A } ],
+            actions[Group1] = [ { SetGroup(group = Group2), SetMods(modifiers = Control) }, { SetMods(modifiers = Control), SetGroup(group = Group2) } ]
+        };
+        key <T136> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ NoSymbol, { A, Y } ]
+        };
+        key <T137> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ NoAction(), { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T138> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ NoSymbol, { A, Y } ],
+            actions[Group1] = [ NoAction(), { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T139> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, { A, Y } ]
+        };
+        key <T140> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group3), { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T141> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ Greek_alpha, { A, Y } ],
+            actions[Group1] = [ SetGroup(group = Group3), { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T142> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, B ]
+        };
+        key <T143> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T144> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, B ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T145> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, B ]
+        };
+        key <T146> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T147> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, B ],
+            actions[Group1] = [ SetGroup(group = Group2), SetGroup(group = Group2) ]
+        };
+        key <T150> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), { SetGroup(group = Group3), SetMods(modifiers = Mod5) } ]
+        };
+        key <T153> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ { SetGroup(group = Group2), SetMods(modifiers = Control) }, SetGroup(group = Group3) ]
+        };
+        key <T156> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            actions[Group1] = [ SetGroup(group = Group2), { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T159> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, { X, Y } ],
+            actions[Group1] = [ { SetGroup(group = Group3), SetMods(modifiers = Mod5) }, SetGroup(group = Group2) ]
+        };
+        key <T162> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, b }, X ],
+            actions[Group1] = [ SetGroup(group = Group3), { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T165> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, b }, { X, Y } ],
+            actions[Group1] = [ { SetGroup(group = Group3), SetMods(modifiers = Mod5) }, { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T168> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, { X, Y } ],
+            actions[Group1] = [ { SetGroup(group = Group3), SetMods(modifiers = Mod5) }, SetGroup(group = Group2) ]
+        };
+        key <T171> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, b }, { X, Y } ],
+            actions[Group1] = [ { SetGroup(group = Group3), SetMods(modifiers = Mod5) }, { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T174> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, b }, { A, B } ],
+            actions[Group1] = [ { SetGroup(group = Group2), SetMods(modifiers = Control) }, { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T177> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, { A, B } ],
+            actions[Group1] = [ { SetGroup(group = Group2), SetMods(modifiers = Control) }, SetGroup(group = Group2) ]
+        };
+        key <T180> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ { a, b }, B ],
+            actions[Group1] = [ { SetGroup(group = Group2), SetMods(modifiers = Control) }, SetGroup(group = Group2) ]
+        };
+        key <T183> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, B ],
+            actions[Group1] = [ SetGroup(group = Group2), SetMods(modifiers = Control) ]
+        };
+        key <T186> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, { A, B } ],
+            actions[Group1] = [ { SetGroup(group = Group3), SetMods(modifiers = Mod5) }, SetGroup(group = Group3) ]
+        };
+        key <T189> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ { A, B }, a ],
+            actions[Group1] = [ SetGroup(group = Group3), { SetGroup(group = Group3), SetMods(modifiers = Mod5) } ]
+        };
+        key <T192> {
+            repeat = false,
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, { A, B } ],
+            actions[Group1] = [ SetGroup(group = Group2), { SetGroup(group = Group2), SetMods(modifiers = Control) } ]
+        };
+        key <T204> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ A ],
+            actions[Group1] = [ { SetGroup(group = Group3), SetMods(modifiers = Mod5) } ]
+        };
+    };
+};

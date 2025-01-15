@@ -101,9 +101,12 @@ pub struct Context {
 #[derive(Clone, Debug, Default)]
 pub(crate) struct Environment {
     pub(crate) home: Option<String>,
+    #[cfg_attr(not(feature = "compose"), allow(dead_code))]
     pub(crate) xdg_config_home: Option<String>,
     pub(crate) locale: String,
+    #[cfg_attr(not(feature = "compose"), allow(dead_code))]
     pub(crate) xlocaledir: String,
+    #[cfg_attr(not(feature = "compose"), allow(dead_code))]
     pub(crate) xcomposefile: Option<String>,
     pub(crate) xkb_default_rules: String,
     pub(crate) xkb_default_model: String,

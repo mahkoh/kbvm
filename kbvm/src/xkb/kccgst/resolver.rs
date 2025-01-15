@@ -1492,16 +1492,26 @@ impl SymbolsResolver<'_, '_, '_, '_> {
                         if idx >= old.levels.len() {
                             old.levels.resize(idx + 1, SymbolsKeyLevel::default());
                         }
-                        if augment && !old.levels[idx].is_empty() {
-                            if let Some(span) = level.span() {
-                                self.r.diag(
-                                    DiagnosticKind::IgnoredKeyField,
-                                    ignoring_redefinition.spanned2(span),
-                                );
-                            }
-                        } else {
-                            old.levels[idx] = level;
+                        let span = level.span();
+                        macro_rules! merge {
+                            ($field:ident, $explicit:ident) => {
+                                if level.$field.is_not_empty() {
+                                    if augment && old.levels[idx].$field.is_not_empty() {
+                                        if let Some(span) = span {
+                                            self.r.diag(
+                                                DiagnosticKind::IgnoredKeyField,
+                                                ignoring_redefinition.spanned2(span),
+                                            );
+                                        }
+                                    } else {
+                                        old.levels[idx].$field = level.$field;
+                                        old.$explicit |= group.$explicit;
+                                    }
+                                }
+                            };
                         }
+                        merge!(symbols, has_explicit_symbols);
+                        merge!(actions, has_explicit_actions);
                     }
                 } else {
                     old.key.groups.push(group);
