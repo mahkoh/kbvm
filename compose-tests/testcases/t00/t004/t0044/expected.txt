@@ -1,0 +1,31 @@
+a
+    pending
+b
+    pending
+c
+    composed
+        c
+
+a
+    pending
+b
+    pending
+d
+    composed
+        d
+
+a
+    pending
+x
+    pending
+y
+    composed
+        y
+
+a
+    pending
+x
+    pending
+z
+    composed
+        z
