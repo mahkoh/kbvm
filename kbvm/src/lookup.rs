@@ -352,6 +352,53 @@ impl Debug for Lookup<'_> {
 }
 
 impl LookupTable {
+    /// Looks up the keysyms associated with a key press.
+    ///
+    /// The `group` and `mods` should be the effective group and effective modifiers
+    /// computed by the compositor.
+    ///
+    /// In wayland, the effective modifiers are the bitwise OR of the pressed, latched,
+    /// and locked modifiers.
+    ///
+    /// # Example
+    ///
+    /// An application using the wayland-client crate might use this function as follows:
+    ///
+    /// ```ignore
+    /// struct State {
+    ///     lookup_table: LookupTable,
+    ///     group: GroupIndex,
+    ///     mods: ModifierMask,
+    /// }
+    ///
+    /// impl Dispatch<WlKeyboard, ()> for State {
+    ///     fn event(
+    ///         state: &mut State,
+    ///         _: &WlKeyboard,
+    ///         event: wl_keyboard::Event,
+    ///         _: &(),
+    ///         _: &Connection,
+    ///         _: &QueueHandle<State>,
+    ///     ) {
+    ///         use wl_keyboard::Event;
+    ///         match event {
+    ///             Event::Modifiers {
+    ///                 mods_depressed, mods_latched, mods_locked, group, ..
+    ///             } => {
+    ///                 state.group = GroupIndex(group);
+    ///                 state.mods = ModifierMask(mods_depressed | mods_latched | mods_locked);
+    ///             }
+    ///             Event::Key { key, state: WEnum::Value(WlKeyState::Pressed), .. } => {
+    ///                 let key = Keycode::from_evdev(key);
+    ///                 for keysym in state.lookup_table.lookup(state.group, state.mods, key) {
+    ///                     println!("{keysym:?}");
+    ///                 }
+    ///             }
+    ///             _ => { },
+    ///         }
+    ///     }
+    /// }
+    /// ```
     pub fn lookup(&self, group: GroupIndex, mods: ModifierMask, keycode: Keycode) -> Lookup<'_> {
         let mut consumed = ModifierMask::default();
         let mut groups = &[][..];
@@ -386,7 +433,15 @@ impl LookupTable {
         }
     }
 
-    pub fn effective_layout(&self, group: GroupIndex, keycode: Keycode) -> Option<GroupIndex> {
+    /// Returns the effective group that will be used for the keycode.
+    ///
+    /// The `group` parameter should be the effective group computed by the compositor.
+    /// This function will then return the effective group for the specific key.
+    ///
+    /// These values can differ when the key has fewer groups than the maximum number of
+    /// groups in the keymap. In this case, the effective group is calculated using
+    /// the [`Redirect`] setting of the key.
+    pub fn effective_group(&self, group: GroupIndex, keycode: Keycode) -> Option<GroupIndex> {
         if let Some(Some(key)) = self.keys.get(keycode.0 as usize) {
             if key.groups.len() > 0 {
                 let group = key.redirect.apply(group, key.groups.len());
@@ -394,6 +449,14 @@ impl LookupTable {
             }
         }
         None
+    }
+
+    /// Returns whether the key repeats.
+    pub fn repeats(&self, keycode: Keycode) -> bool {
+        if let Some(Some(key)) = self.keys.get(keycode.0 as usize) {
+            return key.repeats;
+        }
+        true
     }
 }
 
@@ -478,3 +541,42 @@ impl Iterator for KeysymsIter<'_> {
         })
     }
 }
+
+/*
+struct State {
+    lookup_table: LookupTable,
+    group: GroupIndex,
+    mods: ModifierMask,
+}
+
+impl Dispatch<WlKeyboard, ()> for State {
+    fn event(
+        state: &mut State,
+        wl_keyboard: &WlKeyboard,
+        event: <WlKeyboard as Proxy>::Event,
+        data: &(),
+        _: &Connection,
+        _: &QueueHandle<State>,
+    ) {
+        match event {
+            WlKeyboardEvent::Modifiers {
+                mods_depressed, mods_latched, mods_locked, group, ..
+            } => {
+                state.group = GroupIndex(group);
+                state.mods = ModifierMask(mods_depressed, mods_latched, mods_locked);
+            }
+            WlKeyboardEvent::Key { key, state: WEnum::Value(WlKeyState::Pressed), .. } => {
+                let key = Keycode::from_evdev(key);
+                for keysym in state.lookup_table.lookup(state.group, state.mods, key) {
+                    println!("{keysym:?}");
+                }
+            }
+            _ => { },
+        }
+    }
+}
+ */
+
+/*
+
+ */
