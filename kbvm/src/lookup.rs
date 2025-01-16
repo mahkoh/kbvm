@@ -1,9 +1,7 @@
 #[expect(unused_imports)]
 use crate::builder::Builder;
 use {
-    crate::{
-        builder::Redirect, group::GroupIndex, group_type::GroupType, Keycode, Keysym, ModifierMask,
-    },
+    crate::{builder::Redirect, group::GroupIndex, GroupType, Keycode, Keysym, ModifierMask},
     smallvec::SmallVec,
     std::fmt::{Debug, Formatter},
 };
@@ -209,11 +207,11 @@ pub(crate) struct KeyGroups {
 #[derive(Clone, Debug)]
 pub(crate) struct KeyGroup {
     pub(crate) ty: GroupType,
-    pub(crate) layers: Box<[KeyLayer]>,
+    pub(crate) levels: Box<[KeyLevel]>,
 }
 
 #[derive(Default, Clone, Debug)]
-pub(crate) struct KeyLayer {
+pub(crate) struct KeyLevel {
     pub(crate) symbols: SmallVec<[Keysym; 1]>,
 }
 
@@ -413,8 +411,8 @@ impl LookupTable {
                     consumed = mapping.consumed;
                     // println!("{:?}", group.ty);
                     // println!("{:?}", mapping);
-                    if let Some(layer) = group.layers.get(mapping.layer) {
-                        syms = &layer.symbols;
+                    if let Some(level) = group.levels.get(mapping.level) {
+                        syms = &level.symbols;
                     }
                 }
             }
@@ -480,10 +478,10 @@ impl<'a> IntoIterator for Lookup<'a> {
         let mut did_ctrl_fallback = false;
         if self.use_ctrl_fallback && do_ctrl_transform && syms.len() == 1 && syms[0].0 > 127 {
             for group in self.groups.iter().flatten() {
-                let layer = group.ty.map(self.original_mods).layer;
-                if let Some(layer) = group.layers.get(layer) {
-                    if layer.symbols.len() == 1 && layer.symbols[0].0 <= 127 {
-                        syms = &layer.symbols;
+                let level = group.ty.map(self.original_mods).level;
+                if let Some(level) = group.levels.get(level) {
+                    if level.symbols.len() == 1 && level.symbols[0].0 <= 127 {
+                        syms = &level.symbols;
                         did_ctrl_fallback = true;
                         break;
                     }

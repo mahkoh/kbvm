@@ -2,15 +2,14 @@
 use {crate::lookup::LookupTable, crate::state_machine::StateMachine};
 use {
     crate::{
-        builder::{Builder, GroupBuilder, KeyBuilder, LayerBuilder},
-        group_type::GroupType,
+        builder::{Builder, GroupBuilder, KeyBuilder, LevelBuilder},
         routine::{Routine, RoutineBuilder, SkipAnchor, Var},
         xkb::{
             group::GroupChange,
             keymap::{Action, KeyType},
             Keymap,
         },
-        Keycode, ModifierIndex,
+        GroupType, Keycode, ModifierIndex,
     },
     hashbrown::HashMap,
     isnt::std_1::primitive::IsntSliceExt,
@@ -48,16 +47,16 @@ impl Keymap {
                 };
                 let ty = &types[&(&*group.key_type as *const KeyType)];
                 let mut gb = GroupBuilder::new(idx, ty);
-                for (idx, layer) in group.levels.iter().enumerate() {
-                    if layer.actions.is_empty() && layer.symbols.is_empty() {
+                for (idx, level) in group.levels.iter().enumerate() {
+                    if level.actions.is_empty() && level.symbols.is_empty() {
                         continue;
                     }
-                    let mut lb = LayerBuilder::new(idx);
-                    lb.keysyms(&layer.symbols);
-                    if layer.actions.is_not_empty() {
-                        lb.routine(&actions_to_routine(key.key_code, &layer.actions));
+                    let mut lb = LevelBuilder::new(idx);
+                    lb.keysyms(&level.symbols);
+                    if level.actions.is_not_empty() {
+                        lb.routine(&actions_to_routine(key.key_code, &level.actions));
                     }
-                    gb.add_layer(lb);
+                    gb.add_level(lb);
                 }
                 kb.add_group(gb);
             }

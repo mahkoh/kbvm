@@ -7,11 +7,10 @@ use crate::{routine::RoutineBuilder, state_machine::State, xkb::Keymap};
 use {
     crate::{
         group::GroupIndex,
-        group_type::GroupType,
         lookup::{self, LookupTable},
         routine::{Global, Routine},
         state_machine::{self, StateMachine},
-        Keycode, Keysym, ModifierIndex, ModifierMask,
+        GroupType, Keycode, Keysym, ModifierIndex, ModifierMask,
     },
     hashbrown::HashMap,
     isnt::std_1::primitive::IsntSliceExt,
@@ -117,7 +116,7 @@ use {
 /// ```
 /// # use {
 /// #     kbvm::{
-/// #         builder::{Builder, GroupBuilder, KeyBuilder, LayerBuilder},
+/// #         builder::{Builder, GroupBuilder, KeyBuilder, LevelBuilder},
 /// #         GroupType,
 /// #         syms,
 /// #         evdev,
@@ -131,8 +130,8 @@ use {
 /// let mut builder = Builder::default();
 ///
 /// // Define types for shift and alphabetic keys. These types determine how modifiers
-/// // are mapped to layers. If no mapping is specified, the modifiers automatically
-/// // map to the 0th layer.
+/// // are mapped to levels. If no mapping is specified, the modifiers automatically
+/// // map to the 0th level.
 /// let shift_key_type = GroupType::builder(ModifierMask::NONE).build();
 /// let alphabetic_key_type = GroupType::builder(ModifierMask::SHIFT | ModifierMask::LOCK)
 ///     .map(ModifierMask::SHIFT, 1)
@@ -141,16 +140,16 @@ use {
 ///
 /// // Define the A key.
 /// {
-///     // Lowercase letter on the first layer.
-///     let mut first_layer = LayerBuilder::new(0);
-///     first_layer.keysyms(&[syms::a]);
-///     // Uppercase letter on the second layer.
-///     let mut second_layer = LayerBuilder::new(1);
-///     second_layer.keysyms(&[syms::A]);
+///     // Lowercase letter on the first level.
+///     let mut first_level = LevelBuilder::new(0);
+///     first_level.keysyms(&[syms::a]);
+///     // Uppercase letter on the second level.
+///     let mut second_level = LevelBuilder::new(1);
+///     second_level.keysyms(&[syms::A]);
 ///     // We only use a single group.
 ///     let mut group = GroupBuilder::new(0, &alphabetic_key_type);
-///     group.add_layer(first_layer);
-///     group.add_layer(second_layer);
+///     group.add_level(first_level);
+///     group.add_level(second_level);
 ///     let mut key = KeyBuilder::new(evdev::A);
 ///     key.add_group(group);
 ///     builder.add_key(key);
@@ -164,7 +163,7 @@ use {
 ///         let mut routine = Routine::builder();
 ///         let [mods, key] = routine.allocate_vars();
 ///         routine
-///             .load_lit(key, evdev::LEFTSHIFT.to_raw())
+///             .load_lit(key, evdev::LEFTSHIFT.to_x11())
 ///             .key_down(key)
 ///             .load_lit(mods, ModifierMask::SHIFT.0)
 ///             .pressed_mods_inc(mods)
@@ -173,14 +172,14 @@ use {
 ///             .pressed_mods_dec(mods);
 ///         routine.build()
 ///     };
-///     let mut layer = LayerBuilder::new(0);
-///     layer.keysyms(&[syms::Shift_L]);
-///     // Attach the routine to the first layer. The first part of the routine is
-///     // executed when this layer is pressed. The second part, after `on_release`,
-///     // is executed when the layer is released.
-///     layer.routine(&routine);
+///     let mut level = LevelBuilder::new(0);
+///     level.keysyms(&[syms::Shift_L]);
+///     // Attach the routine to the first level. The first part of the routine is
+///     // executed when this level is pressed. The second part, after `on_release`,
+///     // is executed when the level is released.
+///     level.routine(&routine);
 ///     let mut group = GroupBuilder::new(0, &shift_key_type);
-///     group.add_layer(layer);
+///     group.add_level(level);
 ///     let mut key = KeyBuilder::new(evdev::LEFTSHIFT);
 ///     key.add_group(group);
 ///     builder.add_key(key);
@@ -281,11 +280,11 @@ struct BuilderKey {
 #[derive(Clone, Debug)]
 struct BuilderGroup {
     ty: GroupType,
-    layers: Vec<Option<BuilderLayer>>,
+    levels: Vec<Option<BuilderLevel>>,
 }
 
 #[derive(Clone, Default, Debug)]
-struct BuilderLayer {
+struct BuilderLevel {
     keysyms: SmallVec<[Keysym; 1]>,
     routine: Option<Routine>,
 }
@@ -295,15 +294,15 @@ struct BuilderLayer {
 /// # Example
 ///
 /// ```
-/// # use kbvm::builder::{GroupBuilder, KeyBuilder, LayerBuilder};
+/// # use kbvm::builder::{GroupBuilder, KeyBuilder, LevelBuilder};
 /// # use kbvm::{evdev, syms};
 /// # use kbvm::GroupType;
 /// # use kbvm::ModifierMask;
 /// let group_type = GroupType::builder(ModifierMask::NONE).build();
-/// let mut layer = LayerBuilder::new(0);
-/// layer.keysyms(&[syms::A]);
+/// let mut level = LevelBuilder::new(0);
+/// level.keysyms(&[syms::A]);
 /// let mut group = GroupBuilder::new(0, &group_type);
-/// group.add_layer(layer);
+/// group.add_level(level);
 /// let mut builder = KeyBuilder::new(evdev::A);
 /// builder.add_group(group);
 /// ```
@@ -318,15 +317,15 @@ pub struct KeyBuilder {
 /// # Example
 ///
 /// ```
-/// # use kbvm::builder::{GroupBuilder, LayerBuilder};
+/// # use kbvm::builder::{GroupBuilder, LevelBuilder};
 /// # use kbvm::{syms};
 /// # use kbvm::GroupType;
 /// # use kbvm::ModifierMask;
 /// let group_type = GroupType::builder(ModifierMask::NONE).build();
-/// let mut layer = LayerBuilder::new(0);
-/// layer.keysyms(&[syms::A]);
+/// let mut level = LevelBuilder::new(0);
+/// level.keysyms(&[syms::A]);
 /// let mut group = GroupBuilder::new(0, &group_type);
-/// group.add_layer(layer);
+/// group.add_level(level);
 /// ```
 #[derive(Clone, Debug)]
 pub struct GroupBuilder {
@@ -334,20 +333,20 @@ pub struct GroupBuilder {
     group: BuilderGroup,
 }
 
-/// A builder for a key layer.
+/// A builder for a key level.
 ///
 /// # Example
 ///
 /// ```
-/// # use kbvm::builder::{LayerBuilder};
+/// # use kbvm::builder::{LevelBuilder};
 /// # use kbvm::{syms};
-/// let mut layer = LayerBuilder::new(0);
-/// layer.keysyms(&[syms::A]);
+/// let mut level = LevelBuilder::new(0);
+/// level.keysyms(&[syms::A]);
 /// ```
 #[derive(Clone, Debug)]
-pub struct LayerBuilder {
+pub struct LevelBuilder {
     idx: usize,
-    layer: BuilderLayer,
+    level: BuilderLevel,
 }
 
 impl Builder {
@@ -405,23 +404,23 @@ impl Builder {
                 match group {
                     None => groups.push(None),
                     Some(g) => {
-                        let mut any_layers = false;
-                        let mut layers = Vec::with_capacity(g.layers.len());
-                        for layer in &g.layers {
-                            match layer {
-                                None => layers.push(state_machine::KeyLayer::default()),
+                        let mut any_levels = false;
+                        let mut levels = Vec::with_capacity(g.levels.len());
+                        for level in &g.levels {
+                            match level {
+                                None => levels.push(state_machine::KeyLevel::default()),
                                 Some(l) => {
-                                    any_layers |= l.routine.is_some();
-                                    layers.push(state_machine::KeyLayer {
+                                    any_levels |= l.routine.is_some();
+                                    levels.push(state_machine::KeyLevel {
                                         routine: l.routine.clone(),
                                     })
                                 }
                             }
                         }
-                        any_groups |= any_layers;
+                        any_groups |= any_levels;
                         groups.push(Some(state_machine::KeyGroup {
                             ty: g.ty.clone(),
-                            layers: layers.into_boxed_slice(),
+                            levels: levels.into_boxed_slice(),
                         }));
                     }
                 }
@@ -453,23 +452,23 @@ impl Builder {
                 match group {
                     None => groups.push(None),
                     Some(g) => {
-                        let mut any_layers = false;
-                        let mut layers = Vec::with_capacity(g.layers.len());
-                        for layer in &g.layers {
-                            match layer {
-                                None => layers.push(lookup::KeyLayer::default()),
+                        let mut any_levels = false;
+                        let mut levels = Vec::with_capacity(g.levels.len());
+                        for level in &g.levels {
+                            match level {
+                                None => levels.push(lookup::KeyLevel::default()),
                                 Some(l) => {
-                                    any_layers |= l.keysyms.is_not_empty();
-                                    layers.push(lookup::KeyLayer {
+                                    any_levels |= l.keysyms.is_not_empty();
+                                    levels.push(lookup::KeyLevel {
                                         symbols: l.keysyms.clone(),
                                     })
                                 }
                             }
                         }
-                        any_groups |= any_layers;
+                        any_groups |= any_levels;
                         groups.push(Some(lookup::KeyGroup {
                             ty: g.ty.clone(),
-                            layers: layers.into_boxed_slice(),
+                            levels: levels.into_boxed_slice(),
                         }));
                     }
                 }
@@ -552,55 +551,55 @@ impl GroupBuilder {
             idx,
             group: BuilderGroup {
                 ty: ty.clone(),
-                layers: vec![],
+                levels: vec![],
             },
         }
     }
 
-    /// Adds a layer to the group.
+    /// Adds a level to the group.
     ///
-    /// If a layer with this index already exists, it is overwritten.
-    pub fn add_layer(&mut self, layer: LayerBuilder) {
-        if self.group.layers.len() <= layer.idx {
+    /// If a level with this index already exists, it is overwritten.
+    pub fn add_level(&mut self, level: LevelBuilder) {
+        if self.group.levels.len() <= level.idx {
             self.group
-                .layers
-                .resize_with(layer.idx + 1, Default::default);
+                .levels
+                .resize_with(level.idx + 1, Default::default);
         }
-        self.group.layers[layer.idx] = Some(layer.layer);
+        self.group.levels[level.idx] = Some(level.level);
     }
 }
 
-impl LayerBuilder {
-    /// Creates a new builder for the given layer.
-    pub fn new(layer: usize) -> Self {
+impl LevelBuilder {
+    /// Creates a new builder for the given level.
+    pub fn new(level: usize) -> Self {
         Self {
-            idx: layer,
-            layer: Default::default(),
+            idx: level,
+            level: Default::default(),
         }
     }
 
-    /// Sets the routine of this layer.
+    /// Sets the routine of this level.
     ///
     /// If no routine is set, then the default routine executes the following steps:
     ///
     /// - On press:
-    ///   - Emit a KeyDown event for the keycode of this layer.
+    ///   - Emit a KeyDown event for the keycode of this level.
     ///   - Set the latched modifiers to 0.
     ///   - Set the latched group to 0.
     /// - On release:
-    ///   - Emit a KeyUp event for the keycode of this layer.
+    ///   - Emit a KeyUp event for the keycode of this level.
     ///
     /// If the routine uses globals, these globals should have been allocated via
-    /// [`Builder::add_global`] of the builder that this layer is ultimately attached to.
+    /// [`Builder::add_global`] of the builder that this level is ultimately attached to.
     pub fn routine(&mut self, routine: &Routine) -> &mut Self {
-        self.layer.routine = Some(routine.clone());
+        self.level.routine = Some(routine.clone());
         self
     }
 
-    /// Sets the keysyms of this layer.
+    /// Sets the keysyms of this level.
     pub fn keysyms(&mut self, keysyms: &[Keysym]) -> &mut Self {
-        self.layer.keysyms.clear();
-        self.layer.keysyms.extend_from_slice(keysyms);
+        self.level.keysyms.clear();
+        self.level.keysyms.extend_from_slice(keysyms);
         self
     }
 }

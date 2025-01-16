@@ -139,9 +139,9 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let mut events = vec![];
     let mut repeating_key = None;
     let key_name = |code: Keycode| {
-        let (name, kc) = CODE_TO_NAME[&code.to_raw()];
-        if kc != code.to_raw() {
-            return NameOrKey::Key(code.to_raw());
+        let (name, kc) = CODE_TO_NAME[&code.to_x11()];
+        if kc != code.to_x11() {
+            return NameOrKey::Key(code.to_x11());
         }
         NameOrKey::Name(name)
     };
@@ -196,7 +196,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
             if arg != kn {
                 return Err(ResultError::InvalidKeyName(arg.to_string()));
             }
-            Ok(Keycode::from_raw(kc))
+            Ok(Keycode::from_x11(kc))
         };
         events.clear();
         let mut key = |direction: Direction| {

@@ -80,7 +80,6 @@ pub(crate) mod hidden {
     ///   char is printed with `Debug::format`.
     /// - Otherwise, it prints `0xXXXXXXXX` as for the `Display` implementation.
     #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Default)]
-    #[repr(transparent)]
     pub struct Keysym(pub u32);
 }
 

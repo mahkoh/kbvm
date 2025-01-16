@@ -33,7 +33,7 @@ impl LookupTable {
     /// # Example
     ///
     /// ```
-    /// # use kbvm::builder::{Builder, GroupBuilder, KeyBuilder, LayerBuilder};
+    /// # use kbvm::builder::{Builder, GroupBuilder, KeyBuilder, LevelBuilder};
     /// # use kbvm::GroupType;
     /// # use kbvm::syms;
     /// # use kbvm::ModifierMask;
@@ -44,24 +44,24 @@ impl LookupTable {
     ///         .map(ModifierMask::SHIFT, 1)
     ///         .build();
     ///     let mut gb = GroupBuilder::new(0, &gt);
-    ///     let mut layer = LayerBuilder::new(0);
-    ///     layer.keysyms(&[syms::a]);
-    ///     gb.add_layer(layer);
-    ///     let mut layer = LayerBuilder::new(1);
-    ///     layer.keysyms(&[syms::A]);
-    ///     gb.add_layer(layer);
-    ///     let mut key = KeyBuilder::new(Keycode::from_raw(9));
+    ///     let mut level = LevelBuilder::new(0);
+    ///     level.keysyms(&[syms::a]);
+    ///     gb.add_level(level);
+    ///     let mut level = LevelBuilder::new(1);
+    ///     level.keysyms(&[syms::A]);
+    ///     gb.add_level(level);
+    ///     let mut key = KeyBuilder::new(Keycode::from_x11(9));
     ///     key.repeats(true);
     ///     key.add_group(gb);
     ///     builder.add_key(key)
     /// }
     /// {
     ///     let gt = GroupType::builder(ModifierMask::NONE).build();
-    ///     let mut layer = LayerBuilder::new(0);
-    ///     layer.keysyms(&[syms::Alt_L]);
+    ///     let mut level = LevelBuilder::new(0);
+    ///     level.keysyms(&[syms::Alt_L]);
     ///     let mut gb = GroupBuilder::new(0, &gt);
-    ///     gb.add_layer(layer);
-    ///     let mut key = KeyBuilder::new(Keycode::from_raw(10));
+    ///     gb.add_level(level);
+    ///     let mut key = KeyBuilder::new(Keycode::from_x11(10));
     ///     key.add_group(gb);
     ///     builder.add_key(key)
     /// }
@@ -142,10 +142,10 @@ impl LookupTable {
                     groups.push(None);
                     continue;
                 };
-                let mut levels = Vec::with_capacity(group.layers.len());
+                let mut levels = Vec::with_capacity(group.levels.len());
                 macro_rules! syms_to_map {
                     ($($syms:pat => $mask:ident,)*) => {{
-                        for &sym in group.layers.iter().flat_map(|l| l.symbols.iter()) {
+                        for &sym in group.levels.iter().flat_map(|l| l.symbols.iter()) {
                             let idx = $(
                                 if let $syms = sym {
                                     ModifierIndex::$mask
@@ -172,9 +172,9 @@ impl LookupTable {
                     syms::Num_Lock => MOD2,
                     syms::Super_L | syms::Super_R => MOD4,
                 }
-                for layer in &group.layers {
+                for level in &group.levels {
                     levels.push(KeyLevel {
-                        symbols: layer.symbols.clone(),
+                        symbols: level.symbols.clone(),
                         actions: Default::default(),
                     });
                 }
@@ -184,11 +184,11 @@ impl LookupTable {
                     Entry::Vacant(v) => {
                         let mut mappings = Vec::with_capacity(group.ty.data.cases.len());
                         for case in &group.ty.data.cases {
-                            if case.layer < u32::MAX as usize {
+                            if case.level <= u32::MAX as usize {
                                 mappings.push(KeyTypeMapping {
                                     modifiers: case.mods,
                                     preserved: case.mods & !case.consumed,
-                                    level: Level::new(case.layer as u32 + 1).unwrap(),
+                                    level: Level::new(case.level as u32 + 1).unwrap(),
                                 });
                             }
                         }

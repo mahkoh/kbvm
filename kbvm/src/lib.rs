@@ -11,7 +11,7 @@
 pub use {
     components::Components,
     group::{GroupDelta, GroupIndex},
-    group_type::GroupType,
+    group_type::hidden::GroupType,
     keysym::hidden::Keysym,
     modifier::hidden::{ModifierIndex, ModifierMask},
     state_machine::hidden::Keycode,
@@ -23,7 +23,7 @@ mod config;
 pub mod evdev;
 mod from_bytes;
 mod group;
-mod group_type;
+pub mod group_type;
 pub mod keysym;
 pub mod lookup;
 pub mod modifier;
