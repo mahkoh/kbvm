@@ -1,6 +1,6 @@
 use {
     crate::routine::{
-        convert_to_ssa, run, Global, Hi, Register, Routine, RoutineBuilder, SkipAnchor,
+        convert_to_ssa, run, Global, Hi, Register, Routine, RoutineBuilder,
         StateEventHandler,
     },
     isnt::std_1::vec::IsntVecExt,
@@ -46,15 +46,12 @@ fn test(builder: RoutineBuilder, global: &[u32]) {
 
 #[test]
 fn skip() {
-    let mut anchor = SkipAnchor::default();
     let (mut builder, [g0, g1, g2, ..]) = builder();
     let [r0, r1, r2] = builder.allocate_vars();
+    let anchor = builder.load_lit(r0, 1).load_lit(r1, 4).prepare_skip();
     builder
-        .load_lit(r0, 1)
-        .load_lit(r1, 4)
-        .prepare_skip(&mut anchor)
         .load_lit(r1, 2)
-        .finish_skip(&mut anchor)
+        .finish_skip(anchor)
         .load_lit(r2, 3)
         .store_global(g0, r0)
         .store_global(g1, r1)
@@ -64,19 +61,20 @@ fn skip() {
 
 #[test]
 fn skip_conditional() {
-    let mut anchor = SkipAnchor::default();
     let (mut builder, [g0, g1, g2, ..]) = builder();
     let [r0, r1, r2] = builder.allocate_vars();
-    builder
+    let anchor = builder
         .load_lit(r0, 1)
         .load_lit(r1, 0)
         .load_lit(r2, 0)
-        .prepare_skip_if(r1, false, &mut anchor)
+        .prepare_skip_if(r1);
+    let anchor = builder
         .load_lit(r1, 2)
-        .finish_skip(&mut anchor)
-        .prepare_conditional_skip(r0, false, &mut anchor)
+        .finish_skip(anchor)
+        .prepare_skip_if(r0);
+    builder
         .load_lit(r2, 3)
-        .finish_skip(&mut anchor)
+        .finish_skip(anchor)
         .store_global(g0, r0)
         .store_global(g1, r1)
         .store_global(g2, r2);
@@ -775,31 +773,28 @@ fn igt() {
 fn move_() {
     let (mut builder, g) = builder();
     const N: usize = Register::LENGTH + 1;
-    let mut anchor1 = SkipAnchor::default();
-    let mut anchor2 = SkipAnchor::default();
-    let mut anchor3 = SkipAnchor::default();
     let c = builder.allocate_var();
     builder.load_lit(c, 0);
     let v = builder.allocate_vars::<N>();
     for i in 0..N {
         builder.load_lit(v[i], i as u32);
     }
-    builder.prepare_skip_if(c, true, &mut anchor2);
-    {
+    let anchor2 = builder.prepare_skip_if_not(c);
+    let anchor3 = {
         for i in 0..N {
             builder.store_global(g[i], v[i]);
         }
-        builder.prepare_skip(&mut anchor3);
-    }
-    builder.finish_skip(&mut anchor2);
-    {
+        builder.prepare_skip()
+    };
+    builder.finish_skip(anchor2);
+    let anchor1 = {
         for i in 0..N {
             builder.store_global(g[(i + 1) % N], v[i]);
         }
-        builder.prepare_skip(&mut anchor1);
-    }
-    builder.finish_skip(&mut anchor1);
-    builder.finish_skip(&mut anchor3);
+        builder.prepare_skip()
+    };
+    builder.finish_skip(anchor1);
+    builder.finish_skip(anchor3);
     test(builder, &[8, 0, 1, 2, 3, 4, 5, 6, 7]);
 }
 
@@ -819,13 +814,10 @@ fn global_load() {
 #[test]
 fn global_load2() {
     let (mut builder, [g0, g1, g2, ..]) = builder();
-    let mut anchor1 = SkipAnchor::default();
     let [r0, r1] = builder.allocate_vars();
+    let anchor1 = builder.load_lit(r0, 1).store_global(g0, r0).prepare_skip();
     builder
-        .load_lit(r0, 1)
-        .store_global(g0, r0)
-        .prepare_skip(&mut anchor1)
-        .finish_skip(&mut anchor1)
+        .finish_skip(anchor1)
         .load_global(r1, g0)
         .store_global(g1, r1)
         .store_global(g2, r0);
@@ -835,14 +827,14 @@ fn global_load2() {
 #[test]
 fn binop() {
     let (mut builder, [g0, g1, ..]) = builder();
-    let mut anchor1 = SkipAnchor::default();
     let [r0, r1, r2] = builder.allocate_vars();
-    builder
+    let anchor1 = builder
         .load_lit(r0, 1)
         .load_lit(r2, 1)
         .store_global(g0, r0)
-        .prepare_skip(&mut anchor1)
-        .finish_skip(&mut anchor1)
+        .prepare_skip();
+    builder
+        .finish_skip(anchor1)
         .add(r1, r0, r2)
         .store_global(g1, r1);
     test(builder, &[1, 2]);
@@ -851,12 +843,10 @@ fn binop() {
 #[test]
 fn neg2() {
     let (mut builder, [g0, ..]) = builder();
-    let mut anchor1 = SkipAnchor::default();
     let [r0, r1] = builder.allocate_vars();
+    let anchor1 = builder.load_lit(r0, 1).prepare_skip();
     builder
-        .load_lit(r0, 1)
-        .prepare_skip(&mut anchor1)
-        .finish_skip(&mut anchor1)
+        .finish_skip(anchor1)
         .neg(r1, r0)
         .store_global(g0, r1);
     test(builder, &[!0]);
@@ -866,16 +856,15 @@ fn neg2() {
 fn fallthrough() {
     let (mut builder, g) = builder();
     const N: usize = Register::LENGTH + 1;
-    let mut anchor1 = SkipAnchor::default();
     let c = builder.allocate_var();
     builder.load_lit(c, 0);
     let v = builder.allocate_vars::<N>();
     for i in 0..N {
         builder.load_lit(v[i], i as u32);
     }
-    builder.prepare_skip_if(c, false, &mut anchor1);
+    let anchor1 = builder.prepare_skip_if(c);
     builder.store_global(g[0], v[0]);
-    builder.finish_skip(&mut anchor1);
+    builder.finish_skip(anchor1);
     for i in 0..N {
         builder.store_global(g[(i + 1) % N], v[i]);
     }
@@ -885,17 +874,16 @@ fn fallthrough() {
 #[test]
 fn double_jump() {
     let (mut builder, [g0, g1, g2, g3, ..]) = builder();
-    let mut anchor1 = SkipAnchor::default();
     let [r0, r1, r2, r3] = builder.allocate_vars();
-    builder
-        .load_lit(r0, 1)
-        .prepare_skip(&mut anchor1)
+    let anchor1 = builder.load_lit(r0, 1).prepare_skip();
+    let anchor1 = builder
         .load_lit(r1, 1)
-        .finish_skip(&mut anchor1)
+        .finish_skip(anchor1)
         .load_lit(r2, 1)
-        .prepare_skip(&mut anchor1)
+        .prepare_skip();
+    builder
         .load_lit(r3, 1)
-        .finish_skip(&mut anchor1)
+        .finish_skip(anchor1)
         .store_global(g0, r0)
         .store_global(g1, r1)
         .store_global(g2, r2)
@@ -906,18 +894,16 @@ fn double_jump() {
 #[test]
 fn double_cond_jump() {
     let (mut builder, [g0, g1, g2, g3, ..]) = builder();
-    let mut anchor1 = SkipAnchor::default();
     let [r0, r1, r2, r3, r4] = builder.allocate_vars();
-    builder
-        .load_lit(r4, 1)
-        .load_lit(r0, 1)
-        .prepare_skip_if(r4, false, &mut anchor1)
+    let anchor1 = builder.load_lit(r4, 1).load_lit(r0, 1).prepare_skip_if(r4);
+    let anchor1 = builder
         .load_lit(r1, 1)
-        .finish_skip(&mut anchor1)
+        .finish_skip(anchor1)
         .load_lit(r2, 1)
-        .prepare_conditional_skip(r4, false, &mut anchor1)
+        .prepare_skip_if(r4);
+    builder
         .load_lit(r3, 1)
-        .finish_skip(&mut anchor1)
+        .finish_skip(anchor1)
         .store_global(g0, r0)
         .store_global(g1, r1)
         .store_global(g2, r2)
@@ -928,19 +914,20 @@ fn double_cond_jump() {
 #[test]
 fn double_cond_jump2() {
     let (mut builder, [g0, g1, g2, g3, ..]) = builder();
-    let mut anchor1 = SkipAnchor::default();
     let [r0, r1, r2, r3, r4, r5] = builder.allocate_vars();
-    builder
+    let anchor1 = builder
         .load_lit(r4, 1)
         .load_lit(r5, 0)
         .load_lit(r0, 1)
-        .prepare_skip_if(r4, false, &mut anchor1)
+        .prepare_skip_if(r4);
+    let anchor1 = builder
         .load_lit(r1, 1)
-        .finish_skip(&mut anchor1)
+        .finish_skip(anchor1)
         .load_lit(r2, 1)
-        .prepare_conditional_skip(r5, false, &mut anchor1)
+        .prepare_skip_if(r5);
+    builder
         .load_lit(r3, 1)
-        .finish_skip(&mut anchor1)
+        .finish_skip(anchor1)
         .store_global(g0, r0)
         .store_global(g1, r1)
         .store_global(g2, r2)
@@ -960,8 +947,8 @@ fn many_uninit() {
 
 fn get_args(f: impl FnOnce(&mut RoutineBuilder, [Global; NUM_GLOBALS])) -> usize {
     let (mut builder, g) = builder();
-    let mut anchor1 = SkipAnchor::default();
-    builder.prepare_skip(&mut anchor1).finish_skip(&mut anchor1);
+    let anchor1 = builder.prepare_skip();
+    builder.finish_skip(anchor1);
     f(&mut builder, g);
     if builder.ops.is_not_empty() {
         builder.blocks.push(mem::take(&mut builder.ops));
@@ -1113,22 +1100,20 @@ fn load_spilled_before_skip() {
     */
     let (mut builder, [g0, g1, ..]) = builder();
     let [b] = builder.allocate_vars();
-    let mut anchor1 = SkipAnchor::default();
-    let mut anchor2 = SkipAnchor::default();
     const N: usize = Register::LENGTH;
     let u = builder.allocate_vars::<N>();
     builder.load_lit(b, 99);
     for i in 0..N {
         builder.load_lit(u[i], i as u32);
     }
-    builder.prepare_skip(&mut anchor1);
+    let anchor1 = builder.prepare_skip();
     for i in 0..N {
         builder.store_global(g1, u[i]);
     }
-    builder.prepare_skip(&mut anchor2);
-    builder.finish_skip(&mut anchor1);
+    let anchor2 = builder.prepare_skip();
+    builder.finish_skip(anchor1);
     builder.store_global(g0, b);
-    builder.finish_skip(&mut anchor2);
+    builder.finish_skip(anchor2);
     test(builder, &[99]);
 }
 
@@ -1176,8 +1161,6 @@ fn load_spill_to_spill() {
         g0 = r0
     */
     let (mut builder, [g0, g1, ..]) = builder();
-    let mut anchor1 = SkipAnchor::default();
-    let mut anchor2 = SkipAnchor::default();
     const N: usize = Register::LENGTH + 1;
     let v = builder.allocate_vars::<N>();
     let u = builder.allocate_vars::<N>();
@@ -1187,24 +1170,22 @@ fn load_spill_to_spill() {
     for i in 0..N {
         builder.load_lit(u[i], i as u32);
     }
-    builder.prepare_skip(&mut anchor1);
+    let anchor1 = builder.prepare_skip();
     for i in 0..N {
         builder.store_global(g1, u[i]);
     }
-    builder.prepare_skip(&mut anchor2);
-    builder.finish_skip(&mut anchor1);
+    let anchor2 = builder.prepare_skip();
+    builder.finish_skip(anchor1);
     for i in 0..N {
         builder.store_global(g0, v[i]);
     }
-    builder.finish_skip(&mut anchor2);
+    builder.finish_skip(anchor2);
     test(builder, &[N as u32 - 1]);
 }
 
 #[test]
 fn load_spill_to_spill_reuse() {
     let (mut builder, [g0, g1, g2, ..]) = builder();
-    let mut anchor1 = SkipAnchor::default();
-    let mut anchor2 = SkipAnchor::default();
     const N: usize = Register::LENGTH + 1;
     let v = builder.allocate_vars::<N>();
     let u = builder.allocate_vars::<N>();
@@ -1214,7 +1195,7 @@ fn load_spill_to_spill_reuse() {
     for i in 0..u.len() {
         builder.load_lit(u[i], i as u32);
     }
-    builder.prepare_skip(&mut anchor1);
+    let anchor1 = builder.prepare_skip();
     {
         let w = builder.allocate_vars::<{ 2 * N }>();
         for i in 0..w.len() {
@@ -1227,56 +1208,55 @@ fn load_spill_to_spill_reuse() {
     for i in 0..u.len() {
         builder.store_global(g1, u[i]);
     }
-    builder.prepare_skip(&mut anchor2);
-    builder.finish_skip(&mut anchor1);
+    let anchor2 = builder.prepare_skip();
+    builder.finish_skip(anchor1);
     for i in 0..N {
         builder.store_global(g0, v[i]);
     }
-    builder.finish_skip(&mut anchor2);
+    builder.finish_skip(anchor2);
     test(builder, &[N as u32 - 1]);
 }
 
 #[test]
 fn rotation() {
     let (mut builder, [g0, g1, g2, ..]) = builder();
-    let mut anchor1 = SkipAnchor::default();
-    let mut anchor2 = SkipAnchor::default();
     let [a, b, c] = builder.allocate_vars();
-    builder
+    let anchor1 = builder
         .load_lit(a, 1)
         .load_lit(b, 2)
         .load_lit(c, 3)
-        .prepare_skip(&mut anchor1)
+        .prepare_skip();
+    let anchor2 = builder
         .store_global(g0, b)
         .store_global(g1, c)
         .store_global(g2, a)
-        .prepare_skip(&mut anchor2)
-        .finish_skip(&mut anchor1)
+        .prepare_skip();
+    builder
+        .finish_skip(anchor1)
         .store_global(g0, a)
         .store_global(g1, b)
         .store_global(g2, c)
-        .finish_skip(&mut anchor2);
+        .finish_skip(anchor2);
     test(builder, &[1, 2, 3]);
 }
 
 #[test]
 fn large_rotation() {
     let (mut builder, g) = builder();
-    let mut anchor1 = SkipAnchor::default();
-    let mut anchor2 = SkipAnchor::default();
     const N: usize = Register::LENGTH + 1;
     let v = builder.allocate_vars::<N>();
     for i in 0..N {
         builder.load_lit(v[i], i as u32);
     }
-    builder.prepare_skip(&mut anchor1);
+    let anchor1 = builder.prepare_skip();
     for i in 0..N {
         builder.store_global(g[i], v[(i + 1) % N]);
     }
-    builder.prepare_skip(&mut anchor2).finish_skip(&mut anchor1);
+    let anchor2 = builder.prepare_skip();
+    builder.finish_skip(anchor1);
     for i in 0..N {
         builder.store_global(g[i], v[i]);
     }
-    builder.finish_skip(&mut anchor2);
+    builder.finish_skip(anchor2);
     test(builder, &[0, 1, 2, 3, 4, 5, 6, 7, 8]);
 }
