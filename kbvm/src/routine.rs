@@ -1,6 +1,115 @@
+//! Custom logic to modify the behavior of keys.
+//!
+//! Routines are run as part of the [`StateMachine`]'s handling of key events. They put
+//! the VM in KBVM.
+//!
+//! Routines consist of two parts:
+//!
+//! 1. A part that is run when the key is pressed.
+//! 2. A part that is run when the key is release.
+//!
+//! A routine can use [variables](Var) to store state. Variables are shared between the
+//! two parts of the routine.
+//!
+//! If routines want to communicate with each other or if they want to preserve state
+//! across key-press/release events, they can use [`Global`]s.
+//!
+//! Variables and globals represent `u32`s. All off the usual arithmetic operations can
+//! be performed on variables.
+//!
+//! Routines are primarily useful to emit key-press/release events and to modify the
+//! [`Components`] of the state.
+//!
+//! If a key does not have a routine assigned, the following default routine is used.
+//!
+//! ```
+//! # use kbvm::Keycode;
+//! # use kbvm::routine::Routine;
+//! #
+//! fn default_routine(keycode: Keycode) -> Routine {
+//!     let mut builder = Routine::builder();
+//!     let [kc, zero] = builder.allocate_vars();
+//!     builder
+//!         .load_lit(kc, keycode.raw())
+//!         .key_down(kc)
+//!         .load_lit(zero, 0)
+//!         .mods_latched_store(zero)
+//!         .group_latched_store(zero)
+//!         .on_release() // everything below this point is executed when the key is released
+//!         .key_up(kc);
+//!     builder.build()
+//! }
+//! ```
+//!
+//! # Conditional execution
+//!
+//! Routines support conditional execution by skipping forward within the routine.
+//!
+//! ```
+//! # use kbvm::routine::Routine;
+//! let mut builder = Routine::builder();
+//! let [zero] = builder.allocate_vars();
+//! builder.load_lit(zero, 0);
+//! let anchor = builder.prepare_skip();
+//! builder
+//!     .mods_pressed_store(zero)
+//!     .finish_skip(anchor);
+//! ```
+//!
+//! This example unconditionally skips over the `mods_pressed = zero` instruction. Most of
+//! the time, you want to make use of [`RoutineBuilder::prepare_skip_if`] and
+//! [`RoutineBuilder::prepare_skip_if_not`] to make the skip conditional.
+//!
+//! # Manipulating the components
+//!
+//! The following functions can be used to access the [`Components`]:
+//!
+//! - [`RoutineBuilder::mods_pressed_load`]
+//! - [`RoutineBuilder::mods_latched_load`]
+//! - [`RoutineBuilder::mods_locked_load`]
+//! - [`RoutineBuilder::group_pressed_load`]
+//! - [`RoutineBuilder::group_latched_load`]
+//! - [`RoutineBuilder::group_locked_load`]
+//!
+//! To manipulate the components, you will likely want to use the following functions:
+//!
+//! - [`RoutineBuilder::mods_pressed_inc`]
+//! - [`RoutineBuilder::mods_pressed_dec`]
+//! - [`RoutineBuilder::mods_latched_store`]
+//! - [`RoutineBuilder::mods_locked_store`]
+//! - [`RoutineBuilder::group_pressed_store`]
+//! - [`RoutineBuilder::group_latched_store`]
+//! - [`RoutineBuilder::group_locked_store`]
+//!
+//! There is also a function, `mods_pressed_store`, to set the pressed modifiers directly
+//! but this is almost never what you want.
+//!
+//! For example, if both the left and the right shift key are pressed, you don't want the
+//! shift modifier to be unset when only one of the keys is released. Instead, the
+//! `mods_pressed_inc` and `mods_pressed_dec` functions implement per-modifier reference
+//! counting that handles this situation.
+//!
+//! There are still usecases for `mods_pressed_store`, for example, when you want to change
+//! the pressed modifiers before emitting a `key_down` or `key_up` event. This is fine as
+//! long as you reset the modifiers afterwards.
+//!
+//! # Key Up/Down events
+//!
+//! Routines are responsible for emitting [`key_down`](RoutineBuilder::key_down) and
+//! [`key_up`](RoutineBuilder::key_up) events. This allows them to implement complex
+//! behaviors such as sticky keys, radio groups, locked keys, or key redirects.
+//!
+//! # Flags
+//!
+//! Sometimes a routine wants to change its behavior depending on whether another key
+//! was pressed or released while the key was down. This information is available via the
+//! [`RoutineBuilder::later_key_actuated_load`] function.
+
 #[cfg(test)]
 mod tests;
 
+#[allow(unused_imports)]
+use {crate::builder::Builder, crate::state_machine::StateMachine, crate::Components};
 use {
     crate::{Keycode, ModifierMask},
     debug_fn::debug_fn,
@@ -12,11 +121,18 @@ use {
         array,
         collections::VecDeque,
         fmt::{Debug, Formatter},
-        mem,
+        mem::{self, ManuallyDrop},
         sync::Arc,
     },
 };
 
+/// A variable in a routine.
+///
+/// You can create variables by calling [`RoutineBuilder::allocate_var`] or
+/// [`RoutineBuilder::allocate_vars`].
+///
+/// Variables are local to the routine. They cannot be shared between routines. Use
+/// [`Global`]s to communicate between different routines in the same [`StateMachine`].
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct Var(u64);
 
@@ -38,6 +154,9 @@ impl Debug for Register {
     }
 }
 
+/// A global variable in a state machine.
+///
+/// Objects of this type are created using [`Builder::add_global`].
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub struct Global(pub(crate) u32);
 
@@ -494,6 +613,11 @@ pub(crate) trait StateEventHandler {
     }
 }
 
+/// A routine for use in a [`StateMachine`].
+///
+/// You can create routines with the [`RoutineBuilder`].
+///
+/// See the documentation of the [module](self) for more information about routines.
 #[derive(Clone)]
 pub struct Routine {
     pub(crate) on_press: Arc<[Lo]>,
@@ -690,7 +814,18 @@ pub(crate) fn run<H>(
     }
 }
 
-#[derive(PartialEq)]
+/// An anchor for skipping forward in a [`Routine`].
+///
+/// This object can be used to skip forward in a routine using
+/// [`RoutineBuilder::prepare_skip`], [`RoutineBuilder::prepare_skip_if`], and
+/// [`RoutineBuilder::prepare_skip_if_not`].
+///
+/// # Panic
+///
+/// This type panics when dropped. You must pass it back into
+/// [`RoutineBuilder::finish_skip`] to prevent this.
+#[derive(Debug)]
+#[must_use = "dropping this object panics"]
 pub struct SkipAnchor {
     cond: Option<Var>,
     not: bool,
@@ -698,17 +833,14 @@ pub struct SkipAnchor {
     offset: usize,
 }
 
-impl Default for SkipAnchor {
-    fn default() -> Self {
-        Self {
-            cond: None,
-            not: false,
-            block: !0,
-            offset: !0,
-        }
+impl Drop for SkipAnchor {
+    fn drop(&mut self) {
+        panic!("SkipAnchor is dropped");
     }
 }
 
+/// A builder for a [`Routine`].
+#[derive(Default)]
 pub struct RoutineBuilder {
     blocks: Vec<Vec<Hi>>,
     ops: Vec<Hi>,
@@ -717,17 +849,14 @@ pub struct RoutineBuilder {
 }
 
 impl Routine {
+    /// Creates a [`RoutineBuilder`].
     pub fn builder() -> RoutineBuilder {
-        RoutineBuilder {
-            blocks: Default::default(),
-            ops: Default::default(),
-            next_var: 0,
-            on_release: None,
-        }
+        RoutineBuilder::default()
     }
 }
 
 impl RoutineBuilder {
+    /// Builds the [`Routine`].
     pub fn build(mut self) -> Routine {
         if self.ops.is_not_empty() {
             self.blocks.push(mem::take(&mut self.ops));
@@ -754,6 +883,9 @@ impl RoutineBuilder {
         }
     }
 
+    /// Skips to the part of the routine that runs when the key is released.
+    ///
+    /// The values of variables are preserved.
     pub fn on_release(&mut self) -> &mut Self {
         assert!(self.on_release.is_none());
         self.ops.push(Hi::Jump {
@@ -765,37 +897,63 @@ impl RoutineBuilder {
         self
     }
 
+    /// Allocates a variable for use with this routine.
+    ///
+    /// The returned variable can only be used with this builder.
+    ///
+    /// All variables are implicitly initialized to `0`.
     pub fn allocate_var(&mut self) -> Var {
         let res = Var(self.next_var);
         self.next_var += 1;
         res
     }
 
+    /// Allocates `N` variables for use with this routine.
+    ///
+    /// This is a convenience function that forwards to [`Self::allocate_var`].
     pub fn allocate_vars<const N: usize>(&mut self) -> [Var; N] {
         array::from_fn(|_| self.allocate_var())
     }
 
-    pub fn prepare_skip(&mut self, anchor: &mut SkipAnchor) -> &mut Self {
+    /// Prepares an unconditional skip from this point in the routine to a later point.
+    ///
+    /// [`SkipAnchor`] panics when dropped. You must pass it back into
+    /// [`Self::finish_skip`] to prevent this.
+    pub fn prepare_skip(&mut self) -> SkipAnchor {
         let offset = self.ops.len();
         self.ops.push(Hi::Jump {
             to: self.blocks.len() + 1,
             args: Default::default(),
         });
-        *anchor = SkipAnchor {
+        SkipAnchor {
             cond: None,
             not: false,
             block: self.blocks.len(),
             offset,
-        };
-        self
+        }
     }
 
-    pub fn prepare_conditional_skip(
-        &mut self,
-        var: Var,
-        inverse: bool,
-        anchor: &mut SkipAnchor,
-    ) -> &mut Self {
+    /// Prepares a conditional skip from this point in the routine to a later point.
+    ///
+    /// The skip is performed if `var != 0`.
+    ///
+    /// [`SkipAnchor`] panics when dropped. You must pass it back into
+    /// [`Self::finish_skip`] to prevent this.
+    pub fn prepare_skip_if(&mut self, var: Var) -> SkipAnchor {
+        self.prepare_conditional_skip(var, false)
+    }
+
+    /// Prepares a conditional skip from this point in the routine to a later point.
+    ///
+    /// The skip is performed if `var == 0`.
+    ///
+    /// [`SkipAnchor`] panics when dropped. You must pass it back into
+    /// [`Self::finish_skip`] to prevent this.
+    pub fn prepare_skip_if_not(&mut self, var: Var) -> SkipAnchor {
+        self.prepare_conditional_skip(var, true)
+    }
+
+    fn prepare_conditional_skip(&mut self, var: Var, inverse: bool) -> SkipAnchor {
         let offset = self.ops.len();
         self.ops.push(Hi::JumpIf {
             rs: var,
@@ -803,19 +961,29 @@ impl RoutineBuilder {
             to: self.blocks.len() + 1,
             args: Default::default(),
         });
-        *anchor = SkipAnchor {
+        SkipAnchor {
             cond: Some(var),
             not: inverse,
             block: self.blocks.len(),
             offset,
-        };
-        self
+        }
     }
 
-    pub fn finish_skip(&mut self, anchor: &mut SkipAnchor) -> &mut Self {
-        if anchor == &SkipAnchor::default() {
-            return self;
-        }
+    /// Sets the destination of a skip.
+    ///
+    /// The [`SkipAnchor`] should have been created via [`Self::prepare_skip`],
+    /// [`Self::prepare_skip_if`], or [`Self::prepare_skip_if_not`].
+    ///
+    /// If this anchor was created from a different [`RoutineBuilder`], the behavior is
+    /// unspecified.
+    ///
+    /// If [`Self::build`] is called before all skip destinations have been set, the
+    /// behavior is unspecified.
+    ///
+    /// If you try to jump from before [`Self::on_release`] to after [`Self::on_release`],
+    /// the behavior is unspecified.
+    pub fn finish_skip(&mut self, anchor: SkipAnchor) -> &mut Self {
+        let anchor = ManuallyDrop::new(anchor);
         if let Some(last) = self.ops.last() {
             if !matches!(last, Hi::Jump { .. }) {
                 self.ops.push(Hi::Jump {
@@ -838,20 +1006,22 @@ impl RoutineBuilder {
             },
         };
         self.blocks[anchor.block][anchor.offset] = op;
-        *anchor = Default::default();
         self
     }
 
+    /// `rd = lit`
     pub fn load_lit(&mut self, rd: Var, lit: u32) -> &mut Self {
         self.ops.push(Hi::RegLit { rd, lit });
         self
     }
 
+    /// `rd = g`
     pub fn load_global(&mut self, rd: Var, g: Global) -> &mut Self {
         self.ops.push(Hi::GlobalLoad { rd, g });
         self
     }
 
+    /// `g = rs`
     pub fn store_global(&mut self, g: Global, rs: Var) -> &mut Self {
         self.ops.push(Hi::GlobalStore { rs, g });
         self
@@ -862,114 +1032,150 @@ impl RoutineBuilder {
         self
     }
 
+    /// `rd = rl + rr`
     pub fn add(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Add, rd, rl, rr)
     }
 
+    /// `rd = rl - rr`
     pub fn sub(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Sub, rd, rl, rr)
     }
 
+    /// `rd = rl * rr`
     pub fn mul(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Mul, rd, rl, rr)
     }
 
+    /// `rd = rl / rr`
+    ///
+    /// If `rr` is 0, the value of `rd` is unspecified.
     pub fn udiv(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Udiv, rd, rl, rr)
     }
 
+    /// `rd = ((rl as i32) / (rr as i32)) as u32`
+    ///
+    /// If `rr` is 0, the value of `rd` is unspecified.
     pub fn idiv(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Idiv, rd, rl, rr)
     }
 
+    /// `rd = rl % rr`
+    ///
+    /// If `rr` is 0, the value of `rd` is unspecified.
     pub fn urem(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Urem, rd, rl, rr)
     }
 
+    /// `rd = ((rl as i32) % (rr as i32)) as u32`
+    ///
+    /// If `rr` is 0, the value of `rd` is unspecified.
     pub fn irem(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Irem, rd, rl, rr)
     }
 
+    /// `rd = rl << rr`
     pub fn shl(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Shl, rd, rl, rr)
     }
 
+    /// `rd = rl >> rr`
     pub fn lshr(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Lshr, rd, rl, rr)
     }
 
+    /// `rd = ((rl as i32) >> rr) as u32`
     pub fn ashr(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Ashr, rd, rl, rr)
     }
 
+    /// `rd = rl & !rr`
     pub fn bit_nand(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::BitNand, rd, rl, rr)
     }
 
+    /// `rd = rl & rr`
     pub fn bit_and(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::BitAnd, rd, rl, rr)
     }
 
+    /// `rd = rl | rr`
     pub fn bit_or(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::BitOr, rd, rl, rr)
     }
 
+    /// `rd = rl ^ rr`
     pub fn bit_xor(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::BitXor, rd, rl, rr)
     }
 
+    /// `rd = ((rl != 0) && (rr == 0)) as u32`
     pub fn log_nand(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::LogNand, rd, rl, rr)
     }
 
+    /// `rd = ((rl != 0) && (rr != 0)) as u32`
     pub fn log_and(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::LogAnd, rd, rl, rr)
     }
 
+    /// `rd = ((rl != 0) || (rr != 0)) as u32`
     pub fn log_or(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::LogOr, rd, rl, rr)
     }
 
+    /// `rd = ((rl != 0) ^ (rr != 0)) as u32`
     pub fn log_xor(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::LogXor, rd, rl, rr)
     }
 
+    /// `rd = (rl == rr) as u32`
     pub fn eq(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Eq, rd, rl, rr)
     }
 
+    /// `rd = (rl != rr) as u32`
     pub fn ne(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Ne, rd, rl, rr)
     }
 
+    /// `rd = (rl <= rr) as u32`
     pub fn ule(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Ule, rd, rl, rr)
     }
 
+    /// `rd = ((rl as i32) <= (rr as i32)) as u32`
     pub fn ile(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Ile, rd, rl, rr)
     }
 
+    /// `rd = (rl < rr) as u32`
     pub fn ult(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Ult, rd, rl, rr)
     }
 
+    /// `rd = ((rl as i32) < (rr as i32)) as u32`
     pub fn ilt(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Ilt, rd, rl, rr)
     }
 
+    /// `rd = (rl >= rr) as u32`
     pub fn uge(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Ule, rd, rr, rl)
     }
 
+    /// `rd = ((rl as i32) >= (rr as i32)) as u32`
     pub fn ige(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Ile, rd, rr, rl)
     }
 
+    /// `rd = (rl > rr) as u32`
     pub fn ugt(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Ult, rd, rr, rl)
     }
 
+    /// `rd = ((rl as i32) > (rr as i32)) as u32`
     pub fn igt(&mut self, rd: Var, rl: Var, rr: Var) -> &mut Self {
         self.bin_op(BinOp::Ilt, rd, rr, rl)
     }
@@ -979,28 +1185,44 @@ impl RoutineBuilder {
         self
     }
 
+    /// `rd = rs`
     pub fn move_(&mut self, rd: Var, rs: Var) -> &mut Self {
         self.un_op(UnOp::Move, rd, rs)
     }
 
+    /// `rd = -rs`
     pub fn neg(&mut self, rd: Var, rs: Var) -> &mut Self {
         self.un_op(UnOp::Neg, rd, rs)
     }
 
+    /// `rd = !rs`
     pub fn bit_not(&mut self, rd: Var, rs: Var) -> &mut Self {
         self.un_op(UnOp::BitNot, rd, rs)
     }
 
+    /// `rd = (rs == 0) as u32`
     pub fn log_not(&mut self, rd: Var, rs: Var) -> &mut Self {
         self.un_op(UnOp::LogNot, rd, rs)
     }
 
-    pub fn pressed_mods_inc(&mut self, rs: Var) -> &mut Self {
+    /// `mods_pressed += rs`
+    ///
+    /// This increments the per-modifier reference count for all bits set in `rs`.
+    ///
+    /// If the reference count of a modifier changes from 0 to 1, the bit will be set in
+    /// the `mods_pressed`.
+    pub fn mods_pressed_inc(&mut self, rs: Var) -> &mut Self {
         self.ops.push(Hi::PressedModsInc { rs });
         self
     }
 
-    pub fn pressed_mods_dec(&mut self, rs: Var) -> &mut Self {
+    /// `mods_pressed -= rs`
+    ///
+    /// This decrements the per-modifier reference count for all bits set in `rs`.
+    ///
+    /// If the reference count of a modifier changes from 1 to 0, the bit will be cleared
+    /// in the `mods_pressed`.
+    pub fn mods_pressed_dec(&mut self, rs: Var) -> &mut Self {
         self.ops.push(Hi::PressedModsDec { rs });
         self
     }
@@ -1015,51 +1237,63 @@ impl RoutineBuilder {
         self
     }
 
-    pub fn pressed_mods_load(&mut self, rd: Var) -> &mut Self {
+    /// `rd = mods_pressed`
+    pub fn mods_pressed_load(&mut self, rd: Var) -> &mut Self {
         self.component_load(rd, Component::ModsPressed)
     }
 
-    pub fn pressed_mods_store(&mut self, rs: Var) -> &mut Self {
+    /// `mods_pressed = rs`
+    pub fn mods_pressed_store(&mut self, rs: Var) -> &mut Self {
         self.component_store(rs, Component::ModsPressed)
     }
 
-    pub fn latched_mods_load(&mut self, rd: Var) -> &mut Self {
+    /// `rd = mods_latched`
+    pub fn mods_latched_load(&mut self, rd: Var) -> &mut Self {
         self.component_load(rd, Component::ModsLatched)
     }
 
-    pub fn latched_mods_store(&mut self, rs: Var) -> &mut Self {
+    /// `mods_latched = rs`
+    pub fn mods_latched_store(&mut self, rs: Var) -> &mut Self {
         self.component_store(rs, Component::ModsLatched)
     }
 
-    pub fn locked_mods_load(&mut self, rd: Var) -> &mut Self {
+    /// `rd = mods_locked`
+    pub fn mods_locked_load(&mut self, rd: Var) -> &mut Self {
         self.component_load(rd, Component::ModsLocked)
     }
 
-    pub fn locked_mods_store(&mut self, rs: Var) -> &mut Self {
+    /// `mods_locked = rs`
+    pub fn mods_locked_store(&mut self, rs: Var) -> &mut Self {
         self.component_store(rs, Component::ModsLocked)
     }
 
-    pub fn pressed_group_load(&mut self, rd: Var) -> &mut Self {
+    /// `rd = group_pressed`
+    pub fn group_pressed_load(&mut self, rd: Var) -> &mut Self {
         self.component_load(rd, Component::GroupPressed)
     }
 
-    pub fn pressed_group_store(&mut self, rs: Var) -> &mut Self {
+    /// `group_pressed = rs`
+    pub fn group_pressed_store(&mut self, rs: Var) -> &mut Self {
         self.component_store(rs, Component::GroupPressed)
     }
 
-    pub fn latched_group_load(&mut self, rd: Var) -> &mut Self {
+    /// `rd = group_latched`
+    pub fn group_latched_load(&mut self, rd: Var) -> &mut Self {
         self.component_load(rd, Component::GroupLatched)
     }
 
-    pub fn latched_group_store(&mut self, rs: Var) -> &mut Self {
+    /// `group_latched = rs`
+    pub fn group_latched_store(&mut self, rs: Var) -> &mut Self {
         self.component_store(rs, Component::GroupLatched)
     }
 
-    pub fn locked_group_load(&mut self, rd: Var) -> &mut Self {
+    /// `rd = group_locked`
+    pub fn group_locked_load(&mut self, rd: Var) -> &mut Self {
         self.component_load(rd, Component::GroupLocked)
     }
 
-    pub fn locked_group_store(&mut self, rs: Var) -> &mut Self {
+    /// `group_locked = rs`
+    pub fn group_locked_store(&mut self, rs: Var) -> &mut Self {
         self.component_store(rs, Component::GroupLocked)
     }
 
@@ -1068,15 +1302,18 @@ impl RoutineBuilder {
         self
     }
 
+    /// `rd = later_key_actuated`
     pub fn later_key_actuated_load(&mut self, rd: Var) -> &mut Self {
         self.flag_load(rd, Flag::LaterKeyActuated)
     }
 
+    /// `key_down(rs)`
     pub fn key_down(&mut self, rs: Var) -> &mut Self {
         self.ops.push(Hi::KeyDown { rs });
         self
     }
 
+    /// `key_up(rs)`
     pub fn key_up(&mut self, rs: Var) -> &mut Self {
         self.ops.push(Hi::KeyUp { rs });
         self

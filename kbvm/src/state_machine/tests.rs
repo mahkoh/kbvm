@@ -1,5 +1,5 @@
 use crate::{
-    state_machine::{Direction, Keycode, LogicalEvent},
+    state_machine::{Direction, Event, Keycode},
     xkb::Context,
     GroupIndex, ModifierMask,
 };
@@ -35,14 +35,14 @@ fn test() {
         for event in events {
             println!("{:#?}", event);
             match event {
-                LogicalEvent::KeyDown(kc) => {
+                Event::KeyDown(kc) => {
                     let lookup = lookup.lookup(GroupIndex(0), effective_mods, kc);
                     println!("  {:?}", lookup);
                     for sym in lookup {
                         println!("  {:?}", sym);
                     }
                 }
-                LogicalEvent::ModsEffective(mm) => effective_mods = mm,
+                Event::ModsEffective(mm) => effective_mods = mm,
                 _ => {}
             }
         }

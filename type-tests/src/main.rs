@@ -11,7 +11,7 @@ use {
     integration_test_utils::run,
     isnt::std_1::vec::IsntVecExt,
     kbvm::{
-        state_machine::{Direction, LogicalEvent},
+        state_machine::{Direction, Event},
         xkb::{diagnostic::Diagnostic, Context},
         GroupIndex, Keycode, ModifierMask,
     },
@@ -139,9 +139,9 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let mut events = vec![];
     let mut repeating_key = None;
     let key_name = |code: Keycode| {
-        let (name, kc) = CODE_TO_NAME[&code.to_x11()];
-        if kc != code.to_x11() {
-            return NameOrKey::Key(code.to_x11());
+        let (name, kc) = CODE_TO_NAME[&code.raw()];
+        if kc != code.raw() {
+            return NameOrKey::Key(code.raw());
         }
         NameOrKey::Name(name)
     };
@@ -219,38 +219,38 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
         }
         for event in events.drain(..) {
             match event {
-                LogicalEvent::ModsPressed(m) => {
+                Event::ModsPressed(m) => {
                     writeln!(actual, "    mods_pressed = {m:?}").unwrap();
                 }
-                LogicalEvent::ModsLatched(m) => {
+                Event::ModsLatched(m) => {
                     writeln!(actual, "    mods_latched = {m:?}").unwrap();
                 }
-                LogicalEvent::ModsLocked(m) => {
+                Event::ModsLocked(m) => {
                     writeln!(actual, "    mods_locked = {m:?}").unwrap();
                 }
-                LogicalEvent::ModsEffective(m) => {
+                Event::ModsEffective(m) => {
                     mods = m;
                     writeln!(actual, "    mods_effective = {m:?}").unwrap();
                 }
-                LogicalEvent::KeyDown(kc) => {
+                Event::KeyDown(kc) => {
                     handle_down(&mut actual, kc, &mut repeating_key, group, mods, false)?;
                 }
-                LogicalEvent::KeyUp(kc) => {
+                Event::KeyUp(kc) => {
                     if repeating_key == Some(kc) {
                         repeating_key = None;
                     }
                     writeln!(actual, "    key_up({})", key_name(kc)).unwrap();
                 }
-                LogicalEvent::GroupPressed(g) => {
+                Event::GroupPressed(g) => {
                     writeln!(actual, "    group_pressed = {g:?}").unwrap();
                 }
-                LogicalEvent::GroupLatched(g) => {
+                Event::GroupLatched(g) => {
                     writeln!(actual, "    group_latched = {g:?}").unwrap();
                 }
-                LogicalEvent::GroupLocked(g) => {
+                Event::GroupLocked(g) => {
                     writeln!(actual, "    group_locked = {g:?}").unwrap();
                 }
-                LogicalEvent::GroupEffective(g) => {
+                Event::GroupEffective(g) => {
                     group = g;
                     writeln!(actual, "    group_effective = {g:?}").unwrap();
                 }

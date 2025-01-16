@@ -3,7 +3,7 @@ use {crate::lookup::LookupTable, crate::state_machine::StateMachine};
 use {
     crate::{
         builder::{Builder, GroupBuilder, KeyBuilder, LevelBuilder},
-        routine::{Routine, RoutineBuilder, SkipAnchor, Var},
+        routine::{Routine, RoutineBuilder, Var},
         xkb::{
             group::GroupChange,
             keymap::{Action, KeyType},
@@ -89,37 +89,34 @@ fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
             let action_mods = builder.allocate_var();
             builder
                 .load_lit(action_mods, ms.modifiers.0)
-                .pressed_mods_inc(action_mods);
+                .mods_pressed_inc(action_mods);
             encode_rest!();
-            builder.pressed_mods_dec(action_mods);
+            builder.mods_pressed_dec(action_mods);
             if ms.clear_locks {
-                let mut anchor = SkipAnchor::default();
                 let locked_mods = builder.allocate_var();
                 let later_keys_activated = builder.allocate_var();
+                builder.later_key_actuated_load(later_keys_activated);
+                let anchor = builder.prepare_skip_if(later_keys_activated);
                 builder
-                    .later_key_actuated_load(later_keys_activated)
-                    .prepare_conditional_skip(later_keys_activated, false, &mut anchor)
-                    .locked_mods_load(locked_mods)
+                    .mods_locked_load(locked_mods)
                     .bit_nand(locked_mods, locked_mods, action_mods)
-                    .locked_mods_store(locked_mods)
-                    .finish_skip(&mut anchor);
+                    .mods_locked_store(locked_mods)
+                    .finish_skip(anchor);
             }
         }
         Action::ModsLatch(ml) => {
             let action_mods = builder.allocate_var();
             builder
                 .load_lit(action_mods, ml.modifiers.0)
-                .pressed_mods_inc(action_mods);
+                .mods_pressed_inc(action_mods);
             encode_rest!();
-            builder.pressed_mods_dec(action_mods);
-            let mut anchor = SkipAnchor::default();
+            builder.mods_pressed_dec(action_mods);
             let latched_mods = builder.allocate_var();
             let locked_mods = builder.allocate_var();
             let later_keys_activated = builder.allocate_var();
-            builder
-                .later_key_actuated_load(later_keys_activated)
-                .prepare_conditional_skip(later_keys_activated, false, &mut anchor)
-                .locked_mods_load(locked_mods);
+            builder.later_key_actuated_load(later_keys_activated);
+            let anchor = builder.prepare_skip_if(later_keys_activated);
+            builder.mods_locked_load(locked_mods);
             if ml.clear_locks {
                 let already_locked = builder.allocate_var();
                 builder
@@ -127,7 +124,7 @@ fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
                     .bit_nand(locked_mods, locked_mods, already_locked)
                     .bit_nand(action_mods, action_mods, already_locked);
             }
-            builder.latched_mods_load(latched_mods);
+            builder.mods_latched_load(latched_mods);
             if ml.latch_to_lock {
                 let already_latched = builder.allocate_var();
                 builder
@@ -138,41 +135,41 @@ fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
             }
             builder
                 .bit_or(latched_mods, latched_mods, action_mods)
-                .latched_mods_store(latched_mods)
-                .locked_mods_store(locked_mods)
-                .finish_skip(&mut anchor);
+                .mods_latched_store(latched_mods)
+                .mods_locked_store(locked_mods)
+                .finish_skip(anchor);
         }
         Action::ModsLock(ml) => {
             let action_mods = builder.allocate_var();
             let originally_locked_mods = builder.allocate_var();
             builder
                 .load_lit(action_mods, ml.modifiers.0)
-                .pressed_mods_inc(action_mods);
+                .mods_pressed_inc(action_mods);
             if ml.lock || ml.unlock {
-                builder.locked_mods_load(originally_locked_mods);
+                builder.mods_locked_load(originally_locked_mods);
             }
             if ml.lock {
                 let locked_mods = builder.allocate_var();
                 builder
                     .bit_or(locked_mods, originally_locked_mods, action_mods)
-                    .locked_mods_store(locked_mods);
+                    .mods_locked_store(locked_mods);
             }
             encode_rest!();
-            builder.pressed_mods_dec(action_mods);
+            builder.mods_pressed_dec(action_mods);
             if ml.unlock {
                 let locked_mods = builder.allocate_var();
                 let already_locked_mods = builder.allocate_var();
                 builder
-                    .locked_mods_load(locked_mods)
+                    .mods_locked_load(locked_mods)
                     .bit_and(already_locked_mods, originally_locked_mods, action_mods)
                     .bit_nand(locked_mods, locked_mods, already_locked_mods)
-                    .locked_mods_store(locked_mods);
+                    .mods_locked_store(locked_mods);
             }
         }
         Action::GroupSet(gs) => {
             let group_delta = builder.allocate_var();
             let group = builder.allocate_var();
-            builder.pressed_group_load(group);
+            builder.group_pressed_load(group);
             match gs.group {
                 GroupChange::Absolute(g) => {
                     let new_group = builder.allocate_var();
@@ -188,28 +185,27 @@ fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
             }
             builder
                 .add(group, group, group_delta)
-                .pressed_group_store(group);
+                .group_pressed_store(group);
             encode_rest!();
             builder
-                .pressed_group_load(group)
+                .group_pressed_load(group)
                 .sub(group, group, group_delta)
-                .pressed_group_store(group);
+                .group_pressed_store(group);
             if gs.clear_locks {
-                let mut anchor = SkipAnchor::default();
                 let other_key_actuated = builder.allocate_var();
                 let group_one = builder.allocate_var();
+                builder.later_key_actuated_load(other_key_actuated);
+                let anchor = builder.prepare_skip_if(other_key_actuated);
                 builder
-                    .later_key_actuated_load(other_key_actuated)
-                    .prepare_conditional_skip(other_key_actuated, false, &mut anchor)
                     .load_lit(group_one, 0)
-                    .locked_group_store(group_one)
-                    .finish_skip(&mut anchor);
+                    .group_locked_store(group_one)
+                    .finish_skip(anchor);
             }
         }
         Action::GroupLatch(gl) => {
             let group_delta = builder.allocate_var();
             let group = builder.allocate_var();
-            builder.pressed_group_load(group);
+            builder.group_pressed_load(group);
             match gl.group {
                 GroupChange::Absolute(g) => {
                     let new_group = builder.allocate_var();
@@ -225,58 +221,51 @@ fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
             }
             builder
                 .add(group, group, group_delta)
-                .pressed_group_store(group);
+                .group_pressed_store(group);
             encode_rest!();
             builder
-                .pressed_group_load(group)
+                .group_pressed_load(group)
                 .sub(group, group, group_delta)
-                .pressed_group_store(group);
-            let mut other_key_actuated_anchor = SkipAnchor::default();
-            let mut clear_locks_anchor = SkipAnchor::default();
-            let mut latch_to_lock_anchor = SkipAnchor::default();
+                .group_pressed_store(group);
+            let mut clear_locks_anchor = None;
+            let mut latch_to_lock_anchor = None;
             let other_key_actuated = builder.allocate_var();
-            builder
-                .later_key_actuated_load(other_key_actuated)
-                .prepare_conditional_skip(
-                    other_key_actuated,
-                    false,
-                    &mut other_key_actuated_anchor,
-                );
+            builder.later_key_actuated_load(other_key_actuated);
+            let other_key_actuated_anchor = builder.prepare_skip_if(other_key_actuated);
             if gl.clear_locks {
                 let locked_group = builder.allocate_var();
                 let group_one = builder.allocate_var();
                 let group_changed = builder.allocate_var();
                 builder
-                    .locked_group_load(locked_group)
+                    .group_locked_load(locked_group)
                     .load_lit(group_one, 0)
-                    .locked_group_store(group_one)
-                    .ne(group_changed, locked_group, group_one)
-                    .prepare_conditional_skip(group_changed, false, &mut clear_locks_anchor);
+                    .group_locked_store(group_one)
+                    .ne(group_changed, locked_group, group_one);
+                clear_locks_anchor = Some(builder.prepare_skip_if(group_changed));
             }
             let latched_group = builder.allocate_var();
-            builder.latched_group_load(latched_group);
+            builder.group_latched_load(latched_group);
             if gl.latch_to_lock {
-                let mut anchor = SkipAnchor::default();
                 let locked_group = builder.allocate_var();
+                let anchor = builder.prepare_skip_if_not(latched_group);
                 builder
-                    .prepare_conditional_skip(latched_group, true, &mut anchor)
                     .sub(latched_group, latched_group, group_delta)
-                    .latched_group_store(latched_group)
-                    .locked_group_load(locked_group)
+                    .group_latched_store(latched_group)
+                    .group_locked_load(locked_group)
                     .add(locked_group, locked_group, group_delta)
-                    .locked_group_store(locked_group)
-                    .prepare_skip(&mut latch_to_lock_anchor)
-                    .finish_skip(&mut anchor);
+                    .group_locked_store(locked_group);
+                latch_to_lock_anchor = Some(builder.prepare_skip());
+                builder.finish_skip(anchor);
             }
             builder
                 .add(latched_group, latched_group, group_delta)
-                .latched_group_store(latched_group);
-            builder.finish_skip(&mut other_key_actuated_anchor);
-            if gl.clear_locks {
-                builder.finish_skip(&mut clear_locks_anchor);
+                .group_latched_store(latched_group);
+            builder.finish_skip(other_key_actuated_anchor);
+            if let Some(clear_locks_anchor) = clear_locks_anchor {
+                builder.finish_skip(clear_locks_anchor);
             }
-            if gl.latch_to_lock {
-                builder.finish_skip(&mut latch_to_lock_anchor);
+            if let Some(latch_to_lock_anchor) = latch_to_lock_anchor {
+                builder.finish_skip(latch_to_lock_anchor);
             }
         }
         Action::GroupLock(gl) => {
@@ -285,15 +274,15 @@ fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
                 GroupChange::Absolute(g) => {
                     builder
                         .load_lit(group, g.to_offset() as u32)
-                        .locked_group_store(group);
+                        .group_locked_store(group);
                 }
                 GroupChange::Rel(r) => {
                     let group_delta = builder.allocate_var();
                     builder
                         .load_lit(group_delta, r as u32)
-                        .locked_group_load(group)
+                        .group_locked_load(group)
                         .add(group, group, group_delta)
-                        .locked_group_store(group);
+                        .group_locked_store(group);
                 }
             }
             encode_rest!();

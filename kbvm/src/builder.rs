@@ -30,7 +30,7 @@ use {
 /// ```
 /// # use kbvm::{evdev, Components};
 /// # use kbvm::state_machine::Direction::{Down, Up};
-/// # use kbvm::state_machine::LogicalEvent;
+/// # use kbvm::state_machine::Event;
 /// # use kbvm::xkb::Context;
 /// # use kbvm::xkb::diagnostic::WriteToLog;
 /// #
@@ -95,7 +95,7 @@ use {
 /// for event in events {
 ///     // Applying the event updates the group and modifiers.
 ///     components.apply_event(event);
-///     if let LogicalEvent::KeyDown(kc) = event {
+///     if let Event::KeyDown(kc) = event {
 ///         // Print the keysyms produced by this key press.
 ///         let syms = lookup_table.lookup(components.group, components.mods, kc);
 ///         for sym in syms {
@@ -122,7 +122,7 @@ use {
 /// #         evdev,
 /// #         ModifierMask,
 /// #         routine::Routine,
-/// #         state_machine::{Direction::{Up, Down}, LogicalEvent},
+/// #         state_machine::{Direction::{Up, Down}, Event},
 /// #         Components,
 /// #         Keycode,
 /// #     },
@@ -163,13 +163,13 @@ use {
 ///         let mut routine = Routine::builder();
 ///         let [mods, key] = routine.allocate_vars();
 ///         routine
-///             .load_lit(key, evdev::LEFTSHIFT.to_x11())
+///             .load_lit(key, evdev::LEFTSHIFT.raw())
 ///             .key_down(key)
 ///             .load_lit(mods, ModifierMask::SHIFT.0)
-///             .pressed_mods_inc(mods)
+///             .mods_pressed_inc(mods)
 ///             .on_release()
 ///             .key_up(key)
-///             .pressed_mods_dec(mods);
+///             .mods_pressed_dec(mods);
 ///         routine.build()
 ///     };
 ///     let mut level = LevelBuilder::new(0);
@@ -207,7 +207,7 @@ use {
 /// for event in events {
 ///     // Applying the event updates the group and modifiers.
 ///     components.apply_event(event);
-///     if let LogicalEvent::KeyDown(kc) = event {
+///     if let Event::KeyDown(kc) = event {
 ///         // Print the keysyms produced by this key press.
 ///         let syms = lookup_table.lookup(components.group, components.mods, kc);
 ///         for sym in syms {
@@ -238,7 +238,7 @@ pub enum Redirect {
     /// The group is wrapped modulo the number of available groups.
     #[default]
     Wrap,
-    /// The group is clamped to the last group.
+    /// The group is clamped to the first or last group.
     Clamp,
     /// The group is set to a fixed group.
     Fixed(usize),
@@ -261,7 +261,13 @@ impl Redirect {
         if n >= len {
             match self {
                 Redirect::Wrap => n % len,
-                Redirect::Clamp => len - 1,
+                Redirect::Clamp => {
+                    if (group.0 as i32) < 0 {
+                        0
+                    } else {
+                        len - 1
+                    }
+                }
                 Redirect::Fixed(f) => f,
             }
         } else {

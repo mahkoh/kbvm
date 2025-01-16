@@ -1,6 +1,31 @@
+//! The compositor-side [`StateMachine`].
+//!
+//! This module contains types to map physical key events to logical events.
+//!
+//! The main entry point to this module is the [`StateMachine`] type.
+//!
+//! # Example
+//!
+//! ```
+//! # use kbvm::state_machine::StateMachine;
+//! # use kbvm::xkb::Context;
+//! # use kbvm::xkb::diagnostic::WriteToLog;
+//! #
+//! fn create_state_machine(keymap: &[u8]) -> StateMachine {
+//!     let context = Context::default();
+//!     context
+//!         .keymap_from_bytes(WriteToLog, None, keymap)
+//!         .unwrap()
+//!         .to_builder()
+//!         .build_state_machine()
+//! }
+//! ```
+
 #[cfg(test)]
 mod tests;
 
+#[allow(unused_imports)]
+use crate::evdev;
 use {
     crate::{
         builder::Redirect,
@@ -19,7 +44,29 @@ use {
     },
 };
 
-#[derive(Debug)]
+/// The compositor-side state machine.
+///
+/// This type encodes the business logic turning libinput key events into `wl_keyboard`
+/// events. The documentation of [`Self::handle_key`] has an example showing how to
+/// integrate this type into a wayland compositor.
+///
+/// # Example
+///
+/// ```
+/// # use kbvm::state_machine::StateMachine;
+/// # use kbvm::xkb::Context;
+/// # use kbvm::xkb::diagnostic::WriteToLog;
+/// #
+/// fn create_state_machine(keymap: &[u8]) -> StateMachine {
+///     let context = Context::default();
+///     context
+///         .keymap_from_bytes(WriteToLog, None, keymap)
+///         .unwrap()
+///         .to_builder()
+///         .build_state_machine()
+/// }
+/// ```
+#[derive(Debug, Clone)]
 pub struct StateMachine {
     pub(crate) num_groups: u32,
     pub(crate) num_globals: usize,
@@ -27,23 +74,28 @@ pub struct StateMachine {
     pub(crate) keys: Vec<Option<KeyGroups>>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct KeyGroups {
     pub(crate) groups: Box<[Option<KeyGroup>]>,
     pub(crate) redirect: Redirect,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct KeyGroup {
     pub(crate) ty: GroupType,
     pub(crate) levels: Box<[KeyLevel]>,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub(crate) struct KeyLevel {
     pub(crate) routine: Option<Routine>,
 }
 
+/// The state of a state machine.
+///
+/// This type can be created via [`StateMachine::create_state`] and every [`State`]
+/// object should only be used with the state machine it was created from.
+#[derive(Clone, Debug)]
 pub struct State {
     globals: Box<[u32]>,
     layer2: Vec<Layer2Base>,
@@ -53,33 +105,71 @@ pub struct State {
     actuation: u64,
 }
 
+/// An event emitted by a [`StateMachine`].
+///
+/// This event might cause the [`Components`] of the state to change. You can easily
+/// apply this change by calling [`Components::apply_event`].
+///
+/// # Effective Modifiers and Group
+///
+/// When the pressed/latched/locked modifiers or group change, this might also affect the
+/// effective modifiers/group since the effective modifiers are defined as
+///
+/// ```text
+/// mods_effective = mods_pressed | mods_latched | mods_locked
+/// ```
+///
+/// and the effective group is defined as
+///
+/// ```text
+/// group_effective = group_pressed + group_latched + group_locked
+/// ```
+///
+/// If this happens, the event changing the pressed/latched/locked modifiers or group is
+/// always followed by an event changing the effective modifiers or group. For example,
+/// if a key press changes the pressed and latched modifiers, you might see the following
+/// sequence of events:
+///
+/// - `ModsPressed(ModifierMask::SHIFT)`
+/// - `ModsLatched(ModifierMask::CONTROL)`
+/// - `ModsEffective(ModifierMask::SHIFT | ModifierMask::CONTROL)`
 #[derive(Copy, Clone)]
-pub enum LogicalEvent {
-    ModsPressed(ModifierMask),
-    ModsLatched(ModifierMask),
-    ModsLocked(ModifierMask),
-    ModsEffective(ModifierMask),
-    GroupPressed(GroupDelta),
-    GroupLatched(GroupDelta),
-    GroupLocked(GroupIndex),
-    GroupEffective(GroupIndex),
+pub enum Event {
+    /// A key was logically pressed.
     KeyDown(Keycode),
+    /// A key was logically released.
     KeyUp(Keycode),
+    /// The pressed modifiers have changed.
+    ModsPressed(ModifierMask),
+    /// The latched modifiers have changed.
+    ModsLatched(ModifierMask),
+    /// The locked modifiers have changed.
+    ModsLocked(ModifierMask),
+    /// The effective modifiers have changed.
+    ModsEffective(ModifierMask),
+    /// The pressed group has changed.
+    GroupPressed(GroupDelta),
+    /// The latched group has changed.
+    GroupLatched(GroupDelta),
+    /// The locked group has changed.
+    GroupLocked(GroupIndex),
+    /// The effective group has changed.
+    GroupEffective(GroupIndex),
 }
 
-impl Debug for LogicalEvent {
+impl Debug for Event {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            LogicalEvent::ModsPressed(m) => write!(f, "mods_pressed = {m:?}"),
-            LogicalEvent::ModsLatched(m) => write!(f, "mods_latched = {m:?}"),
-            LogicalEvent::ModsLocked(m) => write!(f, "mods_locked = {m:?}"),
-            LogicalEvent::ModsEffective(m) => write!(f, "mods_effective = {m:?}"),
-            LogicalEvent::GroupPressed(g) => write!(f, "group_pressed = {g:?}"),
-            LogicalEvent::GroupLatched(g) => write!(f, "group_latched = {g:?}"),
-            LogicalEvent::GroupLocked(g) => write!(f, "group_locked = {g:?}"),
-            LogicalEvent::GroupEffective(g) => write!(f, "group_effective = {g:?}"),
-            LogicalEvent::KeyDown(k) => write!(f, "key_down({})", k.0),
-            LogicalEvent::KeyUp(k) => write!(f, "key_up({})", k.0),
+            Event::ModsPressed(m) => write!(f, "mods_pressed = {m:?}"),
+            Event::ModsLatched(m) => write!(f, "mods_latched = {m:?}"),
+            Event::ModsLocked(m) => write!(f, "mods_locked = {m:?}"),
+            Event::ModsEffective(m) => write!(f, "mods_effective = {m:?}"),
+            Event::GroupPressed(g) => write!(f, "group_pressed = {g:?}"),
+            Event::GroupLatched(g) => write!(f, "group_latched = {g:?}"),
+            Event::GroupLocked(g) => write!(f, "group_locked = {g:?}"),
+            Event::GroupEffective(g) => write!(f, "group_effective = {g:?}"),
+            Event::KeyDown(k) => write!(f, "key_down({})", k.0),
+            Event::KeyUp(k) => write!(f, "key_up({})", k.0),
         }
     }
 }
@@ -90,7 +180,7 @@ struct Layer2Handler<'a> {
     pub_state: &'a mut Components,
     any_state_changed: bool,
     acc_state: Components,
-    events: &'a mut Vec<LogicalEvent>,
+    events: &'a mut Vec<Event>,
     layer3: &'a mut Vec<Layer3>,
 }
 
@@ -128,7 +218,7 @@ impl Layer2Handler<'_> {
                 $(
                     if acs.$field != self.pub_state.$field {
                         self.pub_state.$field = acs.$field;
-                        self.events.push(LogicalEvent::$camel(acs.$field));
+                        self.events.push(Event::$camel(acs.$field));
                     }
                 )*
             };
@@ -271,7 +361,7 @@ impl StateEventHandler for Layer2Handler<'_> {
         layer3.key = Some(keycode);
         layer3.rc = 1;
         self.flush_state();
-        self.events.push(LogicalEvent::KeyDown(keycode));
+        self.events.push(Event::KeyDown(keycode));
     }
 
     #[inline(always)]
@@ -292,7 +382,7 @@ impl StateEventHandler for Layer2Handler<'_> {
             return;
         }
         self.flush_state();
-        self.events.push(LogicalEvent::KeyUp(keycode));
+        self.events.push(Event::KeyUp(keycode));
     }
 }
 
@@ -311,6 +401,13 @@ pub(crate) mod hidden {
 }
 
 impl Keycode {
+    /// Returns the raw `u32` representing this keycode.
+    ///
+    /// This value should only be used in [`Routine`]s.
+    pub const fn raw(self) -> u32 {
+        self.0
+    }
+
     /// Creates a keycode from an X11 keycode.
     #[inline]
     pub const fn from_x11(kc: u32) -> Self {
@@ -342,12 +439,13 @@ impl Keycode {
     }
 }
 
+#[derive(Clone, Debug)]
 struct Layer2Base {
     key: Option<Keycode>,
     layer2: Box<Layer2>,
 }
 
-#[derive(Default)]
+#[derive(Default, Clone, Debug)]
 struct Layer2 {
     actuation: u64,
     rc: u32,
@@ -357,19 +455,24 @@ struct Layer2 {
     spill: Box<[u32]>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Layer3 {
     key: Option<Keycode>,
     rc: u32,
 }
 
+/// The direction of a key event.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
+#[non_exhaustive]
 pub enum Direction {
+    /// The key was released.
     Up,
+    /// The key was pressed.
     Down,
 }
 
 impl StateMachine {
+    /// Creates a new [`State`] object that can be used with this state machine.
     pub fn create_state(&self) -> State {
         State {
             globals: vec![0; self.num_globals].into_boxed_slice(),
@@ -381,10 +484,88 @@ impl StateMachine {
         }
     }
 
+    /// Turns a key press/release event into [`Event`]s and updates the [`State`].
+    ///
+    /// The `state` should have been created with [`Self::create_state`] of this object.
+    /// Otherwise this function might panic.
+    ///
+    /// The key-press events are reference counted. This means that a key will remain
+    /// pressed until the number of key-release events matches the number of key-press
+    /// events. For example
+    ///
+    /// ```text
+    /// key_press(A)    -  emits events for the key press
+    /// key_press(A)    -  produces no events
+    /// key_release(A)  -  produces no events
+    /// key_release(A)  -  emits events for the key release
+    /// ```
+    ///
+    /// This means that callers of this function should ensure that the number of
+    /// key-release events eventually matches the number of key-press events for the same
+    /// key. For example:
+    ///
+    /// - If a keyboard is disconnected while a key is pressed, the compositor might want
+    ///   to synthesize a key-release.
+    /// - If a libei client disconnects while a key is pressed, dito.
+    ///
+    /// In turn, this call will only ever emit symmetric [`KeyDown`](Event::KeyDown) and
+    /// [`KeyUp`](Event::KeyUp) events. That is, a `KeyUp` event will not be emitted
+    /// unless it is preceded by a corresponding `KeyDown` event and no `KeyDown` event
+    /// will be emitted if the key is already down.
+    ///
+    /// Compositors should use this function as follows:
+    ///
+    /// 1. Receive keyboard events from libinput or libei.
+    /// 2. Feed the event into this function.
+    /// 3. Discard the original libinput/libei event.
+    /// 4. Process the events emitted via the `events` parameter.
+    ///
+    /// It is important that the compositor does not forward the libinput/libei events
+    /// directly to clients. For example, the state machine might be configured to
+    /// redirect the [`evdev::CAPSLOCK`] key to the [`evdev::LEFTCTRL`] key. Instead, the
+    /// compositor must use the `KeyDown` and `KeyUp` events that are emitted via the
+    /// `events` parameter.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use kbvm::{Components, Keycode};
+    /// # use kbvm::state_machine::{Direction, Event, State, StateMachine};
+    /// # fn send_components_to_clients(components: &Components) { }
+    /// # fn send_key_event_to_clients(keycode: Keycode, down: bool) { }
+    /// #
+    /// fn handle_key_event(
+    ///     state_machine: &StateMachine,
+    ///     state: &mut State,
+    ///     key: Keycode,
+    ///     direction: Direction,
+    ///     components: &mut Components,
+    /// ) {
+    ///     let mut events = vec!();
+    ///     state_machine.handle_key(state, &mut events, key, direction);
+    ///     let mut components_changed = false;
+    ///     for event in events {
+    ///         components_changed |= components.apply_event(event);
+    ///         let (keycode, down) = match event {
+    ///             Event::KeyDown(kc) => (kc, true),
+    ///             Event::KeyUp(kc) => (kc, false),
+    ///             _ => continue,
+    ///         };
+    ///         if components_changed {
+    ///             components_changed = false;
+    ///             send_components_to_clients(components);
+    ///         }
+    ///         send_key_event_to_clients(keycode, down);
+    ///     }
+    ///     if components_changed {
+    ///         send_components_to_clients(components);
+    ///     }
+    /// }
+    /// ```
     pub fn handle_key(
         &self,
         state: &mut State,
-        events: &mut Vec<LogicalEvent>,
+        events: &mut Vec<Event>,
         key: Keycode,
         direction: Direction,
     ) {
@@ -395,7 +576,7 @@ impl StateMachine {
     fn handle_key_(
         &self,
         state: &mut State,
-        events: &mut Vec<LogicalEvent>,
+        events: &mut Vec<Event>,
         key: Keycode,
         direction: Direction,
     ) {
@@ -516,12 +697,5 @@ impl StateMachine {
             }
         }
         handler.flush_state();
-    }
-}
-
-impl State {
-    #[inline]
-    pub fn components(&self) -> Components {
-        self.components
     }
 }

@@ -1,3 +1,36 @@
+//! The client-side [`LookupTable`].
+//!
+//! This module contains types to map key events to keysyms and characters.
+//!
+//! The main entry point to this module is the [`LookupTable`] type.
+//!
+//! # Example
+//!
+//! ```
+//! # use kbvm::{GroupIndex, Keycode, ModifierMask};
+//! # use kbvm::lookup::LookupTable;
+//! # use kbvm::xkb::Context;
+//! # use kbvm::xkb::diagnostic::WriteToLog;
+//! fn create_lookup_table(keymap: &[u8]) -> LookupTable {
+//!     let context = Context::default();
+//!     let keymap = context.keymap_from_bytes(WriteToLog, None, keymap).unwrap();
+//!     keymap.to_builder().build_lookup_table()
+//! }
+//!
+//! fn key_press_to_string(
+//!     lookup_table: &LookupTable,
+//!     group: GroupIndex,
+//!     mods: ModifierMask,
+//!     keycode: Keycode,
+//! ) -> String {
+//!     lookup_table
+//!         .lookup(group, mods, keycode)
+//!         .into_iter()
+//!         .flat_map(|p| p.char())
+//!         .collect()
+//! }
+//! ```
+
 #[expect(unused_imports)]
 use crate::builder::Builder;
 use {
@@ -215,6 +248,31 @@ pub(crate) struct KeyLevel {
     pub(crate) symbols: SmallVec<[Keysym; 1]>,
 }
 
+/// The result of a [`LookupTable::lookup`] call.
+///
+/// This object represents the result of a call to [`LookupTable::lookup`]. Too get the
+/// produced keysyms, use the [`IntoIterator`] implementation of this type.
+///
+/// You can modify the output of the iterator by calling the various functions of this
+/// type. This is described in detail in the [`LookupTable`] documentation.
+///
+/// # Example
+///
+/// ```
+/// # use kbvm::{evdev, GroupIndex, ModifierMask};
+/// # use kbvm::lookup::LookupTable;
+/// fn lookup(table: &LookupTable) {
+///     for output in table.lookup(GroupIndex::ZERO, ModifierMask::SHIFT, evdev::A) {
+///         println!("{:?}", output.keysym());
+///     }
+/// }
+/// ```
+///
+/// This might print
+///
+/// ```text
+/// A
+/// ```
 #[derive(Copy, Clone)]
 pub struct Lookup<'a> {
     original_mods: ModifierMask,
@@ -228,8 +286,11 @@ pub struct Lookup<'a> {
     syms: &'a [Keysym],
 }
 
+/// An iterator over [`KeysymProps`].
+///
+/// This type is created via the [`IntoIterator`] implementation of [`Lookup`].
 #[derive(Clone, Debug)]
-pub struct KeysymsIter<'a> {
+pub struct LookupIter<'a> {
     did_ctrl_fallback: bool,
     do_ctrl_transform: bool,
     do_caps_transform: bool,
@@ -249,7 +310,7 @@ pub struct KeysymProps {
 impl Lookup<'_> {
     /// Enables or disables Ctrl Transformation Fallback.
     ///
-    /// See the documentation of the type for more details.
+    /// See the documentation of [`LookupTable`] for more details.
     pub fn with_ctrl_fallback(mut self, fallback: bool) -> Self {
         self.use_ctrl_fallback = fallback;
         self
@@ -257,14 +318,14 @@ impl Lookup<'_> {
 
     /// Enables or disables Ctrl Transformation Fallback.
     ///
-    /// See the documentation of the type for more details.
+    /// See the documentation of [`LookupTable`] for more details.
     pub fn set_ctrl_fallback(&mut self, fallback: bool) {
         self.use_ctrl_fallback = fallback;
     }
 
     /// Enables or disables Ctrl Transformation.
     ///
-    /// See the documentation of the type for more details.
+    /// See the documentation of [`LookupTable`] for more details.
     pub fn with_ctrl_transform(mut self, transform: bool) -> Self {
         self.do_ctrl_transform = transform;
         self
@@ -272,14 +333,14 @@ impl Lookup<'_> {
 
     /// Enables or disables Ctrl Transformation.
     ///
-    /// See the documentation of the type for more details.
+    /// See the documentation of [`LookupTable`] for more details.
     pub fn set_ctrl_transform(&mut self, transform: bool) {
         self.do_ctrl_transform = transform;
     }
 
     /// Enables or disables Caps Transformation.
     ///
-    /// See the documentation of the type for more details.
+    /// See the documentation of [`LookupTable`] for more details.
     pub fn with_caps_transform(mut self, transform: bool) -> Self {
         self.do_caps_transform = transform;
         self
@@ -287,7 +348,7 @@ impl Lookup<'_> {
 
     /// Enables or disables Caps Transformation.
     ///
-    /// See the documentation of the type for more details.
+    /// See the documentation of [`LookupTable`] for more details.
     pub fn set_caps_transform(&mut self, transform: bool) {
         self.do_caps_transform = transform;
     }
@@ -314,7 +375,7 @@ impl KeysymProps {
     /// The character produced by the lookup.
     ///
     /// If ctrl transformation was applied to the lookup, then this character is different
-    /// from [Keysym::char].
+    /// from [`Keysym::char`].
     pub fn char(&self) -> Option<char> {
         self.char
     }
@@ -459,7 +520,7 @@ impl LookupTable {
 
 impl<'a> IntoIterator for Lookup<'a> {
     type Item = KeysymProps;
-    type IntoIter = KeysymsIter<'a>;
+    type IntoIter = LookupIter<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
         let mut do_ctrl_transform = false;
@@ -488,7 +549,7 @@ impl<'a> IntoIterator for Lookup<'a> {
                 }
             }
         }
-        KeysymsIter {
+        LookupIter {
             did_ctrl_fallback,
             do_ctrl_transform,
             do_caps_transform,
@@ -497,7 +558,7 @@ impl<'a> IntoIterator for Lookup<'a> {
     }
 }
 
-impl Iterator for KeysymsIter<'_> {
+impl Iterator for LookupIter<'_> {
     type Item = KeysymProps;
 
     fn next(&mut self) -> Option<Self::Item> {

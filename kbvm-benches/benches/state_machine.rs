@@ -37,8 +37,8 @@ fn shift_press_release(c: &mut Criterion) {
     c.bench_function("xkbc - press/release - a", |b| {
         b.iter(|| {
             for _ in 0..100 {
-                xkbc.handle_key(A.to_x11(), true);
-                xkbc.handle_key(A.to_x11(), false);
+                xkbc.handle_key(A.raw(), true);
+                xkbc.handle_key(A.raw(), false);
             }
         })
     });
@@ -61,8 +61,8 @@ fn shift_press_release(c: &mut Criterion) {
     c.bench_function("xkbc - press/release - shift", |b| {
         b.iter(|| {
             for _ in 0..100 {
-                xkbc.handle_key(LEFTSHIFT.to_x11(), true);
-                xkbc.handle_key(LEFTSHIFT.to_x11(), false);
+                xkbc.handle_key(LEFTSHIFT.raw(), true);
+                xkbc.handle_key(LEFTSHIFT.raw(), false);
             }
         })
     });
@@ -82,8 +82,8 @@ fn shift_press_release(c: &mut Criterion) {
     });
     c.bench_function("xkbc - press/release - lock", |b| {
         b.iter(|| {
-            xkbc.handle_key(CAPSLOCK.to_x11(), true);
-            xkbc.handle_key(CAPSLOCK.to_x11(), false);
+            xkbc.handle_key(CAPSLOCK.raw(), true);
+            xkbc.handle_key(CAPSLOCK.raw(), false);
         })
     });
     c.bench_function("kbvm - press/release - shift/a", |b| {
@@ -104,10 +104,10 @@ fn shift_press_release(c: &mut Criterion) {
     });
     c.bench_function("xkbc - press/release - shift/a", |b| {
         b.iter(|| {
-            xkbc.handle_key(LEFTSHIFT.to_x11(), true);
-            xkbc.handle_key(A.to_x11(), true);
-            xkbc.handle_key(A.to_x11(), false);
-            xkbc.handle_key(LEFTSHIFT.to_x11(), false);
+            xkbc.handle_key(LEFTSHIFT.raw(), true);
+            xkbc.handle_key(A.raw(), true);
+            xkbc.handle_key(A.raw(), false);
+            xkbc.handle_key(LEFTSHIFT.raw(), false);
         })
     });
     c.bench_function("kbvm - press/release - lock/a", |b| {
@@ -130,12 +130,12 @@ fn shift_press_release(c: &mut Criterion) {
     });
     c.bench_function("xkbc - press/release - lock/a", |b| {
         b.iter(|| {
-            xkbc.handle_key(CAPSLOCK.to_x11(), true);
-            xkbc.handle_key(CAPSLOCK.to_x11(), false);
-            xkbc.handle_key(A.to_x11(), true);
-            xkbc.handle_key(A.to_x11(), false);
-            xkbc.handle_key(CAPSLOCK.to_x11(), true);
-            xkbc.handle_key(CAPSLOCK.to_x11(), false);
+            xkbc.handle_key(CAPSLOCK.raw(), true);
+            xkbc.handle_key(CAPSLOCK.raw(), false);
+            xkbc.handle_key(A.raw(), true);
+            xkbc.handle_key(A.raw(), false);
+            xkbc.handle_key(CAPSLOCK.raw(), true);
+            xkbc.handle_key(CAPSLOCK.raw(), false);
         })
     });
 }

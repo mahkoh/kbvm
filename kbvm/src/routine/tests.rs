@@ -71,7 +71,7 @@ fn skip_conditional() {
         .load_lit(r0, 1)
         .load_lit(r1, 0)
         .load_lit(r2, 0)
-        .prepare_conditional_skip(r1, false, &mut anchor)
+        .prepare_skip_if(r1, false, &mut anchor)
         .load_lit(r1, 2)
         .finish_skip(&mut anchor)
         .prepare_conditional_skip(r0, false, &mut anchor)
@@ -784,7 +784,7 @@ fn move_() {
     for i in 0..N {
         builder.load_lit(v[i], i as u32);
     }
-    builder.prepare_conditional_skip(c, true, &mut anchor2);
+    builder.prepare_skip_if(c, true, &mut anchor2);
     {
         for i in 0..N {
             builder.store_global(g[i], v[i]);
@@ -873,7 +873,7 @@ fn fallthrough() {
     for i in 0..N {
         builder.load_lit(v[i], i as u32);
     }
-    builder.prepare_conditional_skip(c, false, &mut anchor1);
+    builder.prepare_skip_if(c, false, &mut anchor1);
     builder.store_global(g[0], v[0]);
     builder.finish_skip(&mut anchor1);
     for i in 0..N {
@@ -911,7 +911,7 @@ fn double_cond_jump() {
     builder
         .load_lit(r4, 1)
         .load_lit(r0, 1)
-        .prepare_conditional_skip(r4, false, &mut anchor1)
+        .prepare_skip_if(r4, false, &mut anchor1)
         .load_lit(r1, 1)
         .finish_skip(&mut anchor1)
         .load_lit(r2, 1)
@@ -934,7 +934,7 @@ fn double_cond_jump2() {
         .load_lit(r4, 1)
         .load_lit(r5, 0)
         .load_lit(r0, 1)
-        .prepare_conditional_skip(r4, false, &mut anchor1)
+        .prepare_skip_if(r4, false, &mut anchor1)
         .load_lit(r1, 1)
         .finish_skip(&mut anchor1)
         .load_lit(r2, 1)
@@ -978,7 +978,7 @@ fn get_args(f: impl FnOnce(&mut RoutineBuilder, [Global; NUM_GLOBALS])) -> usize
 fn pressed_mods_inc() {
     let n = get_args(|builder, [..]| {
         let v = builder.allocate_var();
-        builder.pressed_mods_inc(v);
+        builder.mods_pressed_inc(v);
     });
     assert_eq!(n, 1);
 }
@@ -987,7 +987,7 @@ fn pressed_mods_inc() {
 fn pressed_mods_dec() {
     let n = get_args(|builder, [..]| {
         let v = builder.allocate_var();
-        builder.pressed_mods_dec(v);
+        builder.mods_pressed_dec(v);
     });
     assert_eq!(n, 1);
 }
@@ -996,7 +996,7 @@ fn pressed_mods_dec() {
 fn component_load() {
     let n = get_args(|builder, [g0, ..]| {
         let v = builder.allocate_var();
-        builder.latched_mods_load(v).store_global(g0, v);
+        builder.mods_latched_load(v).store_global(g0, v);
     });
     assert_eq!(n, 0);
 }
@@ -1005,7 +1005,7 @@ fn component_load() {
 fn component_store() {
     let n = get_args(|builder, [..]| {
         let v = builder.allocate_var();
-        builder.latched_mods_store(v);
+        builder.mods_latched_store(v);
     });
     assert_eq!(n, 1);
 }
