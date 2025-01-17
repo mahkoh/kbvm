@@ -5,7 +5,7 @@ use {
         Output,
     },
     bitflags::Flags,
-    clap::Args,
+    clap::{Args, ValueEnum},
     hashbrown::{hash_map::Entry, HashMap},
     kbvm::{
         lookup::LookupTable,
@@ -51,11 +51,46 @@ use {
 
 #[derive(Args, Debug, Default)]
 pub struct TestWaylandArgs {
-    // #[clap(value_enum, use_value_delimiter = true, long)]
-    // pub backends: Vec<()>,
+    #[clap(long)]
+    print_keymap: bool,
+    #[clap(flatten)]
+    compose: ComposeGroup,
+    #[clap(long)]
+    json: bool,
+    #[clap(value_enum, long, require_equals = true, num_args = 0..=1, default_missing_value = "always")]
+    color: Option<Color>,
 }
 
-pub fn main(_args: TestWaylandArgs) {
+#[derive(ValueEnum, Debug, Clone)]
+enum Color {
+    Never,
+    Always,
+    Auto,
+}
+
+#[derive(Args, Debug, Default)]
+#[group(multiple = false)]
+struct ComposeGroup {
+    #[clap(long)]
+    no_compose: bool,
+    #[clap(long)]
+    compose_file: Option<String>,
+}
+
+enum ComposeSetting {
+    Disabled,
+    Default,
+    Path(String),
+}
+
+pub fn main(args: TestWaylandArgs) {
+    if let Some(color) = args.color {
+        match color {
+            Color::Never => owo_colors::set_override(false),
+            Color::Always => owo_colors::set_override(true),
+            Color::Auto => {}
+        }
+    }
     let con = Connection::connect_to_env().unwrap();
     let mut queue = con.new_event_queue::<State>();
     let qh = queue.handle();
@@ -67,8 +102,18 @@ pub fn main(_args: TestWaylandArgs) {
         keyboards: Default::default(),
         context: Default::default(),
         window: None,
-        // output: Box::new(Ansi::new(Theme::Dark)),
-        output: Box::new(Json),
+        output: match args.json {
+            true => Box::new(Json),
+            false => Box::new(Ansi::new(Theme::Dark)),
+        },
+        compose: match args.compose.compose_file {
+            None => match args.compose.no_compose {
+                true => ComposeSetting::Disabled,
+                _ => ComposeSetting::Default,
+            },
+            Some(p) => ComposeSetting::Path(p),
+        },
+        print_keymap: args.print_keymap,
     };
     loop {
         queue.blocking_dispatch(&mut state).unwrap();
@@ -82,6 +127,8 @@ struct State {
     context: xkb::Context,
     window: Option<Window>,
     output: Box<dyn Output>,
+    compose: ComposeSetting,
+    print_keymap: bool,
 }
 
 struct Window {
@@ -144,14 +191,21 @@ impl State {
                 kb.wl_keyboard.release();
             }
             Entry::Vacant(e) if has_kb => {
-                let compose = self
-                    .context
-                    .compose_table_builder()
-                    .build(WriteToLog)
-                    .map(|table| Compose {
+                let create_compose = |path: Option<&str>| {
+                    let mut builder = self.context.compose_table_builder();
+                    if let Some(path) = path {
+                        builder.file(path);
+                    }
+                    builder.build(WriteToLog).map(|table| Compose {
                         state: table.state(),
                         table,
-                    });
+                    })
+                };
+                let compose = match &self.compose {
+                    ComposeSetting::Disabled => None,
+                    ComposeSetting::Default => create_compose(None),
+                    ComposeSetting::Path(p) => create_compose(Some(p)),
+                };
                 let kb = seat.seat.get_keyboard(&self.qh, name);
                 e.insert(Keyboard {
                     wl_keyboard: kb,
@@ -402,7 +456,9 @@ impl Dispatch<WlKeyboard, u32> for State {
                     .context
                     .keymap_from_bytes(WriteToLog, None, &map)
                     .unwrap();
-                state.output.keymap(&map);
+                if state.print_keymap {
+                    state.output.keymap(&map);
+                }
                 let lookup = map.to_builder().build_lookup_table();
                 keyboard.lookup = Some(lookup);
             }
