@@ -15,15 +15,20 @@ pub struct ExpandRmlvoArgs {
 
 #[derive(Args, Debug, Default)]
 pub struct RmlvoArgs {
+    /// The name of the rules file.
     #[clap(long)]
     rules: Option<String>,
+    /// The name of the model.
     #[clap(long)]
     model: Option<String>,
-    #[clap(long)]
+    /// A comma-separated list of layouts.
+    #[clap(long, value_delimiter = ',', num_args = 1..)]
     layout: Vec<String>,
-    #[clap(long)]
+    /// A comma-separated list of layout variants.
+    #[clap(long, value_delimiter = ',', num_args = 1..)]
     variant: Vec<String>,
-    #[clap(long)]
+    /// A comma-separated list of options.
+    #[clap(long, value_delimiter = ',', num_args = 1..)]
     options: Vec<String>,
 }
 

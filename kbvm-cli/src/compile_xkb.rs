@@ -8,14 +8,17 @@ use {
 pub struct CompileXkbArgs {
     #[clap(flatten)]
     compile_args: CompileArgs,
-    xkb: Option<String>,
+    /// The path to the keymap.
+    ///
+    /// If the path is not specified or if the path is `-`, the keymap is read from stdin.
+    path: Option<String>,
 }
 
 pub fn main(args: CompileXkbArgs) {
     let mut context = Context::builder();
     args.compile_args.apply(&mut context);
     let context = context.build();
-    let path = args.xkb.as_deref().unwrap_or("-");
+    let path = args.path.as_deref().unwrap_or("-");
     let (path, source) = read_path(path);
     let expanded = context.keymap_from_bytes(WriteToLog, Some(path.as_ref()), &source);
     match expanded {

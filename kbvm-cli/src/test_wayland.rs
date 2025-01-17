@@ -1,4 +1,3 @@
-use error_reporter::Report;
 use {
     crate::{
         output::{
@@ -10,6 +9,7 @@ use {
     },
     bitflags::Flags,
     clap::{Args, ValueEnum},
+    error_reporter::Report,
     hashbrown::{hash_map::Entry, HashMap},
     kbvm::{
         lookup::LookupTable,
@@ -57,16 +57,33 @@ use {
 
 #[derive(Args, Debug, Default)]
 pub struct TestWaylandArgs {
+    /// Print the compiled keymap.
     #[clap(long)]
     print_keymap: bool,
     #[clap(flatten)]
     compose: ComposeGroup,
+    /// Print messages as newline-separated JSON.
     #[clap(long)]
     json: bool,
+    /// Instead of using the wl_keyboard.modifiers event, treat the wl_keyboard.key events
+    /// as raw input and run your own state machine.
+    ///
+    /// The state machine is reset whenever the window gains focus.
     #[clap(long)]
     state_machine: bool,
+    /// Use the keymap stored in this file instead of the keymap sent by the compositor.
+    ///
+    /// Implies `--state-machine`.
+    ///
+    /// If the file name is `-`, the keymap is read from stdin. This can be used with the
+    /// following pattern:
+    ///
+    /// kbvm expand-rmlvo --layout ru,de | kbvm test-wayland --keymap -
     #[clap(long)]
     keymap: Option<String>,
+    /// Enable or disable colored output.
+    ///
+    /// By default, colored output is used if stdout refers to a terminal.
     #[clap(value_enum, long, require_equals = true, num_args = 0..=1, default_missing_value = "always")]
     color: Option<Color>,
 }
@@ -81,8 +98,10 @@ enum Color {
 #[derive(Args, Debug, Default)]
 #[group(multiple = false)]
 struct ComposeGroup {
+    /// Disable handling of compose sequences.
     #[clap(long)]
     no_compose: bool,
+    /// Use this compose file instead of the default one.
     #[clap(long)]
     compose_file: Option<String>,
 }
@@ -525,9 +544,7 @@ impl Dispatch<WlKeyboard, u32> for State {
                     return;
                 }
                 let map = unsafe { MmapOptions::new().len(size as usize).map(&fd).unwrap() };
-                let map = state
-                    .context
-                    .keymap_from_bytes(WriteToLog, None, &map);
+                let map = state.context.keymap_from_bytes(WriteToLog, None, &map);
                 let map = match map {
                     Ok(map) => map,
                     Err(_) => {
