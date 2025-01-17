@@ -1,7 +1,7 @@
 use {
     crate::{evdev::keycode_to_name, output::Output},
     debug_fn::debug_fn,
-    kbvm::{xkb::Keymap, GroupIndex, Keycode, Keysym, ModifierMask},
+    kbvm::{xkb::Keymap, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask},
     owo_colors::{OwoColorize, Stream::Stdout},
     std::{
         fmt::{Display, Formatter},
@@ -118,6 +118,14 @@ impl Output for Ansi {
 
     fn mods(&mut self, mods: ModifierMask) {
         self.mods("mods", mods);
+    }
+
+    fn group_pressed(&mut self, group: GroupDelta) {
+        self.group("group_pressed", group.0);
+    }
+
+    fn group_latched(&mut self, group: GroupDelta) {
+        self.group("group_latched", group.0);
     }
 
     fn group_locked(&mut self, group: GroupIndex) {

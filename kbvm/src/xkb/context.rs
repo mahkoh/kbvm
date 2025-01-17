@@ -8,7 +8,7 @@ use {
             code::Code,
             code_loader::CodeLoader,
             code_map::CodeMap,
-            diagnostic::{Diagnostic, DiagnosticHandler, DiagnosticSink},
+            diagnostic::{Diagnostic, DiagnosticHandler, DiagnosticKind, DiagnosticSink},
             interner::{Interned, Interner},
             kccgst::{
                 self,
@@ -28,6 +28,7 @@ use {
     },
     bstr::ByteSlice,
     isnt::std_1::primitive::IsntStrExt,
+    kbvm_proc::ad_hoc_display,
     secure_execution::requires_secure_execution,
     std::{
         path::{Path, PathBuf},
@@ -756,6 +757,13 @@ impl Context {
         let mut tokens = vec![];
         if let Err(e) = lexer.lex_item(&mut interner, &mut tokens) {
             return Err(diagnostics.push_fatal(&mut map, e.val.diagnostic_kind(), e));
+        }
+        if tokens.is_empty() {
+            return Err(diagnostics.push_fatal(
+                &mut map,
+                DiagnosticKind::UnexpectedEof,
+                ad_hoc_display!("keymap is empty").spanned2(span),
+            ));
         }
         let parsed = parse_item(
             &mut map,

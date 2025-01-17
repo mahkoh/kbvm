@@ -168,7 +168,7 @@ impl Parser<'_, '_, '_> {
         expected: &'static [Expected],
     ) -> Result<Spanned<Token>, Spanned<ParserError>> {
         if self.pos >= self.tokens.len() {
-            return Err(self.expected_but_eof(self.tokens.last().unwrap().span, expected));
+            return Err(self.expected_but_eof(expected));
         }
         let token = self.tokens[self.pos];
         self.pos += 1;
@@ -188,7 +188,7 @@ impl Parser<'_, '_, '_> {
         expected: &'static [Expected],
     ) -> Result<Spanned<Token>, Spanned<ParserError>> {
         if self.pos >= self.tokens.len() {
-            return Err(self.expected_but_eof(self.tokens.last().unwrap().span, expected));
+            return Err(self.expected_but_eof(expected));
         }
         Ok(self.tokens[self.pos])
     }

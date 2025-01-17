@@ -1,18 +1,24 @@
+use error_reporter::Report;
 use {
-    crate::output::{
-        ansi::{Ansi, Theme},
-        json::Json,
-        Output,
+    crate::{
+        output::{
+            ansi::{Ansi, Theme},
+            json::Json,
+            Output,
+        },
+        utils::read_path,
     },
     bitflags::Flags,
     clap::{Args, ValueEnum},
     hashbrown::{hash_map::Entry, HashMap},
     kbvm::{
         lookup::LookupTable,
+        state_machine::{self, Direction, Event, StateMachine},
         xkb::{
             self,
             compose::{self, ComposeTable, FeedResult},
             diagnostic::WriteToLog,
+            Context,
         },
         Components, Keycode,
     },
@@ -57,6 +63,10 @@ pub struct TestWaylandArgs {
     compose: ComposeGroup,
     #[clap(long)]
     json: bool,
+    #[clap(long)]
+    state_machine: bool,
+    #[clap(long)]
+    keymap: Option<String>,
     #[clap(value_enum, long, require_equals = true, num_args = 0..=1, default_missing_value = "always")]
     color: Option<Color>,
 }
@@ -91,21 +101,35 @@ pub fn main(args: TestWaylandArgs) {
             Color::Auto => {}
         }
     }
-    let con = Connection::connect_to_env().unwrap();
+    let con = match Connection::connect_to_env() {
+        Ok(c) => c,
+        Err(e) => {
+            log::error!("could not connect to compositor: {}", Report::new(e));
+            std::process::exit(1);
+        }
+    };
     let mut queue = con.new_event_queue::<State>();
     let qh = queue.handle();
     let _registry = con.display().get_registry(&qh, ());
     con.display().sync(&qh, InitialRoundtrip);
+    let context = Context::default();
+    let mut output: Box<dyn Output> = match args.json {
+        true => Box::new(Json),
+        false => Box::new(Ansi::new(Theme::Dark)),
+    };
+    let (lookup_table, state_machine) = create_global_lt_and_sm(
+        &context,
+        &mut *output,
+        args.print_keymap,
+        args.keymap.as_deref(),
+    );
     let mut state = State {
         qh,
         registry: Default::default(),
         keyboards: Default::default(),
-        context: Default::default(),
+        context,
         window: None,
-        output: match args.json {
-            true => Box::new(Json),
-            false => Box::new(Ansi::new(Theme::Dark)),
-        },
+        output,
         compose: match args.compose.compose_file {
             None => match args.compose.no_compose {
                 true => ComposeSetting::Disabled,
@@ -114,10 +138,41 @@ pub fn main(args: TestWaylandArgs) {
             Some(p) => ComposeSetting::Path(p),
         },
         print_keymap: args.print_keymap,
+        create_state_machine: args.state_machine || args.keymap.is_some(),
+        lookup_table,
+        state_machine,
     };
     loop {
         queue.blocking_dispatch(&mut state).unwrap();
     }
+}
+
+fn create_global_lt_and_sm(
+    context: &Context,
+    output: &mut dyn Output,
+    print_keymap: bool,
+    path: Option<&str>,
+) -> (Option<LookupTable>, Option<StateMachine>) {
+    let mut state_machine = None;
+    let mut lookup_table = None;
+    if let Some(path) = path {
+        let (path, source) = read_path(path);
+        let keymap = context.keymap_from_bytes(WriteToLog, Some(path.as_ref()), &source);
+        let keymap = match keymap {
+            Ok(m) => m,
+            Err(_) => {
+                log::error!("could not compile keymap");
+                std::process::exit(1);
+            }
+        };
+        if print_keymap {
+            output.keymap(&keymap);
+        }
+        let builder = keymap.to_builder();
+        state_machine = Some(builder.build_state_machine());
+        lookup_table = Some(builder.build_lookup_table());
+    }
+    (lookup_table, state_machine)
 }
 
 struct State {
@@ -129,6 +184,9 @@ struct State {
     output: Box<dyn Output>,
     compose: ComposeSetting,
     print_keymap: bool,
+    create_state_machine: bool,
+    lookup_table: Option<LookupTable>,
+    state_machine: Option<StateMachine>,
 }
 
 struct Window {
@@ -152,8 +210,15 @@ struct Registry {
 struct Keyboard {
     wl_keyboard: WlKeyboard,
     lookup: Option<LookupTable>,
+    state_machine: Option<Sm>,
     components: Components,
     compose: Option<Compose>,
+}
+
+struct Sm {
+    state_machine: StateMachine,
+    state: state_machine::State,
+    events: Vec<Event>,
 }
 
 struct Compose {
@@ -209,7 +274,12 @@ impl State {
                 let kb = seat.seat.get_keyboard(&self.qh, name);
                 e.insert(Keyboard {
                     wl_keyboard: kb,
-                    lookup: None,
+                    lookup: self.lookup_table.clone(),
+                    state_machine: self.state_machine.clone().map(|sm| Sm {
+                        state: sm.create_state(),
+                        state_machine: sm,
+                        events: vec![],
+                    }),
                     components: Default::default(),
                     compose,
                 });
@@ -451,53 +521,112 @@ impl Dispatch<WlKeyboard, u32> for State {
         use wl_keyboard::Event;
         match event {
             Event::Keymap { fd, size, .. } => {
+                if state.state_machine.is_some() {
+                    return;
+                }
                 let map = unsafe { MmapOptions::new().len(size as usize).map(&fd).unwrap() };
                 let map = state
                     .context
-                    .keymap_from_bytes(WriteToLog, None, &map)
-                    .unwrap();
+                    .keymap_from_bytes(WriteToLog, None, &map);
+                let map = match map {
+                    Ok(map) => map,
+                    Err(_) => {
+                        log::error!("Could not parse keymap");
+                        keyboard.lookup = None;
+                        keyboard.state_machine = None;
+                        return;
+                    }
+                };
                 if state.print_keymap {
                     state.output.keymap(&map);
                 }
-                let lookup = map.to_builder().build_lookup_table();
+                let builder = map.to_builder();
+                if state.create_state_machine {
+                    let sm = builder.build_state_machine();
+                    keyboard.state_machine = Some(Sm {
+                        state: sm.create_state(),
+                        state_machine: sm,
+                        events: vec![],
+                    });
+                }
+                let lookup = builder.build_lookup_table();
                 keyboard.lookup = Some(lookup);
             }
             Event::Key {
                 key,
-                state: WEnum::Value(KeyState::Pressed),
+                state: WEnum::Value(key_state),
                 ..
             } => {
-                let key = Keycode::from_evdev(key);
-                state.output.key_down(key);
-                let Some(lookup) = &keyboard.lookup else {
-                    return;
-                };
-                for key in lookup.lookup(keyboard.components.group, keyboard.components.mods, key) {
-                    let sym = key.keysym();
-                    'handle_sym: {
-                        if let Some(compose) = &mut keyboard.compose {
-                            let res = compose.table.feed(&mut compose.state, sym);
-                            if let Some(res) = res {
-                                match res {
-                                    FeedResult::Pending => state.output.compose_pending(sym),
-                                    FeedResult::Aborted => state.output.compose_aborted(sym),
-                                    FeedResult::Composed { string, keysym } => {
-                                        state.output.composed(keysym, string, sym);
+                let mut handle_logical_key =
+                    |output: &mut dyn Output,
+                     components: &Components,
+                     key: Keycode,
+                     key_state: KeyState| {
+                        if key_state == KeyState::Released {
+                            output.key_up(key);
+                            return;
+                        }
+                        output.key_down(key);
+                        let Some(lookup) = &keyboard.lookup else {
+                            return;
+                        };
+                        for key in lookup.lookup(components.group, components.mods, key) {
+                            let sym = key.keysym();
+                            'handle_sym: {
+                                if let Some(compose) = &mut keyboard.compose {
+                                    let res = compose.table.feed(&mut compose.state, sym);
+                                    if let Some(res) = res {
+                                        match res {
+                                            FeedResult::Pending => output.compose_pending(sym),
+                                            FeedResult::Aborted => output.compose_aborted(sym),
+                                            FeedResult::Composed { string, keysym } => {
+                                                output.composed(keysym, string, sym);
+                                            }
+                                        }
+                                        break 'handle_sym;
                                     }
                                 }
-                                break 'handle_sym;
+                                output.keysym(key.keysym(), key.char());
                             }
                         }
-                        state.output.keysym(key.keysym(), key.char());
+                    };
+                let key = Keycode::from_evdev(key);
+                if let Some(sm) = &mut keyboard.state_machine {
+                    let direction = match key_state {
+                        KeyState::Released => Direction::Up,
+                        KeyState::Pressed => Direction::Down,
+                        _ => return,
+                    };
+                    sm.events.clear();
+                    sm.state_machine
+                        .handle_key(&mut sm.state, &mut sm.events, key, direction);
+                    let components = &mut keyboard.components;
+                    macro_rules! component {
+                        ($field:ident, $p:expr) => {{
+                            state.output.$field($p);
+                            components.$field = $p;
+                            continue;
+                        }};
                     }
+                    for &event in &sm.events {
+                        use state_machine::Event;
+                        let (key, key_state) = match event {
+                            Event::KeyDown(kc) => (kc, KeyState::Pressed),
+                            Event::KeyUp(kc) => (kc, KeyState::Released),
+                            Event::ModsPressed(p) => component!(mods_pressed, p),
+                            Event::ModsLatched(p) => component!(mods_latched, p),
+                            Event::ModsLocked(p) => component!(mods_locked, p),
+                            Event::ModsEffective(p) => component!(mods, p),
+                            Event::GroupPressed(p) => component!(group_pressed, p),
+                            Event::GroupLatched(p) => component!(group_latched, p),
+                            Event::GroupLocked(p) => component!(group_locked, p),
+                            Event::GroupEffective(p) => component!(group, p),
+                        };
+                        handle_logical_key(&mut *state.output, components, key, key_state);
+                    }
+                    return;
                 }
-            }
-            Event::Key {
-                key,
-                state: WEnum::Value(KeyState::Released),
-                ..
-            } => {
-                state.output.key_up(Keycode::from_evdev(key));
+                handle_logical_key(&mut *state.output, &keyboard.components, key, key_state);
             }
             Event::Modifiers {
                 mods_depressed: mods_pressed,
@@ -506,6 +635,9 @@ impl Dispatch<WlKeyboard, u32> for State {
                 group: group_locked,
                 ..
             } => {
+                if keyboard.state_machine.is_some() {
+                    return;
+                }
                 if keyboard.components.group_locked.0 != group_locked {
                     keyboard.components.group_locked.0 = group_locked;
                     keyboard.components.update_effective();
@@ -527,6 +659,12 @@ impl Dispatch<WlKeyboard, u32> for State {
                 keyboard.components.update_effective();
                 if old_mods != keyboard.components.mods {
                     state.output.mods(keyboard.components.mods);
+                }
+            }
+            Event::Enter { .. } => {
+                if let Some(sm) = &mut keyboard.state_machine {
+                    sm.state = sm.state_machine.create_state();
+                    keyboard.components = Components::default();
                 }
             }
             _ => {}

@@ -224,11 +224,11 @@ impl Parser<'_, '_, '_> {
         ParserError::TooDeeplyNested.spanned2(span + self.diagnostic_delta)
     }
 
-    pub(super) fn expected_but_eof(
-        &self,
-        span: Span,
-        expected: &'static [Expected],
-    ) -> Spanned<ParserError> {
+    pub(super) fn expected_but_eof(&self, expected: &'static [Expected]) -> Spanned<ParserError> {
+        let span = match self.tokens.last() {
+            Some(t) => t.span,
+            _ => Span { lo: 0, hi: 0 },
+        };
         ParserError::ExpectedButEof(ExpectedButEof { expected })
             .spanned2(span + self.diagnostic_delta)
     }

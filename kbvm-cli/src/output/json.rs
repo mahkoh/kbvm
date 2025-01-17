@@ -1,6 +1,6 @@
 use {
     crate::{evdev::keycode_to_name, output::Output},
-    kbvm::{xkb::Keymap, GroupIndex, Keycode, Keysym, ModifierMask},
+    kbvm::{xkb::Keymap, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask},
     serde::Serialize,
     std::{
         io::{stdout, Write},
@@ -47,6 +47,12 @@ enum Type<'a> {
     },
     Mods {
         mods: u32,
+    },
+    GroupPressed {
+        group: i32,
+    },
+    GroupLatched {
+        group: i32,
     },
     GroupLocked {
         group: i32,
@@ -125,6 +131,18 @@ impl Output for Json {
 
     fn mods(&mut self, mods: ModifierMask) {
         self.msg(Type::Mods { mods: mods.0 });
+    }
+
+    fn group_pressed(&mut self, group: GroupDelta) {
+        self.msg(Type::GroupPressed {
+            group: group.0 as i32,
+        });
+    }
+
+    fn group_latched(&mut self, group: GroupDelta) {
+        self.msg(Type::GroupLatched {
+            group: group.0 as i32,
+        });
     }
 
     fn group_locked(&mut self, group: GroupIndex) {

@@ -553,6 +553,9 @@ fn expand(
                 }
             } else {
                 if component.is_none() {
+                    if e.component == Component::Variant {
+                        continue;
+                    }
                     encoding = None;
                 }
             }
