@@ -71,6 +71,7 @@ enum Type<'a> {
         string: Option<&'a str>,
         original_keysym: u32,
     },
+    StateReset,
 }
 
 impl Json {
@@ -171,5 +172,9 @@ impl Output for Json {
             string,
             original_keysym: original_keysym.0,
         });
+    }
+
+    fn state_reset(&mut self) {
+        self.msg(Type::StateReset);
     }
 }

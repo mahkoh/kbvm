@@ -19,4 +19,5 @@ pub trait Output {
     fn compose_pending(&mut self, keysym: Keysym);
     fn compose_aborted(&mut self, keysym: Keysym);
     fn composed(&mut self, keysym: Option<Keysym>, string: Option<&str>, original_keysym: Keysym);
+    fn state_reset(&mut self);
 }

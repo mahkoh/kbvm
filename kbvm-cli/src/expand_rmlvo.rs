@@ -33,6 +33,7 @@ pub struct RmlvoArgs {
 }
 
 impl RmlvoArgs {
+    #[allow(clippy::type_complexity)]
     pub fn expand(
         &self,
     ) -> (

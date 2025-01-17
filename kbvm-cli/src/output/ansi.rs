@@ -156,7 +156,7 @@ impl Output for Ansi {
 
     fn composed(&mut self, keysym: Option<Keysym>, string: Option<&str>, original_keysym: Keysym) {
         self.handle_delta();
-        print!("{}   {}", self.now(), "composed".color_compose(self.theme),);
+        print!("{}   {}", self.now(), "composed".color_compose(self.theme));
         if let Some(sym) = keysym {
             print!(" {}", sym);
         }
@@ -164,6 +164,11 @@ impl Output for Ansi {
             print!(" {:?}", string);
         }
         println!(" ({})", original_keysym);
+    }
+
+    fn state_reset(&mut self) {
+        self.handle_delta();
+        println!("{} {}", self.now(), "state reset".color_time(self.theme));
     }
 }
 

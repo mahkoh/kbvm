@@ -15,7 +15,6 @@ use {
         lookup::LookupTable,
         state_machine::{self, Direction, Event, StateMachine},
         xkb::{
-            self,
             compose::{self, ComposeTable, FeedResult},
             diagnostic::WriteToLog,
             Context,
@@ -198,7 +197,7 @@ struct State {
     qh: QueueHandle<State>,
     registry: Registry,
     keyboards: HashMap<u32, Keyboard>,
-    context: xkb::Context,
+    context: Context,
     window: Option<Window>,
     output: Box<dyn Output>,
     compose: ComposeSetting,
@@ -682,6 +681,7 @@ impl Dispatch<WlKeyboard, u32> for State {
                 if let Some(sm) = &mut keyboard.state_machine {
                     sm.state = sm.state_machine.create_state();
                     keyboard.components = Components::default();
+                    state.output.state_reset();
                 }
             }
             _ => {}
