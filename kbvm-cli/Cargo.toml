@@ -1,0 +1,23 @@
+[package]
+name = "kbvm-cli"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "kbvm"
+path = "src/main.rs"
+
+[dependencies]
+kbvm = { path = "../kbvm", features = ["compose"] }
+clap = { version = "4.5.26", features = ["derive"] }
+wayland-client = "0.31.7"
+wayland-protocols = { version = "0.32.5", features = ["client", "staging", "unstable"] }
+env_logger = "0.11.6"
+log = "0.4.25"
+hashbrown = "0.15.2"
+bitflags = "2.8.0"
+memmap2 = "0.9.5"
+owo-colors = { version = "4.1.0", features = ["supports-color", "supports-colors"] }
+debug-fn = "1.0.0"
+serde = { version = "1.0.217", features = ["derive"] }
+serde_json = "1.0.135"

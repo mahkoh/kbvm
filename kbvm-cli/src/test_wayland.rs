@@ -1,0 +1,496 @@
+use {
+    crate::output::{
+        ansi::{Ansi, Theme},
+        json::Json,
+        Output,
+    },
+    bitflags::Flags,
+    clap::Args,
+    hashbrown::{hash_map::Entry, HashMap},
+    kbvm::{
+        lookup::LookupTable,
+        xkb::{
+            self,
+            compose::{self, ComposeTable, FeedResult},
+            diagnostic::WriteToLog,
+        },
+        Components, Keycode,
+    },
+    memmap2::MmapOptions,
+    wayland_client::{
+        delegate_noop,
+        protocol::{
+            wl_buffer::WlBuffer,
+            wl_callback::{self, WlCallback},
+            wl_compositor::WlCompositor,
+            wl_keyboard::{self, KeyState, WlKeyboard},
+            wl_registry::{self, WlRegistry},
+            wl_seat::{self, WlSeat},
+            wl_surface::WlSurface,
+        },
+        Connection, Dispatch, QueueHandle, WEnum,
+    },
+    wayland_protocols::{
+        wp::{
+            single_pixel_buffer::v1::client::wp_single_pixel_buffer_manager_v1::WpSinglePixelBufferManagerV1,
+            viewporter::client::{wp_viewport::WpViewport, wp_viewporter::WpViewporter},
+        },
+        xdg::{
+            decoration::zv1::client::{
+                zxdg_decoration_manager_v1::ZxdgDecorationManagerV1,
+                zxdg_toplevel_decoration_v1::{self, ZxdgToplevelDecorationV1},
+            },
+            shell::client::{
+                xdg_surface::{self, XdgSurface},
+                xdg_toplevel::{self, XdgToplevel},
+                xdg_wm_base::{self, XdgWmBase},
+            },
+        },
+    },
+};
+
+#[derive(Args, Debug, Default)]
+pub struct TestWaylandArgs {
+    // #[clap(value_enum, use_value_delimiter = true, long)]
+    // pub backends: Vec<()>,
+}
+
+pub fn main(_args: TestWaylandArgs) {
+    let con = Connection::connect_to_env().unwrap();
+    let mut queue = con.new_event_queue::<State>();
+    let qh = queue.handle();
+    let _registry = con.display().get_registry(&qh, ());
+    con.display().sync(&qh, InitialRoundtrip);
+    let mut state = State {
+        qh,
+        registry: Default::default(),
+        keyboards: Default::default(),
+        context: Default::default(),
+        window: None,
+        // output: Box::new(Ansi::new(Theme::Dark)),
+        output: Box::new(Json),
+    };
+    loop {
+        queue.blocking_dispatch(&mut state).unwrap();
+    }
+}
+
+struct State {
+    qh: QueueHandle<State>,
+    registry: Registry,
+    keyboards: HashMap<u32, Keyboard>,
+    context: xkb::Context,
+    window: Option<Window>,
+    output: Box<dyn Output>,
+}
+
+struct Window {
+    surface: WlSurface,
+    buffer: WlBuffer,
+    viewport: WpViewport,
+    width: i32,
+    height: i32,
+}
+
+#[derive(Default)]
+struct Registry {
+    wl_compositor: Option<WlCompositor>,
+    wl_seats: HashMap<u32, RawSeat>,
+    wp_viewporter: Option<WpViewporter>,
+    xdg_wm_base: Option<XdgWmBase>,
+    wp_single_pixel_buffer_manager_v1: Option<WpSinglePixelBufferManagerV1>,
+    zxdg_decoration_manager_v1: Option<ZxdgDecorationManagerV1>,
+}
+
+struct Keyboard {
+    wl_keyboard: WlKeyboard,
+    lookup: Option<LookupTable>,
+    components: Components,
+    compose: Option<Compose>,
+}
+
+struct Compose {
+    table: ComposeTable,
+    state: compose::State,
+}
+
+struct RawSeat {
+    seat: WlSeat,
+    capabilities: wl_seat::Capability,
+    name: String,
+}
+
+struct InitialRoundtrip;
+
+delegate_noop!(State: ignore WlCompositor);
+delegate_noop!(State: ignore WpSinglePixelBufferManagerV1);
+delegate_noop!(State: ignore ZxdgDecorationManagerV1);
+delegate_noop!(State: ignore ZxdgToplevelDecorationV1);
+delegate_noop!(State: ignore WpViewporter);
+delegate_noop!(State: ignore WlSurface);
+delegate_noop!(State: ignore WlBuffer);
+delegate_noop!(State: ignore WpViewport);
+
+impl State {
+    fn handle_seat_capabilities(&mut self, name: u32) {
+        let Some(seat) = self.registry.wl_seats.get(&name) else {
+            return;
+        };
+        let has_kb = seat.capabilities.contains(wl_seat::Capability::Keyboard);
+        match self.keyboards.entry(name) {
+            Entry::Occupied(_) if has_kb => {}
+            Entry::Occupied(e) => {
+                let kb = e.remove();
+                kb.wl_keyboard.release();
+            }
+            Entry::Vacant(e) if has_kb => {
+                let compose = self
+                    .context
+                    .compose_table_builder()
+                    .build(WriteToLog)
+                    .map(|table| Compose {
+                        state: table.state(),
+                        table,
+                    });
+                let kb = seat.seat.get_keyboard(&self.qh, name);
+                e.insert(Keyboard {
+                    wl_keyboard: kb,
+                    lookup: None,
+                    components: Default::default(),
+                    compose,
+                });
+            }
+            Entry::Vacant(_) => {}
+        }
+    }
+}
+
+impl Dispatch<WlRegistry, ()> for State {
+    fn event(
+        state: &mut Self,
+        proxy: &WlRegistry,
+        event: wl_registry::Event,
+        _data: &(),
+        _conn: &Connection,
+        qh: &QueueHandle<Self>,
+    ) {
+        use wl_registry::Event;
+        match event {
+            Event::Global {
+                name,
+                interface,
+                version,
+            } => match interface.as_str() {
+                "wl_compositor" => {
+                    state.registry.wl_compositor = Some(proxy.bind(name, version, qh, ()))
+                }
+                "xdg_wm_base" => {
+                    state.registry.xdg_wm_base = Some(proxy.bind(name, version, qh, ()))
+                }
+                "wp_viewporter" => {
+                    state.registry.wp_viewporter = Some(proxy.bind(name, version, qh, ()))
+                }
+                "wp_single_pixel_buffer_manager_v1" => {
+                    state.registry.wp_single_pixel_buffer_manager_v1 =
+                        Some(proxy.bind(name, version, qh, ()))
+                }
+                "zxdg_decoration_manager_v1" => {
+                    state.registry.zxdg_decoration_manager_v1 =
+                        Some(proxy.bind(name, version, qh, ()))
+                }
+                "wl_seat" => {
+                    let seat = RawSeat {
+                        seat: proxy.bind(name, version, qh, name),
+                        capabilities: wl_seat::Capability::empty(),
+                        name: name.to_string(),
+                    };
+                    state.registry.wl_seats.insert(name, seat);
+                }
+                _ => {}
+            },
+            Event::GlobalRemove { name } => {
+                let Some(seat) = state.registry.wl_seats.remove(&name) else {
+                    return;
+                };
+                seat.seat.release();
+            }
+            _ => {}
+        }
+    }
+}
+
+impl Dispatch<XdgWmBase, ()> for State {
+    fn event(
+        _state: &mut Self,
+        proxy: &XdgWmBase,
+        event: xdg_wm_base::Event,
+        _data: &(),
+        _conn: &Connection,
+        _qh: &QueueHandle<Self>,
+    ) {
+        use xdg_wm_base::Event;
+        match event {
+            Event::Ping { serial } => {
+                proxy.pong(serial);
+            }
+            _ => {}
+        }
+    }
+}
+
+impl Dispatch<WlSeat, u32> for State {
+    fn event(
+        state: &mut Self,
+        _proxy: &WlSeat,
+        event: wl_seat::Event,
+        name: &u32,
+        _conn: &Connection,
+        _qh: &QueueHandle<Self>,
+    ) {
+        let Some(seat) = state.registry.wl_seats.get_mut(name) else {
+            return;
+        };
+        use wl_seat::Event;
+        match event {
+            Event::Capabilities { capabilities } => {
+                seat.capabilities = capabilities.unwrap();
+                state.handle_seat_capabilities(*name);
+            }
+            Event::Name { name } => {
+                seat.name = name;
+            }
+            _ => {}
+        }
+    }
+}
+
+impl Dispatch<XdgSurface, ()> for State {
+    fn event(
+        state: &mut Self,
+        proxy: &XdgSurface,
+        event: xdg_surface::Event,
+        _data: &(),
+        _conn: &Connection,
+        _qh: &QueueHandle<Self>,
+    ) {
+        let window = state.window.as_ref().unwrap();
+        use xdg_surface::Event;
+        match event {
+            Event::Configure { serial } => {
+                proxy.ack_configure(serial);
+                window.viewport.set_destination(window.width, window.height);
+                window.surface.attach(Some(&window.buffer), 0, 0);
+                window.surface.commit();
+            }
+            _ => {}
+        }
+    }
+}
+
+impl Dispatch<XdgToplevel, ()> for State {
+    fn event(
+        state: &mut Self,
+        _proxy: &XdgToplevel,
+        event: xdg_toplevel::Event,
+        _data: &(),
+        _conn: &Connection,
+        _qh: &QueueHandle<Self>,
+    ) {
+        let window = state.window.as_mut().unwrap();
+        use xdg_toplevel::Event;
+        match event {
+            Event::Configure {
+                mut width,
+                mut height,
+                ..
+            } => {
+                if width == 0 {
+                    width = 800;
+                }
+                if height == 0 {
+                    height = 600;
+                }
+                window.width = width;
+                window.height = height;
+            }
+            Event::Close => {
+                std::process::exit(0);
+            }
+            _ => {}
+        }
+    }
+}
+
+impl Dispatch<WlCallback, InitialRoundtrip> for State {
+    fn event(
+        state: &mut Self,
+        _proxy: &WlCallback,
+        event: wl_callback::Event,
+        _name: &InitialRoundtrip,
+        _conn: &Connection,
+        qh: &QueueHandle<Self>,
+    ) {
+        use wl_callback::Event;
+        match event {
+            Event::Done { .. } => {
+                let r = &state.registry;
+                macro_rules! check_singleton {
+                    ($name:ident) => {
+                        if r.$name.is_none() {
+                            log::error!("compositor does not expose {} global", stringify!($name));
+                            std::process::exit(1);
+                        }
+                    };
+                }
+                check_singleton!(xdg_wm_base);
+                check_singleton!(wl_compositor);
+                check_singleton!(wp_viewporter);
+                check_singleton!(wp_single_pixel_buffer_manager_v1);
+                let surface = r.wl_compositor.as_ref().unwrap().create_surface(qh, ());
+                let viewport = r
+                    .wp_viewporter
+                    .as_ref()
+                    .unwrap()
+                    .get_viewport(&surface, qh, ());
+                let xdg_surface = r
+                    .xdg_wm_base
+                    .as_ref()
+                    .unwrap()
+                    .get_xdg_surface(&surface, qh, ());
+                let xdg_toplevel = xdg_surface.get_toplevel(qh, ());
+                if let Some(dm) = &r.zxdg_decoration_manager_v1 {
+                    let decoration = dm.get_toplevel_decoration(&xdg_toplevel, qh, ());
+                    decoration.set_mode(zxdg_toplevel_decoration_v1::Mode::ServerSide);
+                }
+                surface.commit();
+                let buffer = state
+                    .registry
+                    .wp_single_pixel_buffer_manager_v1
+                    .as_ref()
+                    .unwrap()
+                    .create_u32_rgba_buffer(0, 0, 0, !0, qh, ());
+                state.window = Some(Window {
+                    surface,
+                    buffer,
+                    viewport,
+                    width: 800,
+                    height: 600,
+                });
+            }
+            _ => {}
+        }
+    }
+}
+
+impl Dispatch<WlKeyboard, u32> for State {
+    fn event(
+        state: &mut Self,
+        _proxy: &WlKeyboard,
+        event: wl_keyboard::Event,
+        &name: &u32,
+        _conn: &Connection,
+        _qh: &QueueHandle<Self>,
+    ) {
+        let Some(keyboard) = state.keyboards.get_mut(&name) else {
+            return;
+        };
+        use wl_keyboard::Event;
+        match event {
+            Event::Keymap { fd, size, .. } => {
+                let map = unsafe { MmapOptions::new().len(size as usize).map(&fd).unwrap() };
+                let map = state
+                    .context
+                    .keymap_from_bytes(WriteToLog, None, &map)
+                    .unwrap();
+                state.output.keymap(&map);
+                let lookup = map.to_builder().build_lookup_table();
+                keyboard.lookup = Some(lookup);
+            }
+            Event::Key {
+                key,
+                state: WEnum::Value(KeyState::Pressed),
+                ..
+            } => {
+                let key = Keycode::from_evdev(key);
+                state.output.key_down(key);
+                let Some(lookup) = &keyboard.lookup else {
+                    return;
+                };
+                for key in lookup.lookup(keyboard.components.group, keyboard.components.mods, key) {
+                    let sym = key.keysym();
+                    'handle_sym: {
+                        if let Some(compose) = &mut keyboard.compose {
+                            let res = compose.table.feed(&mut compose.state, sym);
+                            if let Some(res) = res {
+                                match res {
+                                    FeedResult::Pending => state.output.compose_pending(sym),
+                                    FeedResult::Aborted => state.output.compose_aborted(sym),
+                                    FeedResult::Composed { string, keysym } => {
+                                        state.output.composed(keysym, string, sym);
+                                    }
+                                }
+                                break 'handle_sym;
+                            }
+                        }
+                        state.output.keysym(key.keysym(), key.char());
+                    }
+                }
+            }
+            Event::Key {
+                key,
+                state: WEnum::Value(KeyState::Released),
+                ..
+            } => {
+                state.output.key_up(Keycode::from_evdev(key));
+            }
+            Event::Modifiers {
+                mods_depressed: mods_pressed,
+                mods_latched,
+                mods_locked,
+                group: group_locked,
+                ..
+            } => {
+                if keyboard.components.group_locked.0 != group_locked {
+                    keyboard.components.group_locked.0 = group_locked;
+                    keyboard.components.update_effective();
+                    state.output.group_locked(keyboard.components.group_locked);
+                    state.output.group(keyboard.components.group);
+                }
+                macro_rules! update {
+                    ($field:ident) => {
+                        if keyboard.components.$field.0 != $field {
+                            keyboard.components.$field.0 = $field;
+                            state.output.$field(keyboard.components.$field);
+                        }
+                    };
+                }
+                update!(mods_pressed);
+                update!(mods_latched);
+                update!(mods_locked);
+                let old_mods = keyboard.components.mods;
+                keyboard.components.update_effective();
+                if old_mods != keyboard.components.mods {
+                    state.output.mods(keyboard.components.mods);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+/// Some people don't understand that simple things should be simple.
+trait WEnumGarbageExt<T> {
+    fn unwrap(self) -> T;
+}
+
+impl<T> WEnumGarbageExt<T> for WEnum<T>
+where
+    T: Flags<Bits = u32>,
+{
+    fn unwrap(self) -> T {
+        match self {
+            WEnum::Value(t) => t,
+            WEnum::Unknown(f) => T::from_bits_retain(f),
+        }
+    }
+}

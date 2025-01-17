@@ -2,13 +2,14 @@
 resolver = "2"
 members = [
     "compile-tests",
-    "type-tests",
+    "compose-tests",
     "generator",
+    "integration-test-utils",
     "kbvm",
+    "kbvm-benches",
+    "kbvm-cli",
     "kbvm-proc",
     "libxkbcommon-test-linker",
-    "kbvm-benches",
+    "type-tests",
     "x11-tests",
-    "compose-tests",
-    "integration-test-utils",
 ]

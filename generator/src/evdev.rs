@@ -1,9 +1,50 @@
+use std::collections::HashMap;
+
 pub fn main() {
-    let output = generate();
+    let output = generate_kbvm();
     std::fs::write("kbvm/src/evdev/generated.rs", output).unwrap();
+    let output = generate_cli();
+    std::fs::write("kbvm-cli/src/evdev/generated.rs", output).unwrap();
 }
 
-fn generate() -> String {
+fn generate_cli() -> String {
+    let mut len = 0;
+    let mut names = HashMap::new();
+    for (k, v) in MAP {
+        len = len.max(*v);
+        names.insert(*v, *k);
+    }
+
+    use std::fmt::Write;
+    let mut res = String::new();
+    writeln!(res, "use kbvm::Keycode;").unwrap();
+    writeln!(res).unwrap();
+    writeln!(
+        res,
+        "pub fn keycode_to_name(keycode: Keycode) -> Option<&'static str> {{"
+    )
+    .unwrap();
+    writeln!(res, "    static NAMES: [Option<&'static str>; {len}] = [").unwrap();
+    for i in 0..len {
+        match names.get(&i) {
+            Some(k) => {
+                let k = k.to_uppercase();
+                writeln!(res, "        Some({k:?}),").unwrap()
+            }
+            None => writeln!(res, "        None,").unwrap(),
+        }
+    }
+    writeln!(res, "    ];").unwrap();
+    writeln!(
+        res,
+        "    NAMES.get(keycode.to_evdev() as usize).copied().flatten()"
+    )
+    .unwrap();
+    writeln!(res, "}}").unwrap();
+    res
+}
+
+fn generate_kbvm() -> String {
     use std::fmt::Write;
     let mut res = String::new();
     writeln!(res, "use crate::Keycode;\n").unwrap();
