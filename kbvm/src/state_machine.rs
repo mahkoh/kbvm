@@ -133,7 +133,7 @@ pub struct State {
 /// - `ModsPressed(ModifierMask::SHIFT)`
 /// - `ModsLatched(ModifierMask::CONTROL)`
 /// - `ModsEffective(ModifierMask::SHIFT | ModifierMask::CONTROL)`
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 pub enum Event {
     /// A key was logically pressed.
     KeyDown(Keycode),

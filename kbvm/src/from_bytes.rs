@@ -38,7 +38,7 @@ macro_rules! from_bytes {
                 const MAX_BYTES: usize = <$ty>::BITS as usize / 8;
                 const MAX_CHARS: usize = MAX_BYTES * 2;
                 if b.len() > MAX_CHARS || ($signed && b.len() == MAX_CHARS) {
-                    while b.len() > 0 && b[0] == 0 {
+                    while b.len() > 0 && b[0] == b'0' {
                         b = &b[1..];
                     }
                     if b.len() > MAX_CHARS {

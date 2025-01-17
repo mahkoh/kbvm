@@ -2,6 +2,9 @@
 //!
 //! See the documentation of [`Builder`] for examples showing how to use this module.
 
+#[cfg(test)]
+mod tests;
+
 #[expect(unused_imports)]
 use crate::{routine::RoutineBuilder, state_machine::State, xkb::Keymap};
 use {

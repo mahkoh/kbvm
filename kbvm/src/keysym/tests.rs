@@ -177,3 +177,62 @@ fn to_lower() {
 fn ssharp_is_lower() {
     assert!(syms::ssharp.is_lowercase());
 }
+
+#[test]
+fn double_sided_iter() {
+    let expected: Vec<_> = Keysym::all().collect();
+    let mut actual: Vec<_> = Keysym::all().rev().collect();
+    actual.reverse();
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn invalid_unicode_case_conv() {
+    let sym = Keysym(0x01_ff_ff_ff);
+    assert_eq!(sym.to_uppercase(), sym);
+    assert_eq!(sym.to_lowercase(), sym);
+}
+
+#[test]
+fn small_letter_dotless_i() {
+    let upper = Keysym(0x01_00_01_31);
+    let lower = Keysym(0x49);
+    assert_eq!(upper.to_uppercase(), lower);
+}
+
+#[test]
+fn is_in_unicode_range() {
+    let sym = Keysym(0x01_00_01_31);
+    assert!(sym.is_in_unicode_range());
+    let sym = Keysym(0x31);
+    assert!(sym.is_not_in_unicode_range());
+}
+
+#[test]
+fn is_well_known() {
+    assert!(syms::kana_A.is_well_known());
+    assert!(Keysym(0x01_ff_ff_ff).is_not_well_known());
+}
+
+#[test]
+fn is_valid() {
+    assert!(syms::kana_A.is_valid());
+    assert!(Keysym(!0).is_invalid());
+    assert!(Keysym(0x01_ff_ff_ff).is_invalid());
+}
+
+#[test]
+fn is_lowercase() {
+    assert!(syms::a.is_lowercase());
+    assert!(!syms::A.is_lowercase());
+    assert!(!Keysym(!0).is_lowercase());
+    assert!(!Keysym(0x01_ff_ff_ff).is_lowercase());
+}
+
+#[test]
+fn is_uppercase() {
+    assert!(syms::A.is_uppercase());
+    assert!(!syms::a.is_uppercase());
+    assert!(!Keysym(!0).is_uppercase());
+    assert!(!Keysym(0x01_ff_ff_ff).is_uppercase());
+}
