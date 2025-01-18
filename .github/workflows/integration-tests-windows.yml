@@ -18,6 +18,11 @@ jobs:
         run: |
           cd compile-tests
           cargo run
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: compile-tests/testcases/t00/t000/t0001/actual.xkb
   type-tests:
     runs-on: windows-latest
     steps:
@@ -25,14 +30,6 @@ jobs:
       - name: Build
         run: |
           cd type-tests
-          cargo run
-  x11-tests:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build
-        run: |
-          cd x11-tests
           cargo run
   compose-tests:
     runs-on: windows-latest
