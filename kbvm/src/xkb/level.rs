@@ -2,6 +2,8 @@
 pub(crate) struct Level(u32);
 
 impl Level {
+    pub(crate) const ONE: Self = Self::new(1).unwrap();
+
     pub(crate) const fn new(level: u32) -> Option<Level> {
         if level < 1 {
             return None;

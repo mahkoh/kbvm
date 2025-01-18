@@ -236,3 +236,51 @@ fn is_uppercase() {
     assert!(!Keysym(!0).is_uppercase());
     assert!(!Keysym(0x01_ff_ff_ff).is_uppercase());
 }
+
+#[test]
+fn very_long_name() {
+    let name = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+    assert!(Keysym::from_str(name).is_none());
+    assert!(Keysym::from_str_insensitive(name).is_none());
+}
+
+#[test]
+fn early_unicode() {
+    let name = "U55";
+    assert_eq!(Keysym::from_str(name), Some(Keysym(0x55)));
+}
+
+#[test]
+fn invalid_unicode() {
+    let name = "UAAX";
+    assert_eq!(Keysym::from_str(name), None);
+}
+
+#[test]
+fn xf86_case_insensitive() {
+    let name = "xf86_10cHANNELSdOWN";
+    assert_eq!(
+        Keysym::from_str_insensitive(name),
+        Some(syms::XF8610ChannelsDown)
+    );
+}
+
+#[test]
+fn parse() {
+    let name = "XF8610ChannelsDown";
+    let keysym = name.parse::<Keysym>();
+    assert_eq!(keysym.ok(), Some(syms::XF8610ChannelsDown));
+}
+
+#[test]
+fn debug_invalid() {
+    let s = format!("{:?}", Keysym(0xff_ff_ff_ff));
+    assert_eq!(s, "0xffffffff");
+}
+
+#[test]
+fn display() {
+    assert_eq!(syms::kana_A.to_string(), "kana_A");
+    assert_eq!(Keysym::from_char('語').to_string(), "U8a9e");
+    assert_eq!(Keysym(0xff_ff_ff_ff).to_string(), "0xffffffff");
+}

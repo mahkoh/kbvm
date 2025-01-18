@@ -1,0 +1,52 @@
+both a
+    key_down(a)
+    sym = kana_A, char = 'ア'
+    key_up(a)
+both 2
+    key_down(2)
+    sym = kana_A, char = 'ア'
+    key_up(2)
+both 3
+    key_down(3)
+    sym = kana_A, char = 'ア'
+    key_up(3)
+both 7
+    key_down(7)
+    sym = kana_A, char = 'ア'
+    key_up(7)
+both 8
+    key_down(8)
+    sym = kana_A, char = 'ア'
+    key_up(8)
+both slash
+    key_down(slash)
+    sym = kana_A, char = 'ア'
+    key_up(slash)
+down leftctrl
+    key_down(leftctrl)
+    mods_pressed = 0x00000004
+    mods_effective = 0x00000004
+both a
+    key_down(a)
+    sym = a, char = '\u{1}'
+    key_up(a)
+both 2
+    key_down(2)
+    sym = 2, char = '\0'
+    key_up(2)
+both 3
+    key_down(3)
+    sym = 3, char = '\u{18}'
+    key_up(3)
+both 7
+    key_down(7)
+    sym = 7, char = '\u{1c}'
+    key_up(7)
+both 8
+    key_down(8)
+    sym = 8, char = '\u{7f}'
+    key_up(8)
+both slash
+    key_down(slash)
+    sym = slash, char = '\u{1f}'
+    key_up(slash)

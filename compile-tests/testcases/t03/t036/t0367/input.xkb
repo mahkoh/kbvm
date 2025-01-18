@@ -1,0 +1,47 @@
+xkb_Keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+        <c> = 3;
+        <d> = 4;
+        <e> = 5;
+    };
+    xkb_types {
+        virtual_modifiers V = Mod2;
+        virtual_modifiers W = 0x80000000;
+
+        type "A" {
+            modifiers = Shift + Mod2;
+            map[Mod2] = Level2;
+            preserve[Shift] = Shift;
+        };
+        type "B" {
+            modifiers = Shift + Mod2 + V;
+            map[Mod2] = Level2;
+            preserve[V] = V;
+        };
+        type "C" {
+            modifiers = Shift + Mod2 + V;
+            preserve[V] = V;
+            map[Mod2] = Level2;
+        };
+        type "D" {
+            modifiers = Shift + Mod2 + V;
+            map[V] = Level3;
+            preserve[V] = V;
+            map[Mod2] = Level2;
+        };
+        type "E" {
+            modifiers = Shift + Mod2 + V;
+            preserve[W] = W;
+            map[Mod2] = Level2;
+        };
+    };
+    xkb_symbols {
+        key <a> { type = "A", [ a ] };
+        key <b> { type = "B", [ a ] };
+        key <c> { type = "C", [ a ] };
+        key <d> { type = "D", [ a ] };
+        key <e> { type = "E", [ a ] };
+    };
+};

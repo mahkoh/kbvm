@@ -1,0 +1,80 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 1;
+        <b> = 2;
+        <c> = 3;
+        <d> = 4;
+        <e> = 5;
+    };
+
+    xkb_types {
+        virtual_modifiers V = Mod2;
+        virtual_modifiers W = 0x80000000;
+
+        type "A" {
+            modifiers = Shift+Mod2;
+            map[Shift] = Level1;
+            preserve[Shift] = Shift;
+            map[Mod2] = Level2;
+        };
+
+        type "B" {
+            modifiers = Shift+Mod2;
+            map[Mod2] = Level2;
+        };
+
+        type "C" {
+            modifiers = Shift+Mod2;
+            map[Mod2] = Level2;
+        };
+
+        type "D" {
+            modifiers = Shift+Mod2;
+            map[Mod2] = Level3;
+            preserve[Mod2] = Mod2;
+        };
+
+        type "E" {
+            modifiers = Shift+Mod2;
+            map[0x80000000] = Level1;
+            preserve[0x80000000] = 0x80000000;
+            map[Mod2] = Level2;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        key.repeat = true;
+
+        key <a> {
+            type[Group1] = "A",
+            symbols[Group1] = [ a ]
+        };
+        key <b> {
+            type[Group1] = "B",
+            symbols[Group1] = [ a ]
+        };
+        key <c> {
+            type[Group1] = "C",
+            symbols[Group1] = [ a ]
+        };
+        key <d> {
+            type[Group1] = "D",
+            symbols[Group1] = [ a ]
+        };
+        key <e> {
+            type[Group1] = "E",
+            symbols[Group1] = [ a ]
+        };
+    };
+};

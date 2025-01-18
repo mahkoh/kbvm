@@ -44,8 +44,14 @@ fn test() {
     assert_eq!(i64::from_bytes_hex(b"g"), None);
     assert_eq!(u32::from_bytes_dec(b"a"), None);
     assert_eq!(i64::from_bytes_dec(b"a"), None);
-    assert_eq!(u32::from_bytes_hex(b"000000000000000000000000000000001"), Some(1));
+    assert_eq!(
+        u32::from_bytes_hex(b"000000000000000000000000000000001"),
+        Some(1)
+    );
     assert_eq!(u32::from_bytes_hex(b""), None);
-    assert_eq!(i64::from_bytes_hex(b"000000000000000000000000000000001"), Some(1));
+    assert_eq!(
+        i64::from_bytes_hex(b"000000000000000000000000000000001"),
+        Some(1)
+    );
     assert_eq!(i64::from_bytes_hex(b""), None);
 }

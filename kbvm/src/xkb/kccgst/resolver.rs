@@ -25,6 +25,7 @@ use {
                 },
                 MergeMode,
             },
+            level::Level,
             meaning::{Meaning, MeaningCache},
             modmap::Vmodmap,
             resolved::{
@@ -456,6 +457,11 @@ fn fix_combined_properties(
         }
         let mut new_map = IndexMap::with_hasher(DefaultHashBuilder::default());
         let mut new_preserved = IndexMap::with_hasher(DefaultHashBuilder::default());
+        for (mask, val) in &ty.preserved {
+            if let indexmap::map::Entry::Vacant(v) = ty.map.entry(*mask) {
+                v.insert(Level::ONE.spanned2(val.span));
+            }
+        }
         for (mask, val) in &ty.map {
             let Ok(effective) = mods.try_get_effective(*mask) else {
                 continue;

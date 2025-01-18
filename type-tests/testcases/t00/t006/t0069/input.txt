@@ -1,0 +1,12 @@
+both a
+both b
+down leftshift
+both a
+both b
+up leftshift
+both capslock
+both a
+both b
+down leftshift
+both a
+both b
