@@ -11,3 +11,4 @@ error_reporter = "1.0.0"
 isnt = "0.1.0"
 serde = { version = "1.0.216", features = ["derive"] }
 toml = "0.8.19"
+bstr = "1.11.3"
