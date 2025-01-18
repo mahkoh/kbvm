@@ -737,7 +737,7 @@ fn eval_mods_(
                     v.val.0 &= 0xff;
                 }
                 v.val.spanned2(expr.span)
-            })
+            });
         }
         Expr::Path(p) => p
             .unique_ident()
