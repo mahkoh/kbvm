@@ -1,6 +1,7 @@
-use crate::Keycode;
-use crate::xkb::Context;
-use crate::xkb::diagnostic::WriteToStderr;
+use crate::{
+    xkb::{diagnostic::WriteToStderr, Context},
+    Keycode,
+};
 
 #[test]
 fn absolute_path() {
@@ -19,12 +20,17 @@ fn absolute_path() {
             "#
         };
     }
-    let path = format!("{}/src/xkb/code_loader/symbols.xkb", env!("CARGO_MANIFEST_DIR"));
+    let path = format!(
+        "{}/src/xkb/code_loader/symbols.xkb",
+        env!("CARGO_MANIFEST_DIR")
+    );
     let map = format!(map!(), path);
     let mut context = Context::builder();
     context.clear();
     let context = context.build();
-    let keymap = context.keymap_from_bytes(WriteToStderr, None, &map).unwrap();
+    let keymap = context
+        .keymap_from_bytes(WriteToStderr, None, &map)
+        .unwrap();
     assert!(keymap.keys.contains_key(&Keycode::from_x11(1)));
     assert!(!keymap.keys.contains_key(&Keycode::from_x11(2)));
 }

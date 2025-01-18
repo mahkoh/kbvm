@@ -46,6 +46,8 @@ pub(crate) enum ParserError {
         .0.slice.as_bytes().as_bstr(),
     )]
     InvalidU32(InvalidU32),
+    #[error("reached maximum runtime")]
+    MaxRuntimeReached,
 }
 
 impl ParserError {
@@ -56,6 +58,7 @@ impl ParserError {
             ParserError::UnexpectedDeclCandidate(_) => DiagnosticKind::UnexpectedDeclaration,
             ParserError::UnexpectedToken(_) => DiagnosticKind::UnexpectedToken,
             ParserError::InvalidU32(_) => DiagnosticKind::U32Overflow,
+            ParserError::MaxRuntimeReached => DiagnosticKind::MaxRuntimeReached,
         }
     }
 }

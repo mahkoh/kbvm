@@ -139,6 +139,8 @@ fn default_limits() {
     let c = context.build();
     assert_eq!(c.max_includes, 1024);
     assert_eq!(c.max_include_depth, 128);
+    assert_eq!(c.max_runtime, 500_000);
+    assert_eq!(c.max_compose_rules, 50_000);
 }
 
 #[test]
@@ -147,7 +149,11 @@ fn custom_limits() {
     context.clear();
     context.max_includes(123);
     context.max_include_depth(456);
+    context.max_runtime(789);
+    context.max_compose_rules(12);
     let c = context.build();
     assert_eq!(c.max_includes, 123);
     assert_eq!(c.max_include_depth, 456);
+    assert_eq!(c.max_runtime, 789);
+    assert_eq!(c.max_compose_rules, 12);
 }

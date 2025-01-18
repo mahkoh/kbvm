@@ -28,6 +28,7 @@ fn test() {
         let span = map.add(None, None, &code);
         interner.intern(&code.to_slice()).spanned2(span)
     };
+    let mut remaining_runtime = u64::MAX;
     let rules = intern("evdev");
     let groups = [
         Group {
@@ -52,6 +53,7 @@ fn test() {
         &mut loader,
         &mut DiagnosticSink::new(&mut diag),
         &mut meaning_cache,
+        &mut remaining_runtime,
         rules,
         model,
         &options,

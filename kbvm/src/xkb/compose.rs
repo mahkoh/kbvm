@@ -216,6 +216,7 @@ impl ComposeTableBuilder<'_> {
         let mut lexers = vec![(None, lexer)];
         let mut processed_includes = 0;
         let mut current_includes = HashSet::new();
+        let mut processed_statements = 0;
         macro_rules! pop {
             () => {
                 if let Some((Some(path), _)) = lexers.pop() {
@@ -252,8 +253,26 @@ impl ComposeTableBuilder<'_> {
                     continue;
                 }
             };
+            if processed_statements >= self.context.max_runtime {
+                diagnostics.push(
+                    &mut map,
+                    DiagnosticKind::MaxRuntimeReached,
+                    ad_hoc_display!("maximum number of statements reached").spanned2(line.span),
+                );
+                break;
+            }
+            processed_statements += 1;
             let include = match line.val {
                 Line::Production(p) => {
+                    if productions.len() as u64 >= self.context.max_compose_rules {
+                        diagnostics.push(
+                            &mut map,
+                            DiagnosticKind::MaxComposeRulesReached,
+                            ad_hoc_display!("maximum number of compose rules reached")
+                                .spanned2(line.span),
+                        );
+                        break;
+                    }
                     productions.push(p.spanned2(line.span));
                     continue;
                 }

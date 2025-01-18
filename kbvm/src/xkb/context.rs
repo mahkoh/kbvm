@@ -94,6 +94,9 @@ pub struct Context {
     pub(crate) paths: Vec<Arc<PathBuf>>,
     pub(crate) max_includes: u64,
     pub(crate) max_include_depth: u64,
+    pub(crate) max_runtime: u64,
+    #[cfg_attr(not(feature = "compose"), allow(dead_code))]
+    pub(crate) max_compose_rules: u64,
     #[cfg_attr(not(feature = "registry"), allow(dead_code))]
     pub(crate) load_extra_rules: bool,
     pub(crate) env: Environment,
@@ -127,6 +130,8 @@ pub struct ContextBuilder {
     load_extra_rules: bool,
     max_includes: u64,
     max_include_depth: u64,
+    max_runtime: u64,
+    max_compose_rules: u64,
     prefix: Vec<PathBuf>,
     suffix: Vec<PathBuf>,
     environment_accessor: Option<EnvironmentAccessor>,
@@ -140,6 +145,8 @@ impl Default for ContextBuilder {
             load_extra_rules: false,
             max_includes: 1024,
             max_include_depth: 128,
+            max_runtime: 500_000,
+            max_compose_rules: 100_000,
             prefix: vec![],
             suffix: vec![],
             environment_accessor: None,
@@ -246,6 +253,24 @@ impl ContextBuilder {
         self.max_include_depth = val;
     }
 
+    /// Sets the maximum runtime of the parsing process.
+    ///
+    /// The default is `500_000`.
+    ///
+    /// This value has no unit and does not correspond to CPU or wall time. It limits how
+    /// much work is performed by a single method call of the context but how it does this
+    /// is unspecified.
+    pub fn max_runtime(&mut self, val: u64) {
+        self.max_runtime = val;
+    }
+
+    /// Sets the maximum number of compose rules.
+    ///
+    /// The default is `100_000`.
+    pub fn max_compose_rules(&mut self, val: u64) {
+        self.max_compose_rules = val;
+    }
+
     /// Removes all paths from the builder, disables the environment, and disables the
     /// system paths.
     pub fn clear(&mut self) {
@@ -318,6 +343,8 @@ impl ContextBuilder {
             paths,
             max_includes: self.max_includes,
             max_include_depth: self.max_include_depth,
+            max_runtime: self.max_runtime,
+            max_compose_rules: self.max_compose_rules,
             load_extra_rules: self.load_extra_rules,
             env: Environment {
                 home,
@@ -398,12 +425,14 @@ impl Context {
         let mut ast_cache = AstCache::default();
         let mut loader = CodeLoader::new(&self.paths);
         let mut meaning_cache = MeaningCache::default();
+        let mut remaining_runtime = self.max_runtime;
         let mut item = self.handle_rmlvo(
             diagnostics,
             &mut map,
             &mut interner,
             &mut loader,
             &mut meaning_cache,
+            &mut remaining_runtime,
             rules,
             model,
             groups,
@@ -417,6 +446,7 @@ impl Context {
             &mut loader,
             &mut interner,
             &mut meaning_cache,
+            &mut remaining_runtime,
             &mut cooker,
             &mut item,
         )
@@ -507,12 +537,14 @@ impl Context {
         let mut interner = Interner::default();
         let mut loader = CodeLoader::new(&self.paths);
         let mut meaning_cache = MeaningCache::default();
+        let mut remaining_runtime = self.max_runtime;
         let includes = self.handle_rmlvo(
             diagnostics,
             &mut map,
             &mut interner,
             &mut loader,
             &mut meaning_cache,
+            &mut remaining_runtime,
             rules,
             model,
             groups,
@@ -548,6 +580,7 @@ impl Context {
         interner: &mut Interner,
         loader: &mut CodeLoader,
         meaning_cache: &mut MeaningCache,
+        remaining_runtime: &mut u64,
         rules: Option<&str>,
         model: Option<&str>,
         groups: Option<&[rmlvo::Group<'_>]>,
@@ -558,6 +591,7 @@ impl Context {
             &mut CodeLoader,
             &mut DiagnosticSink,
             &mut MeaningCache,
+            &mut u64,
             Spanned<Interned>,
             Option<Interned>,
             &[Interned],
@@ -620,6 +654,7 @@ impl Context {
             loader,
             diagnostics,
             meaning_cache,
+            remaining_runtime,
             rules,
             model,
             &options,
@@ -630,6 +665,9 @@ impl Context {
     }
 
     /// Creates a keymap from an existing XKB map.
+    ///
+    /// If the buffer contains more than one keymap, then all but the first one are
+    /// ignored.
     ///
     /// # Security
     ///
@@ -765,6 +803,7 @@ impl Context {
                 ad_hoc_display!("keymap is empty").spanned2(span),
             ));
         }
+        let mut remaining_runtime = self.max_runtime;
         let parsed = parse_item(
             &mut map,
             diagnostics,
@@ -772,6 +811,7 @@ impl Context {
             &mut meaning_cache,
             &tokens,
             0,
+            &mut remaining_runtime,
         );
         tokens.clear();
         let mut parsed = match parsed {
@@ -787,6 +827,7 @@ impl Context {
             &mut loader,
             &mut interner,
             &mut meaning_cache,
+            &mut remaining_runtime,
             &mut cooker,
             &mut parsed.val,
         ))
@@ -801,6 +842,7 @@ impl Context {
         loader: &mut CodeLoader,
         interner: &mut Interner,
         meaning_cache: &mut MeaningCache,
+        remaining_runtime: &mut u64,
         cooker: &mut StringCooker,
         item: &mut Item,
     ) -> Keymap {
@@ -811,6 +853,7 @@ impl Context {
             loader,
             interner,
             meaning_cache,
+            remaining_runtime,
             item,
             self.max_includes,
             self.max_include_depth,

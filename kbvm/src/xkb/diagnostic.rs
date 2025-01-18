@@ -1701,6 +1701,12 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     ComposeRuleWithoutConditions,
+    /// The maximum runtime has been reached. Further code.
+    #[severity = Error]
+    MaxRuntimeReached,
+    /// The maximum number of compose rules has been reached. Further rules are ignored.
+    #[severity = Error]
+    MaxComposeRulesReached,
 }
 
 impl DiagnosticKind {

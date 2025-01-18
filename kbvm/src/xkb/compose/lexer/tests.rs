@@ -136,9 +136,9 @@ fn stringstring() {
 #[test]
 fn escapes() {
     let mut interner = Interner::default();
-    let abc = i(&mut interner, "a\"Mc\u{7f}");
+    let abc = i(&mut interner, "a\"MMc\u{7f}");
     let input = r#"
-        "a\"\x4dc\177"
+        "a\"\x4D\x4dc\177"
     "#;
     assert_eq!(l(&mut interner, input), [Token::String(abc)]);
 }

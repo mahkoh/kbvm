@@ -50,6 +50,7 @@ pub(crate) fn create_item(
     loader: &mut CodeLoader,
     diagnostics: &mut DiagnosticSink,
     meaning_cache: &mut MeaningCache,
+    remaining_runtime: &mut u64,
     rules: Spanned<Interned>,
     model: Option<Interned>,
     options: &[Interned],
@@ -63,6 +64,7 @@ pub(crate) fn create_item(
         loader,
         diagnostics,
         meaning_cache,
+        remaining_runtime,
         rules,
         model,
         options,
@@ -133,6 +135,7 @@ pub(crate) fn create_includes(
     loader: &mut CodeLoader,
     diagnostics: &mut DiagnosticSink,
     meaning_cache: &mut MeaningCache,
+    remaining_runtime: &mut u64,
     rules: Spanned<Interned>,
     model: Option<Interned>,
     options: &[Interned],
@@ -197,6 +200,15 @@ pub(crate) fn create_includes(
                 continue;
             }
         };
+        if *remaining_runtime == 0 {
+            diagnostics.push(
+                map,
+                DiagnosticKind::MaxRuntimeReached,
+                ad_hoc_display!("maximum number of statements reached").spanned2(line.span),
+            );
+            break;
+        }
+        *remaining_runtime -= 1;
         match line.val {
             Line::Macro(n, v) => {
                 macros.insert(n, v.to_vec());

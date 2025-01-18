@@ -56,6 +56,7 @@ struct Parser<'a, 'b, 'c> {
     pos: usize,
     diagnostic_delta: u64,
     expr_depth: usize,
+    remaining_runtime: &'a mut u64,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -108,8 +109,9 @@ pub(crate) fn snoop_ty_and_name(
         pos: 0,
         diagnostic_delta: 0,
         expr_depth: 0,
+        remaining_runtime: &mut { u64::MAX },
     };
-    let flags = parser.parse_flags();
+    let flags = parser.parse_flags()?;
     let default = flags
         .flags
         .iter()
@@ -149,6 +151,7 @@ pub(crate) fn parse_item(
     meaning_cache: &mut MeaningCache,
     tokens: &[Spanned<Token>],
     diagnostic_delta: u64,
+    remaining_runtime: &mut u64,
 ) -> Result<Spanned<Item>, Spanned<ParserError>> {
     Parser {
         diag: Some(Diag { map, diagnostics }),
@@ -158,6 +161,7 @@ pub(crate) fn parse_item(
         pos: 0,
         diagnostic_delta,
         expr_depth: 0,
+        remaining_runtime,
     }
     .parse_item()
 }
@@ -193,8 +197,16 @@ impl Parser<'_, '_, '_> {
         Ok(self.tokens[self.pos])
     }
 
+    fn consume_runtime(&mut self, span: Span) -> Result<(), Spanned<ParserError>> {
+        if *self.remaining_runtime == 0 {
+            return Err(ParserError::MaxRuntimeReached.spanned2(span));
+        }
+        *self.remaining_runtime -= 1;
+        Ok(())
+    }
+
     fn parse_item(&mut self) -> Result<Spanned<Item>, Spanned<ParserError>> {
-        let flags = self.parse_flags();
+        let flags = self.parse_flags()?;
         let i = self.parse_ident()?;
         let meaning = self
             .meaning_cache
@@ -229,7 +241,11 @@ impl Parser<'_, '_, '_> {
             None => i.span.lo,
         };
         let item = Item { flags, ty: map.val };
-        Ok(item.spanned(lo, map.span.hi))
+        let span = Span {
+            lo,
+            hi: map.span.hi,
+        };
+        Ok(item.spanned2(span))
     }
 
     fn parse_config_item_type(
@@ -298,7 +314,7 @@ impl Parser<'_, '_, '_> {
     }
 
     fn parse_map_config(&mut self) -> Result<Spanned<NestedConfigItem>, Spanned<ParserError>> {
-        let flags = self.parse_flags();
+        let flags = self.parse_flags()?;
         let ty = self.parse_ident()?;
         let meaning = self
             .meaning_cache
@@ -518,7 +534,7 @@ impl Parser<'_, '_, '_> {
         Ok((map_name, t.span))
     }
 
-    fn parse_flags(&mut self) -> Flags {
+    fn parse_flags(&mut self) -> Result<Flags, Spanned<ParserError>> {
         let mut flags = vec![];
         while let Some(t) = self.try_peek() {
             let Token::Ident(i) = t.val else {
@@ -542,13 +558,14 @@ impl Parser<'_, '_, '_> {
                 FunctionKeys,
                 AlternateGroup,
             };
+            self.consume_runtime(t.span)?;
             flags.push(FlagWrapper {
                 name: i.spanned2(t.span),
                 flag,
             });
             self.pos += 1;
         }
-        Flags { flags }
+        Ok(Flags { flags })
     }
 
     fn parse_interpret_decl(
@@ -1032,8 +1049,8 @@ impl Parser<'_, '_, '_> {
         lo: u64,
         terminator: Punctuation,
         expected: &'static [Expected],
-        mut f: impl FnMut(&mut Self) -> Result<E, Spanned<ParserError>>,
-    ) -> Result<Spanned<Vec<E>>, Spanned<ParserError>> {
+        mut f: impl FnMut(&mut Self) -> Result<Spanned<E>, Spanned<ParserError>>,
+    ) -> Result<Spanned<Vec<Spanned<E>>>, Spanned<ParserError>> {
         let mut res = vec![];
         loop {
             if self.peek(expected)?.val == Token::Punctuation(terminator) {
@@ -1043,10 +1060,12 @@ impl Parser<'_, '_, '_> {
             let err = match f(self) {
                 Err(e) => e,
                 Ok(l) => {
+                    self.consume_runtime(l.span)?;
                     res.push(l);
                     continue;
                 }
             };
+            self.consume_runtime(err.span)?;
             let Some(diag) = &mut self.diag else {
                 return Err(err);
             };
@@ -1075,8 +1094,8 @@ impl Parser<'_, '_, '_> {
         terminator: Punctuation,
         expected: &'static [Expected],
         terminator_plus_comma: &'static [Expected],
-        mut f: impl FnMut(&mut Self) -> Result<T, Spanned<ParserError>>,
-    ) -> Result<Spanned<Vec<T>>, Spanned<ParserError>> {
+        mut f: impl FnMut(&mut Self) -> Result<Spanned<T>, Spanned<ParserError>>,
+    ) -> Result<Spanned<Vec<Spanned<T>>>, Spanned<ParserError>> {
         let mut res = vec![];
         let mut consume_comma = false;
         loop {
@@ -1097,7 +1116,9 @@ impl Parser<'_, '_, '_> {
                     return Err(self.unexpected_token(expected, t));
                 }
             }
-            res.push(f(self)?);
+            let v = f(self)?;
+            self.consume_runtime(v.span)?;
+            res.push(v);
             consume_comma = true;
         }
         let hi = self.consume_token(terminator)?.hi;
@@ -1252,6 +1273,7 @@ impl Parser<'_, '_, '_> {
             }
             self.pos += 1;
             let last = self.parse_path_component(None)?;
+            self.consume_runtime(last.span)?;
             span.hi = last.span.hi;
             components.push(last.val);
         }
@@ -1357,6 +1379,7 @@ impl Parser<'_, '_, '_> {
             };
             self.pos += 1;
             let rhs = self.parse_mul_div_expr(EXPR_TOKENS)?;
+            self.consume_runtime(rhs.span)?;
             let span = Span {
                 lo: lhs.span.lo,
                 hi: rhs.span.hi,
@@ -1383,6 +1406,7 @@ impl Parser<'_, '_, '_> {
             };
             self.pos += 1;
             let rhs = self.parse_term_expr(EXPR_TOKENS)?;
+            self.consume_runtime(t.span)?;
             let span = Span {
                 lo: lhs.span.lo,
                 hi: rhs.span.hi,

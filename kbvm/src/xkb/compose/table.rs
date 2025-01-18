@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 #[allow(unused_imports)]
 use crate::{syms, xkb::Context};
 use {

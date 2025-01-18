@@ -72,6 +72,7 @@ impl AstCache {
         loader: &mut CodeLoader,
         interner: &mut Interner,
         meaning_cache: &mut MeaningCache,
+        remaining_runtime: &mut u64,
         ty: CodeType,
         file: Interned,
         file_map: Option<Interned>,
@@ -128,7 +129,15 @@ impl AstCache {
                 TokensOrItem::Invalid => {}
                 TokensOrItem::Item(item) => return Ok(item.clone_with_delta(delta)),
                 TokensOrItem::Tokens(t) => {
-                    match parse_item(map, diagnostics, interner, meaning_cache, t, delta) {
+                    match parse_item(
+                        map,
+                        diagnostics,
+                        interner,
+                        meaning_cache,
+                        t,
+                        delta,
+                        remaining_runtime,
+                    ) {
                         Ok(item) => {
                             let ret = item.clone_with_delta(delta);
                             entry.tokens_or_item = TokensOrItem::Item(item);
