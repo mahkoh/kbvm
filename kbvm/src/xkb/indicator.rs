@@ -4,7 +4,7 @@ use kbvm_proc::CloneWithDelta;
 pub(crate) struct IndicatorIdx(u32);
 
 impl IndicatorIdx {
-    pub const ONE: Self = Self::new(1).unwrap();
+    pub(crate) const ONE: Self = Self::new(1).unwrap();
 
     pub(crate) const fn new(idx: u32) -> Option<Self> {
         if idx < 1 || idx > u32::BITS {

@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests;
 
-pub trait FromBytes: Sized {
+pub(crate) trait FromBytes: Sized {
     fn from_bytes_dec(b: &[u8]) -> Option<Self>;
 
     fn from_bytes_hex(b: &[u8]) -> Option<Self>;

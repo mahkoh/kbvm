@@ -1992,8 +1992,8 @@ impl Diagnostic {
     }
 
     /// Returns the source location of this diagnostic message.
-    pub fn location(&self) -> &DiagnosticLocation {
-        &self.location
+    pub fn location(&self) -> Option<&DiagnosticLocation> {
+        Some(&self.location)
     }
 }
 

@@ -29,7 +29,7 @@ use {
 };
 
 #[derive(Default)]
-pub struct ParserCache {
+pub(crate) struct ParserCache {
     group_assignments: Vec<Interned>,
     mapping_keys: Vec<MappingKey>,
     mapping_values: Vec<MappingValue>,

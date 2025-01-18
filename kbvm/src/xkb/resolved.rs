@@ -309,7 +309,7 @@ pub(crate) struct ResolvedGroupLock {
 }
 
 impl GroupsRedirect {
-    pub fn to_redirect(self) -> Redirect {
+    pub(crate) fn to_redirect(self) -> Redirect {
         match self {
             GroupsRedirect::Wrap => Redirect::Wrap,
             GroupsRedirect::Clamp => Redirect::Clamp,

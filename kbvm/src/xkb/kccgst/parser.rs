@@ -94,7 +94,7 @@ macro_rules! parse_inline_list {
     };
 }
 
-pub type TyAndName = (Option<Span>, Spanned<CodeType>, Option<Spanned<Interned>>);
+pub(crate) type TyAndName = (Option<Span>, Spanned<CodeType>, Option<Spanned<Interned>>);
 
 pub(crate) fn snoop_ty_and_name(
     tokens: &[Spanned<Token>],

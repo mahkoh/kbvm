@@ -7,7 +7,7 @@ pub(crate) mod ast_cache;
 pub(crate) mod embedder;
 mod expr;
 #[cfg(test)]
-pub mod formatter;
+pub(crate) mod formatter;
 pub(crate) mod includer;
 pub(crate) mod lexer;
 pub(crate) mod parser;
