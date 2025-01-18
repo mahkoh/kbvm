@@ -144,8 +144,6 @@ fn test_kccgst(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(),
     };
 
     if Some(map.as_bytes()) != expected.as_deref().ok() {
-        println!("{:?}", map);
-        println!("{:?}", expected.as_ref().unwrap().as_bstr());
         let actual = match WRITE_FAILED {
             true => "expected.xkb",
             false => "actual.xkb",
