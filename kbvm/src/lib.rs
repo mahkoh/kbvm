@@ -88,9 +88,9 @@ pub use {
     components::Components,
     group::{GroupDelta, GroupIndex},
     group_type::hidden::GroupType,
+    keycode::Keycode,
     keysym::hidden::Keysym,
     modifier::hidden::{ModifierIndex, ModifierMask},
-    state_machine::hidden::Keycode,
 };
 
 pub mod builder;
@@ -100,6 +100,7 @@ pub mod evdev;
 mod from_bytes;
 mod group;
 pub mod group_type;
+mod keycode;
 pub mod keysym;
 pub mod lookup;
 pub mod modifier;

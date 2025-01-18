@@ -1,0 +1,93 @@
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+both x
+    key_down(x)
+    mods_pressed = 0x0000007f
+    mods_effective = 0x0000007f
+    key_up(x)
+    mods_pressed = 0x00000000
+    mods_latched = 0x0000007f
+both a
+    key_down(a)
+    sym = b, char = 'b'
+    mods_latched = 0x00000000
+    mods_effective = 0x00000000
+    key_up(a)
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+both x
+    key_down(x)
+    mods_pressed = 0x0000007f
+    mods_effective = 0x0000007f
+    key_up(x)
+    mods_pressed = 0x00000000
+    mods_latched = 0x0000007f
+both x
+    key_down(x)
+    mods_pressed = 0x0000007f
+    key_up(x)
+    mods_pressed = 0x00000000
+    mods_latched = 0x00000000
+    mods_locked = 0x0000007f
+both a
+    key_down(a)
+    sym = b, char = 'b'
+    key_up(a)
+both x
+    key_down(x)
+    mods_pressed = 0x0000007f
+    key_up(x)
+    mods_pressed = 0x00000000
+    mods_locked = 0x00000000
+    mods_effective = 0x00000000
+
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+both y
+    key_down(y)
+    mods_pressed = 0x000000ff
+    mods_effective = 0x000000ff
+    key_up(y)
+    mods_pressed = 0x00000000
+    mods_latched = 0x000000ff
+both a
+    key_down(a)
+    sym = c, char = 'c'
+    mods_latched = 0x00000000
+    mods_effective = 0x00000000
+    key_up(a)
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+both y
+    key_down(y)
+    mods_pressed = 0x000000ff
+    mods_effective = 0x000000ff
+    key_up(y)
+    mods_pressed = 0x00000000
+    mods_latched = 0x000000ff
+both y
+    key_down(y)
+    mods_pressed = 0x000000ff
+    key_up(y)
+    mods_pressed = 0x00000000
+    mods_latched = 0x00000000
+    mods_locked = 0x000000ff
+both a
+    key_down(a)
+    sym = c, char = 'c'
+    key_up(a)
+both y
+    key_down(y)
+    mods_pressed = 0x000000ff
+    key_up(y)
+    mods_pressed = 0x00000000
+    mods_locked = 0x00000000
+    mods_effective = 0x00000000

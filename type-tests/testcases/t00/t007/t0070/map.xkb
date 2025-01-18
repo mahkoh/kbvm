@@ -1,0 +1,42 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_types {
+        type "A" {
+            modifiers = 0xff;
+            map[0x7f] = Level2;
+            map[0xff] = Level3;
+        };
+    };
+    xkb_symbols {
+        key <x> {
+            [
+                {
+                    LatchMods(mods = 0x01, latchToLock, clearLocks),
+                    LatchMods(mods = 0x02, latchToLock, clearLocks),
+                    LatchMods(mods = 0x04, latchToLock, clearLocks),
+                    LatchMods(mods = 0x08, latchToLock, clearLocks),
+                    LatchMods(mods = 0x10, latchToLock, clearLocks),
+                    LatchMods(mods = 0x20, latchToLock, clearLocks),
+                    LatchMods(mods = 0x40, latchToLock, clearLocks),
+                },
+            ],
+        };
+        key <y> {
+            [
+                {
+                    LatchMods(mods = 0x01, latchToLock, clearLocks),
+                    LatchMods(mods = 0x02, latchToLock, clearLocks),
+                    LatchMods(mods = 0x04, latchToLock, clearLocks),
+                    LatchMods(mods = 0x08, latchToLock, clearLocks),
+                    LatchMods(mods = 0x10, latchToLock, clearLocks),
+                    LatchMods(mods = 0x20, latchToLock, clearLocks),
+                    LatchMods(mods = 0x40, latchToLock, clearLocks),
+                    LatchMods(mods = 0x80, latchToLock, clearLocks),
+                },
+            ],
+        };
+        key <a> { type = "A", [ a, b, c ] };
+    };
+};

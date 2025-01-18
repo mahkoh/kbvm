@@ -1,11 +1,25 @@
 use crate::{
     builder::Builder,
     evdev,
-    lookup::Lookup,
+    lookup::{Lookup, LookupTable},
     syms,
     xkb::{diagnostic::WriteToStderr, Context},
     GroupIndex, Keycode, Keysym, ModifierMask,
 };
+
+fn lookup_table(map: &str) -> LookupTable {
+    let mut context = Context::builder();
+    context.clear();
+    context.append_path(&format!(
+        "{}/../type-tests/include",
+        env!("CARGO_MANIFEST_DIR")
+    ));
+    let map = context
+        .build()
+        .keymap_from_bytes(WriteToStderr, None, map)
+        .unwrap();
+    map.to_builder().build_lookup_table()
+}
 
 #[test]
 fn clamp_negative() {
@@ -31,10 +45,7 @@ fn clamp_negative() {
             };
         };
     "#;
-    let map = Context::default()
-        .keymap_from_bytes(WriteToStderr, None, MAP)
-        .unwrap();
-    let lookup = map.to_builder().build_lookup_table();
+    let lookup = lookup_table(MAP);
     let keysym = |kc| {
         lookup
             .lookup(GroupIndex(!0), ModifierMask::NONE, Keycode::from_x11(kc))
@@ -55,17 +66,7 @@ fn create_custom_lookup<A, F>(
 where
     F: for<'a> Fn(Lookup<'a>, A) -> Lookup<'a>,
 {
-    let mut context = Context::builder();
-    context.clear();
-    context.append_path(&format!(
-        "{}/../type-tests/include",
-        env!("CARGO_MANIFEST_DIR")
-    ));
-    let map = context
-        .build()
-        .keymap_from_bytes(WriteToStderr, None, map)
-        .unwrap();
-    let lookup = map.to_builder().build_lookup_table();
+    let lookup = lookup_table(map);
     move |kc, mask, a| {
         let lookup = lookup.lookup(GroupIndex::ZERO, mask, kc);
         let lookup = transform(lookup, a);
@@ -234,17 +235,7 @@ fn remaining_mods() {
             };
         };
     "#;
-    let mut context = Context::builder();
-    context.clear();
-    context.append_path(&format!(
-        "{}/../type-tests/include",
-        env!("CARGO_MANIFEST_DIR")
-    ));
-    let map = context
-        .build()
-        .keymap_from_bytes(WriteToStderr, None, MAP)
-        .unwrap();
-    let lookup = map.to_builder().build_lookup_table();
+    let lookup = lookup_table(MAP);
     let prod = |kc, mask| {
         let lookup = lookup.lookup(GroupIndex::ZERO, mask, kc);
         lookup
@@ -298,7 +289,110 @@ fn remaining_mods() {
         (syms::leftarrow, ModifierMask::CONTROL | ModifierMask::SHIFT),
     );
     assert_eq!(
-        prod(evdev::KP4, ModifierMask::CONTROL | ModifierMask::SHIFT | ModifierMask::MOD2),
+        prod(
+            evdev::KP4,
+            ModifierMask::CONTROL | ModifierMask::SHIFT | ModifierMask::MOD2
+        ),
         (syms::leftarrow, ModifierMask::CONTROL),
     );
+}
+
+#[test]
+fn did_transform() {
+    const MAP: &str = r#"
+        xkb_keymap {
+            xkb_keycodes {
+                include "generated"
+            };
+            xkb_symbols {
+                key <a> { [ a ] };
+                key <b> { [ kana_A ], [ a ] };
+            };
+        };
+    "#;
+    let lookup = lookup_table(MAP);
+    let prod = |kc, mask| {
+        let lookup = lookup.lookup(GroupIndex::ZERO, mask, kc);
+        lookup.into_iter().next().unwrap()
+    };
+    assert!(!prod(evdev::A, ModifierMask::NONE).did_ctrl_fallback());
+    assert!(!prod(evdev::A, ModifierMask::NONE).did_ctrl_transform());
+    assert!(!prod(evdev::A, ModifierMask::NONE).did_caps_transform());
+    assert!(!prod(evdev::A, ModifierMask::LOCK).did_ctrl_fallback());
+    assert!(!prod(evdev::A, ModifierMask::LOCK).did_ctrl_transform());
+    assert!(prod(evdev::A, ModifierMask::LOCK).did_caps_transform());
+    assert!(!prod(evdev::A, ModifierMask::CONTROL).did_ctrl_fallback());
+    assert!(prod(evdev::A, ModifierMask::CONTROL).did_ctrl_transform());
+    assert!(!prod(evdev::A, ModifierMask::CONTROL).did_caps_transform());
+    assert!(prod(evdev::B, ModifierMask::CONTROL).did_ctrl_fallback());
+    assert!(prod(evdev::B, ModifierMask::CONTROL).did_ctrl_transform());
+    assert!(!prod(evdev::B, ModifierMask::CONTROL).did_caps_transform());
+    assert!(prod(evdev::B, ModifierMask::CONTROL | ModifierMask::LOCK).did_ctrl_fallback());
+    assert!(prod(evdev::B, ModifierMask::CONTROL | ModifierMask::LOCK).did_ctrl_transform());
+    assert!(prod(evdev::B, ModifierMask::CONTROL | ModifierMask::LOCK).did_caps_transform());
+}
+
+#[test]
+fn effective_group() {
+    const MAP: &str = r#"
+        xkb_keymap {
+            xkb_keycodes {
+                include "generated"
+            };
+            xkb_symbols {
+                key <a> { [ a ] };
+                key <b> { [ a ], [ b ] };
+                key <c> { groupsClamp, [ a ], [ b ] };
+                key <d> { groupsRedirect = Group2, [ a ], [ b ] };
+                key <e> { };
+            };
+        };
+    "#;
+    let lookup = lookup_table(MAP);
+    let prod = |kc, idx: u32| lookup.effective_group(GroupIndex(idx), kc).map(|g| g.0);
+    assert_eq!(prod(evdev::A, 0), Some(0));
+    assert_eq!(prod(evdev::A, 1), Some(0));
+    assert_eq!(prod(evdev::A, !0), Some(0));
+    assert_eq!(prod(evdev::B, 0), Some(0));
+    assert_eq!(prod(evdev::B, 1), Some(1));
+    assert_eq!(prod(evdev::B, 2), Some(0));
+    assert_eq!(prod(evdev::B, 3), Some(1));
+    assert_eq!(prod(evdev::B, !0), Some(1));
+    assert_eq!(prod(evdev::C, 0), Some(0));
+    assert_eq!(prod(evdev::C, 1), Some(1));
+    assert_eq!(prod(evdev::C, 2), Some(1));
+    assert_eq!(prod(evdev::C, 3), Some(1));
+    assert_eq!(prod(evdev::C, !0), Some(0));
+    assert_eq!(prod(evdev::C, !0 - 1), Some(0));
+    assert_eq!(prod(evdev::D, 0), Some(0));
+    assert_eq!(prod(evdev::D, 1), Some(1));
+    assert_eq!(prod(evdev::D, 2), Some(1));
+    assert_eq!(prod(evdev::D, 3), Some(1));
+    assert_eq!(prod(evdev::D, !0), Some(1));
+    assert_eq!(prod(evdev::D, !0 - 1), Some(1));
+    assert_eq!(prod(evdev::E, 0), None);
+    assert_eq!(prod(evdev::E, 1), None);
+    assert_eq!(prod(evdev::E, 2), None);
+    assert_eq!(prod(evdev::E, 3), None);
+    assert_eq!(prod(evdev::E, !0), None);
+    assert_eq!(prod(evdev::E, !0 - 1), None);
+}
+
+#[test]
+fn repeats() {
+    const MAP: &str = r#"
+        xkb_keymap {
+            xkb_keycodes {
+                include "generated"
+            };
+            xkb_symbols {
+                key <a> { [ a ] };
+                key <b> { repeats = false, [ a ] };
+            };
+        };
+    "#;
+    let lookup = lookup_table(MAP);
+    assert_eq!(lookup.repeats(evdev::A), true);
+    assert_eq!(lookup.repeats(evdev::B), false);
+    assert_eq!(lookup.repeats(evdev::C), true);
 }

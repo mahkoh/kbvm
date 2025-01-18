@@ -1,5 +1,8 @@
 //! Modifier helpers.
 
+#[cfg(test)]
+mod tests;
+
 use {
     crate::modifier::hidden::{ModifierIndex, ModifierMask},
     std::{
