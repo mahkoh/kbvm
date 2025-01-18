@@ -730,7 +730,12 @@ fn eval_mods_(
     let res = match &expr.val {
         Expr::UnInverse(v) => {
             return eval_mods_(v.deref().as_ref(), name_to_mod).map(|mut v| {
+                let only_real = v.val.0 & !0xff == 0;
                 v.val.0 = !v.val.0;
+                if only_real {
+                    // assume that only real modifiers are desired here
+                    v.val.0 &= 0xff;
+                }
                 v.val.spanned2(expr.span)
             })
         }

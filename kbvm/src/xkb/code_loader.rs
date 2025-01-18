@@ -6,7 +6,6 @@ use {
     cfg_if::cfg_if,
     hashbrown::HashMap,
     std::{
-        ffi::OsStr,
         io::{self},
         ops::Range,
         path::{Path, PathBuf},
@@ -77,6 +76,7 @@ impl CodeLoader {
         cfg_if! {
             if #[cfg(unix)] {
                 use std::os::unix::ffi::OsStrExt;
+                use std::ffi::OsStr;
                 let path = Some(Path::new(OsStr::from_bytes(&self.partial_path)));
             } else {
                 let path = match std::str::from_utf8(&self.partial_path) {

@@ -1,4 +1,3 @@
-use bstr::ByteSlice;
 use {
     error_reporter::Report,
     integration_test_utils::run,

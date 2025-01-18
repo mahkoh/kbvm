@@ -63,17 +63,20 @@ impl Vmodmap {
         mask: ModifierMask,
     ) -> Result<ModifierMask, ModifierMask> {
         let mut ok = true;
-        let mut res = mask;
-        res.0 &= 0xff;
+        let mut to_clear = ModifierMask::NONE;
+        let mut to_set = ModifierMask::NONE;
         for m in &self.mods {
-            if mask.contains(m.idx.to_mask()) {
+            let vmod_mask = m.idx.to_mask();
+            if mask.contains(vmod_mask) {
+                to_clear |= vmod_mask;
                 let def = m.def.map(|d| d.val).unwrap_or_default();
-                res |= def;
+                to_set |= def;
                 if def == ModifierMask::NONE {
                     ok = false;
                 }
             }
         }
+        let res = (mask & !to_clear) | to_set;
         ok.then_some(res).ok_or(res)
     }
 }
