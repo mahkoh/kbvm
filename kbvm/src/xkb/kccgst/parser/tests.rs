@@ -86,6 +86,7 @@ fn round_trip() {
                         &mut meaning_cache,
                         tokens,
                         0,
+                        &mut { u64::MAX },
                     );
                     let item = match item {
                         Ok(i) => i,

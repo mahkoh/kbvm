@@ -114,6 +114,7 @@ fn test() {
             &mut meaning_cache,
             &tokens,
             0,
+            &mut { u64::MAX },
         );
         tokens.clear();
         let mut parsed = match parsed {
@@ -130,6 +131,7 @@ fn test() {
             &mut loader,
             &mut interner,
             &mut meaning_cache,
+            &mut { u64::MAX },
             &mut parsed.val,
             1024,
             128,

@@ -140,7 +140,7 @@ fn default_limits() {
     assert_eq!(c.max_includes, 1024);
     assert_eq!(c.max_include_depth, 128);
     assert_eq!(c.max_runtime, 500_000);
-    assert_eq!(c.max_compose_rules, 50_000);
+    assert_eq!(c.max_compose_rules, 100_000);
 }
 
 #[test]
