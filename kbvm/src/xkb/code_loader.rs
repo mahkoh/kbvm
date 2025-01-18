@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 use {
     crate::xkb::{
         code::Code,
