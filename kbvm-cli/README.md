@@ -146,7 +146,7 @@ The `expand-rmlvo` subcommand can be used to expand a list of RMLVO names to an 
 that is not yet self contained.
 
 ```console
-~$ kbvm expand-rmlvo --layout us,de --variant ,neo --options grp:ctrl_space_toggle
+$ kbvm expand-rmlvo --layout us,de --variant ,neo --options grp:ctrl_space_toggle
 xkb_keymap {
     xkb_keycodes {
         override "evdev"
@@ -185,7 +185,7 @@ The `test-wayland` subcommand can be used to test either the keymap sent by the 
 or a completely different keymap without install it.
 
 ```console
-~$ kbvm test-wayland
+$ kbvm test-wayland
 [0279709.670] key down A
 [0279709.670]   sym a 'a'
 [0279709.813] key up   A
@@ -216,7 +216,7 @@ You can use the `--keymap <FILE>` parameter to use a custom keymap instead of th
 configured in your compositor.
 
 ```console
-~$ kbvm expand-rmlvo --layout us,de --variant ,neo --options grp:ctrl_space_toggle | kbvm test-wayland --keymap -
+$ kbvm expand-rmlvo --layout us,de --variant ,neo --options grp:ctrl_space_toggle | kbvm test-wayland --keymap -
 [0279870.220] key down A
 [0279870.220]   sym a 'a'
 [0279870.306] key up   A
