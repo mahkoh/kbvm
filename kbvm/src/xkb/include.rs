@@ -62,7 +62,7 @@ impl Iterator for IncludeIter<'_> {
     type Item = Result<Include, Spanned<ParseIncludeError>>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.pos < self.s.len() && self.s[self.pos].is_ascii_whitespace() {
+        while self.pos < self.s.len() && self.s[self.pos].is_ascii_whitespace() {
             self.pos += 1;
         }
         assert!(self.pos <= self.s.len());

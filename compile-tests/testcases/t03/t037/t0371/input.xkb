@@ -1,0 +1,20 @@
+xkb_keymap {
+    xkb_compat {
+        indicator "A" {
+            group = 1;
+            whichgroupstate = none;
+        };
+        indicator "B" {
+            group = 1;
+            whichgroupstate = base;
+        };
+        indicator "C" {
+            group = 1;
+            whichgroupstate = latched;
+        };
+        indicator "D" {
+            group = 1;
+            whichgroupstate = invalid;
+        };
+    };
+};

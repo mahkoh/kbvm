@@ -1,0 +1,6 @@
+xkb_keymap {
+    xkb_keycodes {
+        indicator 32 = "X";
+        indicator 33 = "Y";
+    };
+};

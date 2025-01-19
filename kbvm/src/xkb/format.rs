@@ -189,6 +189,7 @@ impl Format for Compat<'_> {
             for i in &m.indicators {
                 let write = i.modifier_mask.0 != 0
                     || i.group_mask.0 != 0
+                    || i.group_components != GroupComponent::Effective
                     || i.controls != ControlMask::NONE;
                 if write {
                     wrote_any_indicators = true;

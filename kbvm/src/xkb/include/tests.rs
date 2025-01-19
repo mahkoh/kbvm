@@ -4,6 +4,7 @@ use {
         code_map::CodeMap,
         include::{error::ParseIncludeError, parse_include, IncludeIter},
         interner::{Interned, Interner},
+        kccgst::MergeMode,
         span::SpanExt,
     },
     std::sync::Arc,
@@ -32,23 +33,33 @@ fn test() {
     let tt = i(&mut interner, "22");
     let xx = i(&mut interner, "xx");
     let ayo = i(&mut interner, "ayo");
-    let mut iter = iter(&mut map, &mut interner, "abcd(ef):22+xx|abcd(ayo)");
+    let yy = i(&mut interner, "yy");
+    let mut iter = iter(&mut map, &mut interner, "abcd(ef):22+xx|abcd(ayo)  +yy");
 
     let i = iter.next().unwrap().unwrap();
     assert_eq!(i.file.val, abcd);
     assert_eq!(i.map.unwrap().val, ef);
     assert_eq!(i.group.unwrap().group_name.val, tt);
     assert_eq!(i.group.unwrap().group.raw(), 22);
+    assert_eq!(i.merge_mode, None);
 
     let i = iter.next().unwrap().unwrap();
     assert_eq!(i.file.val, xx);
     assert!(i.map.is_none());
     assert!(i.group.is_none());
+    assert_eq!(i.merge_mode.unwrap(), MergeMode::Override);
 
     let i = iter.next().unwrap().unwrap();
     assert_eq!(i.file.val, abcd);
     assert_eq!(i.map.unwrap().val, ayo);
     assert!(i.group.is_none());
+    assert_eq!(i.merge_mode.unwrap(), MergeMode::Augment);
+
+    let i = iter.next().unwrap().unwrap();
+    assert_eq!(i.file.val, yy);
+    assert!(i.map.is_none());
+    assert!(i.group.is_none());
+    assert_eq!(i.merge_mode.unwrap(), MergeMode::Override);
 
     assert!(iter.next().is_none());
 }
@@ -60,23 +71,37 @@ fn invalid_format() {
     let mut iter = iter(&mut map, &mut interner, "abc+");
     assert!(iter.next().unwrap().is_ok());
     let e = iter.next().unwrap().unwrap_err();
-    // todo!()
-    // assert_eq!(e.val, ParseIncludeError::EmptyGroupName);
+    assert_eq!(e.val, ParseIncludeError::MissingFileName);
 }
 
 #[test]
 fn invalid_group() {
     let mut map = CodeMap::default();
     let mut interner = Interner::default();
-    let mut iter = iter(&mut map, &mut interner, "abc:9999999999999999999999");
-    let e = iter.next().unwrap().unwrap_err();
-    let ParseIncludeError::InvalidGroupIndex(idx) = e.val else {
-        panic!(
-            // "{:?}",
-            // e.into_diagnostic(&mut map, DiagnosticKind::InvalidGroupIndex)
-        );
-    };
-    assert_eq!(idx.as_bytes(), b"9999999999999999999999");
+    {
+        let mut iter = iter(&mut map, &mut interner, "abc:9999999999999999999999");
+        let e = iter.next().unwrap().unwrap_err();
+        let ParseIncludeError::InvalidGroupIndex(idx) = e.val else {
+            unreachable!();
+        };
+        assert_eq!(idx.as_bytes(), b"9999999999999999999999");
+    }
+    {
+        let mut iter = iter(&mut map, &mut interner, "abc:33");
+        let e = iter.next().unwrap().unwrap_err();
+        let ParseIncludeError::InvalidGroupIndex(idx) = e.val else {
+            unreachable!();
+        };
+        assert_eq!(idx.as_bytes(), b"33");
+    }
+    {
+        let mut iter = iter(&mut map, &mut interner, "abc:xyz");
+        let e = iter.next().unwrap().unwrap_err();
+        let ParseIncludeError::InvalidGroupIndex(idx) = e.val else {
+            unreachable!();
+        };
+        assert_eq!(idx.as_bytes(), b"x");
+    }
 }
 
 #[test]
@@ -87,4 +112,13 @@ fn missing_merge_mode() {
     assert!(iter.next().unwrap().is_ok());
     let e = iter.next().unwrap().unwrap_err();
     assert_eq!(e.val, ParseIncludeError::MissingMergeMode);
+}
+
+#[test]
+fn unterminated_map_name() {
+    let mut map = CodeMap::default();
+    let mut interner = Interner::default();
+    let mut iter = iter(&mut map, &mut interner, "abc(def");
+    let e = iter.next().unwrap().unwrap_err();
+    assert_eq!(e.val, ParseIncludeError::UnterminatedMapName);
 }

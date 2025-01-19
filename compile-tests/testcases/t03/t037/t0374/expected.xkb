@@ -1,0 +1,42 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 1;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+
+        type "FOUR_LEVEL" {
+            modifiers = Shift;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            level_name[Level3] = "AltGr";
+            level_name[Level4] = "Shift AltGr";
+            map[None] = Level1;
+            map[Shift] = Level2;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        modmap Mod1 { <a> };
+
+        key.repeat = true;
+
+        key <a> {
+            type[Group1] = "FOUR_LEVEL",
+            symbols[Group1] = [ x, a, b ],
+            actions[Group1] = [ NoAction(), NoAction(), SetMods(modifiers = Mod1) ]
+        };
+    };
+};

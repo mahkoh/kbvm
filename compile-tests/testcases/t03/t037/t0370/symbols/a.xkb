@@ -1,0 +1,12 @@
+default xkb_symbols {
+    key <a> { [ a ] };
+};
+
+default xkb_symbols {
+    key <a> { [ A ] };
+};
+
+xkb_symbols "v" {
+    key <b> { [ b ] };
+};
+
