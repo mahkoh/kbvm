@@ -15,7 +15,7 @@ use {
     thiserror::Error,
 };
 
-// const SINGLE: Option<&str> = Some("t0363");
+// const SINGLE: Option<&str> = Some("t0411");
 const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
 const WRITE_FAILED: bool = false;
@@ -252,6 +252,13 @@ fn test_rmlvo(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let mut context = Context::builder();
     context.clear();
     context.append_path(case);
+    context.enable_environment(true);
+    context.environment_accessor(move |s| match s {
+        "HOME" => Some(format!("{}/home", env!("CARGO_MANIFEST_DIR"))),
+        "XKB_CONFIG_ROOT" => Some(format!("{}/include", env!("CARGO_MANIFEST_DIR"))),
+        "XKB_CONFIG_EXTRA_PATH" => Some(format!("{}/include-extra", env!("CARGO_MANIFEST_DIR"))),
+        _ => None,
+    });
     context.append_path("./include");
     let context = context.build();
     let kccgst = context.expand_names(

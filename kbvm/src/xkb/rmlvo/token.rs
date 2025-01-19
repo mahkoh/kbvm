@@ -18,12 +18,6 @@ pub(crate) enum Punctuation {
     Exclam,
 }
 
-impl PartialEq<Punctuation> for Token {
-    fn eq(&self, other: &Punctuation) -> bool {
-        *self == Token::Punctuation(*other)
-    }
-}
-
 impl Punctuation {
     pub(crate) fn expected(self) -> &'static [Expected] {
         macro_rules! c {
@@ -35,11 +29,5 @@ impl Punctuation {
         }
         let e = c![Equals, Times, Exclam];
         slice::from_ref(e)
-    }
-}
-
-impl From<Punctuation> for Token {
-    fn from(value: Punctuation) -> Self {
-        Self::Punctuation(value)
     }
 }

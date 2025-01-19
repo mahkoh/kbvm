@@ -367,14 +367,8 @@ pub(crate) fn create_includes(
                                 break;
                             }
                             matched_any_group = true;
-                            let mut any_viable = false;
                             for mg in &mut matched_groups {
                                 mg.matched_rule &= mg.matched_rule_key;
-                                any_viable |= mg.matched_rule;
-                            }
-                            if !any_viable {
-                                matches = false;
-                                break;
                             }
                         }
                     };

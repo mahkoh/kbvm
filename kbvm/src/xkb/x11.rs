@@ -547,7 +547,7 @@ where
             .unwrap_or_default();
         for (idx, (map, name)) in self.indicator_map.maps.iter().zip(names.iter()).enumerate() {
             let group_mask = GroupMask(map.groups.into());
-            let group_components = match map.which_groups {
+            let group_component = match map.which_groups {
                 _ if group_mask.0 == 0 => GroupComponent::Effective,
                 _ if map.which_groups == IMGroupsWhich::default() => GroupComponent::None,
                 IMGroupsWhich::USE_BASE => GroupComponent::Base,
@@ -609,7 +609,7 @@ where
                 group_mask,
                 controls,
                 mod_components,
-                group_component: group_components,
+                group_component,
             });
         }
         Ok(())

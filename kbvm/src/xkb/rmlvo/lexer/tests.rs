@@ -159,3 +159,19 @@ fn invalid_ident() {
 fn unterminated_group() {
     assert_eq!(e("$"), LexerError::EmptyMacroName);
 }
+
+#[test]
+fn rn() {
+    let input = "a\\\r\nb";
+    let mut interner = Interner::default();
+    let a = i(&mut interner, "a");
+    let b = i(&mut interner, "b");
+    let code = Code::new(&input.as_bytes().to_vec().into());
+    let mut lexer = Lexer::new(&empty_path(), &code, 0);
+    let mut output = vec![];
+    lexer.lex_line(&mut interner, &mut output).unwrap();
+    assert_eq!(output, [Token::Ident(a), Token::Ident(b)]);
+    output.clear();
+    lexer.lex_line(&mut interner, &mut output).unwrap();
+    assert!(output.is_empty());
+}
