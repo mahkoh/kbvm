@@ -14,15 +14,6 @@ supports
 
 A keymap can be turned into a compositor-side state machine or a client-side lookup table.
 
-## Compatibility
-
-See [compatibility.md](./docs/compatibility.md).
-
-## CLI
-
-The [kbvm-cli](./kbvm-cli/README.md) crate provides a binary that can be used to compile
-and test keymaps without installing them.
-
 ## License
 
 This project is licensed under either of

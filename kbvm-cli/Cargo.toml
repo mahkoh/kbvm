@@ -2,7 +2,11 @@
 name = "kbvm-cli"
 version = "0.1.0"
 edition = "2021"
+repository = "https://github.com/mahkoh/kbvm"
 license = "GPL-3.0-only"
+description = "A CLI for working with XKB"
+keywords = ["cli", "linux", "xkb", "wayland"]
+categories = ["command-line-utilities", "compilers", "visualization"]
 
 [[bin]]
 name = "kbvm"

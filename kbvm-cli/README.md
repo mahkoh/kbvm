@@ -1,5 +1,7 @@
 # kbvm-cli
 
+[![crates.io](https://img.shields.io/crates/v/kbvm-cli.svg)](http://crates.io/crates/kbvm-cli)
+
 This crate provides the `kbvm` binary that can be used to compile and test XKB keymaps
 and XCompose files without installing them.
 
