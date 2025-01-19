@@ -182,7 +182,7 @@ See the same section for the `compile-xkb` command.
 ### `kbvm test-wayland`
 
 The `test-wayland` subcommand can be used to test either the keymap sent by the compositor
-or a completely different keymap without install it.
+or a completely different keymap without installing it.
 
 ```console
 $ kbvm test-wayland
@@ -216,7 +216,7 @@ You can use the `--keymap <FILE>` parameter to use a custom keymap instead of th
 configured in your compositor.
 
 ```console
-$ kbvm expand-rmlvo --layout us,de --variant ,neo --options grp:ctrl_space_toggle | kbvm test-wayland --keymap -
+$ kbvm compile-rmlvo --layout us,de --variant ,neo --options grp:ctrl_space_toggle | kbvm test-wayland --keymap -
 [0279870.220] key down A
 [0279870.220]   sym a 'a'
 [0279870.306] key up   A
@@ -262,6 +262,19 @@ $ kbvm expand-rmlvo --layout us,de --variant ,neo --options grp:ctrl_space_toggl
 [0279879.989] key up   LEFTSHIFT
 [0279879.989] mods_pressed = 0x00000000
 [0279879.989] mods         = 0x00000000
+```
+
+#### Testing Custom XCompose Files
+
+You can use the `--compose-file <PATH>` parameter to test custom XCompose files.
+
+```console
+$ cat XCompose
+<a>: "yep it's a custom compose file"
+$ kbvm test-wayland --compose-file XCompose
+[0280232.052] key down A
+[0280232.052]   composed "yep it's a custom compose file" (a)
+[0280232.128] key up   A
 ```
 
 ## License
