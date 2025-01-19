@@ -8,7 +8,7 @@ use {
         utils::read_path,
     },
     bitflags::Flags,
-    clap::{Args, ValueEnum},
+    clap::{Args, ValueEnum, ValueHint},
     error_reporter::Report,
     hashbrown::{hash_map::Entry, HashMap},
     kbvm::{
@@ -78,7 +78,7 @@ pub struct TestWaylandArgs {
     /// following pattern:
     ///
     /// kbvm expand-rmlvo --layout ru,de | kbvm test-wayland --keymap -
-    #[clap(long)]
+    #[clap(long, value_hint = ValueHint::FilePath)]
     keymap: Option<String>,
     /// Enable or disable colored output.
     ///
@@ -101,7 +101,7 @@ struct ComposeGroup {
     #[clap(long)]
     no_compose: bool,
     /// Use this compose file instead of the default one.
-    #[clap(long)]
+    #[clap(long, value_hint = ValueHint::FilePath)]
     compose_file: Option<String>,
 }
 

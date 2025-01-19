@@ -3,15 +3,16 @@ use {
         compile_rmlvo::{self, CompileRmlvoArgs},
         compile_xkb::{self, CompileXkbArgs},
         expand_rmlvo::{self, ExpandRmlvoArgs},
+        generate::{self, GenerateArgs},
         test_wayland::{self, TestWaylandArgs},
     },
-    clap::{Args, Parser, Subcommand},
+    clap::{Args, Parser, Subcommand, ValueHint},
     kbvm::xkb::ContextBuilder,
 };
 
 /// KBVM test utility.
 #[derive(Parser, Debug)]
-struct Kbvm {
+pub struct Kbvm {
     #[clap(subcommand)]
     command: Cmd,
 }
@@ -26,6 +27,8 @@ enum Cmd {
     CompileRmlvo(CompileRmlvoArgs),
     /// Compile a keymap from an XKB file.
     CompileXkb(CompileXkbArgs),
+    /// Generate shell completion scripts for kbvm.
+    GenerateCompletion(GenerateArgs),
 }
 
 #[derive(Args, Debug, Default)]
@@ -34,10 +37,10 @@ pub struct CompileArgs {
     #[clap(long)]
     pub no_default_includes: bool,
     /// Prepend an include path.
-    #[clap(long)]
+    #[clap(long, value_hint = ValueHint::DirPath)]
     pub prepend_include: Vec<String>,
     /// Append an include path.
-    #[clap(long)]
+    #[clap(long, value_hint = ValueHint::DirPath)]
     pub append_include: Vec<String>,
 }
 
@@ -62,5 +65,6 @@ pub fn main() {
         Cmd::ExpandRmlvo(args) => expand_rmlvo::main(args),
         Cmd::CompileRmlvo(args) => compile_rmlvo::main(args),
         Cmd::CompileXkb(args) => compile_xkb::main(args),
+        Cmd::GenerateCompletion(args) => generate::main(args),
     }
 }

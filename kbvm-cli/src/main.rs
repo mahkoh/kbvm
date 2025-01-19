@@ -7,6 +7,7 @@ mod compile_rmlvo;
 mod compile_xkb;
 mod evdev;
 mod expand_rmlvo;
+mod generate;
 mod output;
 mod test_wayland;
 mod utils;

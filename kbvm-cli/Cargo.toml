@@ -2,6 +2,7 @@
 name = "kbvm-cli"
 version = "0.1.0"
 edition = "2021"
+license = "GPL-3.0-only"
 
 [[bin]]
 name = "kbvm"
@@ -10,6 +11,7 @@ path = "src/main.rs"
 [dependencies]
 kbvm = { path = "../kbvm", features = ["compose"] }
 clap = { version = "4.5.26", features = ["derive"] }
+clap_complete = "4.5.42"
 wayland-client = "0.31.7"
 wayland-protocols = { version = "0.32.5", features = ["client", "staging", "unstable"] }
 env_logger = "0.11.6"

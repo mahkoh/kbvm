@@ -1,6 +1,6 @@
 use {
     crate::{cli::CompileArgs, utils::read_path},
-    clap::Args,
+    clap::{Args, ValueHint},
     kbvm::xkb::{diagnostic::WriteToLog, Context},
 };
 
@@ -11,6 +11,7 @@ pub struct CompileXkbArgs {
     /// The path to the keymap.
     ///
     /// If the path is not specified or if the path is `-`, the keymap is read from stdin.
+    #[clap(value_hint = ValueHint::FilePath)]
     path: Option<String>,
 }
 

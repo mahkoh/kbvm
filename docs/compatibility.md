@@ -1,5 +1,8 @@
 # Compatibility
 
+KBVM aims to be mostly compatible with the X server and libxkbcommon. Some of the
+differences are described in this file.
+
 ## XKB
 
 ### Syntax
