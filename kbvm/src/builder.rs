@@ -236,7 +236,7 @@ pub struct Builder {
 /// A group-redirect setting.
 ///
 /// When a group is out-of-bounds, it will be redirected according to this setting.
-#[derive(Copy, Clone, Default, Debug)]
+#[derive(Copy, Clone, Default, Debug, Eq, PartialEq)]
 pub enum Redirect {
     /// The group is wrapped modulo the number of available groups.
     #[default]

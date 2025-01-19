@@ -609,7 +609,7 @@ where
                 group_mask,
                 controls,
                 mod_components,
-                group_components,
+                group_component: group_components,
             });
         }
         Ok(())

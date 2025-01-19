@@ -189,7 +189,7 @@ impl Format for Compat<'_> {
             for i in &m.indicators {
                 let write = i.modifier_mask.0 != 0
                     || i.group_mask.0 != 0
-                    || i.group_components != GroupComponent::Effective
+                    || i.group_component != GroupComponent::Effective
                     || i.controls != ControlMask::NONE;
                 if write {
                     wrote_any_indicators = true;
@@ -262,9 +262,9 @@ impl Format for CompatIndicator<'_> {
                 write!(f.f, "groups = 0x{:08x};", i.group_mask.0)?;
                 f.write_newline()?;
             }
-            if i.group_components != GroupComponent::Effective {
+            if i.group_component != GroupComponent::Effective {
                 f.write_nesting()?;
-                write!(f.f, "whichGroupState = {};", i.group_components)?;
+                write!(f.f, "whichGroupState = {};", i.group_component)?;
                 f.write_newline()?;
             }
             if i.controls != ControlMask::NONE {

@@ -108,7 +108,7 @@ impl Keymap {
                 group_mask,
                 controls: map.controls.despan().unwrap_or_default(),
                 mod_components,
-                group_components,
+                group_component: group_components,
             };
             indicators.push(i);
         }
@@ -124,7 +124,7 @@ impl Keymap {
                 group_mask: Default::default(),
                 controls: Default::default(),
                 mod_components: Default::default(),
-                group_components: Default::default(),
+                group_component: Default::default(),
             };
             indicators.push(i);
         }

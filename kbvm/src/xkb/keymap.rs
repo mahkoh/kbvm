@@ -7,6 +7,8 @@
 mod from_lookup;
 mod from_resolved;
 pub mod iterators;
+#[cfg(test)]
+mod tests;
 mod to_builder;
 
 use {
@@ -136,7 +138,7 @@ pub struct Indicator {
     pub(crate) group_mask: GroupMask,
     pub(crate) controls: ControlMask,
     pub(crate) mod_components: ModComponentMask,
-    pub(crate) group_components: GroupComponent,
+    pub(crate) group_component: GroupComponent,
 }
 
 /// An indicator matcher that determines if an indicator should be active.
@@ -548,7 +550,7 @@ impl Indicator {
             group_mask: Default::default(),
             controls: Default::default(),
             mod_components: Default::default(),
-            group_components: Default::default(),
+            group_component: Default::default(),
         }
     }
 }
@@ -1265,13 +1267,13 @@ impl Indicator {
         }
         macro_rules! group_flag {
             ($comp:ident, $tt:tt) => {
-                self.group_components == GroupComponent::$comp
+                self.group_component == GroupComponent::$comp
                 && self.group_mask.0 $tt 0
             };
         }
         macro_rules! group_mask {
             ($comp:ident) => {
-                (self.group_components == GroupComponent::$comp)
+                (self.group_component == GroupComponent::$comp)
                     .then_some(self.group_mask.0)
                     .unwrap_or_default()
             };

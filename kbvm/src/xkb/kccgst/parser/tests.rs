@@ -112,29 +112,3 @@ fn round_trip() {
         }
     }
 }
-
-#[test]
-fn check_error() {
-    let mut interner = Interner::default();
-    let mut meaning_cache = MeaningCache::default();
-    let mut map = CodeMap::default();
-    let input = r#"
-        xkb_keycodes hurr {
-            <abcd> = 0xffffffff1;
-        };
-    "#;
-    let code = Code::new(&Arc::new(input.as_bytes().to_vec()));
-    let tokens = l(&mut map, &mut interner, &code).unwrap();
-    // let _err = parse_item(&mut map, &mut )
-    // let _err = Parser {
-    //     tokens: &tokens[0],
-    //     interner: &interner,
-    //     meaning_cache: &mut meaning_cache,
-    //     pos: 0,
-    //     diagnostic_delta: 0,
-    // }
-    // .parse_item()
-    // .unwrap_err();
-    // let err = err.into_diagnostic(&mut map, Severity::Error);
-    // panic!("{}", err.with_code());
-}

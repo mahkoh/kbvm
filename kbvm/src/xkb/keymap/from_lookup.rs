@@ -192,6 +192,7 @@ impl LookupTable {
                                 });
                             }
                         }
+                        mappings.sort_unstable_by_key(|k| (k.level, k.modifiers.0));
                         let kt = KeyType {
                             name: Arc::new(format!("type{}", num_key_types)),
                             modifiers: group.ty.data.mask,
@@ -232,7 +233,9 @@ impl LookupTable {
         }
         let mut types: Vec<_> = key_types.into_values().collect();
         types.sort_unstable_by_key(|kt| kt.name.clone());
-        keys.sort_by_key(|k| k.0);
+        keys.sort_unstable_by(|l, r| l.1.key_name.cmp(&r.1.key_name));
+        keycodes.sort_unstable_by(|l, r| l.name.cmp(&r.name));
+        mod_maps.sort_unstable();
         Keymap {
             name: None,
             max_keycode,
