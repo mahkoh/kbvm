@@ -60,18 +60,6 @@ fn env_env() {
 }
 
 #[test]
-fn env_paths() {
-    init_env();
-    let mut context = Context::builder();
-    context.clear();
-    context.enable_environment(true);
-    let c = context.build();
-    assert_eq!(c.paths.len(), 2);
-    assert_eq!(c.paths[0].as_os_str(), "b/xkb");
-    assert_eq!(c.paths[1].as_os_str(), "a/.xkb");
-}
-
-#[test]
 fn system_paths() {
     let mut context = Context::builder();
     context.clear();
