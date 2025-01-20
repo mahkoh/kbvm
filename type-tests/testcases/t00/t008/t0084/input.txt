@@ -1,0 +1,19 @@
+down a
+down b
+up b
+up a
+
+down b
+down a
+up a
+up b
+
+down b
+down a
+up b
+up a
+
+down a
+down b
+up a
+up b

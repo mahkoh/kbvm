@@ -1,0 +1,8 @@
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+both b
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)

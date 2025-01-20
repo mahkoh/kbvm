@@ -1,0 +1,12 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+    };
+    xkb_symbols {
+        key <a> { [
+            Redirect(keycode = <b>, mods = modMapMods),
+        ] };
+        modmap Mod1 { <a> };
+    };
+};

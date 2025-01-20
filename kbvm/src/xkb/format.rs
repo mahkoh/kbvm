@@ -7,7 +7,7 @@ use {
             keymap::{
                 actions::{
                     GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
-                    ModsLockAction, ModsSetAction,
+                    ModsLockAction, ModsSetAction, RedirectKeyAction,
                 },
                 Action, Indicator, KeyGroup, KeyLevel, KeyType,
             },
@@ -388,6 +388,7 @@ impl Format for Action {
             Action::GroupSet(e) => e.format(f),
             Action::GroupLatch(e) => e.format(f),
             Action::GroupLock(e) => e.format(f),
+            Action::RedirectKey(e) => e.format(f),
         }
     }
 }
@@ -468,6 +469,23 @@ impl Format for GroupLockAction {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
         f.write("LockGroup(")?;
         write!(f.f, "group = {}", group_change(self.group))?;
+        f.write(")")?;
+        Ok(())
+    }
+}
+
+impl Format for RedirectKeyAction {
+    fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
+        f.write("RedirectKey(")?;
+        f.write("key = <")?;
+        f.write(&self.key_name)?;
+        f.write(">")?;
+        if self.mods_to_clear.0 != 0 {
+            write!(f.f, ", clearMods = {}", modifier_mask(self.mods_to_clear))?;
+        }
+        if self.mods_to_set.0 != 0 {
+            write!(f.f, ", mods = {}", modifier_mask(self.mods_to_set))?;
+        }
         f.write(")")?;
         Ok(())
     }

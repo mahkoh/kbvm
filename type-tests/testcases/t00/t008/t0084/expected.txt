@@ -1,0 +1,47 @@
+down a
+    key_down(a)
+    sym = a, char = 'a'
+down b
+up b
+up a
+    key_up(a)
+
+down b
+    mods_pressed = 0x00000008
+    mods_effective = 0x00000008
+    key_down(a)
+    sym = a, char = 'a'
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+down a
+up a
+up b
+    mods_pressed = 0x00000008
+    mods_effective = 0x00000008
+    key_up(a)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+
+down b
+    mods_pressed = 0x00000008
+    mods_effective = 0x00000008
+    key_down(a)
+    sym = a, char = 'a'
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+down a
+up b
+up a
+    key_up(a)
+
+down a
+    key_down(a)
+    sym = a, char = 'a'
+down b
+up a
+up b
+    mods_pressed = 0x00000008
+    mods_effective = 0x00000008
+    key_up(a)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000

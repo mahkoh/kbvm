@@ -1,0 +1,23 @@
+both capslock
+    key_down(capslock)
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+    key_up(capslock)
+    mods_pressed = 0x00000000
+    mods_latched = 0x00000001
+both b
+    key_down(a)
+    sym = A, char = 'A'
+    mods_latched = 0x00000000
+    mods_effective = 0x00000000
+    key_down(c)
+    sym = c, char = 'c'
+    key_up(c)
+    key_up(a)
+both b
+    key_down(a)
+    sym = a, char = 'a'
+    key_down(c)
+    sym = c, char = 'c'
+    key_up(c)
+    key_up(a)

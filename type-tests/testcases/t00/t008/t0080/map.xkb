@@ -1,0 +1,12 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <x> { [ SetMods(mods = Mod1) ] };
+        key <y> { [ LatchMods(mods = Lock) ] };
+        key <z> { [ LockMods(mods = Mod3) ] };
+        key <a> { [ a, A ] };
+        key <b> { [ RedirectKey(key = <a>, clearMods = all-Lock, mods = Shift) ] };
+    };
+};

@@ -673,6 +673,7 @@ xkb_keymap {
             type[Group2] = "FOUR_LEVEL_ALPHABETIC",
             type[Group3] = "ALPHABETIC",
             symbols[Group1] = [ p, P ],
+            actions[Group1] = [ RedirectKey(key = <AD09>, clearMods = Mod1, mods = Mod2), NoAction() ],
             symbols[Group2] = [ p, P, thorn, THORN ],
             symbols[Group3] = [ p, P ]
         };

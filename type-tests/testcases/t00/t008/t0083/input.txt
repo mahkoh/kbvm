@@ -1,0 +1,4 @@
+both y
+both b
+both c
+both c

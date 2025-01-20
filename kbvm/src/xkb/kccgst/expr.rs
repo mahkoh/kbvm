@@ -21,12 +21,13 @@ use {
                 ActionDefaults, Filter, ModMapField, Predicate, ResolvedAction,
                 ResolvedActionAffect, ResolvedActionMods, ResolvedGroupLatch, ResolvedGroupLock,
                 ResolvedGroupSet, ResolvedKeyKind, ResolvedKeycodes, ResolvedModsLatch,
-                ResolvedModsLock, ResolvedModsSet, ResolvedNoAction, ResolvedTypes,
+                ResolvedModsLock, ResolvedModsSet, ResolvedNoAction, ResolvedRedirectKey,
+                ResolvedTypes,
             },
             span::{Span, SpanExt, SpanResult1, SpanResult2, Spanned},
             string_cooker::StringCooker,
         },
-        Keysym, ModifierIndex, ModifierMask,
+        Keycode, Keysym, ModifierIndex, ModifierMask,
     },
     isnt::std_1::primitive::IsntU8SliceExt,
     smallvec::SmallVec,
@@ -61,6 +62,8 @@ pub(crate) enum EvalError {
     UnsupportedExpressionForBoolean,
     #[error("unsupported expression for keysym")]
     UnsupportedExpressionForKeysym,
+    #[error("unsupported expression for keycode")]
+    UnsupportedExpressionForKeycode,
     #[error("unsupported expression for mod mask")]
     UnsupportedExpressionForModMask,
     #[error("unsupported expression for key repeat")]
@@ -107,6 +110,12 @@ pub(crate) enum EvalError {
     MissingValueForLatchGroupGroup,
     #[error("missing value for LockGroup(group)")]
     MissingValueForLockGroupGroup,
+    #[error("missing value for RedirectKey(key)")]
+    MissingValueForRedirectKeyKey,
+    #[error("missing value for RedirectKey(clearMods)")]
+    MissingValueForRedirectKeyClearmods,
+    #[error("missing value for RedirectKey(mods)")]
+    MissingValueForRedirectKeyMods,
     #[error("unknown modifier")]
     UnknownModifier,
     #[error("unknown LockMods(affect) value")]
@@ -189,6 +198,8 @@ pub(crate) enum EvalError {
     MissingKeyTypeValue,
     #[error("unknown key type")]
     UnknownKeyType,
+    #[error("unknown RedirectKey parameter")]
+    UnknownParameterForRedirectKey,
 }
 
 impl EvalError {
@@ -220,6 +231,7 @@ impl EvalError {
             UnsupportedExpressionForLockModsAffect,
             UnsupportedExpressionForAction,
             UnsupportedExpressionForSymbolsOrActions,
+            UnsupportedExpressionForKeycode,
             UnknownBooleanValue,
             UnknownKeysym,
             UnknownAction,
@@ -231,6 +243,7 @@ impl EvalError {
             UnknownParameterForSetGroup,
             UnknownParameterForLatchGroup,
             UnknownParameterForLockGroup,
+            UnknownParameterForRedirectKey,
             MissingValueForSetModsMods,
             MissingValueForLatchModsMods,
             MissingValueForLockModsMods,
@@ -238,6 +251,9 @@ impl EvalError {
             MissingValueForSetGroupGroup,
             MissingValueForLatchGroupGroup,
             MissingValueForLockGroupGroup,
+            MissingValueForRedirectKeyKey,
+            MissingValueForRedirectKeyClearmods,
+            MissingValueForRedirectKeyMods,
             UnknownModifier,
             UnknownLockModsAffect,
             NotOneInterpretFilterArgument,
@@ -469,6 +485,23 @@ pub(crate) fn eval_u32(
     )
     .map_err(|_| overflow)
     .span_either(expr.span)
+}
+
+fn eval_keycode(
+    keycodes: &ResolvedKeycodes,
+    expr: Spanned<&Expr>,
+) -> Result<Spanned<(Interned, Keycode)>, Spanned<EvalError>> {
+    let Expr::KeyName(name) = &expr.val else {
+        return Err(UnsupportedExpressionForKeycode.spanned2(expr.span));
+    };
+    let Some(kc) = keycodes.name_to_key.get(name) else {
+        return Err(UnknownKeycode.spanned2(expr.span));
+    };
+    let (name, kc) = match kc.kind {
+        ResolvedKeyKind::Real(kc) => (*name, kc.val),
+        ResolvedKeyKind::Alias(n1, kc, n2) => (n2.unwrap_or(n1).val, kc),
+    };
+    Ok((name, kc).spanned2(expr.span))
 }
 
 pub(crate) fn eval_group_change(
@@ -835,6 +868,7 @@ trait ActionParameters: Clone {
         &mut self,
         interner: &Interner,
         meaning_cache: &mut MeaningCache,
+        keycodes: &ResolvedKeycodes,
         vmods: &Vmodmap,
         meaning: Spanned<Meaning>,
         value: Spanned<ActionParameterValue<'_>>,
@@ -910,6 +944,7 @@ impl ActionParameters for ResolvedNoAction {
         &mut self,
         _interner: &Interner,
         _meaning_cache: &mut MeaningCache,
+        _keycodes: &ResolvedKeycodes,
         _vmods: &Vmodmap,
         meaning: Spanned<Meaning>,
         _value: Spanned<ActionParameterValue<'_>>,
@@ -925,6 +960,7 @@ impl ActionParameters for ResolvedModsSet {
         &mut self,
         interner: &Interner,
         meaning_cache: &mut MeaningCache,
+        _keycodes: &ResolvedKeycodes,
         vmods: &Vmodmap,
         meaning: Spanned<Meaning>,
         value: Spanned<ActionParameterValue<'_>>,
@@ -956,6 +992,7 @@ impl ActionParameters for ResolvedModsLatch {
         &mut self,
         interner: &Interner,
         meaning_cache: &mut MeaningCache,
+        _keycodes: &ResolvedKeycodes,
         vmods: &Vmodmap,
         meaning: Spanned<Meaning>,
         value: Spanned<ActionParameterValue<'_>>,
@@ -990,6 +1027,7 @@ impl ActionParameters for ResolvedModsLock {
         &mut self,
         interner: &Interner,
         meaning_cache: &mut MeaningCache,
+        _keycodes: &ResolvedKeycodes,
         vmods: &Vmodmap,
         meaning: Spanned<Meaning>,
         value: Spanned<ActionParameterValue<'_>>,
@@ -1028,6 +1066,7 @@ impl ActionParameters for ResolvedGroupSet {
         &mut self,
         interner: &Interner,
         meaning_cache: &mut MeaningCache,
+        _keycodes: &ResolvedKeycodes,
         _vmods: &Vmodmap,
         meaning: Spanned<Meaning>,
         value: Spanned<ActionParameterValue<'_>>,
@@ -1057,6 +1096,7 @@ impl ActionParameters for ResolvedGroupLatch {
         &mut self,
         interner: &Interner,
         meaning_cache: &mut MeaningCache,
+        _keycodes: &ResolvedKeycodes,
         _vmods: &Vmodmap,
         meaning: Spanned<Meaning>,
         value: Spanned<ActionParameterValue<'_>>,
@@ -1089,6 +1129,7 @@ impl ActionParameters for ResolvedGroupLock {
         &mut self,
         interner: &Interner,
         _meaning_cache: &mut MeaningCache,
+        _keycodes: &ResolvedKeycodes,
         _vmods: &Vmodmap,
         meaning: Spanned<Meaning>,
         value: Spanned<ActionParameterValue<'_>>,
@@ -1108,9 +1149,53 @@ impl ActionParameters for ResolvedGroupLock {
     }
 }
 
+impl ActionParameters for ResolvedRedirectKey {
+    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForLockGroup;
+
+    fn handle_field(
+        &mut self,
+        interner: &Interner,
+        meaning_cache: &mut MeaningCache,
+        keycodes: &ResolvedKeycodes,
+        vmods: &Vmodmap,
+        meaning: Spanned<Meaning>,
+        value: Spanned<ActionParameterValue<'_>>,
+    ) -> Result<(), Spanned<EvalError>> {
+        match meaning.val {
+            Meaning::Kc | Meaning::Keycode | Meaning::Key => {
+                self.keycode = Some(eval_keycode(
+                    keycodes,
+                    value!(value, MissingValueForRedirectKeyKey),
+                )?);
+            }
+            Meaning::Clearmods | Meaning::Clearmodifiers => {
+                self.mods_to_clear = Some(eval_action_mods(
+                    interner,
+                    meaning_cache,
+                    vmods,
+                    value!(value, MissingValueForRedirectKeyClearmods),
+                )?);
+            }
+            Meaning::Mods | Meaning::Modifiers => {
+                self.mods_to_set = Some(eval_action_mods(
+                    interner,
+                    meaning_cache,
+                    vmods,
+                    value!(value, MissingValueForRedirectKeyMods),
+                )?);
+            }
+            _ => {
+                return Err(UnknownParameterForRedirectKey.spanned2(meaning.span));
+            }
+        }
+        Ok(())
+    }
+}
+
 fn create_action<T: ActionParameters>(
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
+    keycodes: &ResolvedKeycodes,
     vmods: &Vmodmap,
     default: &T,
     args: &[Spanned<CallArg>],
@@ -1145,6 +1230,7 @@ fn create_action<T: ActionParameters>(
         t.handle_field(
             interner,
             meaning_cache,
+            keycodes,
             vmods,
             meaning.spanned2(path.span),
             value,
@@ -1156,6 +1242,7 @@ fn create_action<T: ActionParameters>(
 fn handle_action_global<T: ActionParameters>(
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
+    keycodes: &ResolvedKeycodes,
     vmods: &Vmodmap,
     t: &mut T,
     var: &Var,
@@ -1177,6 +1264,7 @@ fn handle_action_global<T: ActionParameters>(
     t.handle_field(
         interner,
         meaning_cache,
+        keycodes,
         vmods,
         meaning.spanned2(var.path.span),
         value,
@@ -1184,11 +1272,11 @@ fn handle_action_global<T: ActionParameters>(
 }
 
 macro_rules! generate_action_name_meta {
-    ($($meaning:ident => $big:ident | $little:ident,)* ; $($unimplemented:ident,)*) => {
+    ($($($meaning:ident)|* => $big:ident | $little:ident,)* ; $($unimplemented:ident,)*) => {
         macro_rules! action_name_meta {
             ($macro_:ident, $meaning_inner:expr, $span:expr) => {
                 match $meaning_inner {
-                    $(Meaning::$meaning => $macro_!($big, $little),)*
+                    $($(Meaning::$meaning)|* => $macro_!($big, $little),)*
                     $(Meaning::$unimplemented)|* => return Err(UnimplementedAction.spanned2($span)),
                     _ => return Err(UnknownAction.spanned2($span)),
                 }
@@ -1205,6 +1293,7 @@ generate_action_name_meta! {
     SetGroup => ResolvedGroupSet | group_set,
     LatchGroup => ResolvedGroupLatch | group_latch,
     LockGroup => ResolvedGroupLock | group_lock,
+    RedirectKey | Redirect => ResolvedRedirectKey | redirect_key,
     ;
     MovePtr,
     MovePointer,
@@ -1222,8 +1311,6 @@ generate_action_name_meta! {
     SetControls,
     LockControls,
     Private,
-    RedirectKey,
-    Redirect,
     ISOLock,
     ActionMessage,
     MessageAction,
@@ -1245,6 +1332,7 @@ generate_action_name_meta! {
 fn eval_action(
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
+    keycodes: &ResolvedKeycodes,
     vmods: &Vmodmap,
     action_defaults: &ActionDefaults,
     expr: Spanned<&Expr>,
@@ -1263,6 +1351,7 @@ fn eval_action(
             ResolvedAction::$action(create_action(
                 interner,
                 meaning_cache,
+                keycodes,
                 vmods,
                 &action_defaults.$field,
                 &call.args,
@@ -1276,6 +1365,7 @@ fn eval_action(
 pub(crate) fn eval_action_default(
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
+    keycodes: &ResolvedKeycodes,
     vmods: &Vmodmap,
     decl: &Var,
     span: Span,
@@ -1288,6 +1378,7 @@ pub(crate) fn eval_action_default(
             handle_action_global(
                 interner,
                 meaning_cache,
+                keycodes,
                 vmods,
                 &mut defaults.$field,
                 decl,
@@ -1306,9 +1397,11 @@ pub(crate) enum InterpField {
     LevelOneOnly(bool),
 }
 
+#[expect(clippy::too_many_arguments)]
 pub(crate) fn eval_interp_field(
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
+    keycodes: &ResolvedKeycodes,
     vmods: &Vmodmap,
     action_defaults: &ActionDefaults,
     var: &Var,
@@ -1338,7 +1431,15 @@ pub(crate) fn eval_interp_field(
                 Some(e) => e,
             };
             InterpField::Action(
-                eval_action(interner, meaning_cache, vmods, action_defaults, e.as_ref())?.val,
+                eval_action(
+                    interner,
+                    meaning_cache,
+                    keycodes,
+                    vmods,
+                    action_defaults,
+                    e.as_ref(),
+                )?
+                .val,
             )
         }
         Meaning::Virtualmodifier | Meaning::Virtualmod => {
@@ -1628,6 +1729,7 @@ pub(crate) fn eval_symbols_field(
     cooker: &mut StringCooker,
     meaning_cache: &mut MeaningCache,
     action_defaults: &ActionDefaults,
+    keycodes: &ResolvedKeycodes,
     mods: &Vmodmap,
     key_types: &ResolvedTypes,
     not: Option<Span>,
@@ -1745,7 +1847,8 @@ pub(crate) fn eval_symbols_field(
             diagnostics,
             get_expr!(MissingKeyActionsValue),
             |e| {
-                let action = eval_action(interner, meaning_cache, mods, action_defaults, e)?;
+                let action =
+                    eval_action(interner, meaning_cache, keycodes, mods, action_defaults, e)?;
                 let action = match action.val {
                     ResolvedAction::ResolvedNoAction(_) => None,
                     _ => Some(action),

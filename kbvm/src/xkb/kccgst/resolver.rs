@@ -87,6 +87,7 @@ pub(crate) fn resolve(
 
     let mut compat = CompatResolver {
         r: &mut resolver,
+        keycodes: &keycodes,
         mods: &mods,
         data: Default::default(),
     }
@@ -146,6 +147,7 @@ struct TypesResolver<'a, 'b, 'c, 'd> {
 
 struct CompatResolver<'a, 'b, 'c, 'd> {
     r: &'a mut Resolver<'b, 'c, 'd>,
+    keycodes: &'a ResolvedKeycodes,
     mods: &'a Vmodmap,
     data: ResolvedCompat,
 }
@@ -478,20 +480,26 @@ fn fix_combined_properties(
         ty.preserved = new_preserved;
     }
 
+    let fix_action_mods = |action_mods: &mut Option<Spanned<ResolvedActionMods>>| {
+        if let Some(action_mods) = action_mods {
+            if let ResolvedActionMods::Explicit(e) = &mut action_mods.val {
+                *e = mods.get_effective(*e);
+            }
+        }
+    };
     for key in symbols.keys.values_mut() {
         for group in &mut key.key.groups {
             for level in &mut group.levels {
                 for action in &mut level.actions {
-                    let action_mods = match &mut action.val {
-                        ResolvedAction::ResolvedModsSet(e) => &mut e.modifiers,
-                        ResolvedAction::ResolvedModsLatch(e) => &mut e.modifiers,
-                        ResolvedAction::ResolvedModsLock(e) => &mut e.modifiers,
-                        _ => continue,
-                    };
-                    if let Some(action_mods) = action_mods {
-                        if let ResolvedActionMods::Explicit(e) = &mut action_mods.val {
-                            *e = mods.get_effective(*e);
+                    match &mut action.val {
+                        ResolvedAction::ResolvedModsSet(e) => fix_action_mods(&mut e.modifiers),
+                        ResolvedAction::ResolvedModsLatch(e) => fix_action_mods(&mut e.modifiers),
+                        ResolvedAction::ResolvedModsLock(e) => fix_action_mods(&mut e.modifiers),
+                        ResolvedAction::ResolvedRedirectKey(e) => {
+                            fix_action_mods(&mut e.mods_to_set);
+                            fix_action_mods(&mut e.mods_to_clear);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -1020,6 +1028,7 @@ impl CompatResolver<'_, '_, '_, '_> {
         let res = eval_interp_field(
             self.r.interner,
             self.r.meaning_cache,
+            self.keycodes,
             self.mods,
             &self.data.action_defaults,
             &decl.var,
@@ -1255,6 +1264,7 @@ impl ConfigWalker for CompatResolver<'_, '_, '_, '_> {
                     let res = eval_action_default(
                         self.r.interner,
                         self.r.meaning_cache,
+                        self.keycodes,
                         self.mods,
                         &e.var,
                         span,
@@ -1416,6 +1426,7 @@ impl SymbolsResolver<'_, '_, '_, '_> {
             self.r.cooker,
             self.r.meaning_cache,
             &self.data.action_defaults,
+            self.keycodes,
             self.mods,
             self.types,
             not,
@@ -1751,6 +1762,7 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_, '_> {
                         let res = eval_action_default(
                             self.r.interner,
                             self.r.meaning_cache,
+                            self.keycodes,
                             self.mods,
                             &v.var,
                             span,

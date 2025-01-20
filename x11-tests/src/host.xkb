@@ -1236,6 +1236,7 @@ xkb_symbols "pc_us_pt_2_us_3_inet(evdev)_group(shift_caps_toggle)_compose(ralt)"
 		type[Group2]= "FOUR_LEVEL_ALPHABETIC",
 		type[Group3]= "ALPHABETIC",
 		symbols[Group1]= [               p,               P ],
+		actions[Group1]= [ RedirectKey(key = <AD09>, clearMods = Mod1, mods = Mod2) ],
 		symbols[Group2]= [               p,               P,           thorn,           THORN ],
 		symbols[Group3]= [               p,               P ]
 	};

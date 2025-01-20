@@ -1,0 +1,38 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 1;
+        <b> = 2;
+    };
+
+    xkb_types {
+        virtual_modifiers A = 0x00001000;
+        virtual_modifiers B = 0x00002000;
+
+        type "ONE_LEVEL" {
+            modifiers = None;
+            level_name[Level1] = "Any";
+            map[None] = Level1;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        key.repeat = true;
+
+        key <a> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ RedirectKey(key = <b>, clearMods = 0x00001000, mods = 0x00002000) ]
+        };
+    };
+};

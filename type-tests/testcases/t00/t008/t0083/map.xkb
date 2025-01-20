@@ -1,0 +1,11 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <y> { [ LatchGroup(group = Group2) ] };
+        key <a> { [ a ], [ b ] };
+        key <b> { [ { RedirectKey(key = <a>, mods = Mod3), SetMods(mods = Mod2) } ] };
+        key <c> { [ RedirectKey(key = <a>, mods = Mod3) ] };
+    };
+};

@@ -1,0 +1,57 @@
+both z
+    key_down(z)
+    mods_pressed = 0x00000020
+    mods_locked = 0x00000020
+    mods_effective = 0x00000020
+    key_up(z)
+    mods_pressed = 0x00000000
+both y
+    key_down(y)
+    mods_pressed = 0x00000002
+    mods_effective = 0x00000022
+    key_up(y)
+    mods_pressed = 0x00000000
+    mods_latched = 0x00000002
+down x
+    key_down(x)
+    mods_pressed = 0x00000008
+    mods_effective = 0x0000002a
+down b
+    mods_pressed = 0x00000003
+    mods_latched = 0x00000000
+    mods_locked = 0x00000000
+    mods_effective = 0x00000003
+    key_down(a)
+    sym = a, char = 'a'
+    mods_pressed = 0x00000008
+    mods_locked = 0x00000020
+    mods_effective = 0x00000028
+up b
+    mods_pressed = 0x00000001
+    mods_locked = 0x00000000
+    mods_effective = 0x00000001
+    key_up(a)
+    mods_pressed = 0x00000008
+    mods_locked = 0x00000020
+    mods_effective = 0x00000028
+down b
+    mods_pressed = 0x00000001
+    mods_locked = 0x00000000
+    mods_effective = 0x00000001
+    key_down(a)
+    sym = A, char = 'A'
+    mods_pressed = 0x00000008
+    mods_locked = 0x00000020
+    mods_effective = 0x00000028
+up b
+    mods_pressed = 0x00000001
+    mods_locked = 0x00000000
+    mods_effective = 0x00000001
+    key_up(a)
+    mods_pressed = 0x00000008
+    mods_locked = 0x00000020
+    mods_effective = 0x00000028
+up x
+    key_up(x)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000020

@@ -1,0 +1,3 @@
+down b
+down leftshift
+up b

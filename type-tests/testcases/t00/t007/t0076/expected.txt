@@ -1,0 +1,17 @@
+both capslock
+    key_down(capslock)
+    group_pressed = 1
+    group_effective = 1
+    key_up(capslock)
+    group_pressed = 0
+    group_latched = 1
+both b
+    key_down(a)
+    sym = b, char = 'b'
+    group_latched = 0
+    group_effective = 0
+    key_up(a)
+both b
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)

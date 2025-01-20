@@ -1,0 +1,12 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+    };
+    xkb_symbols {
+        virtual_modifiers A = 0x1000;
+        virtual_modifiers B = 0x2000;
+
+        key <a> { [ RedirectKey(key = <b>, clearMods = A, mods = B) ] };
+    };
+};
