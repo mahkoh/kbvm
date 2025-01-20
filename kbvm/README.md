@@ -21,7 +21,7 @@ The MSRV is `max(1.83, stable - 3)`.
 
 ## License
 
-The kbvm crate is licensed under either of
+This project is licensed under either of
 
 - Apache License, Version 2.0
 - MIT License

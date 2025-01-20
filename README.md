@@ -26,7 +26,7 @@ and test keymaps without installing them.
 
 ## License
 
-This project is licensed under either of
+This kbvm crate is licensed under either of
 
 - Apache License, Version 2.0
 - MIT License
