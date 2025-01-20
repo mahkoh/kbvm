@@ -15,6 +15,10 @@ supports
 
 A keymap can be turned into a compositor-side state machine or a client-side lookup table.
 
+## MSRV
+
+The MSRV is `max(1.83, stable - 3)`.
+
 ## License
 
 This project is licensed under either of

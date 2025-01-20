@@ -18,4 +18,5 @@ jobs:
         run: |
           rustup override set 1.83.0
           cd kbvm
+          cargo update
           cargo check --all-features --verbose

@@ -2,6 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/kbvm.svg)](http://crates.io/crates/kbvm)
 [![docs.rs](https://docs.rs/kbvm/badge.svg)](http://docs.rs/kbvm)
+![MSRV](https://img.shields.io/crates/msrv/kbvm)
 
 KBVM is a rust implementation of the XKB specification and associated protocols. It
 supports
