@@ -1,0 +1,12 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_compat {
+        interpret.locking;
+        interpret a { };
+    };
+    xkb_symbols {
+        key <a> { [ a ] };
+    };
+};

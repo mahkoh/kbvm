@@ -1,6 +1,6 @@
 use {
     criterion::{black_box, criterion_group, criterion_main, Criterion},
-    kbvm::keysym::{keysyms, Keysym},
+    kbvm::Keysym,
     libxkbcommon_test_linker::{
         xkb_keysym_from_name, xkb_keysym_get_name, xkb_keysym_to_upper, xkb_keysym_to_utf32,
         xkb_utf32_to_keysym,
@@ -44,7 +44,7 @@ pub fn to_char(c: &mut Criterion) {
 }
 
 pub fn to_char_all(c: &mut Criterion) {
-    let keysyms: Vec<_> = keysyms().collect();
+    let keysyms: Vec<_> = Keysym::all().collect();
     c.bench_function("to_char_all - kbvm", |b| {
         b.iter(|| {
             for sym in &keysyms {

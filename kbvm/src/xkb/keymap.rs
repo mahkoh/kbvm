@@ -444,7 +444,29 @@ pub struct Key {
     pub(crate) key_code: crate::Keycode,
     pub(crate) groups: Vec<Option<KeyGroup>>,
     pub(crate) repeat: bool,
+    pub(crate) behavior: Option<KeyBehavior>,
     pub(crate) redirect: GroupsRedirect,
+}
+
+/// A key behavior.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_symbols {
+///     key <a> {
+///         locks = true,
+///         [ a, A ],
+///     };
+/// };
+/// ```
+///
+/// The key behavior is `KeyBehavior::Lock`.
+#[derive(Clone, Debug, PartialEq)]
+#[non_exhaustive]
+pub enum KeyBehavior {
+    /// The key locks.
+    Lock,
 }
 
 /// A key group.
@@ -726,6 +748,24 @@ impl Key {
     /// The function returns [`Redirect::Clamp`].
     pub fn redirect(&self) -> Redirect {
         self.redirect.to_redirect()
+    }
+
+    /// Returns the behavior of the key.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         locks = true,
+    ///         [ a, A ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `KeyBehavior::Lock`.
+    pub fn behavior(&self) -> Option<&KeyBehavior> {
+        self.behavior.as_ref()
     }
 
     /// Returns an iterator over the groups of this key.

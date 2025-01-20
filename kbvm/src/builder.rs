@@ -284,6 +284,7 @@ struct BuilderKey {
     repeats: bool,
     groups: Vec<Option<BuilderGroup>>,
     redirect: Redirect,
+    routine: Option<Routine>,
 }
 
 #[derive(Clone, Debug)]
@@ -404,42 +405,53 @@ impl Builder {
     /// Builds a compositor-side [`StateMachine`].
     pub fn build_state_machine(&self) -> StateMachine {
         let mut map = HashMap::with_capacity(self.keys.len());
+        let mut has_layer1 = false;
         let mut num_groups = 0;
         for (keycode, key) in &self.keys {
-            let mut any_groups = false;
             let mut groups = Vec::with_capacity(key.groups.len());
             num_groups = num_groups.max(key.groups.len());
             for group in &key.groups {
                 match group {
                     None => groups.push(None),
                     Some(g) => {
-                        let mut any_levels = false;
                         let mut levels = Vec::with_capacity(g.levels.len());
                         for level in &g.levels {
                             match level {
                                 None => levels.push(state_machine::KeyLevel::default()),
-                                Some(l) => {
-                                    any_levels |= l.routine.is_some();
-                                    levels.push(state_machine::KeyLevel {
-                                        routine: l.routine.clone(),
-                                    })
-                                }
+                                Some(l) => levels.push(state_machine::KeyLevel {
+                                    routine: l.routine.clone(),
+                                }),
                             }
                         }
-                        any_groups |= any_levels;
-                        groups.push(Some(state_machine::KeyGroup {
-                            ty: g.ty.clone(),
-                            levels: levels.into_boxed_slice(),
-                        }));
+                        while let Some(level) = levels.last() {
+                            if level.routine.is_none() {
+                                levels.pop();
+                            } else {
+                                break;
+                            }
+                        }
+                        if levels.is_empty() {
+                            groups.push(None);
+                        } else {
+                            groups.push(Some(state_machine::KeyGroup {
+                                ty: g.ty.clone(),
+                                levels: levels.into_boxed_slice(),
+                            }));
+                        }
                     }
                 }
             }
-            if any_groups {
+            if groups.iter().all(|g| g.is_none()) {
+                groups.clear();
+            }
+            if groups.is_not_empty() || key.routine.is_some() {
+                has_layer1 |= key.routine.is_some();
                 map.insert(
                     *keycode,
                     state_machine::KeyGroups {
                         redirect: key.redirect.constrain(groups.len()),
                         groups: groups.into_boxed_slice(),
+                        routine: key.routine.clone(),
                     },
                 );
             }
@@ -448,6 +460,7 @@ impl Builder {
             num_groups: (num_groups as u32).max(1),
             num_globals: self.next_global as usize,
             keys: map_to_vec(map),
+            has_layer1,
         }
     }
 
@@ -550,6 +563,35 @@ impl KeyBuilder {
             self.key.groups.resize_with(group.idx + 1, Default::default);
         }
         self.key.groups[group.idx] = Some(group.group);
+    }
+
+    /// Sets the routine of this key.
+    ///
+    /// This is a more advanced feature than [`LevelBuilder::routine`] and usually not
+    /// required.
+    ///
+    /// If no routine is set, then the default routine executes the following steps:
+    ///
+    /// - On press:
+    ///   - `key_down` for the keycode.
+    /// - On release:
+    ///   - `key_up` for the keycode.
+    ///
+    /// This routine can be used to implement key locking, radio groups, overlays, etc. It
+    /// is executed before the state machine determines which groups to use. The keycode
+    /// used in `key_down` instructions determines how to retrieve the groups.
+    ///
+    /// The routine can use `key_down` and `key_up` as many times as it likes.
+    ///
+    /// The routine can neither access nor manipulate the components (modifiers, groups)
+    /// of the state machine. Trying to access them always returns 0, trying to modify
+    /// them has no effect. The same applies to the `later_key_actuated` flag.
+    ///
+    /// If the routine uses globals, these globals should have been allocated via
+    /// [`Builder::add_global`] of the builder that this key is ultimately attached to.
+    pub fn routine(&mut self, routine: &Routine) -> &mut Self {
+        self.key.routine = Some(routine.clone());
+        self
     }
 }
 

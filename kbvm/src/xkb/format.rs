@@ -9,7 +9,7 @@ use {
                     GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
                     ModsLockAction, ModsSetAction, RedirectKeyAction,
                 },
-                Action, Indicator, KeyGroup, KeyLevel, KeyType,
+                Action, Indicator, KeyBehavior, KeyGroup, KeyLevel, KeyType,
             },
             mod_component::ModComponentMask,
             resolved::GroupsRedirect,
@@ -552,6 +552,16 @@ impl Format for Keys<'_> {
                 if !key.repeat {
                     f.write_nesting()?;
                     f.write("repeat = false")?;
+                    needs_newline = true;
+                }
+                if let Some(behavior) = &key.behavior {
+                    handle_newline(&mut needs_newline, f)?;
+                    f.write_nesting()?;
+                    match behavior {
+                        KeyBehavior::Lock => {
+                            f.write("locks = true")?;
+                        }
+                    }
                     needs_newline = true;
                 }
                 if key.redirect != GroupsRedirect::Wrap {

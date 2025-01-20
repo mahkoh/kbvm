@@ -17,8 +17,8 @@ use {
                     GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
                     ModsLockAction, ModsSetAction, RedirectKeyAction,
                 },
-                Action, Indicator, Key, KeyGroup, KeyLevel, KeyType, KeyTypeMapping, ModMapValue,
-                VirtualModifier,
+                Action, Indicator, Key, KeyBehavior, KeyGroup, KeyLevel, KeyType, KeyTypeMapping,
+                ModMapValue, VirtualModifier,
             },
             level::Level,
             mod_component::ModComponentMask,
@@ -39,7 +39,7 @@ use {
         errors::{ConnectionError, ReplyError},
         protocol::{
             xkb::{
-                self, BoolCtrl, ConnectionExt as E2, DeviceSpec, GetControlsReply,
+                self, BehaviorType, BoolCtrl, ConnectionExt as E2, DeviceSpec, GetControlsReply,
                 GetIndicatorMapReply, GetMapReply, GetNamesReply, IDSpec, IMGroupsWhich,
                 IMModsWhich, LedClass, MapPart, NameDetail, SAIsoLockFlag, SAType, VMod, XIFeature,
                 ID, SA,
@@ -236,6 +236,7 @@ where
         | MapPart::MODIFIER_MAP
         | MapPart::EXPLICIT_COMPONENTS
         | MapPart::KEY_ACTIONS
+        | MapPart::KEY_BEHAVIORS
         | MapPart::VIRTUAL_MODS
         | MapPart::VIRTUAL_MOD_MAP;
     let names = NameDetail::KEYCODES
@@ -718,9 +719,24 @@ where
                     key_code: kc,
                     groups,
                     repeat,
+                    behavior: None,
                     redirect,
                 },
             );
+        }
+        let behaviors = self.map.map.behaviors_rtrn.as_deref().unwrap_or_default();
+        for behavior in behaviors {
+            let keycode = Keycode::from_x11(behavior.keycode as u32);
+            let Some(key) = self.keys.get_mut(&keycode) else {
+                continue;
+            };
+            #[expect(clippy::single_match)]
+            match BehaviorType::from(behavior.behavior.as_type()) {
+                BehaviorType::LOCK => {
+                    key.behavior = Some(KeyBehavior::Lock);
+                }
+                _ => {}
+            }
         }
     }
 

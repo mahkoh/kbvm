@@ -71,12 +71,14 @@ pub struct StateMachine {
     pub(crate) num_globals: usize,
     // pub(crate) keys: HashMap<Keycode, KeyGroups>,
     pub(crate) keys: Vec<Option<KeyGroups>>,
+    pub(crate) has_layer1: bool,
 }
 
 #[derive(Debug, Clone)]
 pub(crate) struct KeyGroups {
     pub(crate) groups: Box<[Option<KeyGroup>]>,
     pub(crate) redirect: Redirect,
+    pub(crate) routine: Option<Routine>,
 }
 
 #[derive(Debug, Clone)]
@@ -97,11 +99,35 @@ pub(crate) struct KeyLevel {
 #[derive(Clone, Debug)]
 pub struct State {
     globals: Box<[u32]>,
+    layer1: Vec<Layer1Base>,
     layer2: Vec<Layer2Base>,
+    next: Layer2State,
+    actuation: u64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Layer2State {
     layer3: Vec<Layer3>,
     mods_pressed_count: [u32; NUM_MODS],
     components: Components,
-    actuation: u64,
+}
+
+impl Layer2State {
+    fn create_handler<'a>(
+        &'a mut self,
+        events: &'a mut Vec<Event>,
+        machine: &'a StateMachine,
+    ) -> Layer2Handler<'a> {
+        Layer2Handler {
+            num_groups: machine.num_groups,
+            mods_pressed_count: &mut self.mods_pressed_count,
+            acc_state: self.components,
+            pub_state: &mut self.components,
+            events,
+            any_state_changed: false,
+            layer3: &mut self.layer3,
+        }
+    }
 }
 
 /// An event emitted by a [`StateMachine`].
@@ -169,6 +195,131 @@ impl Debug for Event {
             Event::GroupEffective(g) => write!(f, "group_effective = {g:?}"),
             Event::KeyDown(k) => write!(f, "key_down({})", k.0),
             Event::KeyUp(k) => write!(f, "key_up({})", k.0),
+        }
+    }
+}
+
+struct Layer1Handler<'a> {
+    actuation: u64,
+    machine: &'a StateMachine,
+    layer2: &'a mut Vec<Layer2Base>,
+    next: &'a mut Layer2State,
+    events: &'a mut Vec<Event>,
+}
+
+#[inline(always)]
+fn adjust_spill(spill: &mut Box<[u32]>, size: usize) {
+    if size > 0 {
+        if size <= spill.len() {
+            spill[..size].fill(0);
+        } else {
+            *spill = vec![0; size].into_boxed_slice();
+        }
+    }
+}
+
+impl StateEventHandler for Layer1Handler<'_> {
+    #[inline(always)]
+    fn key_down(&mut self, globals: &mut [u32], key: Keycode) {
+        let mut slot = None;
+        for base in &mut *self.layer2 {
+            if base.key != Some(key) {
+                if base.key.is_none() {
+                    slot = Some(base);
+                }
+                continue;
+            }
+            let layer2 = &mut base.layer2;
+            layer2.rc = layer2.rc.saturating_add(1);
+            return;
+        }
+        let group = self.next.components.group;
+        let mods = self.next.components.mods;
+        let mut on_press = None;
+        let mut on_release = None;
+        let mut spill = 0;
+        if let Some(Some(key_groups)) = self.machine.keys.get(key.0 as usize) {
+            if key_groups.groups.is_not_empty() {
+                let group = key_groups.redirect.apply(group, key_groups.groups.len());
+                if let Some(key_group) = &key_groups.groups[group] {
+                    let mapping = key_group.ty.map(mods);
+                    let level = mapping.level;
+                    if let Some(key_level) = key_group.levels.get(level) {
+                        if let Some(routine) = &key_level.routine {
+                            on_press = Some(&routine.on_press);
+                            on_release = Some(routine.on_release.clone());
+                            spill = routine.spill;
+                        }
+                    }
+                }
+            }
+        }
+        let base = match slot {
+            Some(slot) => slot,
+            _ => {
+                self.layer2.push(Layer2Base {
+                    key: None,
+                    layer2: Default::default(),
+                });
+                self.layer2.last_mut().unwrap()
+            }
+        };
+        base.key = Some(key);
+        let layer2 = &mut base.layer2;
+        layer2.rc = 1;
+        layer2.actuation = self.actuation + 1;
+        layer2.registers_log = Default::default();
+        layer2.flags = Default::default();
+        layer2.on_release = on_release;
+        adjust_spill(&mut layer2.spill, spill);
+        let mut handler = self.next.create_handler(self.events, self.machine);
+        if let Some(on_press) = on_press {
+            run(
+                &mut handler,
+                on_press,
+                &mut layer2.registers_log,
+                globals,
+                &mut layer2.flags,
+                &mut layer2.spill,
+            );
+        } else {
+            handler.key_down(globals, key);
+            if handler.acc_state.any_latched() {
+                handler.mods_latched_store(0);
+                handler.group_latched_store(0);
+            }
+        }
+        handler.flush_state();
+    }
+
+    #[inline(always)]
+    fn key_up(&mut self, globals: &mut [u32], key: Keycode) {
+        for base in &mut *self.layer2 {
+            if base.key != Some(key) {
+                continue;
+            }
+            let layer2 = &mut base.layer2;
+            layer2.rc -= 1;
+            if layer2.rc != 0 {
+                return;
+            }
+            layer2.flags[Flag::LaterKeyActuated] = (layer2.actuation < self.actuation) as u32;
+            let mut handler = self.next.create_handler(self.events, self.machine);
+            if let Some(release) = &layer2.on_release {
+                run(
+                    &mut handler,
+                    release,
+                    &mut layer2.registers_log,
+                    globals,
+                    &mut layer2.flags,
+                    &mut layer2.spill,
+                );
+                handler.flush_state();
+            } else {
+                handler.key_up(globals, key);
+            }
+            base.key = None;
+            return;
         }
     }
 }
@@ -339,7 +490,7 @@ impl StateEventHandler for Layer2Handler<'_> {
     }
 
     #[inline(always)]
-    fn key_down(&mut self, keycode: Keycode) {
+    fn key_down(&mut self, _globals: &mut [u32], keycode: Keycode) {
         // println!("down {:?}", self.layer3);
         let mut slot = None;
         for key in &mut *self.layer3 {
@@ -364,7 +515,7 @@ impl StateEventHandler for Layer2Handler<'_> {
     }
 
     #[inline(always)]
-    fn key_up(&mut self, keycode: Keycode) {
+    fn key_up(&mut self, _globals: &mut [u32], keycode: Keycode) {
         // println!("up   {:?}", self.layer3);
         'find_key: {
             for key in &mut *self.layer3 {
@@ -383,6 +534,20 @@ impl StateEventHandler for Layer2Handler<'_> {
         self.flush_state();
         self.events.push(Event::KeyUp(keycode));
     }
+}
+
+#[derive(Clone, Debug)]
+struct Layer1Base {
+    key: Option<Keycode>,
+    layer1: Box<Layer1>,
+}
+
+#[derive(Default, Clone, Debug)]
+struct Layer1 {
+    rc: u32,
+    registers_log: StaticMap<Register, u32>,
+    on_release: Option<Arc<[Lo]>>,
+    spill: Box<[u32]>,
 }
 
 #[derive(Clone, Debug)]
@@ -422,10 +587,9 @@ impl StateMachine {
     pub fn create_state(&self) -> State {
         State {
             globals: vec![0; self.num_globals].into_boxed_slice(),
+            layer1: Default::default(),
             layer2: Default::default(),
-            layer3: Default::default(),
-            mods_pressed_count: Default::default(),
-            components: Default::default(),
+            next: Default::default(),
             actuation: Default::default(),
         }
     }
@@ -526,45 +690,55 @@ impl StateMachine {
         key: Keycode,
         direction: Direction,
     ) {
+        let mut handler = Layer1Handler {
+            actuation: state.actuation,
+            machine: self,
+            events,
+            next: &mut state.next,
+            layer2: &mut state.layer2,
+        };
+        if !self.has_layer1 {
+            match direction {
+                Direction::Up => {
+                    handler.key_up(&mut state.globals, key);
+                }
+                Direction::Down => {
+                    handler.key_down(&mut state.globals, key);
+                }
+            }
+            return;
+        }
+        #[cold]
+        fn cold() {}
+        cold();
         let mut slot = None;
-        for base in &mut state.layer2 {
+        for base in &mut state.layer1 {
             if base.key != Some(key) {
                 if base.key.is_none() {
                     slot = Some(base);
                 }
                 continue;
             }
-            let layer2 = &mut base.layer2;
+            let layer1 = &mut base.layer1;
             if direction == Direction::Down {
-                layer2.rc = layer2.rc.saturating_add(1);
+                layer1.rc = layer1.rc.saturating_add(1);
                 return;
             }
-            layer2.rc -= 1;
-            if layer2.rc != 0 {
+            layer1.rc -= 1;
+            if layer1.rc != 0 {
                 return;
             }
-            layer2.flags[Flag::LaterKeyActuated] = (layer2.actuation < state.actuation) as u32;
-            let mut handler = Layer2Handler {
-                num_groups: self.num_groups,
-                mods_pressed_count: &mut state.mods_pressed_count,
-                acc_state: state.components,
-                pub_state: &mut state.components,
-                events,
-                any_state_changed: false,
-                layer3: &mut state.layer3,
-            };
-            if let Some(release) = &layer2.on_release {
+            if let Some(release) = &layer1.on_release {
                 run(
                     &mut handler,
                     release,
-                    &mut layer2.registers_log,
+                    &mut layer1.registers_log,
                     &mut state.globals,
-                    &mut layer2.flags,
-                    &mut layer2.spill,
+                    &mut StaticMap::default(),
+                    &mut layer1.spill,
                 );
-                handler.flush_state();
             } else {
-                handler.key_up(key);
+                handler.key_up(&mut state.globals, key);
             }
             base.key = None;
             return;
@@ -572,76 +746,43 @@ impl StateMachine {
         if direction == Direction::Up {
             return;
         }
-        let group = state.components.group;
-        let mods = state.components.mods;
         let mut on_press = None;
         let mut on_release = None;
         let mut spill = 0;
         if let Some(Some(key_groups)) = self.keys.get(key.0 as usize) {
-            if key_groups.groups.is_not_empty() {
-                let group = key_groups.redirect.apply(group, key_groups.groups.len());
-                if let Some(key_group) = &key_groups.groups[group] {
-                    let mapping = key_group.ty.map(mods);
-                    let level = mapping.level;
-                    if let Some(key_level) = key_group.levels.get(level) {
-                        if let Some(routine) = &key_level.routine {
-                            on_press = Some(&routine.on_press);
-                            on_release = Some(routine.on_release.clone());
-                            spill = routine.spill;
-                        }
-                    }
-                }
+            if let Some(routine) = &key_groups.routine {
+                on_press = Some(&routine.on_press);
+                on_release = Some(routine.on_release.clone());
+                spill = routine.spill;
             }
         }
         let base = match slot {
             Some(slot) => slot,
             _ => {
-                state.layer2.push(Layer2Base {
+                state.layer1.push(Layer1Base {
                     key: None,
-                    layer2: Default::default(),
+                    layer1: Default::default(),
                 });
-                state.layer2.last_mut().unwrap()
+                state.layer1.last_mut().unwrap()
             }
         };
         base.key = Some(key);
-        let layer2 = &mut base.layer2;
-        layer2.rc = 1;
-        layer2.actuation = state.actuation + 1;
-        layer2.registers_log = Default::default();
-        layer2.flags = Default::default();
-        layer2.on_release = on_release;
-        if spill > 0 {
-            if spill <= layer2.spill.len() {
-                layer2.spill[..spill].fill(0);
-            } else {
-                layer2.spill = vec![0; spill].into_boxed_slice();
-            }
-        }
-        let mut handler = Layer2Handler {
-            num_groups: self.num_groups,
-            mods_pressed_count: &mut state.mods_pressed_count,
-            acc_state: state.components,
-            pub_state: &mut state.components,
-            events,
-            any_state_changed: false,
-            layer3: &mut state.layer3,
-        };
+        let layer1 = &mut base.layer1;
+        layer1.rc = 1;
+        layer1.registers_log = Default::default();
+        layer1.on_release = on_release;
+        adjust_spill(&mut layer1.spill, spill);
         if let Some(on_press) = on_press {
             run(
                 &mut handler,
                 on_press,
-                &mut layer2.registers_log,
+                &mut layer1.registers_log,
                 &mut state.globals,
-                &mut layer2.flags,
-                &mut layer2.spill,
+                &mut StaticMap::default(),
+                &mut layer1.spill,
             );
         } else {
-            handler.key_down(key);
-            if handler.acc_state.any_latched() {
-                handler.mods_latched_store(0);
-                handler.group_latched_store(0);
-            }
+            handler.key_down(&mut state.globals, key);
         }
-        handler.flush_state();
     }
 }

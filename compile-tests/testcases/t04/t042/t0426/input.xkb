@@ -1,0 +1,9 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        key <a> { !locks, };
+        augment key <a> { locks };
+    };
+};

@@ -1,0 +1,25 @@
+both leftshift
+    key_down(leftshift)
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+both a
+    key_down(a)
+    sym = A, char = 'A'
+    key_up(a)
+both leftshift
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+
+both leftshift
+    key_down(leftshift)
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+both a
+    key_down(a)
+    sym = A, char = 'A'
+    key_up(a)

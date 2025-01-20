@@ -128,8 +128,6 @@ pub(crate) enum EvalError {
     UnknownFilterPredicate,
     #[error("unknown `interpret` field")]
     UnknownInterpretField,
-    #[error("unimplemented `interpret` field")]
-    UnimplementedInterpretField,
     #[error("interpret `action` argument must have a value")]
     MissingInterpretActionValue,
     #[error("interpret `virtualmodifier` argument must have a value")]
@@ -260,7 +258,6 @@ impl EvalError {
             NamedFilterArgArgument,
             UnknownFilterPredicate,
             UnknownInterpretField,
-            UnimplementedInterpretField,
             MissingInterpretActionValue,
             MissingInterpretVirtualmodValue,
             UnknownInterpretVirtualModifier,
@@ -1394,6 +1391,7 @@ pub(crate) enum InterpField {
     Action(ResolvedAction),
     VirtualModifier(ModifierIndex),
     Repeat(bool),
+    Locking(bool),
     LevelOneOnly(bool),
 }
 
@@ -1480,7 +1478,7 @@ pub(crate) fn eval_interp_field(
             InterpField::LevelOneOnly(val)
         }
         Meaning::Repeat => InterpField::Repeat(boolean()?),
-        Meaning::Locking => return Err(UnimplementedInterpretField.spanned2(var.path.span)),
+        Meaning::Locking => InterpField::Locking(boolean()?),
         _ => return Err(UnknownInterpretField.spanned2(var.path.span)),
     };
     Ok(res.spanned2(span))
@@ -1665,6 +1663,7 @@ pub(crate) enum SymbolsField {
     Actions((Option<GroupIdx>, GroupList<ResolvedAction>)),
     Virtualmodifiers(ModifierMask),
     Repeating(Option<bool>),
+    Locks(bool),
     Groupswrap,
     Groupsclamp,
     Groupsredirect(GroupIdx),
@@ -1877,6 +1876,10 @@ pub(crate) fn eval_symbols_field(
                 Some(boolean()?)
             };
             SymbolsField::Repeating(repeating)
+        }
+        Meaning::Locking | Meaning::Lock | Meaning::Locks => {
+            deny_idx!();
+            SymbolsField::Locks(boolean()?)
         }
         Meaning::Groupswrap | Meaning::Wrapgroups => {
             deny_idx!();

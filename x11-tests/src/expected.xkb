@@ -1021,6 +1021,7 @@ xkb_keymap {
             symbols[Group1] = [ XF86Explorer ]
         };
         key <I153> {
+            locks = true,
             type[Group1] = "ONE_LEVEL",
             symbols[Group1] = [ XF86Send ]
         };

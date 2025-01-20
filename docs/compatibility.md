@@ -18,7 +18,8 @@ KBVM supports a number of syntax extensions:
 ### Semantics
 
 - `xkb_geometry` items are ignored.
-- No key behaviors are supported.
+- Only the following behaviors are supported:
+  - Locking
 - Only the following actions are supported:
   - `SetMods`
   - `LatchMods`

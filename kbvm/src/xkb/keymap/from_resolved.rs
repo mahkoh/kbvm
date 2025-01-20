@@ -5,15 +5,15 @@ use {
             interner::{Interned, Interner},
             keymap::{
                 actions::RedirectKeyAction, Action, GroupLatchAction, GroupLockAction,
-                GroupSetAction, Indicator, Key, KeyGroup, KeyLevel, KeyType, KeyTypeMapping,
-                Keycode, ModMapValue, ModsLatchAction, ModsLockAction, ModsSetAction,
-                VirtualModifier,
+                GroupSetAction, Indicator, Key, KeyBehavior, KeyGroup, KeyLevel, KeyType,
+                KeyTypeMapping, Keycode, ModMapValue, ModsLatchAction, ModsLockAction,
+                ModsSetAction, VirtualModifier,
             },
             level::Level,
             mod_component::ModComponentMask,
             resolved::{
                 BuiltInKeytype, GroupsRedirect, KeyTypeRef, ModMapField, Resolved, ResolvedAction,
-                ResolvedActionMods, ResolvedKeyKind, SymbolsKeyGroup,
+                ResolvedActionMods, ResolvedKeyKind, SymbolsKeyBehavior, SymbolsKeyGroup,
             },
             span::{Despan, Spanned},
             Keymap,
@@ -199,6 +199,7 @@ impl Keymap {
                 key_name: get_string(key.name.val),
                 key_code: key.code,
                 repeat: key.key.repeating.despan().flatten().unwrap_or(false),
+                behavior: key.key.behavior.as_ref().and_then(|b| map_behavior(&b.val)),
                 redirect,
                 groups,
             };
@@ -236,6 +237,18 @@ impl Keymap {
             keys,
         }
     }
+}
+
+fn map_behavior(b: &SymbolsKeyBehavior) -> Option<KeyBehavior> {
+    let behavior = match b {
+        SymbolsKeyBehavior::Locks(b) => {
+            if !*b {
+                return None;
+            }
+            KeyBehavior::Lock
+        }
+    };
+    Some(behavior)
 }
 
 fn map_symbol_groups(

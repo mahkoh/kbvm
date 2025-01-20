@@ -34,7 +34,8 @@ use {
                 ModMapField, Predicate, Resolved, ResolvedAction, ResolvedActionMods,
                 ResolvedCompat, ResolvedKey, ResolvedKeyKind, ResolvedKeyType,
                 ResolvedKeyTypeWithName, ResolvedKeycodes, ResolvedSymbols, ResolvedTypes,
-                SymbolsKey, SymbolsKeyGroup, SymbolsKeyLevel, SymbolsKeyWithKey,
+                SymbolsKey, SymbolsKeyBehavior, SymbolsKeyGroup, SymbolsKeyLevel,
+                SymbolsKeyWithKey,
             },
             span::{Span, SpanExt, Spanned},
             string_cooker::StringCooker,
@@ -436,6 +437,11 @@ fn fix_combined_properties(
                     }
                     if let Some(repeat) = interp.interp.repeat {
                         handle_repeat(repeat);
+                    }
+                    if let Some(locks) = interp.interp.locking {
+                        if (group_idx, level_idx) == (0, 0) && key.behavior.is_none() {
+                            key.behavior = Some(locks.map(SymbolsKeyBehavior::Locks));
+                        }
                     }
                 }
             }
@@ -992,6 +998,9 @@ impl Interp {
             InterpField::LevelOneOnly(u) => {
                 self.level_one_only = Some(u.spanned2(field.span));
             }
+            InterpField::Locking(e) => {
+                self.locking = Some(e.spanned2(field.span));
+            }
         }
     }
 }
@@ -1397,6 +1406,9 @@ impl SymbolsKey {
             SymbolsField::Repeating(e) => {
                 self.repeating = Some(e.spanned2(f.span));
             }
+            SymbolsField::Locks(e) => {
+                self.behavior = Some(SymbolsKeyBehavior::Locks(e).spanned2(f.span));
+            }
             SymbolsField::Groupswrap => {
                 self.groups_redirect = Some(GroupsRedirect::Wrap.spanned2(f.span))
             }
@@ -1550,6 +1562,7 @@ impl SymbolsResolver<'_, '_, '_, '_> {
             opt!(virtualmodifiers);
             opt!(repeating);
             opt!(groups_redirect);
+            opt!(behavior);
         } else {
             entry.insert(SymbolsKeyWithKey {
                 name: real_name,
