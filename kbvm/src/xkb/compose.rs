@@ -394,10 +394,11 @@ impl LocaleLines {
             } else {
                 continue;
             };
+            let ret = Some((l.trim_ascii(), r.trim_ascii()));
             unsafe {
                 type Ret<'b> = Option<(&'b [u8], &'b [u8])>;
                 // SAFETY: This is a compiler bug that will never be fixed.
-                return mem::transmute::<Ret<'_>, Ret<'a>>(Some((l.trim_ascii(), r.trim_ascii())));
+                return mem::transmute::<Ret<'_>, Ret<'a>>(ret);
             }
         }
     }
