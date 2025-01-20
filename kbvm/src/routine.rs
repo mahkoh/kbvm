@@ -604,11 +604,13 @@ pub(crate) trait StateEventHandler {
         let _ = val;
     }
 
-    fn key_down(&mut self, keycode: Keycode) {
+    fn key_down(&mut self, globals: &mut [u32], keycode: Keycode) {
+        let _ = globals;
         let _ = keycode;
     }
 
-    fn key_up(&mut self, keycode: Keycode) {
+    fn key_up(&mut self, globals: &mut [u32], keycode: Keycode) {
+        let _ = globals;
         let _ = keycode;
     }
 }
@@ -791,11 +793,11 @@ pub(crate) fn run<H>(
             }
             Lo::KeyDown { rs } => {
                 let s = registers[rs];
-                h.key_down(Keycode(s));
+                h.key_down(globals, Keycode(s));
             }
             Lo::KeyUp { rs } => {
                 let s = registers[rs];
-                h.key_up(Keycode(s));
+                h.key_up(globals, Keycode(s));
             }
             Lo::ModsPressedLoad { rd } => registers[rd] = h.mods_pressed_load(),
             Lo::ModsPressedStore { rs } => h.mods_pressed_store(registers[rs]),
