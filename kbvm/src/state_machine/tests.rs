@@ -12,6 +12,7 @@ fn test() {
     let mut sink = vec![];
     let mut context = Context::builder();
     context.clear();
+    context.enable_environment(false);
     let keymap = context
         .build()
         .keymap_from_bytes(&mut sink, None, MAP.as_bytes())

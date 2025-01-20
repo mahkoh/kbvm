@@ -11,7 +11,7 @@ fn shift_press_release(c: &mut Criterion) {
     let mut builder = context.compose_table_builder();
     builder.buffer(COMPOSE);
     let table = builder.build(WriteToStderr).unwrap();
-    let mut state = table.state();
+    let mut state = table.create_state();
     c.bench_function("compose no-match", |b| {
         b.iter(|| {
             black_box(table.feed(&mut state, syms::a));

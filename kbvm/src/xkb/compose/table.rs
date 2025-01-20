@@ -63,7 +63,7 @@ enum NodeType {
 /// # use kbvm::xkb::diagnostic::WriteToLog;
 /// let context = Context::default();
 /// let table = context.compose_table_builder().build(WriteToLog).unwrap();
-/// let mut state = table.state();
+/// let mut state = table.create_state();
 /// let res = table.feed(&mut state, syms::dead_acute);
 /// println!("{:?}", res);
 /// let res = table.feed(&mut state, syms::dead_acute);
@@ -84,10 +84,10 @@ pub struct ComposeTable {
 
 /// The state of a compose operation.
 ///
-/// This object is created via [`ComposeTable::state`] and should only be used with the
+/// This object is created via [`ComposeTable::create_state`] and should only be used with the
 /// table that it was created from.
 ///
-/// This object is essentially a pointer into the compose table and cheap to clone.
+/// This object is essentially a pointer into the compose table and is cheap to clone.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct State {
     range: Range<usize>,
@@ -103,7 +103,7 @@ pub enum FeedResult<'a> {
     /// valid continuation.
     Aborted,
     /// The call completed a compose sequence. The `string` and `keysym` fields contain
-    /// the generated output. At least one of them is not `None`.
+    /// the generated output.
     Composed {
         string: Option<&'a str>,
         keysym: Option<Keysym>,
@@ -380,7 +380,7 @@ impl ComposeTable {
     /// Creates a new [`State`] for use with this table.
     ///
     /// The returned state is in the initial state.
-    pub fn state(&self) -> State {
+    pub fn create_state(&self) -> State {
         let NodeType::Intermediate { range } = self.nodes[0].deserialize() else {
             unreachable!();
         };
@@ -389,7 +389,7 @@ impl ComposeTable {
 
     /// Advance the compose state.
     ///
-    /// The `state` should have been created by [`Self::state`]. Otherwise this function
+    /// The `state` should have been created by [`Self::create_state`]. Otherwise this function
     /// might panic.
     ///
     /// This function returns `None` if the call had no effect. This happens in two
@@ -421,7 +421,7 @@ impl ComposeTable {
                     FeedResult::Pending
                 }
                 NodeType::Leaf { payload } => {
-                    *state = self.state();
+                    *state = self.create_state();
                     let payload = &self.payloads[payload];
                     FeedResult::Composed {
                         string: payload.string.as_deref(),
@@ -434,7 +434,7 @@ impl ComposeTable {
         if state.range.start == 1 {
             return None;
         }
-        *state = self.state();
+        *state = self.create_state();
         Some(FeedResult::Aborted)
     }
 
@@ -448,7 +448,7 @@ impl ComposeTable {
         Iter {
             table: self,
             stack: vec![],
-            child_range: vec![self.state().range],
+            child_range: vec![self.create_state().range],
         }
     }
 

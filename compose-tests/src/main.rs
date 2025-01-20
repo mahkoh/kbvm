@@ -108,7 +108,7 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
     let input_path = case.join("input.txt");
     let input = std::fs::read_to_string(&input_path).map_err(ResultError::ReadInputFailed)?;
 
-    let mut state = table.state();
+    let mut state = table.create_state();
 
     for mut line in input.lines() {
         writeln!(actual, "{}", line).unwrap();

@@ -24,6 +24,7 @@ fn init_env() {
 fn default_env() {
     let mut context = Context::builder();
     context.clear();
+    context.enable_environment(false);
     let context = context.build();
     let e = &context.env;
     assert_eq!(e.home, None);
@@ -74,7 +75,8 @@ fn env_paths() {
 fn system_paths() {
     let mut context = Context::builder();
     context.clear();
-    context.enable_system_paths(true);
+    context.enable_environment(false);
+    context.enable_default_includes(true);
     let c = context.build();
     assert_eq!(c.paths.len(), 2);
     assert_eq!(c.paths[0].as_os_str(), "/etc/xkb");
@@ -86,7 +88,7 @@ fn system_and_env_paths() {
     init_env();
     let mut context = Context::builder();
     context.clear();
-    context.enable_system_paths(true);
+    context.enable_default_includes(true);
     context.enable_environment(true);
     let c = context.build();
     assert_eq!(c.paths.len(), 4);
@@ -100,7 +102,8 @@ fn system_and_env_paths() {
 fn prefix_and_suffix() {
     let mut context = Context::builder();
     context.clear();
-    context.enable_system_paths(true);
+    context.enable_environment(false);
+    context.enable_default_includes(true);
     context.prepend_path("prefix1");
     context.prepend_path("prefix2");
     context.append_path("suffix1");
@@ -119,6 +122,7 @@ fn prefix_and_suffix() {
 fn default_extra_paths() {
     let mut context = Context::builder();
     context.clear();
+    context.enable_environment(false);
     let c = context.build();
     assert_eq!(c.load_extra_rules, false);
 }
@@ -127,6 +131,7 @@ fn default_extra_paths() {
 fn enable_extra_paths() {
     let mut context = Context::builder();
     context.clear();
+    context.enable_environment(false);
     context.load_extra_rules(true);
     let c = context.build();
     assert_eq!(c.load_extra_rules, true);
@@ -136,6 +141,7 @@ fn enable_extra_paths() {
 fn default_limits() {
     let mut context = Context::builder();
     context.clear();
+    context.enable_environment(false);
     let c = context.build();
     assert_eq!(c.max_includes, 1024);
     assert_eq!(c.max_include_depth, 128);
@@ -147,6 +153,7 @@ fn default_limits() {
 fn custom_limits() {
     let mut context = Context::builder();
     context.clear();
+    context.enable_environment(false);
     context.max_includes(123);
     context.max_include_depth(456);
     context.max_runtime(789);

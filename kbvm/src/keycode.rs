@@ -1,3 +1,5 @@
+#[allow(unused_imports)]
+use crate::{evdev, routine::Routine};
 use kbvm_proc::CloneWithDelta;
 
 /// A keycode.

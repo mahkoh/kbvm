@@ -17,7 +17,7 @@ pub(crate) mod hidden {
     /// A modifier mask.
     ///
     /// KBVM does not inherently assign meaning to the bits in the mask. However, in the
-    /// XKB ecosystem, the bits in the least significant byte has the following meaning:
+    /// XKB ecosystem, the bits in the least significant byte have the following meaning:
     ///
     /// - `0x01` - [`Self::SHIFT`]
     /// - `0x02` - [`Self::LOCK`]

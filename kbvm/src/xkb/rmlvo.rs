@@ -76,6 +76,8 @@ pub enum MergeMode {
 
 /// An include statement in an XKB section.
 ///
+/// This is part of [`Expanded`].
+///
 /// # Example
 ///
 /// ```xkb

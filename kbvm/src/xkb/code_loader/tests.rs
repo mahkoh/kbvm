@@ -27,6 +27,7 @@ fn absolute_path() {
     let map = format!(map!(), path);
     let mut context = Context::builder();
     context.clear();
+    context.enable_environment(false);
     let context = context.build();
     let keymap = context
         .keymap_from_bytes(WriteToStderr, None, &map)

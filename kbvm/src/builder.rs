@@ -20,7 +20,7 @@ use {
     smallvec::SmallVec,
 };
 
-/// A builder for compositor-side [`StateMachine`] and client-side [`LookupTable`].
+/// A builder for compositor-side [`StateMachine`]s and client-side [`LookupTable`]s.
 ///
 /// This type is usually created using [`Keymap::to_builder`] but can also be created
 /// manually.
@@ -396,7 +396,7 @@ impl Builder {
 
     /// Adds a key to this builder.
     ///
-    /// If a key with this keycode already exists, it is overwritten.
+    /// If a key with the same keycode already exists, it is overwritten.
     pub fn add_key(&mut self, key: KeyBuilder) {
         self.keys.insert(key.code, key.key);
     }
@@ -544,7 +544,7 @@ impl KeyBuilder {
 
     /// Adds a group to this key.
     ///
-    /// If a group with this index already exists, it is overwritten.
+    /// If a group with the same index already exists, it is overwritten.
     pub fn add_group(&mut self, group: GroupBuilder) {
         if self.key.groups.len() <= group.idx {
             self.key.groups.resize_with(group.idx + 1, Default::default);
@@ -567,7 +567,7 @@ impl GroupBuilder {
 
     /// Adds a level to the group.
     ///
-    /// If a level with this index already exists, it is overwritten.
+    /// If a level with the same index already exists, it is overwritten.
     pub fn add_level(&mut self, level: LevelBuilder) {
         if self.group.levels.len() <= level.idx {
             self.group
@@ -579,10 +579,10 @@ impl GroupBuilder {
 }
 
 impl LevelBuilder {
-    /// Creates a new builder for the given level.
-    pub fn new(level: usize) -> Self {
+    /// Creates a new builder for the given index.
+    pub fn new(idx: usize) -> Self {
         Self {
-            idx: level,
+            idx,
             level: Default::default(),
         }
     }

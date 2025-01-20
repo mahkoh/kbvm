@@ -58,8 +58,6 @@ use {
 ///         <a> = 38;
 ///         <leftshift> = 50;
 ///     };
-///     xkb_types { };
-///     xkb_compat { };
 ///     xkb_symbols {
 ///         key <a> {
 ///             [ a, A ],
@@ -698,7 +696,7 @@ impl Key {
     ///
     /// The iterator returns two elements, one for `[ a, A ]` and one for `[ b, B ]`.
     ///
-    /// # Example 1
+    /// # Example 2
     ///
     /// ```xkb
     /// xkb_symbols {
@@ -808,7 +806,7 @@ impl KeyType {
     /// ```
     ///
     /// The iterator returns one mapping for `map[Shift]` and one mapping for
-    /// `map[Shift]`.
+    /// `map[Mod1]`.
     ///
     /// Note that no mappings are returned for `map[None]` and `map[Shift+Mod1]`.
     pub fn mappings(&self) -> Mappings<'_> {

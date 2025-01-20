@@ -280,7 +280,7 @@ impl State {
                         builder.file(path);
                     }
                     builder.build(WriteToLog).map(|table| Compose {
-                        state: table.state(),
+                        state: table.create_state(),
                         table,
                     })
                 };

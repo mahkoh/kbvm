@@ -9,7 +9,7 @@ use crate::{
     ModifierMask,
 };
 
-/// The active modifiers/groups of a keyboard.
+/// The active modifiers/group of a keyboard.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Default)]
 #[non_exhaustive]
 pub struct Components {
@@ -65,7 +65,7 @@ impl Components {
         }
     }
 
-    /// Updates the effective modifiers and groups in terms of the pressed/latched/locked
+    /// Updates the effective modifiers and group in terms of the pressed/latched/locked
     /// modifiers/group.
     ///
     /// This function is intended for clients receiving the pressed/latched/locked

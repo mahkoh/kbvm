@@ -29,6 +29,7 @@ fn main() {
     }
     let mut context = Context::builder();
     context.clear();
+    context.enable_environment(false);
     let roundtrip = context
         .build()
         .keymap_from_bytes(WriteToLog, None, actual.as_bytes())

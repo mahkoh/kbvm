@@ -59,7 +59,7 @@ pub struct ComposeTableBuilder<'a> {
 }
 
 impl Context {
-    /// Creates a builder for compose table.
+    /// Creates a builder for a compose table.
     ///
     /// This function is only available when the `compose` feature is enabled.
     pub fn compose_table_builder(&self) -> ComposeTableBuilder<'_> {
@@ -74,7 +74,8 @@ impl Context {
 impl ComposeTableBuilder<'_> {
     /// Sets the locale to use for the compose file.
     ///
-    /// If this function is not called, the locale of the context is used. See [`Context::locale].
+    /// If this function is not called, the locale of the context is used. See
+    /// [`Context::locale`].
     pub fn locale(&mut self, locale: &str) {
         self.locale = Some(locale.to_string());
     }

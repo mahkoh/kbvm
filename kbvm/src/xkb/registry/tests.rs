@@ -15,6 +15,7 @@ use {
 fn without_extra() {
     let mut context = Context::builder();
     context.clear();
+    context.enable_environment(false);
     let root = env!("CARGO_MANIFEST_DIR").to_string() + "/src/xkb/registry";
     context.append_path(&Path::new(&root).join("dir1"));
     context.append_path(&Path::new(&root).join("dir2"));
@@ -46,6 +47,7 @@ fn without_extra() {
 fn with_extra() {
     let mut context = Context::builder();
     context.clear();
+    context.enable_environment(false);
     context.load_extra_rules(true);
     let root = env!("CARGO_MANIFEST_DIR").to_string() + "/src/xkb/registry";
     context.append_path(&Path::new(&root).join("dir1"));

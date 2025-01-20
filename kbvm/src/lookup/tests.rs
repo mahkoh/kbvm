@@ -10,6 +10,7 @@ use crate::{
 fn lookup_table(map: &str) -> LookupTable {
     let mut context = Context::builder();
     context.clear();
+    context.enable_environment(false);
     context.append_path(&format!(
         "{}/../type-tests/include",
         env!("CARGO_MANIFEST_DIR")

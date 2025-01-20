@@ -61,8 +61,8 @@ pub trait DiagnosticHandler {
     /// The function should return `true` if the message should be passed to the handler.
     ///
     /// The `is_fatal` argument is `true` if this message is a fatal error that will also
-    /// returned to the application via `Result::Err`. In this case the application might
-    /// want to only receive the diagnostic via one of the two mechanisms.
+    /// be returned to the application via `Result::Err`. In this case the application
+    /// might want to only receive the diagnostic via one of the two mechanisms.
     fn filter(&self, kind: DiagnosticKind, is_fatal: bool) -> bool {
         let _ = kind;
         let _ = is_fatal;

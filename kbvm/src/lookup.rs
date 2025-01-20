@@ -35,7 +35,7 @@
 mod tests;
 
 #[expect(unused_imports)]
-use crate::builder::Builder;
+use crate::{builder::Builder, Components};
 use {
     crate::{builder::Redirect, group::GroupIndex, GroupType, Keycode, Keysym, ModifierMask},
     smallvec::SmallVec,
@@ -71,7 +71,7 @@ use {
 /// # Key Repeat
 ///
 /// A key can be configured to repeat. In this case, the client should periodically emulate
-/// key-press events until the next key is pressed or this key is released.
+/// key-press events until the next repeating key is pressed or this key is released.
 ///
 /// This property can be accessed with the [`Lookup::repeats`] function.
 ///
@@ -124,8 +124,6 @@ use {
 /// This behavior can be disabled by using [`Lookup::with_caps_transform`] and
 /// [`Lookup::set_caps_transform`].
 ///
-/// Caps transformation is applied before ctrl transformation.
-///
 /// ```
 /// # use kbvm::GroupIndex;
 /// # use kbvm::Keysym;
@@ -153,8 +151,6 @@ use {
 ///
 /// This behavior can be disabled by using [`Lookup::with_ctrl_transform`] and
 /// [`Lookup::set_ctrl_transform`].
-///
-/// Caps transformation is applied before ctrl transformation.
 ///
 /// ```
 /// # use kbvm::GroupIndex;
@@ -203,6 +199,9 @@ use {
 /// then, instead of using the original keysym, the keysym form the first such group is used.
 ///
 /// Caps and ctrl transformations are then applied to that keysym.
+///
+/// This is sometimes used to allow users of non-latin keyboard layouts to use latin
+/// keysyms in keyboard shortcuts.
 ///
 /// This behavior can be disabled by using [`Lookup::with_ctrl_fallback`] and
 /// [`Lookup::set_ctrl_fallback`].
@@ -253,7 +252,7 @@ pub(crate) struct KeyLevel {
 
 /// The result of a [`LookupTable::lookup`] call.
 ///
-/// This object represents the result of a call to [`LookupTable::lookup`]. Too get the
+/// This object represents the result of a call to [`LookupTable::lookup`]. To get the
 /// produced keysyms, use the [`IntoIterator`] implementation of this type.
 ///
 /// You can modify the output of the iterator by calling the various functions of this
@@ -419,7 +418,7 @@ impl LookupTable {
     /// computed by the compositor.
     ///
     /// In wayland, the effective modifiers are the bitwise OR of the pressed, latched,
-    /// and locked modifiers.
+    /// and locked modifiers. This can be managed with the [`Components`] type.
     ///
     /// # Example
     ///

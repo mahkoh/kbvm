@@ -81,11 +81,11 @@ use {
 /// This type contains the following include paths:
 ///
 /// - Paths added via [`ContextBuilder::prepend_path`] in reverse order.
-/// - If environment variables are [enabled](ContextBuilder::enable_environment):
-///   - `$XDG_CONFIG_HOME/xkb` if `$XDG_CONFIG_HOME` is set.
-///   - `$HOME/.config/xkb` if `$XDG_CONFIG_HOME` is not set and `$HOME` is set.
-///   - `$HOME/.xkb` if `$HOME` is set.
-/// - If system paths are [enabled](ContextBuilder::enable_system_paths):
+/// - If default include paths are [enabled](ContextBuilder::enable_default_includes):
+///   - If environment variables are [enabled](ContextBuilder::enable_environment):
+///     - `$XDG_CONFIG_HOME/xkb` if `$XDG_CONFIG_HOME` is set.
+///     - `$HOME/.config/xkb` if `$XDG_CONFIG_HOME` is not set and `$HOME` is set.
+///     - `$HOME/.xkb` if `$HOME` is set.
 ///   - The first system path.
 ///   - The second system path.
 /// - Paths added via [`ContextBuilder::append_path`].
@@ -125,7 +125,7 @@ type EnvironmentAccessor = Box<dyn FnMut(&str) -> Option<String>>;
 
 /// A builder for [`Context`] objects.
 pub struct ContextBuilder {
-    enable_system_dirs: bool,
+    enable_default_includes: bool,
     enable_environment: bool,
     load_extra_rules: bool,
     max_includes: u64,
@@ -140,7 +140,7 @@ pub struct ContextBuilder {
 impl Default for ContextBuilder {
     fn default() -> Self {
         Self {
-            enable_system_dirs: true,
+            enable_default_includes: true,
             enable_environment: !requires_secure_execution(),
             load_extra_rules: false,
             max_includes: 1024,
@@ -161,13 +161,13 @@ impl Default for Context {
 }
 
 impl ContextBuilder {
-    /// Enables or disables the use of system paths.
+    /// Enables or disables the use of default include paths.
     ///
     /// The default is `true`.
     ///
-    /// See the documentation of [`Context`] for the list of system paths.
-    pub fn enable_system_paths(&mut self, val: bool) {
-        self.enable_system_dirs = val;
+    /// See the documentation of [`Context`] for the list of default include paths.
+    pub fn enable_default_includes(&mut self, val: bool) {
+        self.enable_default_includes = val;
     }
 
     /// Enables or disables the use of environment variables.
@@ -220,8 +220,7 @@ impl ContextBuilder {
         self.suffix.push(path.as_ref().to_path_buf());
     }
 
-    /// Sets the maximum number of includes that will be processed when by each function
-    /// call.
+    /// Sets the maximum number of includes that will be processed by each function call.
     ///
     /// The default is `1024`.
     ///
@@ -271,11 +270,9 @@ impl ContextBuilder {
         self.max_compose_rules = val;
     }
 
-    /// Removes all paths from the builder, disables the environment, and disables the
-    /// system paths.
+    /// Removes all paths from the builder and disables the default include paths.
     pub fn clear(&mut self) {
-        self.enable_system_dirs = false;
-        self.enable_environment = false;
+        self.enable_default_includes = false;
         self.prefix.clear();
         self.suffix.clear();
         self.environment_accessor = None;
@@ -314,15 +311,15 @@ impl ContextBuilder {
         while let Some(p) = self.prefix.pop() {
             push!(p);
         }
-        if let Some(config) = &xdg_config_home {
-            push!(format!("{config}/xkb"));
-        } else if let Some(home) = &home {
-            push!(format!("{home}/.config/xkb"));
-        }
-        if let Some(home) = &home {
-            push!(format!("{home}/.xkb"));
-        }
-        if self.enable_system_dirs {
+        if self.enable_default_includes {
+            if let Some(config) = &xdg_config_home {
+                push!(format!("{config}/xkb"));
+            } else if let Some(home) = &home {
+                push!(format!("{home}/.config/xkb"));
+            }
+            if let Some(home) = &home {
+                push!(format!("{home}/.xkb"));
+            }
             push!(xkb_config_extra_path.clone());
             push!(xkb_config_root.clone());
         }

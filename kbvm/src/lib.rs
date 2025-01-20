@@ -38,7 +38,7 @@
 //!    [`keymap_from_bytes`](xkb::Context::keymap_from_bytes) or
 //!    [`keymap_from_names`](xkb::Context::keymap_from_names) to create an
 //!    [`xkb::Keymap`].
-//! 3. You can format this keymap as a string by using,
+//! 3. You can format this keymap as a string by using
 //!    [`Keymap::format`](xkb::Keymap::format). You send this keymap to clients via the
 //!    `wl_keyboard.keymap` event.
 //! 4. You then use [`Keymap::to_builder`](xkb::Keymap::to_builder) followed by

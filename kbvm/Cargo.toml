@@ -7,12 +7,17 @@ license = "MIT OR Apache-2.0"
 description = "An implementation of the XKB specification"
 keywords = ["parser", "protocol", "linux", "xkb", "wayland"]
 categories = ["api-bindings", "compilers", "parser-implementations"]
+rust-version = "1.83.0"
 
 [features]
 default = ["log"]
+# Enables the WriteToLog diagnostic handler.
 log = ["dep:log"]
+# Enables loading the RMLVO registry.
 registry = ["dep:serde", "dep:quick-xml", "dep:error_reporter"]
+# Enables parsing of XCompose files.
 compose = []
+# Enables loading keymaps from X11 connections.
 x11 = ["dep:x11rb"]
 
 [package.metadata.docs.rs]

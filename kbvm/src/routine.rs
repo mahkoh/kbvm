@@ -14,8 +14,8 @@
 //! If routines want to communicate with each other or if they want to preserve state
 //! across key-press/release events, they can use [`Global`]s.
 //!
-//! Variables and globals represent `u32`s. All off the usual arithmetic operations can
-//! be performed on variables.
+//! Variables and globals represent `u32`s. All of the usual arithmetic operations can
+//! be performed on variables and these operations use wrapping semantics.
 //!
 //! Routines are primarily useful to emit key-press/release events and to modify the
 //! [`Components`] of the state.
@@ -883,9 +883,13 @@ impl RoutineBuilder {
         }
     }
 
-    /// Skips to the part of the routine that runs when the key is released.
+    /// Starts the part of the routine that runs when the key is released.
     ///
     /// The values of variables are preserved.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `on_release` was already called on this builder.
     pub fn on_release(&mut self) -> &mut Self {
         assert!(self.on_release.is_none());
         self.ops.push(Hi::Jump {
@@ -901,7 +905,8 @@ impl RoutineBuilder {
     ///
     /// The returned variable can only be used with this builder.
     ///
-    /// All variables are implicitly initialized to `0`.
+    /// All variables are implicitly initialized to `0` but initializing them explicitly
+    /// will produce more efficient code.
     pub fn allocate_var(&mut self) -> Var {
         let res = Var(self.next_var);
         self.next_var += 1;

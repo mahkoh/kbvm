@@ -117,6 +117,7 @@ fn test_kccgst(mut diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(),
 
     let mut context = Context::builder();
     context.clear();
+    context.enable_environment(false);
     context.append_path(case);
     context.append_path(&case.join("extra-includes"));
     context.append_path("./include");
