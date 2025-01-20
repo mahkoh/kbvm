@@ -18,6 +18,7 @@ xkb_keymap {
         key <a> {
             groupsclamp,
             type = "X",
+            lock,
             symbols[Group2] = [ { a, b } ],
             actions[Group2] = [ NoAction(), SetMods(mods = Mod1) ],
         };

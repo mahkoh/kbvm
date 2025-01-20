@@ -1,0 +1,9 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <leftshift> { locks, [ SetMods(mods = Shift) ] };
+        key <a> { [ a, A ] };
+    };
+};

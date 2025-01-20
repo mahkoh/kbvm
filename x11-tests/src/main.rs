@@ -17,6 +17,7 @@ use {
 fn main() {
     let xvfb = Xvfb::launch();
     xvfb.set_keymap(include_str!("host.xkb"));
+    // xvfb.print_keymap();
     xvfb.con.setup_xkb_extension().unwrap();
     let id = xvfb.con.get_xkb_core_device_id().unwrap();
     let map = xvfb.con.get_xkb_keymap(id).unwrap();
@@ -61,6 +62,9 @@ impl Xvfb {
         let (display_read, display_write) = uapi::pipe().unwrap();
         let pid = unsafe { fork().unwrap() };
         if pid == 0 {
+            unsafe {
+                c::daemon(0, 0);
+            }
             let pid = unsafe { fork().unwrap() };
             if pid == 0 {
                 drop([exit_read, exit_write, display_read]);

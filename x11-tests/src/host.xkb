@@ -1576,7 +1576,7 @@ xkb_symbols "pc_us_pt_2_us_3_inet(evdev)_group(shift_caps_toggle)_compose(ralt)"
 	key <I150>               {	[       XF86Sleep ] };
 	key <I151>               {	[      XF86WakeUp ] };
 	key <I152>               {	[    XF86Explorer ] };
-	key <I153>               {	[        XF86Send ] };
+	key <I153>               { lock = true,	[        XF86Send ] };
 	key <I155>               {	[        XF86Xfer ] };
 	key <I156>               {	[     XF86Launch1 ] };
 	key <I157>               {	[     XF86Launch2 ] };

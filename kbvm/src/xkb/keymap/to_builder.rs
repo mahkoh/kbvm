@@ -6,7 +6,7 @@ use {
         routine::{Routine, RoutineBuilder, Var},
         xkb::{
             group::GroupChange,
-            keymap::{Action, KeyType},
+            keymap::{Action, KeyBehavior, KeyType},
             Keymap,
         },
         GroupType, Keycode, ModifierIndex,
@@ -60,10 +60,41 @@ impl Keymap {
                 }
                 kb.add_group(gb);
             }
+            if let Some(behavior) = &key.behavior {
+                kb.routine(&behavior_to_routine(&mut builder, key.key_code, behavior));
+            }
             builder.add_key(kb);
         }
         builder
     }
+}
+
+fn behavior_to_routine(b: &mut Builder, key: Keycode, behavior: &KeyBehavior) -> Routine {
+    let mut builder = RoutineBuilder::default();
+    match behavior {
+        KeyBehavior::Lock => {
+            let global = b.add_global();
+            let [kc, state_old, state_new] = builder.allocate_vars();
+            let anchor = builder
+                .load_global(state_old, global)
+                .prepare_skip_if(state_old);
+            let anchor = builder
+                .load_lit(state_new, 1)
+                .store_global(global, state_new)
+                .load_lit(kc, key.raw())
+                .key_down(kc)
+                .finish_skip(anchor)
+                .on_release()
+                .prepare_skip_if_not(state_old);
+            builder
+                .load_lit(state_new, 0)
+                .store_global(global, state_new)
+                .load_lit(kc, key.raw())
+                .key_up(kc)
+                .finish_skip(anchor);
+        }
+    }
+    builder.build()
 }
 
 fn actions_to_routine(key: Keycode, actions: &[Action]) -> Routine {

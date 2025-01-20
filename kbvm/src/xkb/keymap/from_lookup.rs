@@ -227,6 +227,7 @@ impl LookupTable {
                 key_code: kc,
                 groups,
                 repeat: kg.repeats,
+                behavior: None,
                 redirect,
             };
             keys.push((kc, symbol));

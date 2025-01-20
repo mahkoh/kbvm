@@ -6,7 +6,7 @@ use crate::{
         group::GroupMask,
         group_component::GroupComponent,
         indicator::IndicatorIdx,
-        keymap::{actions::ModsSetAction, Action, Indicator},
+        keymap::{actions::ModsSetAction, Action, Indicator, KeyBehavior},
         mod_component::ModComponentMask,
         Context,
     },
@@ -45,6 +45,7 @@ fn inspection() {
         assert_eq!(k1.keycode().raw(), 1);
         assert_eq!(k1.repeats(), false);
         assert_eq!(k1.redirect(), Redirect::Clamp);
+        assert_eq!(k1.behavior(), Some(&KeyBehavior::Lock));
         {
             let mut groups = k1.groups();
             let g1 = groups.next().unwrap();

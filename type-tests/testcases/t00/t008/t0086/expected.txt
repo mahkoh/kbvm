@@ -1,0 +1,17 @@
+down a
+    key_down(a)
+    sym = a, char = 'a'
+up   a
+repeat
+    key_repeat(a)
+    sym = a, char = 'a'
+down a
+up   a
+    key_up(a)
+down a
+    key_down(a)
+    sym = a, char = 'a'
+up   a
+down a
+up   a
+    key_up(a)

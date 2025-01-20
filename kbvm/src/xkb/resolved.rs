@@ -128,6 +128,7 @@ pub(crate) struct Interp {
     pub(crate) virtual_modifier: Option<Spanned<ModifierIndex>>,
     pub(crate) repeat: Option<Spanned<bool>>,
     pub(crate) level_one_only: Option<Spanned<bool>>,
+    pub(crate) locking: Option<Spanned<bool>>,
 }
 
 impl Interp {
@@ -161,6 +162,12 @@ pub(crate) struct SymbolsKey {
     pub(crate) repeating: Option<Spanned<Option<bool>>>,
     pub(crate) groups_redirect: Option<Spanned<GroupsRedirect>>,
     pub(crate) modmap: ModifierMask,
+    pub(crate) behavior: Option<Spanned<SymbolsKeyBehavior>>,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub(crate) enum SymbolsKeyBehavior {
+    Locks(bool),
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
