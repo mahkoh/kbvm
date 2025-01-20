@@ -111,6 +111,7 @@ pub(crate) struct ActionDefaults {
     pub(crate) group_set: ResolvedGroupSet,
     pub(crate) group_latch: ResolvedGroupLatch,
     pub(crate) group_lock: ResolvedGroupLock,
+    pub(crate) redirect_key: ResolvedRedirectKey,
 }
 
 #[derive(Debug)]
@@ -254,6 +255,7 @@ pub(crate) enum ResolvedAction {
     ResolvedGroupSet(ResolvedGroupSet),
     ResolvedGroupLatch(ResolvedGroupLatch),
     ResolvedGroupLock(ResolvedGroupLock),
+    ResolvedRedirectKey(ResolvedRedirectKey),
 }
 
 #[derive(Copy, Clone, Debug, Default)]
@@ -316,4 +318,11 @@ impl GroupsRedirect {
             GroupsRedirect::Redirect(r) => Redirect::Fixed(r.to_offset()),
         }
     }
+}
+
+#[derive(Copy, Clone, Default, Debug)]
+pub(crate) struct ResolvedRedirectKey {
+    pub(crate) keycode: Option<Spanned<(Interned, Keycode)>>,
+    pub(crate) mods_to_set: Option<Spanned<ResolvedActionMods>>,
+    pub(crate) mods_to_clear: Option<Spanned<ResolvedActionMods>>,
 }

@@ -1,0 +1,10 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <leftshift> { [ SetMods(mods = Mod1+Mod2) ] };
+        key <a> { [ a ] };
+        key <b> { [ RedirectKey(key = <a>, clearMods = Mod1) ] };
+    };
+};

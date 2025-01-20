@@ -1,0 +1,45 @@
+both y
+    key_down(y)
+    group_pressed = 1
+    group_effective = 1
+    key_up(y)
+    group_pressed = 0
+    group_latched = 1
+both b
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000020
+    key_down(a)
+    sym = b, char = 'b'
+    mods_pressed = 0x00000010
+    mods_effective = 0x00000010
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000020
+    key_up(a)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+both c
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000020
+    key_down(a)
+    sym = b, char = 'b'
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+    group_latched = 0
+    group_effective = 0
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000020
+    key_up(a)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+both c
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000020
+    key_down(a)
+    sym = a, char = 'a'
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+    mods_pressed = 0x00000020
+    mods_effective = 0x00000020
+    key_up(a)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000

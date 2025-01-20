@@ -1,0 +1,10 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <capslock> { [ LatchMods(mods = Shift) ] };
+        key <a> { [ a, A ] };
+        key <b> { [ { LockMods(mods = Mod1, affect = lock), RedirectKey(key = <a>) } ] };
+    };
+};

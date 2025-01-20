@@ -15,7 +15,7 @@ use {
                 self,
                 actions::{
                     GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
-                    ModsLockAction, ModsSetAction,
+                    ModsLockAction, ModsSetAction, RedirectKeyAction,
                 },
                 Action, Indicator, Key, KeyGroup, KeyLevel, KeyType, KeyTypeMapping, ModMapValue,
                 VirtualModifier,
@@ -664,7 +664,7 @@ where
                     }
                     if has_actions {
                         if let Some(action) = actions.next() {
-                            level.actions.extend(map_action(action));
+                            level.actions.extend(map_action(&self.key_names, action));
                         }
                     }
                     levels.push(level);
@@ -773,7 +773,7 @@ where
     }
 }
 
-fn map_action(action: &xkb::Action) -> Option<Action> {
+fn map_action(key_names: &HashMap<Keycode, Arc<String>>, action: &xkb::Action) -> Option<Action> {
     macro_rules! map_group {
         ($a:expr) => {
             match $a.flags.contains(SA::GROUP_ABSOLUTE) {
@@ -825,6 +825,18 @@ fn map_action(action: &xkb::Action) -> Option<Action> {
             let a = action.as_lockgroup();
             Action::GroupLock(GroupLockAction {
                 group: map_group!(a),
+            })
+        }
+        SAType::REDIRECT_KEY => {
+            let a = action.as_redirect();
+            let key_code = Keycode::from_x11(a.newkey as u32);
+            let mods_to_set = ModifierMask(a.real_modifiers.into());
+            let mask = ModifierMask(a.mask.into());
+            Action::RedirectKey(RedirectKeyAction {
+                key_name: key_names.get(&key_code)?.clone(),
+                key_code,
+                mods_to_set,
+                mods_to_clear: mask & !mods_to_set,
             })
         }
         _ => return None,

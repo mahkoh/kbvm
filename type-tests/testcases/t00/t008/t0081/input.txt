@@ -1,0 +1,6 @@
+both z
+both y
+down x
+down b
+up b
+up x

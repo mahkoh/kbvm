@@ -68,20 +68,45 @@ impl Keymap {
 
 fn actions_to_routine(key: Keycode, actions: &[Action]) -> Routine {
     let mut builder = Routine::builder();
-    let keycode = builder.allocate_var();
-    builder.load_lit(keycode, key.0).key_down(keycode);
-    encode_actions(&mut builder, actions, keycode);
+    let key = if actions.iter().any(|a| matches!(a, Action::RedirectKey(_))) {
+        None
+    } else {
+        let kc = builder.allocate_var();
+        builder.load_lit(kc, key.0).key_down(kc);
+        Some(kc)
+    };
+    let affects_components = actions.iter().any(|a| match a {
+        Action::ModsSet(_)
+        | Action::ModsLatch(_)
+        | Action::ModsLock(_)
+        | Action::GroupSet(_)
+        | Action::GroupLatch(_)
+        | Action::GroupLock(_) => true,
+        Action::RedirectKey(_) => false,
+    });
+    encode_actions(&mut builder, actions, key, affects_components);
+    // let routine = builder.build();
+    // println!("{:#?}", routine);
+    // routine
     builder.build()
 }
 
-fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
+fn encode_actions(
+    builder: &mut RoutineBuilder,
+    actions: &[Action],
+    key: Option<Var>,
+    affects_components: bool,
+) {
     let Some(action) = actions.first() else {
-        builder.on_release().key_up(key);
+        builder.on_release();
+        if let Some(key) = key {
+            builder.key_up(key);
+        }
         return;
     };
     macro_rules! encode_rest {
         () => {
-            encode_actions(builder, &actions[1..], key);
+            encode_actions(builder, &actions[1..], key, affects_components);
         };
     }
     match action {
@@ -286,6 +311,65 @@ fn encode_actions(builder: &mut RoutineBuilder, actions: &[Action], key: Var) {
                 }
             }
             encode_rest!();
+        }
+        Action::RedirectKey(rk) => {
+            if rk.modifier_mask().0 == 0 {
+                // simple case where modifiers are not changed
+                let key = builder.allocate_var();
+                builder.load_lit(key, rk.key_code().raw()).key_down(key);
+                if !affects_components {
+                    let zero = builder.allocate_var();
+                    builder
+                        .load_lit(zero, 0)
+                        .mods_latched_store(zero)
+                        .group_latched_store(zero);
+                }
+                encode_rest!();
+                builder.key_up(key);
+                return;
+            }
+            let [zero, key, mods, pressed, latched, locked, effective] = builder.allocate_vars();
+            let encode_transform = |builder: &mut RoutineBuilder| {
+                builder
+                    .mods_pressed_load(pressed)
+                    .mods_latched_load(latched)
+                    .mods_locked_load(locked)
+                    .bit_or(effective, pressed, latched)
+                    .bit_or(effective, effective, locked);
+                if rk.mods_to_clear().0 != 0 {
+                    builder
+                        .load_lit(mods, rk.mods_to_clear().0)
+                        .bit_nand(effective, effective, mods);
+                }
+                if rk.mods_to_set().0 != 0 {
+                    builder
+                        .load_lit(mods, rk.mods_to_set().0)
+                        .bit_or(effective, effective, mods);
+                }
+                builder
+                    .mods_pressed_store(effective)
+                    .load_lit(zero, 0)
+                    .mods_latched_store(zero)
+                    .mods_locked_store(zero);
+            };
+            encode_transform(builder);
+            builder
+                .load_lit(key, rk.key_code().raw())
+                .key_down(key)
+                .mods_pressed_store(pressed)
+                .mods_locked_store(locked);
+            if affects_components {
+                builder.mods_latched_store(latched);
+            } else {
+                builder.group_latched_store(zero);
+            }
+            encode_rest!();
+            encode_transform(builder);
+            builder
+                .key_up(key)
+                .mods_pressed_store(pressed)
+                .mods_latched_store(latched)
+                .mods_locked_store(locked);
         }
     }
 }

@@ -24,7 +24,7 @@ use {
             keymap::{
                 actions::{
                     GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
-                    ModsLockAction, ModsSetAction,
+                    ModsLockAction, ModsSetAction, RedirectKeyAction,
                 },
                 iterators::{Groups, Indicators, Keys, Levels, Mappings, VirtualModifiers},
             },
@@ -243,11 +243,16 @@ pub enum Action {
     GroupLatch(GroupLatchAction),
     /// A `LockGroup` action.
     GroupLock(GroupLockAction),
+    /// A `RedirectKey` action.
+    RedirectKey(RedirectKeyAction),
 }
 
 /// The XKB actions supported by KBVM.
 pub mod actions {
-    use crate::{xkb::group, ModifierMask};
+    use {
+        crate::{xkb::group, ModifierMask},
+        std::sync::Arc,
+    };
 
     /// A `SetMods` action.
     ///
@@ -351,6 +356,48 @@ pub mod actions {
     #[derive(Clone, Debug, PartialEq)]
     pub struct GroupLockAction {
         pub(crate) group: group::GroupChange,
+    }
+
+    /// A `RedirectKey` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ RedirectKey(key = b) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// # Implementation
+    ///
+    /// KBVM implements this action as follows:
+    ///
+    /// The new key code is emitted in `KeyDown` and `KeyUp` events instead of the
+    /// original key code.
+    ///
+    /// If the [`Self::modifier_mask`] of the action is not empty, then it additionally
+    /// modifies the components before and after the `KeyDown` and `KeyUp` events as
+    /// follows:
+    ///
+    /// - Before the event:
+    ///
+    ///   1. Save the pressed, latched, and locked modifiers.
+    ///   2. Set the latched and locked modifiers to 0.
+    ///   3. Set the pressed modifiers to the effective modifiers.
+    ///   4. Clear the modifiers from [`Self::mods_to_clear`] from the pressed modifiers.
+    ///   5. Set the modifiers from [`Self::mods_to_set`] in the pressed modifiers.
+    ///
+    /// - After the event:
+    ///
+    ///   1. Restore the pressed, latched, and locked modifiers.
+    #[derive(Clone, Debug, PartialEq)]
+    pub struct RedirectKeyAction {
+        pub(crate) key_name: Arc<String>,
+        pub(crate) key_code: crate::Keycode,
+        pub(crate) mods_to_set: ModifierMask,
+        pub(crate) mods_to_clear: ModifierMask,
     }
 }
 
@@ -1207,6 +1254,83 @@ impl GroupLockAction {
     /// The function returns `GroupChange::Relative(-1)`.
     pub fn group(&self) -> GroupChange {
         self.group.to_group_change()
+    }
+}
+
+impl RedirectKeyAction {
+    /// Returns the name of the key that this action redirects to.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ RedirectKey(key = <b>) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `"b"`.
+    pub fn key_name(&self) -> &str {
+        &self.key_name
+    }
+
+    /// Returns the keycode of the key that this action redirects to.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ RedirectKey(key = <b>) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns the keycode of `<b>`.
+    pub fn key_code(&self) -> crate::Keycode {
+        self.key_code
+    }
+
+    /// Returns the mods that will be set by this action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ RedirectKey(key = <b>, mods = Shift+Mod1) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `ModifierMask::SHIFT | ModifierMask::MOD1`.
+    pub fn mods_to_set(&self) -> ModifierMask {
+        self.mods_to_set
+    }
+
+    /// Returns the mods that will be cleared by this action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ RedirectKey(key = <b>, clearMods = Shift+Mod1) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `ModifierMask::SHIFT | ModifierMask::MOD1`.
+    pub fn mods_to_clear(&self) -> ModifierMask {
+        self.mods_to_clear
+    }
+
+    /// Returns the mods that are affected by this action.
+    ///
+    /// This is a shorthand for `self.mods_to_set() | self.mods_to_clear()`.
+    pub fn modifier_mask(&self) -> ModifierMask {
+        self.mods_to_set | self.mods_to_clear
     }
 }
 

@@ -1,0 +1,10 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <capslock> { [ LatchGroup(group = Group2) ] };
+        key <a> { [ a ], [ b ] };
+        key <b> { [ RedirectKey(key = <a>) ] };
+    };
+};

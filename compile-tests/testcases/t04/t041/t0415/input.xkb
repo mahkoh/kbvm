@@ -1,0 +1,10 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+        alias <c> = <b>;
+    };
+    xkb_symbols {
+        key <a> { [ RedirectKey(key = <c>) ] };
+    };
+};

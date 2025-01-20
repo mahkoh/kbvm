@@ -904,6 +904,19 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     UnsupportedExpressionForSymbolsOrActions,
+    /// An expression in keycode position has an unexpected form.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ RedirectKey(key = "abcd") ]
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    UnsupportedExpressionForKeycode,
     /// An expression in boolean position has an unexpected value.
     ///
     /// # Example
@@ -1112,6 +1125,45 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     MissingValueForLockGroupGroup,
+    /// The `key` argument in a `RedirectKey` action does not have a value.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ RedirectKey(key) ],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    MissingValueForRedirectKeyKey,
+    /// The `clearMods` argument in a `RedirectKey` action does not have a value.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ RedirectKey(clearMods) ],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    MissingValueForRedirectKeyClearmods,
+    /// The `mods` argument in a `RedirectKey` action does not have a value.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ RedirectKey(mods) ],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    MissingValueForRedirectKeyMods,
     /// The `affect` argument in a `LockMods` action has an unexpected value.
     ///
     /// # Example
@@ -1707,6 +1759,19 @@ pub enum DiagnosticKind {
     /// The maximum number of compose rules has been reached. Further rules are ignored.
     #[severity = Error]
     MaxComposeRulesReached,
+    /// An unknown parameter appears in a `RedirectKey` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ RedirectKey(abcd = 1) ],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    UnknownParameterForRedirectKey,
 }
 
 impl DiagnosticKind {

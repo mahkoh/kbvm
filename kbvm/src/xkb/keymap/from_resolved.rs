@@ -4,9 +4,10 @@ use {
             group::GroupIdx,
             interner::{Interned, Interner},
             keymap::{
-                Action, GroupLatchAction, GroupLockAction, GroupSetAction, Indicator, Key,
-                KeyGroup, KeyLevel, KeyType, KeyTypeMapping, Keycode, ModMapValue, ModsLatchAction,
-                ModsLockAction, ModsSetAction, VirtualModifier,
+                actions::RedirectKeyAction, Action, GroupLatchAction, GroupLockAction,
+                GroupSetAction, Indicator, Key, KeyGroup, KeyLevel, KeyType, KeyTypeMapping,
+                Keycode, ModMapValue, ModsLatchAction, ModsLockAction, ModsSetAction,
+                VirtualModifier,
             },
             level::Level,
             mod_component::ModComponentMask,
@@ -171,6 +172,8 @@ impl Keymap {
                 .map(|g| {
                     map_symbol_groups(
                         &mut used_types,
+                        &mut used_key_names,
+                        &mut get_string,
                         &default_key_types,
                         &types_by_ident,
                         key.key.modmap,
@@ -237,6 +240,8 @@ impl Keymap {
 
 fn map_symbol_groups(
     used_types: &mut HashSet<*const KeyType>,
+    used_key_names: &mut HashSet<Interned>,
+    get_string: &mut impl FnMut(Interned) -> Arc<String>,
     default_key_types: &StaticMap<BuiltInKeytype, Option<Arc<KeyType>>>,
     types_by_ident: &HashMap<Interned, Arc<KeyType>>,
     modmap: ModifierMask,
@@ -258,7 +263,7 @@ fn map_symbol_groups(
             let actions = m
                 .actions
                 .iter()
-                .flat_map(|a| map_action(modmap, &a.val))
+                .flat_map(|a| map_action(modmap, used_key_names, get_string, &a.val))
                 .collect();
             KeyLevel { symbols, actions }
         })
@@ -280,7 +285,12 @@ fn map_symbol_groups(
     })
 }
 
-fn map_action(modmap: ModifierMask, a: &ResolvedAction) -> Option<Action> {
+fn map_action(
+    modmap: ModifierMask,
+    used_key_names: &mut HashSet<Interned>,
+    get_string: &mut impl FnMut(Interned) -> Arc<String>,
+    a: &ResolvedAction,
+) -> Option<Action> {
     let map_action_mods = |mods: &Option<Spanned<ResolvedActionMods>>| {
         let mods = mods
             .despan()
@@ -325,6 +335,16 @@ fn map_action(modmap: ModifierMask, a: &ResolvedAction) -> Option<Action> {
         ResolvedAction::ResolvedGroupLock(m) => Action::GroupLock(GroupLockAction {
             group: m.group.despan().unwrap_or_default(),
         }),
+        ResolvedAction::ResolvedRedirectKey(m) => {
+            let (name, kc) = m.keycode?.val;
+            used_key_names.insert(name);
+            Action::RedirectKey(RedirectKeyAction {
+                key_name: get_string(name),
+                key_code: kc,
+                mods_to_set: map_action_mods(&m.mods_to_set).unwrap_or_default(),
+                mods_to_clear: map_action_mods(&m.mods_to_clear).unwrap_or_default(),
+            })
+        }
     };
     Some(action)
 }
