@@ -7,13 +7,14 @@ license = "GPL-3.0-only"
 description = "A CLI for working with XKB"
 keywords = ["cli", "linux", "xkb", "wayland"]
 categories = ["command-line-utilities", "compilers", "visualization"]
+rust-version = "1.83.0"
 
 [[bin]]
 name = "kbvm"
 path = "src/main.rs"
 
 [dependencies]
-kbvm = { path = "../kbvm", features = ["compose"] }
+kbvm = { version = "0.1.0", path = "../kbvm", features = ["compose"] }
 clap = { version = "4.5.26", features = ["derive"] }
 clap_complete = "4.5.42"
 wayland-client = "0.31.7"
