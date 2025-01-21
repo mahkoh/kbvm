@@ -1,0 +1,20 @@
+xkb_keymap {
+    xkb_keycodes {
+        <1> = 1;
+        <2> = 2;
+        <3> = 3;
+        <4> = 4;
+        <5> = 5;
+        <6> = 6;
+        <7> = 7;
+    };
+    xkb_symbols {
+        key <1> { radiogroup = 1 };
+        key <2> { allownone, radiogroup = 1 };
+        key <3> { allownone[2], radiogroup = 1 };
+        key <4> { allownone[1], radiogroup = 1 };
+        key <5> { allownone[1], allownone = false, radiogroup = 1 };
+        key <6> { !allownone, radiogroup = 1 };
+        key <7> { allownone[Group1 + Group2], radiogroup = Group1 + Group2 };
+    };
+};

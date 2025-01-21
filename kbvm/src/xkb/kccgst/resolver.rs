@@ -1421,6 +1421,16 @@ impl SymbolsKey {
             SymbolsField::Overlay(e) => {
                 self.behavior = Some(SymbolsKeyBehavior::Overlay(e).spanned2(f.span))
             }
+            SymbolsField::AllowNone(allow, mask) => match allow {
+                true => self.allow_none |= mask,
+                false => self.allow_none &= !mask,
+            },
+            SymbolsField::RadioGroup(rg) => {
+                self.behavior = rg.map(|rg| {
+                    let allow_none = self.allow_none & rg.to_mask() != 0;
+                    SymbolsKeyBehavior::RadioGroup(allow_none, rg).spanned2(f.span)
+                });
+            }
         }
     }
 }
@@ -1728,6 +1738,18 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_, '_> {
                             v.var.expr.as_ref().map(|e| e.as_ref()),
                             span,
                             true,
+                        );
+                        if let Some(f) = field {
+                            self.data.key_default.apply_field(f);
+                        }
+                    }
+                    Meaning::Allownone => {
+                        let field = self.parse_symbols_field(
+                            v.var.not,
+                            Some(v.var.path.as_ref()),
+                            v.var.expr.as_ref().map(|e| e.as_ref()),
+                            span,
+                            false,
                         );
                         if let Some(f) = field {
                             self.data.key_default.apply_field(f);

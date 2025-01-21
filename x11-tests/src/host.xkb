@@ -1587,11 +1587,11 @@ xkb_symbols "pc_us_pt_2_us_3_inet(evdev)_group(shift_caps_toggle)_compose(ralt)"
 	key <I162>               {	[    XF86TaskPane ], overlay1 = <I170> };
 	key <I163>               {	[        XF86Mail ], overlay2 = <I171> };
 	key <I164>               {	[   XF86Favorites ] };
-	key <I165>               {	[  XF86MyComputer ] };
-	key <I166>               {	[        XF86Back ] };
-	key <I167>               {	[     XF86Forward ] };
-	key <I169>               {	[       XF86Eject ] };
-	key <I170>               {	[       XF86Eject,       XF86Eject ] };
+	key <I165>               {	[  XF86MyComputer ], radiogroup = 1 };
+	key <I166>               {	[        XF86Back ], radiogroup = 32 };
+	key <I167>               {	[     XF86Forward ], allownone, radiogroup = 2 };
+	key <I169>               {	[       XF86Eject ], radiogroup = 2, allownone };
+	key <I170>               {	[       XF86Eject,       XF86Eject ], radiogroup = 3, allownone };
 	key <I171>               {	[   XF86AudioNext ] };
 	key <I172>               {	[   XF86AudioPlay,  XF86AudioPause ] };
 	key <I173>               {	[   XF86AudioPrev ] };

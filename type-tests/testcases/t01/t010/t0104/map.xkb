@@ -1,0 +1,10 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        allownone[2];
+        key <a> { radiogroup = 1 };
+        key <b> { radiogroup = 2 };
+    };
+};
