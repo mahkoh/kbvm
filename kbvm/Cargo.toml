@@ -24,7 +24,7 @@ x11 = ["dep:x11rb"]
 all-features = true
 
 [dependencies]
-kbvm-proc = { path = "../kbvm-proc" }
+kbvm-proc = { version = "0.1.0", path = "../kbvm-proc" }
 thiserror = { version = "2.0.5", default-features = false }
 bstr = { version = "1.11.0", default-features = false, features = ["alloc"] }
 arrayvec = { version = "0.7.6", default-features = false }
