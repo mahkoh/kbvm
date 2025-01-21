@@ -1,0 +1,21 @@
+both b
+    key_down(b)
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+    key_up(b)
+    mods_pressed = 0x00000000
+    mods_latched = 0x00000001
+both c
+    key_down(c)
+    group_pressed = 1
+    key_up(c)
+    group_pressed = 0
+    group_latched = 1
+both a
+    key_down(a)
+    mods_latched = 0x00000000
+    mods_effective = 0x00000000
+    group_latched = 0
+    controls = 0x00000400
+    key_up(a)
+    controls = 0x00000000

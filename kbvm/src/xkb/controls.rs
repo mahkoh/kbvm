@@ -1,5 +1,5 @@
 #[derive(Copy, Clone, Default, PartialEq, Eq)]
-pub(crate) struct ControlMask(u16);
+pub(crate) struct ControlMask(pub(crate) u16);
 
 keyed_bitfield! {
     ControlMask:
@@ -13,7 +13,7 @@ keyed_bitfield! {
     7 => ACCESS_X_TIMEOUT => AccessXTimeout,
     8 => ACCESS_X_FEEDBACK => AccessXFeedback,
     9 => AUDIBLE_BELL => AudibleBell,
-    10 => IGNORE_GROUP_LOCK => IgnoreGroupLock,
-    11 => OVERLAY1 => Overlay1,
-    12 => OVERLAY2 => Overlay2,
+    10 => OVERLAY1 => Overlay1,
+    11 => OVERLAY2 => Overlay2,
+    12 => IGNORE_GROUP_LOCK => IgnoreGroupLock,
 }

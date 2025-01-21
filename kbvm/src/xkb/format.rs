@@ -6,8 +6,9 @@ use {
             group_component::GroupComponent,
             keymap::{
                 actions::{
-                    GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
-                    ModsLockAction, ModsSetAction, RedirectKeyAction,
+                    ControlsLockAction, ControlsSetAction, GroupLatchAction, GroupLockAction,
+                    GroupSetAction, ModsLatchAction, ModsLockAction, ModsSetAction,
+                    RedirectKeyAction,
                 },
                 Action, Indicator, KeyBehavior, KeyGroup, KeyLevel, KeyType,
             },
@@ -389,6 +390,8 @@ impl Format for Action {
             Action::GroupLatch(e) => e.format(f),
             Action::GroupLock(e) => e.format(f),
             Action::RedirectKey(e) => e.format(f),
+            Action::ControlsSet(e) => e.format(f),
+            Action::ControlsLock(e) => e.format(f),
         }
     }
 }
@@ -422,19 +425,12 @@ impl Format for ModsLatchAction {
 
 impl Format for ModsLockAction {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
-        f.write("LockMods(")?;
-        write!(f.f, "modifiers = {}", modifier_mask(self.modifiers))?;
-        'affect: {
-            let affect = match (self.lock, self.unlock) {
-                (false, false) => "neither",
-                (true, false) => "lock",
-                (false, true) => "unlock",
-                _ => break 'affect,
-            };
-            write!(f.f, ", affect={}", affect)?;
-        }
-        f.write(")")?;
-        Ok(())
+        write!(
+            f.f,
+            "LockMods(modifiers = {}{})",
+            modifier_mask(self.modifiers),
+            affect(self.lock, self.unlock),
+        )
     }
 }
 
@@ -488,6 +484,24 @@ impl Format for RedirectKeyAction {
         }
         f.write(")")?;
         Ok(())
+    }
+}
+
+impl Format for ControlsSetAction {
+    fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
+        write!(f.f, "SetControls(controls = {})", self.controls)?;
+        Ok(())
+    }
+}
+
+impl Format for ControlsLockAction {
+    fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
+        write!(
+            f.f,
+            "LockControls(controls = {}{})",
+            self.controls,
+            affect(self.lock, self.unlock),
+        )
     }
 }
 
@@ -722,6 +736,18 @@ fn group_change(gc: GroupChange) -> impl Display {
             }
             Display::fmt(&r, f)
         }
+    })
+}
+
+fn affect(lock: bool, unlock: bool) -> impl Display {
+    debug_fn(move |f| {
+        let affect = match (lock, unlock) {
+            (false, false) => "neither",
+            (true, false) => "lock",
+            (false, true) => "unlock",
+            _ => return Ok(()),
+        };
+        write!(f, ", affect={}", affect)
     })
 }
 

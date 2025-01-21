@@ -4,6 +4,7 @@ mod tests;
 #[allow(unused_imports)]
 use crate::state_machine::StateMachine;
 use crate::{
+    controls::ControlsMask,
     group::{GroupDelta, GroupIndex},
     state_machine::Event,
     ModifierMask,
@@ -36,6 +37,8 @@ pub struct Components {
     ///
     /// This is defined as the sum of the pressed, latched, and locked group.
     pub group: GroupIndex,
+    /// The controls.
+    pub controls: ControlsMask,
 }
 
 impl Components {
@@ -61,6 +64,7 @@ impl Components {
             Event::GroupLatched(v) => change!(group_latched, v),
             Event::GroupLocked(v) => change!(group_locked, v),
             Event::GroupEffective(v) => change!(group, v),
+            Event::Controls(v) => change!(controls, v),
             _ => false,
         }
     }

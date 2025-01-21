@@ -255,6 +255,9 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
                     group = g;
                     writeln!(actual, "    group_effective = {g:?}").unwrap();
                 }
+                Event::Controls(c) => {
+                    writeln!(actual, "    controls = {c:?}").unwrap();
+                }
             };
         }
     }

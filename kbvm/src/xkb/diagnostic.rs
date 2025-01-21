@@ -1164,6 +1164,45 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     MissingValueForRedirectKeyMods,
+    /// The `controls` argument in a `SetControls` action does not have a value.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ SetControls(controls) ],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    MissingValueForSetControlsControls,
+    /// The `controls` argument in a `LockControls` action does not have a value.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ LockControls(controls) ],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    MissingValueForLockControlsControls,
+    /// The `affect` argument in a `LockControls` action does not have a value.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ LockControls(affect) ],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    MissingValueForLockControlsAffect,
     /// The `affect` argument in a `LockMods` action has an unexpected value.
     ///
     /// # Example
@@ -1772,6 +1811,32 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     UnknownParameterForRedirectKey,
+    /// An unknown parameter appears in a `SetControls` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ SetControls(abcd = 1) ],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    UnknownParameterForSetControls,
+    /// An unknown parameter appears in a `LockControls` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ LockControls(abcd = 1) ],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    UnknownParameterForLockControls,
 }
 
 impl DiagnosticKind {

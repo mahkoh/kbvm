@@ -1,0 +1,13 @@
+both b
+    key_down(b)
+    controls = 0x00000400
+    key_up(b)
+down b
+    key_down(b)
+both a
+    key_down(a)
+    controls = 0x00000c00
+    key_up(a)
+up   b
+    key_up(b)
+    controls = 0x00000800

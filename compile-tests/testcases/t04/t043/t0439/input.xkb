@@ -1,0 +1,18 @@
+xkb_keymap {
+    xkb_keycodes {
+        <1> = 1;
+        <2> = 2;
+        <3> = 3;
+        <4> = 4;
+        <5> = 5;
+        <6> = 6;
+    };
+    xkb_symbols {
+        key <1> { [ SetControls(controls = Overlay1) ] };
+        key <2> { [ LockControls(controls = Overlay1+Overlay2) ] };
+        key <3> { [ LockControls(controls = Overlay2, affect = lock) ] };
+        key <4> { [ LockControls(controls = Overlay2, affect = unlock) ] };
+        key <5> { [ LockControls(controls = Overlay2, affect = neither) ] };
+        key <6> { [ LockControls(controls = Overlay2, affect = both) ] };
+    };
+};

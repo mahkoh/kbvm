@@ -1,6 +1,6 @@
 use {
     crate::{evdev::keycode_to_name, output::Output},
-    kbvm::{xkb::Keymap, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask},
+    kbvm::{xkb::Keymap, ControlsMask, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask},
     serde::Serialize,
     std::{
         io::{stdout, Write},
@@ -59,6 +59,9 @@ enum Type<'a> {
     },
     Group {
         group: i32,
+    },
+    Controls {
+        controls: u32,
     },
     ComposePending {
         keysym: u32,
@@ -156,6 +159,10 @@ impl Output for Json {
         self.msg(Type::Group {
             group: group.0 as i32,
         });
+    }
+
+    fn controls(&mut self, group: ControlsMask) {
+        self.msg(Type::Controls { controls: group.0 });
     }
 
     fn compose_pending(&mut self, keysym: Keysym) {

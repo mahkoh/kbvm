@@ -112,6 +112,8 @@ pub(crate) struct ActionDefaults {
     pub(crate) group_latch: ResolvedGroupLatch,
     pub(crate) group_lock: ResolvedGroupLock,
     pub(crate) redirect_key: ResolvedRedirectKey,
+    pub(crate) set_controls: ResolvedSetControls,
+    pub(crate) lock_controls: ResolvedLockControls,
 }
 
 #[derive(Debug)]
@@ -263,6 +265,8 @@ pub(crate) enum ResolvedAction {
     ResolvedGroupLatch(ResolvedGroupLatch),
     ResolvedGroupLock(ResolvedGroupLock),
     ResolvedRedirectKey(ResolvedRedirectKey),
+    ResolvedSetControls(ResolvedSetControls),
+    ResolvedLockControls(ResolvedLockControls),
 }
 
 #[derive(Copy, Clone, Debug, Default)]
@@ -332,4 +336,15 @@ pub(crate) struct ResolvedRedirectKey {
     pub(crate) keycode: Option<Spanned<(Interned, Keycode)>>,
     pub(crate) mods_to_set: Option<Spanned<ResolvedActionMods>>,
     pub(crate) mods_to_clear: Option<Spanned<ResolvedActionMods>>,
+}
+
+#[derive(Copy, Clone, Default, Debug)]
+pub(crate) struct ResolvedSetControls {
+    pub(crate) controls: Option<Spanned<ControlMask>>,
+}
+
+#[derive(Copy, Clone, Default, Debug)]
+pub(crate) struct ResolvedLockControls {
+    pub(crate) controls: Option<Spanned<ControlMask>>,
+    pub(crate) affect: Option<Spanned<ResolvedActionAffect>>,
 }

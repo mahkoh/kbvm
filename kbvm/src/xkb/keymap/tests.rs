@@ -2,6 +2,7 @@ use crate::{
     builder::Redirect,
     syms,
     xkb::{
+        controls::ControlMask,
         diagnostic::WriteToStderr,
         group::GroupMask,
         group_component::GroupComponent,
@@ -10,7 +11,7 @@ use crate::{
         mod_component::ModComponentMask,
         Context,
     },
-    Components, GroupDelta, GroupIndex, ModifierMask,
+    Components, ControlsMask, GroupDelta, GroupIndex, ModifierMask,
 };
 
 #[test]
@@ -236,6 +237,19 @@ fn indicator_matcher() {
         c.group = GroupIndex(1);
         assert_eq!(m.matches(&c), false);
         c.group_locked = GroupIndex(1);
+        assert_eq!(m.matches(&c), true);
+    }
+    {
+        i.group_component = GroupComponent::None;
+        i.controls = ControlMask::OVERLAY1;
+        let m = i.matcher();
+        let mut c = Components::default();
+        assert_eq!(m.matches(&c), false);
+        c.controls = ControlsMask(ControlMask::OVERLAY2.0 as u32);
+        assert_eq!(m.matches(&c), false);
+        c.controls |= ControlsMask(ControlMask::OVERLAY1.0 as u32);
+        assert_eq!(m.matches(&c), true);
+        c.controls = ControlsMask(ControlMask::OVERLAY1.0 as u32);
         assert_eq!(m.matches(&c), true);
     }
 }

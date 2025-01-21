@@ -637,6 +637,7 @@ impl Dispatch<WlKeyboard, u32> for State {
                             Event::GroupLatched(p) => component!(group_latched, p),
                             Event::GroupLocked(p) => component!(group_locked, p),
                             Event::GroupEffective(p) => component!(group, p),
+                            Event::Controls(p) => component!(controls, p),
                         };
                         handle_logical_key(&mut *state.output, components, key, key_state);
                     }

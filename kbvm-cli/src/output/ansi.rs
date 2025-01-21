@@ -1,7 +1,7 @@
 use {
     crate::{evdev::keycode_to_name, output::Output},
     debug_fn::debug_fn,
-    kbvm::{xkb::Keymap, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask},
+    kbvm::{xkb::Keymap, ControlsMask, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask},
     owo_colors::{OwoColorize, Stream::Stdout},
     std::{
         fmt::{Display, Formatter},
@@ -136,6 +136,15 @@ impl Output for Ansi {
         self.group("group", group.0);
     }
 
+    fn controls(&mut self, group: ControlsMask) {
+        self.handle_delta();
+        println!(
+            "{} {} = {group:?}",
+            self.now(),
+            "controls".color_controls(self.theme),
+        );
+    }
+
     fn compose_pending(&mut self, keysym: Keysym) {
         self.handle_delta();
         println!(
@@ -193,6 +202,7 @@ trait Colorize {
     fn color_sym(&self, theme: Theme) -> impl Display;
     fn color_mods(&self, theme: Theme) -> impl Display;
     fn color_group(&self, theme: Theme) -> impl Display;
+    fn color_controls(&self, theme: Theme) -> impl Display;
     fn color_compose(&self, theme: Theme) -> impl Display;
 }
 
@@ -231,6 +241,13 @@ where
     fn color_group(&self, theme: Theme) -> impl Display {
         let c = match theme {
             Theme::Dark => [255, 100, 100],
+        };
+        apply(self, c)
+    }
+
+    fn color_controls(&self, theme: Theme) -> impl Display {
+        let c = match theme {
+            Theme::Dark => [255, 100, 255],
         };
         apply(self, c)
     }

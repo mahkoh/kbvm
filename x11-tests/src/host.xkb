@@ -1577,11 +1577,11 @@ xkb_symbols "pc_us_pt_2_us_3_inet(evdev)_group(shift_caps_toggle)_compose(ralt)"
 	key <I151>               {	[      XF86WakeUp ] };
 	key <I152>               {	[    XF86Explorer ] };
 	key <I153>               { lock = true,	[        XF86Send ] };
-	key <I155>               {	[        XF86Xfer ] };
-	key <I156>               {	[     XF86Launch1 ] };
-	key <I157>               {	[     XF86Launch2 ] };
-	key <I158>               {	[         XF86WWW ] };
-	key <I159>               {	[         XF86DOS ] };
+	key <I155>               {	[        XF86Xfer ], [ SetControls(controls = Overlay1) ] };
+	key <I156>               {	[     XF86Launch1 ], [ LockControls(controls = Overlay1+Overlay2) ] };
+	key <I157>               {	[     XF86Launch2 ], [ LockControls(controls = Overlay1+Overlay2, affect = lock) ] };
+	key <I158>               {	[         XF86WWW ], [ LockControls(controls = Overlay1+Overlay2, affect = unlock) ] };
+	key <I159>               {	[         XF86DOS ], [ LockControls(controls = Overlay1+Overlay2, affect = neither) ] };
 	key <I160>               {	[ XF86ScreenSaver ] };
 	key <I161>               {	[ XF86RotateWindows ] };
 	key <I162>               {	[    XF86TaskPane ] };

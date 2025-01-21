@@ -1,4 +1,4 @@
-use kbvm::{xkb::Keymap, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask};
+use kbvm::{xkb::Keymap, ControlsMask, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask};
 
 pub mod ansi;
 pub mod json;
@@ -16,6 +16,7 @@ pub trait Output {
     fn group_latched(&mut self, group: GroupDelta);
     fn group_locked(&mut self, group: GroupIndex);
     fn group(&mut self, group: GroupIndex);
+    fn controls(&mut self, group: ControlsMask);
     fn compose_pending(&mut self, keysym: Keysym);
     fn compose_aborted(&mut self, keysym: Keysym);
     fn composed(&mut self, keysym: Option<Keysym>, string: Option<&str>, original_keysym: Keysym);
