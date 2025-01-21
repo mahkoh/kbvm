@@ -1,0 +1,16 @@
+xkb_keymap {
+    xkb_keycodes {
+        <looooooong_a> = 1;
+        alias <looooooong_b> = <looooooong_a>;
+        <K000> = 2;
+        <K001> = 3;
+        <K002> = 4;
+    };
+    xkb_symbols {
+        key <looooooong_b> {
+            overlay1 = <looooooong_a>,
+            [ RedirectKey(key = <looooooong_a>) ],
+        };
+        key <K000> { };
+    };
+};

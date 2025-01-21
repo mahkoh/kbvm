@@ -5,6 +5,7 @@ use {
             group::GroupChange,
             group_component::GroupComponent,
             keymap::{
+                self,
                 actions::{
                     ControlsLockAction, ControlsSetAction, GroupLatchAction, GroupLockAction,
                     GroupSetAction, ModsLatchAction, ModsLockAction, ModsSetAction,
@@ -20,11 +21,12 @@ use {
         Keysym, ModifierMask,
     },
     debug_fn::debug_fn,
+    hashbrown::{HashMap, HashSet},
     isnt::std_1::vec::IsntVecExt,
     smallvec::SmallVec,
     std::{
-        fmt,
-        fmt::{Display, Formatter, Write},
+        fmt::{self, Display, Formatter, Write},
+        sync::Arc,
     },
 };
 
@@ -37,7 +39,9 @@ where
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let mut writer = Writer {
             nesting: 0,
-            alternate: f.alternate(),
+            multi_line: f.alternate(),
+            lookup_only: false,
+            long_keys: None,
             newline: match f.alternate() {
                 true => "\n",
                 false => " ",
@@ -50,7 +54,9 @@ where
 
 struct Writer<'a, 'b> {
     nesting: usize,
-    alternate: bool,
+    multi_line: bool,
+    lookup_only: bool,
+    long_keys: Option<HashMap<Arc<String>, String>>,
     newline: &'static str,
     f: &'a mut Formatter<'b>,
 }
@@ -85,8 +91,19 @@ impl Writer<'_, '_> {
         Ok(())
     }
 
+    fn write_key_name(&mut self, name: &Arc<String>) -> fmt::Result {
+        if name.len() > 4 {
+            if let Some(names) = &mut self.long_keys {
+                if let Some(name) = names.get(name) {
+                    return self.f.write_str(name);
+                }
+            }
+        }
+        self.write(name)
+    }
+
     fn write_nesting(&mut self) -> fmt::Result {
-        if self.alternate {
+        if self.multi_line {
             let spaces = self.nesting * 4;
             write!(self.f, "{:spaces$}", "", spaces = spaces)?;
         }
@@ -115,6 +132,59 @@ impl Writer<'_, '_> {
             f(self, item)?;
         }
         Ok(())
+    }
+}
+
+impl Display for keymap::Formatter<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        let mut long_keys = None;
+        if self.rename_long_keys {
+            let mut has_any = false;
+            let mut conflicts = HashSet::new();
+            for key in &self.keymap.keycodes {
+                if key.name.len() > 4 {
+                    has_any = true;
+                }
+                if key.name.len() == 4
+                    && key.name.as_bytes()[0] == b'K'
+                    && key.name.as_bytes()[1..].iter().all(|b| b.is_ascii_digit())
+                {
+                    conflicts.insert(key.name.clone());
+                }
+            }
+            let mut names = HashMap::new();
+            if has_any {
+                let mut next = 0u64;
+                for key in &self.keymap.keycodes {
+                    if key.name.len() <= 4 {
+                        continue;
+                    }
+                    let name = loop {
+                        let name = format!("K{:03}", next);
+                        next += 1;
+                        if !conflicts.contains(&name) {
+                            break name;
+                        }
+                    };
+                    names.insert(key.name.clone(), name);
+                }
+            }
+            if !names.is_empty() {
+                long_keys = Some(names);
+            }
+        }
+        let mut writer = Writer {
+            nesting: 0,
+            multi_line: !self.single_line,
+            lookup_only: self.lookup_only,
+            long_keys,
+            newline: match self.single_line {
+                false => "\n",
+                true => " ",
+            },
+            f,
+        };
+        Format::format(self.keymap, &mut writer)
     }
 }
 
@@ -287,7 +357,9 @@ impl Format for KeycodeKeys<'_> {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
         for k in &self.0.keycodes {
             f.write_nesting()?;
-            write!(f.f, "<{}> = {};", k.name, k.keycode.0)?;
+            f.write("<")?;
+            f.write_key_name(&k.name)?;
+            write!(f.f, "> = {};", k.keycode.0)?;
             f.write_newline()?;
         }
         Ok(())
@@ -474,7 +546,7 @@ impl Format for RedirectKeyAction {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
         f.write("RedirectKey(")?;
         f.write("key = <")?;
-        f.write(&self.key_name)?;
+        f.write_key_name(&self.key_name)?;
         f.write(">")?;
         if self.mods_to_clear.0 != 0 {
             write!(f.f, ", clearMods = {}", modifier_mask(self.mods_to_clear))?;
@@ -551,7 +623,7 @@ impl Format for Keys<'_> {
         for key in m.keys.values() {
             f.write_nesting()?;
             f.write("key <")?;
-            f.write(&key.key_name)?;
+            f.write_key_name(&key.key_name)?;
             f.write("> {")?;
             f.write_nested(|f| {
                 let mut needs_newline = false;
@@ -568,24 +640,26 @@ impl Format for Keys<'_> {
                     f.write("repeat = false")?;
                     needs_newline = true;
                 }
-                if let Some(behavior) = &key.behavior {
-                    handle_newline(&mut needs_newline, f)?;
-                    f.write_nesting()?;
-                    match behavior {
-                        KeyBehavior::Lock => {
-                            f.write("locks = true")?;
+                if !f.lookup_only {
+                    if let Some(behavior) = &key.behavior {
+                        handle_newline(&mut needs_newline, f)?;
+                        f.write_nesting()?;
+                        match behavior {
+                            KeyBehavior::Lock => {
+                                f.write("locks = true")?;
+                            }
+                            KeyBehavior::Overlay(b) => {
+                                let idx = match b.overlay() {
+                                    KeyOverlay::Overlay1 => 1,
+                                    KeyOverlay::Overlay2 => 2,
+                                };
+                                write!(f.f, "overlay{idx} = <")?;
+                                f.write_key_name(&b.key_name)?;
+                                f.write(">")?;
+                            }
                         }
-                        KeyBehavior::Overlay(b) => {
-                            let idx = match b.overlay() {
-                                KeyOverlay::Overlay1 => 1,
-                                KeyOverlay::Overlay2 => 2,
-                            };
-                            write!(f.f, "overlay{idx} = <")?;
-                            f.write(&b.key_name)?;
-                            f.write(">")?;
-                        }
+                        needs_newline = true;
                     }
-                    needs_newline = true;
                 }
                 if key.redirect != GroupsRedirect::Wrap {
                     handle_newline(&mut needs_newline, f)?;
@@ -658,15 +732,17 @@ impl Format for Keys<'_> {
                             "NoSymbol",
                             |l| &l.symbols,
                         )?;
-                        write_levels(
-                            &mut needs_newline,
-                            idx,
-                            group,
-                            f,
-                            "actions",
-                            "NoAction()",
-                            |l| &l.actions,
-                        )?;
+                        if !f.lookup_only {
+                            write_levels(
+                                &mut needs_newline,
+                                idx,
+                                group,
+                                f,
+                                "actions",
+                                "NoAction()",
+                                |l| &l.actions,
+                            )?;
+                        }
                     }
                 }
                 if !needs_newline {
@@ -707,10 +783,12 @@ impl Format for ModMaps<'_> {
             if let Some(s) = kc.key_sym {
                 s.format(f)?;
             } else {
-                write!(f.f, "<{}>", kc.key_name)?;
+                f.write("<")?;
+                f.write_key_name(&kc.key_name)?;
+                f.write(">")?;
             }
             f.write(" };")?;
-            if kc.key_sym.is_some() && f.alternate {
+            if kc.key_sym.is_some() && f.multi_line {
                 write!(f.f, " // <{}>", kc.key_name)?;
             }
             f.write_newline()?;
