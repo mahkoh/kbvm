@@ -7,7 +7,7 @@ use {
                 actions::{ControlsLockAction, ControlsSetAction, RedirectKeyAction},
                 Action, GroupLatchAction, GroupLockAction, GroupSetAction, Indicator, Key,
                 KeyBehavior, KeyGroup, KeyLevel, KeyType, KeyTypeMapping, Keycode, ModMapValue,
-                ModsLatchAction, ModsLockAction, ModsSetAction, VirtualModifier,
+                ModsLatchAction, ModsLockAction, ModsSetAction, OverlayBehavior, VirtualModifier,
             },
             level::Level,
             mod_component::ModComponentMask,
@@ -195,18 +195,23 @@ impl Keymap {
                     redirect = GroupsRedirect::Redirect(GroupIdx::ONE);
                 }
             }
+            let behavior = key
+                .key
+                .behavior
+                .as_ref()
+                .and_then(|b| map_behavior(&mut used_key_names, &mut get_string, &b.val));
             let k = Key {
                 key_name: get_string(key.name.val),
-                key_code: key.code,
+                keycode: key.code,
                 repeat: key.key.repeating.despan().flatten().unwrap_or(false),
-                behavior: key.key.behavior.as_ref().and_then(|b| map_behavior(&b.val)),
+                behavior,
                 redirect,
                 groups,
             };
             keys.push(k);
         }
         keys.sort_unstable_by(|l, r| l.key_name.cmp(&r.key_name));
-        let keys = keys.into_iter().map(|k| (k.key_code, k)).collect();
+        let keys = keys.into_iter().map(|k| (k.keycode, k)).collect();
         let mut keycodes = Vec::with_capacity(resolved.keycodes.name_to_key.len());
         // https://gitlab.freedesktop.org/xorg/xserver/-/issues/1780
         let mut max_keycode = 255;
@@ -239,13 +244,26 @@ impl Keymap {
     }
 }
 
-fn map_behavior(b: &SymbolsKeyBehavior) -> Option<KeyBehavior> {
+fn map_behavior(
+    used_key_names: &mut HashSet<Interned>,
+    get_string: &mut impl FnMut(Interned) -> Arc<String>,
+    b: &SymbolsKeyBehavior,
+) -> Option<KeyBehavior> {
     let behavior = match b {
         SymbolsKeyBehavior::Locks(b) => {
             if !*b {
                 return None;
             }
             KeyBehavior::Lock
+        }
+        SymbolsKeyBehavior::Overlay((overlay, name, keycode)) => {
+            used_key_names.insert(*name);
+            let behavior = OverlayBehavior {
+                overlay: *overlay,
+                key_name: get_string(*name),
+                keycode: *keycode,
+            };
+            KeyBehavior::Overlay(behavior)
         }
     };
     Some(behavior)
@@ -353,7 +371,7 @@ fn map_action(
             used_key_names.insert(name);
             Action::RedirectKey(RedirectKeyAction {
                 key_name: get_string(name),
-                key_code: kc,
+                keycode: kc,
                 mods_to_set: map_action_mods(&m.mods_to_set).unwrap_or_default(),
                 mods_to_clear: map_action_mods(&m.mods_to_clear).unwrap_or_default(),
             })

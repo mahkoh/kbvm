@@ -224,7 +224,7 @@ impl LookupTable {
             };
             let symbol = Key {
                 key_name: name.clone(),
-                key_code: kc,
+                keycode: kc,
                 groups,
                 repeat: kg.repeats,
                 behavior: None,

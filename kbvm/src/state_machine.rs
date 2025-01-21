@@ -223,6 +223,41 @@ fn adjust_spill(spill: &mut Box<[u32]>, size: usize) {
 }
 
 impl StateEventHandler for Layer1Handler<'_> {
+    #[inline]
+    fn mods_pressed_load(&self) -> u32 {
+        self.next.components.mods_pressed.0
+    }
+
+    #[inline]
+    fn mods_latched_load(&self) -> u32 {
+        self.next.components.mods_latched.0
+    }
+
+    #[inline]
+    fn mods_locked_load(&self) -> u32 {
+        self.next.components.mods_locked.0
+    }
+
+    #[inline]
+    fn group_pressed_load(&self) -> u32 {
+        self.next.components.group_pressed.0
+    }
+
+    #[inline]
+    fn group_latched_load(&self) -> u32 {
+        self.next.components.group_latched.0
+    }
+
+    #[inline]
+    fn group_locked_load(&self) -> u32 {
+        self.next.components.group_locked.0
+    }
+
+    #[inline]
+    fn controls_load(&self) -> u32 {
+        self.next.components.controls.0
+    }
+
     #[inline(always)]
     fn key_down(&mut self, globals: &mut [u32], key: Keycode) {
         let mut slot = None;

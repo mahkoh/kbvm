@@ -13,6 +13,7 @@ use {
             group_component::GroupComponent,
             interner::{Interned, Interner},
             kccgst::ast::{CallArg, Expr, Path, Var},
+            keymap::KeyOverlay,
             level::Level,
             meaning::{Meaning, MeaningCache},
             mod_component::ModComponentMask,
@@ -194,6 +195,8 @@ pub(crate) enum EvalError {
     MissingKeySymbolsValue,
     #[error("key `actions` argument must have a value")]
     MissingKeyActionsValue,
+    #[error("key `overlay1`/`overlay2` argument must have a value")]
+    MissingKeyOverlayValue,
     #[error("key `virtual_modifiers` argument must have a value")]
     MissingKeyVirtualModifiersValue,
     #[error("unknown key `repeating` value")]
@@ -307,6 +310,7 @@ impl EvalError {
             UnknownKeyRepeatingValue,
             MissingKeyTypeValue,
             UnknownKeyType,
+            MissingKeyOverlayValue,
         }
     }
 }
@@ -1748,6 +1752,7 @@ pub(crate) enum SymbolsField {
     Groupswrap,
     Groupsclamp,
     Groupsredirect(GroupIdx),
+    Overlay((KeyOverlay, Interned, Keycode)),
 }
 
 pub(crate) type GroupList<T> = Vec<SmallVec<[Spanned<T>; 1]>>;
@@ -1981,6 +1986,16 @@ pub(crate) fn eval_symbols_field(
             let expr = get_expr!(MissingKeyGroupsRedirectValue);
             let group = eval_group(interner, expr)?;
             SymbolsField::Groupsredirect(group.val)
+        }
+        Meaning::Overlay | Meaning::Overlay1 | Meaning::Overlay2 => {
+            deny_idx!();
+            let expr = get_expr!(MissingKeyOverlayValue);
+            let kc = eval_keycode(keycodes, expr)?.val;
+            let overlay = match meaning != Meaning::Overlay2 {
+                true => KeyOverlay::Overlay1,
+                false => KeyOverlay::Overlay2,
+            };
+            SymbolsField::Overlay((overlay, kc.0, kc.1))
         }
         _ => return Err(UnknownKeyField.spanned2(span)),
     };

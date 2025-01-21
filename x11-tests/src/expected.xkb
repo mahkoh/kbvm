@@ -1062,10 +1062,12 @@ xkb_keymap {
             symbols[Group1] = [ XF86RotateWindows ]
         };
         key <I162> {
+            overlay1 = <I170>,
             type[Group1] = "ONE_LEVEL",
             symbols[Group1] = [ XF86TaskPane ]
         };
         key <I163> {
+            overlay2 = <I171>,
             type[Group1] = "ONE_LEVEL",
             symbols[Group1] = [ XF86Mail ]
         };

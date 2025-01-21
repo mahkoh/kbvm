@@ -583,9 +583,10 @@ impl KeyBuilder {
     ///
     /// The routine can use `key_down` and `key_up` as many times as it likes.
     ///
-    /// The routine can neither access nor manipulate the components (modifiers, groups)
-    /// of the state machine. Trying to access them always returns 0, trying to modify
-    /// them has no effect. The same applies to the `later_key_actuated` flag.
+    /// The routine cannot manipulate the components (modifiers, groups, components)
+    /// of the state machine. Trying to modify them has no effect.
+    ///
+    /// The `later_key_actuated` flag is always 0 in the routine.
     ///
     /// If the routine uses globals, these globals should have been allocated via
     /// [`Builder::add_global`] of the builder that this key is ultimately attached to.

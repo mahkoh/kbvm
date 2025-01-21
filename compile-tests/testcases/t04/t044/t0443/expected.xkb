@@ -1,0 +1,45 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <1> = 1;
+        <2> = 2;
+        <3> = 3;
+        <4> = 4;
+        <5> = 5;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        key.repeat = true;
+
+        key <1> {
+            repeat = false,
+            overlay1 = <2>
+        };
+        key <3> {
+            repeat = false,
+            locks = true
+        };
+        key <4> {
+            repeat = false,
+            locks = true
+        };
+        key <5> {
+            repeat = false,
+            overlay1 = <2>
+        };
+    };
+};

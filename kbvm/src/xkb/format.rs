@@ -10,7 +10,7 @@ use {
                     GroupSetAction, ModsLatchAction, ModsLockAction, ModsSetAction,
                     RedirectKeyAction,
                 },
-                Action, Indicator, KeyBehavior, KeyGroup, KeyLevel, KeyType,
+                Action, Indicator, KeyBehavior, KeyGroup, KeyLevel, KeyOverlay, KeyType,
             },
             mod_component::ModComponentMask,
             resolved::GroupsRedirect,
@@ -574,6 +574,15 @@ impl Format for Keys<'_> {
                     match behavior {
                         KeyBehavior::Lock => {
                             f.write("locks = true")?;
+                        }
+                        KeyBehavior::Overlay(b) => {
+                            let idx = match b.overlay() {
+                                KeyOverlay::Overlay1 => 1,
+                                KeyOverlay::Overlay2 => 2,
+                            };
+                            write!(f.f, "overlay{idx} = <")?;
+                            f.write(&b.key_name)?;
+                            f.write(">")?;
                         }
                     }
                     needs_newline = true;

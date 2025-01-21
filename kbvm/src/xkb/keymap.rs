@@ -404,7 +404,7 @@ pub mod actions {
     #[derive(Clone, Debug, PartialEq)]
     pub struct RedirectKeyAction {
         pub(crate) key_name: Arc<String>,
-        pub(crate) key_code: crate::Keycode,
+        pub(crate) keycode: crate::Keycode,
         pub(crate) mods_to_set: ModifierMask,
         pub(crate) mods_to_clear: ModifierMask,
     }
@@ -484,7 +484,7 @@ pub enum GroupChange {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Key {
     pub(crate) key_name: Arc<String>,
-    pub(crate) key_code: crate::Keycode,
+    pub(crate) keycode: crate::Keycode,
     pub(crate) groups: Vec<Option<KeyGroup>>,
     pub(crate) repeat: bool,
     pub(crate) behavior: Option<KeyBehavior>,
@@ -510,6 +510,49 @@ pub struct Key {
 pub enum KeyBehavior {
     /// The key locks.
     Lock,
+    /// The key is affected by an overlay control.
+    Overlay(OverlayBehavior),
+}
+
+/// The overlay that affects a key behavior.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_symbols {
+///     key <a> {
+///         overlay2 = <b>,
+///     };
+/// };
+/// ```
+///
+/// The overlay is `Overlay2`.
+#[derive(Copy, Clone, Debug, PartialEq)]
+#[non_exhaustive]
+pub enum KeyOverlay {
+    /// The first overlay.
+    Overlay1,
+    /// The second overlay.
+    Overlay2,
+}
+
+/// An overlay behavior.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_symbols {
+///     key <a> {
+///         overlay1 = <b>,
+///         [ a, A ],
+///     };
+/// };
+/// ```
+#[derive(Clone, Debug, PartialEq)]
+pub struct OverlayBehavior {
+    pub(crate) overlay: KeyOverlay,
+    pub(crate) key_name: Arc<String>,
+    pub(crate) keycode: crate::Keycode,
 }
 
 /// A key group.
@@ -754,7 +797,7 @@ impl Key {
     ///
     /// The function returns `38`.
     pub fn keycode(&self) -> crate::Keycode {
-        self.key_code
+        self.keycode
     }
 
     /// Returns whether the key repeats.
@@ -1371,8 +1414,8 @@ impl RedirectKeyAction {
     /// ```
     ///
     /// The function returns the keycode of `<b>`.
-    pub fn key_code(&self) -> crate::Keycode {
-        self.key_code
+    pub fn keycode(&self) -> crate::Keycode {
+        self.keycode
     }
 
     /// Returns the mods that will be set by this action.
@@ -1486,6 +1529,61 @@ impl ControlsLockAction {
     /// The function returns the mask for `Overlay1`.
     pub fn mask(&self) -> ControlsMask {
         ControlsMask(self.controls.0 as u32)
+    }
+}
+
+impl OverlayBehavior {
+    /// Returns the overlay that controls this behavior.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         overlay2 = <b>,
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `KeyOverlay::Overlay2`.
+    pub fn overlay(&self) -> KeyOverlay {
+        self.overlay
+    }
+
+    /// Returns the name of the key that this behavior redirects to if the overlay is
+    /// active.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         overlay1 = <b>,
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `"b"`.
+    pub fn key_name(&self) -> &str {
+        &self.key_name
+    }
+
+    /// Returns the keycode of the key that this action redirects to if the overlay is
+    /// active.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         overlay1 = <b>,
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns the keycode of `<b>`.
+    pub fn keycode(&self) -> crate::Keycode {
+        self.keycode
     }
 }
 
