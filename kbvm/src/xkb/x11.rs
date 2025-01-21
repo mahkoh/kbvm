@@ -19,8 +19,8 @@ use {
                     GroupSetAction, ModsLatchAction, ModsLockAction, ModsSetAction,
                     RedirectKeyAction,
                 },
-                Action, Indicator, Key, KeyBehavior, KeyGroup, KeyLevel, KeyType, KeyTypeMapping,
-                ModMapValue, VirtualModifier,
+                Action, Indicator, Key, KeyBehavior, KeyGroup, KeyLevel, KeyOverlay, KeyType,
+                KeyTypeMapping, ModMapValue, OverlayBehavior, VirtualModifier,
             },
             level::Level,
             mod_component::ModComponentMask,
@@ -722,7 +722,7 @@ where
                 kc,
                 Key {
                     key_name: name.clone(),
-                    key_code: kc,
+                    keycode: kc,
                     groups,
                     repeat,
                     behavior: None,
@@ -736,10 +736,26 @@ where
             let Some(key) = self.keys.get_mut(&keycode) else {
                 continue;
             };
-            #[expect(clippy::single_match)]
             match BehaviorType::from(behavior.behavior.as_type()) {
                 BehaviorType::LOCK => {
                     key.behavior = Some(KeyBehavior::Lock);
+                }
+                x @ BehaviorType::OVERLAY1 | x @ BehaviorType::OVERLAY2 => {
+                    let behavior = behavior.behavior.as_overlay1();
+                    let keycode = Keycode::from_x11(behavior.key as u32);
+                    let Some(name) = self.key_names.get(&keycode) else {
+                        continue;
+                    };
+                    let overlay = match x {
+                        BehaviorType::OVERLAY1 => KeyOverlay::Overlay1,
+                        _ => KeyOverlay::Overlay2,
+                    };
+                    let behavior = OverlayBehavior {
+                        overlay,
+                        key_name: name.clone(),
+                        keycode,
+                    };
+                    key.behavior = Some(KeyBehavior::Overlay(behavior));
                 }
                 _ => {}
             }
@@ -856,7 +872,7 @@ fn map_action(key_names: &HashMap<Keycode, Arc<String>>, action: &xkb::Action) -
             let mask = ModifierMask(a.mask.into());
             Action::RedirectKey(RedirectKeyAction {
                 key_name: key_names.get(&key_code)?.clone(),
-                key_code,
+                keycode: key_code,
                 mods_to_set,
                 mods_to_clear: mask & !mods_to_set,
             })

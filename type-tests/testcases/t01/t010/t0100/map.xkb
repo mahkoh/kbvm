@@ -1,0 +1,9 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <a> { [ SetControls(controls = Overlay2) ] };
+        key <b> { overlay2 = <c> };
+    };
+};

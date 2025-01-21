@@ -5,8 +5,9 @@ use {
         builder::{Builder, GroupBuilder, KeyBuilder, LevelBuilder},
         routine::{Routine, RoutineBuilder, Var},
         xkb::{
+            controls::ControlMask,
             group::GroupChange,
-            keymap::{Action, KeyBehavior, KeyType},
+            keymap::{Action, KeyBehavior, KeyOverlay, KeyType},
             Keymap,
         },
         GroupType, Keycode, ModifierIndex,
@@ -38,7 +39,7 @@ impl Keymap {
             types.insert(&**ty as *const KeyType, builder.build());
         }
         for key in self.keys.values() {
-            let mut kb = KeyBuilder::new(key.key_code);
+            let mut kb = KeyBuilder::new(key.keycode);
             kb.repeats(key.repeat);
             kb.redirect(key.redirect.to_redirect());
             for (idx, group) in key.groups.iter().enumerate() {
@@ -54,14 +55,14 @@ impl Keymap {
                     let mut lb = LevelBuilder::new(idx);
                     lb.keysyms(&level.symbols);
                     if level.actions.is_not_empty() {
-                        lb.routine(&actions_to_routine(key.key_code, &level.actions));
+                        lb.routine(&actions_to_routine(key.keycode, &level.actions));
                     }
                     gb.add_level(lb);
                 }
                 kb.add_group(gb);
             }
             if let Some(behavior) = &key.behavior {
-                kb.routine(&behavior_to_routine(&mut builder, key.key_code, behavior));
+                kb.routine(&behavior_to_routine(&mut builder, key.keycode, behavior));
             }
             builder.add_key(kb);
         }
@@ -93,7 +94,30 @@ fn behavior_to_routine(b: &mut Builder, key: Keycode, behavior: &KeyBehavior) ->
                 .key_up(kc)
                 .finish_skip(anchor);
         }
+        KeyBehavior::Overlay(b) => {
+            let mask = match b.overlay() {
+                KeyOverlay::Overlay1 => ControlMask::OVERLAY1,
+                KeyOverlay::Overlay2 => ControlMask::OVERLAY2,
+            };
+            let [m, controls, active, kc] = builder.allocate_vars();
+            let anchor1 = builder
+                .load_lit(m, mask.0 as u32)
+                .controls_load(controls)
+                .bit_and(active, controls, m)
+                .prepare_skip_if_not(active);
+            let anchor2 = builder.load_lit(kc, b.keycode.raw()).prepare_skip();
+            builder
+                .finish_skip(anchor1)
+                .load_lit(kc, key.raw())
+                .finish_skip(anchor2)
+                .key_down(kc)
+                .on_release()
+                .key_up(kc);
+        }
     }
+    // let routine = builder.build();
+    // println!("{:#?}", routine);
+    // routine
     builder.build()
 }
 
@@ -354,7 +378,7 @@ fn encode_actions(
             if rk.modifier_mask().0 == 0 {
                 // simple case where modifiers are not changed
                 let key = builder.allocate_var();
-                builder.load_lit(key, rk.key_code().raw()).key_down(key);
+                builder.load_lit(key, rk.keycode().raw()).key_down(key);
                 if !preserves_latch {
                     let zero = builder.allocate_var();
                     builder
@@ -392,7 +416,7 @@ fn encode_actions(
             };
             encode_transform(builder);
             builder
-                .load_lit(key, rk.key_code().raw())
+                .load_lit(key, rk.keycode().raw())
                 .key_down(key)
                 .mods_pressed_store(pressed)
                 .mods_locked_store(locked);

@@ -1837,6 +1837,19 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     UnknownParameterForLockControls,
+    /// The `overlay1`/`overlay2` field in a key statement does not have a value.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         overlay1;
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    MissingKeyOverlayValue,
 }
 
 impl DiagnosticKind {

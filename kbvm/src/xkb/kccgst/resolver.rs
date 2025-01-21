@@ -1418,6 +1418,9 @@ impl SymbolsKey {
             SymbolsField::Groupsredirect(e) => {
                 self.groups_redirect = Some(GroupsRedirect::Redirect(e).spanned2(f.span))
             }
+            SymbolsField::Overlay(e) => {
+                self.behavior = Some(SymbolsKeyBehavior::Overlay(e).spanned2(f.span))
+            }
         }
     }
 }

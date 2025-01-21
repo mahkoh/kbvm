@@ -1584,8 +1584,8 @@ xkb_symbols "pc_us_pt_2_us_3_inet(evdev)_group(shift_caps_toggle)_compose(ralt)"
 	key <I159>               {	[         XF86DOS ], [ LockControls(controls = Overlay1+Overlay2, affect = neither) ] };
 	key <I160>               {	[ XF86ScreenSaver ] };
 	key <I161>               {	[ XF86RotateWindows ] };
-	key <I162>               {	[    XF86TaskPane ] };
-	key <I163>               {	[        XF86Mail ] };
+	key <I162>               {	[    XF86TaskPane ], overlay1 = <I170> };
+	key <I163>               {	[        XF86Mail ], overlay2 = <I171> };
 	key <I164>               {	[   XF86Favorites ] };
 	key <I165>               {	[  XF86MyComputer ] };
 	key <I166>               {	[        XF86Back ] };

@@ -20,6 +20,8 @@ KBVM supports a number of syntax extensions:
 - `xkb_geometry` items are ignored.
 - Only the following behaviors are supported:
   - Locking
+  - Overlay1
+  - Overlay2
 - Only the following actions are supported:
   - `SetMods`
   - `LatchMods`
@@ -30,7 +32,7 @@ KBVM supports a number of syntax extensions:
   - `RedirectKey`
   - `SetControls`
   - `LockControls`
-    - Controls have no effect on the state machine.
+    - Only the overlay controls affect the state machine.
 - Modifiers are not truncated to the lower 8 bits.
 - Each key can have up to 32 groups.
 - Each key level can have an arbitrary number of symbols and actions.

@@ -1,0 +1,20 @@
+xkb_keymap {
+    xkb_keycodes {
+        <1> = 1;
+        <2> = 2;
+        <3> = 3;
+        <4> = 4;
+        <5> = 5;
+        <6> = 6;
+    };
+    xkb_symbols {
+        key <1> { overlay1 = <2> };
+        augment key <1> { lock };
+        key <3> { lock };
+        augment key <3> { overlay1 = <2> };
+        key <4> { overlay1 = <2> };
+        override key <4> { lock };
+        key <5> { lock };
+        override key <5> { overlay1 = <2> };
+    };
+};

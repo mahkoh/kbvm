@@ -7,6 +7,7 @@ use {
             group_component::GroupComponent,
             indicator::IndicatorIdx,
             interner::Interned,
+            keymap::KeyOverlay,
             level::Level,
             mod_component::ModComponentMask,
             modmap::Vmodmap,
@@ -170,6 +171,7 @@ pub(crate) struct SymbolsKey {
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub(crate) enum SymbolsKeyBehavior {
     Locks(bool),
+    Overlay((KeyOverlay, Interned, Keycode)),
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
