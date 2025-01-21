@@ -18,3 +18,11 @@ jobs:
         run: |
           cd kbvm
           cargo clippy --all-features --verbose -- -Dwarnings
+  cli-clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Clippy
+        run: |
+          cd kbvm-cli
+          cargo clippy --all-features --verbose -- -Dwarnings
