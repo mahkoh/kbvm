@@ -5,6 +5,7 @@
 
 use {
     crate::{
+        controls::ControlsMask,
         group::{GroupDelta, GroupIndex},
         xkb::{
             controls::ControlMask,
@@ -14,8 +15,9 @@ use {
             keymap::{
                 self,
                 actions::{
-                    GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
-                    ModsLockAction, ModsSetAction, RedirectKeyAction,
+                    ControlsLockAction, ControlsSetAction, GroupLatchAction, GroupLockAction,
+                    GroupSetAction, ModsLatchAction, ModsLockAction, ModsSetAction,
+                    RedirectKeyAction,
                 },
                 Action, Indicator, Key, KeyBehavior, KeyGroup, KeyLevel, KeyType, KeyTypeMapping,
                 ModMapValue, VirtualModifier,
@@ -46,6 +48,7 @@ use {
             },
             xproto::{Atom, ConnectionExt as E1, GetAtomNameReply},
         },
+        x11_utils::Serialize,
     },
 };
 
@@ -223,6 +226,9 @@ where
             group_latched: GroupDelta(reply.latched_group as i32 as u32),
             group_locked: GroupIndex(reply.locked_group.into()),
             group: GroupIndex(reply.group.into()),
+            // applications don't maintain this field so let's just keep it 0 in the
+            // initial state as well. this matches wayland.
+            controls: ControlsMask(0),
         })
     }
 }
@@ -853,6 +859,25 @@ fn map_action(key_names: &HashMap<Keycode, Arc<String>>, action: &xkb::Action) -
                 key_code,
                 mods_to_set,
                 mods_to_clear: mask & !mods_to_set,
+            })
+        }
+        SAType::SET_CONTROLS => {
+            let a = action.as_setcontrols();
+            Action::ControlsSet(ControlsSetAction {
+                controls: ControlMask(
+                    u16::from(a.bool_ctrls_low) | (u16::from(a.bool_ctrls_high) << 8),
+                ),
+            })
+        }
+        SAType::LOCK_CONTROLS => {
+            let flags: SA = action.serialize()[1].into();
+            let a = action.as_lockcontrols();
+            Action::ControlsLock(ControlsLockAction {
+                controls: ControlMask(
+                    u16::from(a.bool_ctrls_low) | (u16::from(a.bool_ctrls_high) << 8),
+                ),
+                lock: !flags.contains(SAIsoLockFlag::NO_LOCK),
+                unlock: !flags.contains(SAIsoLockFlag::NO_UNLOCK),
             })
         }
         _ => return None,

@@ -23,8 +23,9 @@ use {
             indicator::IndicatorIdx,
             keymap::{
                 actions::{
-                    GroupLatchAction, GroupLockAction, GroupSetAction, ModsLatchAction,
-                    ModsLockAction, ModsSetAction, RedirectKeyAction,
+                    ControlsLockAction, ControlsSetAction, GroupLatchAction, GroupLockAction,
+                    GroupSetAction, ModsLatchAction, ModsLockAction, ModsSetAction,
+                    RedirectKeyAction,
                 },
                 iterators::{Groups, Indicators, Keys, Levels, Mappings, VirtualModifiers},
             },
@@ -32,7 +33,7 @@ use {
             mod_component::ModComponentMask,
             resolved::GroupsRedirect,
         },
-        Components, Keysym, ModifierIndex, ModifierMask,
+        Components, ControlsMask, Keysym, ModifierIndex, ModifierMask,
     },
     hashbrown::DefaultHashBuilder,
     indexmap::IndexMap,
@@ -151,6 +152,7 @@ pub struct IndicatorMatcher {
     group_not_latched: bool,
     group_locked: u32,
     group: u32,
+    controls: u32,
 }
 
 #[derive(Debug, PartialEq)]
@@ -245,12 +247,19 @@ pub enum Action {
     GroupLock(GroupLockAction),
     /// A `RedirectKey` action.
     RedirectKey(RedirectKeyAction),
+    /// A `SetControls` action.
+    ControlsSet(ControlsSetAction),
+    /// A `LockControls` action.
+    ControlsLock(ControlsLockAction),
 }
 
 /// The XKB actions supported by KBVM.
 pub mod actions {
     use {
-        crate::{xkb::group, ModifierMask},
+        crate::{
+            xkb::{controls::ControlMask, group},
+            ModifierMask,
+        },
         std::sync::Arc,
     };
 
@@ -398,6 +407,40 @@ pub mod actions {
         pub(crate) key_code: crate::Keycode,
         pub(crate) mods_to_set: ModifierMask,
         pub(crate) mods_to_clear: ModifierMask,
+    }
+
+    /// A `SetControls` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ SetControls(controls = Overlay1) ],
+    ///     };
+    /// };
+    /// ```
+    #[derive(Clone, Debug, PartialEq)]
+    pub struct ControlsSetAction {
+        pub(crate) controls: ControlMask,
+    }
+
+    /// A `LockControls` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ LockControls(controls = Overlay1) ],
+    ///     };
+    /// };
+    /// ```
+    #[derive(Clone, Debug, PartialEq)]
+    pub struct ControlsLockAction {
+        pub(crate) controls: ControlMask,
+        pub(crate) lock: bool,
+        pub(crate) unlock: bool,
     }
 }
 
@@ -1374,6 +1417,78 @@ impl RedirectKeyAction {
     }
 }
 
+impl ControlsSetAction {
+    /// Returns the controls mask of this action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ SetControls(mods = Overlay1) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns the mask for `Overlay1`.
+    pub fn mask(&self) -> ControlsMask {
+        ControlsMask(self.controls.0 as u32)
+    }
+}
+
+impl ControlsLockAction {
+    /// Returns whether this action will lock the controls.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ LockControls(controls = Overlay1, affect = unlock) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `false`.
+    pub fn lock(&self) -> bool {
+        self.lock
+    }
+
+    /// Returns whether this action will unlock previously-locked controls.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ LockControls(controls = Overlay1, affect = lock) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `false`.
+    pub fn unlock(&self) -> bool {
+        self.unlock
+    }
+
+    /// Returns the controls mask of this action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <leftshift> {
+    ///         [ LockControls(mods = Overlay1) ],
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns the mask for `Overlay1`.
+    pub fn mask(&self) -> ControlsMask {
+        ControlsMask(self.controls.0 as u32)
+    }
+}
+
 impl Indicator {
     /// The name of the `Num Lock` indicator.
     pub const NUM_LOCK: &str = "Num Lock";
@@ -1451,6 +1566,7 @@ impl Indicator {
             group_not_latched: group_flag!(Latched, ==),
             group_locked: group_mask!(Locked),
             group: group_mask!(Effective),
+            controls: self.controls.0 as u32,
         }
     }
 }
@@ -1473,6 +1589,7 @@ impl IndicatorMatcher {
         if components.group.0 < u32::BITS {
             res |= self.group & (1 << components.group.0);
         }
+        res |= self.controls & components.controls.0;
         res != 0
     }
 }

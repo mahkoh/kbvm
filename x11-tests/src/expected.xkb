@@ -1030,23 +1030,28 @@ xkb_keymap {
         };
         key <I155> {
             type[Group1] = "ONE_LEVEL",
-            symbols[Group1] = [ XF86Xfer ]
+            symbols[Group1] = [ XF86Xfer ],
+            actions[Group1] = [ SetControls(controls = Overlay1) ]
         };
         key <I156> {
             type[Group1] = "ONE_LEVEL",
-            symbols[Group1] = [ XF86Launch1 ]
+            symbols[Group1] = [ XF86Launch1 ],
+            actions[Group1] = [ LockControls(controls = Overlay1+Overlay2) ]
         };
         key <I157> {
             type[Group1] = "ONE_LEVEL",
-            symbols[Group1] = [ XF86Launch2 ]
+            symbols[Group1] = [ XF86Launch2 ],
+            actions[Group1] = [ LockControls(controls = Overlay1+Overlay2, affect=lock) ]
         };
         key <I158> {
             type[Group1] = "ONE_LEVEL",
-            symbols[Group1] = [ XF86WWW ]
+            symbols[Group1] = [ XF86WWW ],
+            actions[Group1] = [ LockControls(controls = Overlay1+Overlay2, affect=unlock) ]
         };
         key <I159> {
             type[Group1] = "ONE_LEVEL",
-            symbols[Group1] = [ XF86DOS ]
+            symbols[Group1] = [ XF86DOS ],
+            actions[Group1] = [ LockControls(controls = Overlay1+Overlay2, affect=neither) ]
         };
         key <I160> {
             type[Group1] = "ONE_LEVEL",

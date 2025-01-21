@@ -99,23 +99,30 @@ fn behavior_to_routine(b: &mut Builder, key: Keycode, behavior: &KeyBehavior) ->
 
 fn actions_to_routine(key: Keycode, actions: &[Action]) -> Routine {
     let mut builder = Routine::builder();
-    let key = if actions.iter().any(|a| matches!(a, Action::RedirectKey(_))) {
-        None
-    } else {
-        let kc = builder.allocate_var();
-        builder.load_lit(kc, key.0).key_down(kc);
-        Some(kc)
-    };
-    let affects_components = actions.iter().any(|a| match a {
+    let preserves_latch = actions.iter().any(|a| match a {
         Action::ModsSet(_)
         | Action::ModsLatch(_)
         | Action::ModsLock(_)
         | Action::GroupSet(_)
         | Action::GroupLatch(_)
         | Action::GroupLock(_) => true,
-        Action::RedirectKey(_) => false,
+        Action::ControlsSet(_) | Action::ControlsLock(_) | Action::RedirectKey(_) => false,
     });
-    encode_actions(&mut builder, actions, key, affects_components);
+    let key = if actions.iter().any(|a| matches!(a, Action::RedirectKey(_))) {
+        None
+    } else {
+        let kc = builder.allocate_var();
+        builder.load_lit(kc, key.0).key_down(kc);
+        if !preserves_latch {
+            let zero = builder.allocate_var();
+            builder
+                .load_lit(zero, 0)
+                .group_latched_store(zero)
+                .mods_latched_store(zero);
+        }
+        Some(kc)
+    };
+    encode_actions(&mut builder, actions, key, preserves_latch);
     // let routine = builder.build();
     // println!("{:#?}", routine);
     // routine
@@ -126,7 +133,7 @@ fn encode_actions(
     builder: &mut RoutineBuilder,
     actions: &[Action],
     key: Option<Var>,
-    affects_components: bool,
+    preserves_latch: bool,
 ) {
     let Some(action) = actions.first() else {
         builder.on_release();
@@ -137,7 +144,7 @@ fn encode_actions(
     };
     macro_rules! encode_rest {
         () => {
-            encode_actions(builder, &actions[1..], key, affects_components);
+            encode_actions(builder, &actions[1..], key, preserves_latch);
         };
     }
     match action {
@@ -348,7 +355,7 @@ fn encode_actions(
                 // simple case where modifiers are not changed
                 let key = builder.allocate_var();
                 builder.load_lit(key, rk.key_code().raw()).key_down(key);
-                if !affects_components {
+                if !preserves_latch {
                     let zero = builder.allocate_var();
                     builder
                         .load_lit(zero, 0)
@@ -389,7 +396,7 @@ fn encode_actions(
                 .key_down(key)
                 .mods_pressed_store(pressed)
                 .mods_locked_store(locked);
-            if affects_components {
+            if preserves_latch {
                 builder.mods_latched_store(latched);
             } else {
                 builder.group_latched_store(zero);
@@ -401,6 +408,40 @@ fn encode_actions(
                 .mods_pressed_store(pressed)
                 .mods_latched_store(latched)
                 .mods_locked_store(locked);
+        }
+        Action::ControlsSet(cs) => {
+            let [controls, change] = builder.allocate_vars();
+            builder
+                .load_lit(change, cs.controls.0 as u32)
+                .controls_load(controls)
+                .bit_or(controls, controls, change)
+                .controls_store(controls);
+            encode_rest!();
+            builder
+                .controls_load(controls)
+                .bit_nand(controls, controls, change)
+                .controls_store(controls);
+        }
+        Action::ControlsLock(cl) => {
+            let [controls, common, change] = builder.allocate_vars();
+            if cl.lock || cl.unlock {
+                builder
+                    .load_lit(change, cl.controls.0 as u32)
+                    .controls_load(controls)
+                    .bit_and(common, controls, change);
+            }
+            if cl.lock {
+                builder
+                    .bit_or(controls, controls, change)
+                    .controls_store(controls);
+            }
+            encode_rest!();
+            if cl.unlock {
+                builder
+                    .controls_load(controls)
+                    .bit_nand(controls, controls, common)
+                    .controls_store(controls);
+            }
         }
     }
 }

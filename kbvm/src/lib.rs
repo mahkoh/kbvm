@@ -86,6 +86,7 @@
 
 pub use {
     components::Components,
+    controls::ControlsMask,
     group::{GroupDelta, GroupIndex},
     group_type::hidden::GroupType,
     keycode::Keycode,
@@ -93,9 +94,12 @@ pub use {
     modifier::hidden::{ModifierIndex, ModifierMask},
 };
 
+#[macro_use]
+mod macros;
 pub mod builder;
 mod components;
 mod config;
+mod controls;
 pub mod evdev;
 mod from_bytes;
 mod group;

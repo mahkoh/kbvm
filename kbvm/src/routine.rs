@@ -256,6 +256,7 @@ enum Component {
     GroupPressed,
     GroupLatched,
     GroupLocked,
+    Controls,
 }
 
 impl Debug for Component {
@@ -267,6 +268,7 @@ impl Debug for Component {
             Component::GroupPressed => "group_pressed",
             Component::GroupLatched => "group_latched",
             Component::GroupLocked => "group_locked",
+            Component::Controls => "controls",
         };
         f.write_str(s)
     }
@@ -544,6 +546,7 @@ lo!(
         GroupPressed = GroupPressedLoad, GroupPressedStore,
         GroupLatched = GroupLatchedLoad, GroupLatchedStore,
         GroupLocked = GroupLockedLoad, GroupLockedStore,
+        Controls = ControlsLoad, ControlsStore,
         ;
 );
 
@@ -601,6 +604,14 @@ pub(crate) trait StateEventHandler {
     }
 
     fn group_locked_store(&mut self, val: u32) {
+        let _ = val;
+    }
+
+    fn controls_load(&self) -> u32 {
+        0
+    }
+
+    fn controls_store(&mut self, val: u32) {
         let _ = val;
     }
 
@@ -811,6 +822,8 @@ pub(crate) fn run<H>(
             Lo::GroupLatchedStore { rs } => h.group_latched_store(registers[rs]),
             Lo::GroupLockedLoad { rd } => registers[rd] = h.group_locked_load(),
             Lo::GroupLockedStore { rs } => h.group_locked_store(registers[rs]),
+            Lo::ControlsLoad { rd } => registers[rd] = h.controls_load(),
+            Lo::ControlsStore { rs } => h.controls_store(registers[rs]),
         }
         i = i.saturating_add(1);
     }
@@ -1302,6 +1315,16 @@ impl RoutineBuilder {
     /// `group_locked = rs`
     pub fn group_locked_store(&mut self, rs: Var) -> &mut Self {
         self.component_store(rs, Component::GroupLocked)
+    }
+
+    /// `rd = controls`
+    pub fn controls_load(&mut self, rd: Var) -> &mut Self {
+        self.component_load(rd, Component::Controls)
+    }
+
+    /// `controls = rs`
+    pub fn controls_store(&mut self, rs: Var) -> &mut Self {
+        self.component_store(rs, Component::Controls)
     }
 
     fn flag_load(&mut self, rd: Var, flag: Flag) -> &mut Self {
@@ -1882,6 +1905,7 @@ impl RegisterAllocator {
                         GroupPressed => GroupPressedLoad,
                         GroupLatched => GroupLatchedLoad,
                         GroupLocked => GroupLockedLoad,
+                        Controls => ControlsLoad,
                     };
                     self.out.push_front(lo);
                 }
@@ -1903,6 +1927,7 @@ impl RegisterAllocator {
                         GroupPressed => GroupPressedStore,
                         GroupLatched => GroupLatchedStore,
                         GroupLocked => GroupLockedStore,
+                        Controls => ControlsStore,
                     };
                     self.out.push_front(lo);
                 }

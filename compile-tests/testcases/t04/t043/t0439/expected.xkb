@@ -1,0 +1,66 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <1> = 1;
+        <2> = 2;
+        <3> = 3;
+        <4> = 4;
+        <5> = 5;
+        <6> = 6;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+
+        type "ONE_LEVEL" {
+            modifiers = None;
+            level_name[Level1] = "Any";
+            map[None] = Level1;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        key.repeat = true;
+
+        key <1> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ SetControls(controls = Overlay1) ]
+        };
+        key <2> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ LockControls(controls = Overlay1+Overlay2) ]
+        };
+        key <3> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ LockControls(controls = Overlay2, affect=lock) ]
+        };
+        key <4> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ LockControls(controls = Overlay2, affect=unlock) ]
+        };
+        key <5> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ LockControls(controls = Overlay2, affect=neither) ]
+        };
+        key <6> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            actions[Group1] = [ LockControls(controls = Overlay2) ]
+        };
+    };
+};

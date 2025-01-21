@@ -1,4 +1,4 @@
-use crate::{state_machine::Event, Components, GroupDelta, GroupIndex, ModifierMask};
+use crate::{state_machine::Event, Components, ControlsMask, GroupDelta, GroupIndex, ModifierMask};
 
 #[test]
 fn apply_event() {
@@ -17,10 +17,15 @@ fn apply_event() {
     assert_eq!(c.group_latched.0, 0x2);
     assert!(c.apply_event(Event::GroupLocked(GroupIndex(0x4))));
     assert_eq!(c.group_locked.0, 0x4);
+    assert!(c.apply_event(Event::Controls(ControlsMask(0x4))));
+    assert_eq!(c.controls.0, 0x4);
+    assert!(c.apply_event(Event::Controls(ControlsMask(0x8))));
+    assert_eq!(c.controls.0, 0x8);
     assert!(c.apply_event(Event::GroupEffective(GroupIndex(0x8))));
     assert_eq!(c.group.0, 0x8);
     assert!(!c.apply_event(Event::GroupEffective(GroupIndex(0x8))));
     assert_eq!(c.group.0, 0x8);
+    assert!(!c.apply_event(Event::Controls(ControlsMask(0x8))));
 }
 
 #[test]

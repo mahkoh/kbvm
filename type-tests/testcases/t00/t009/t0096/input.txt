@@ -1,0 +1,3 @@
+both b
+down b
+up   b

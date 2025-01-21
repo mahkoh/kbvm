@@ -30,6 +30,7 @@ use {
     crate::{
         builder::Redirect,
         components::Components,
+        controls::ControlsMask,
         group::{GroupDelta, GroupIndex},
         modifier::{NUM_MODS, NUM_MODS_MASK},
         routine::{run, Flag, Lo, Register, Routine, StateEventHandler},
@@ -180,6 +181,8 @@ pub enum Event {
     GroupLocked(GroupIndex),
     /// The effective group has changed.
     GroupEffective(GroupIndex),
+    /// The controls have changed.
+    Controls(ControlsMask),
 }
 
 impl Debug for Event {
@@ -195,6 +198,7 @@ impl Debug for Event {
             Event::GroupEffective(g) => write!(f, "group_effective = {g:?}"),
             Event::KeyDown(k) => write!(f, "key_down({})", k.0),
             Event::KeyUp(k) => write!(f, "key_up({})", k.0),
+            Event::Controls(c) => write!(f, "controls = {c:?}"),
         }
     }
 }
@@ -382,6 +386,7 @@ impl Layer2Handler<'_> {
             GroupLatched, group_latched;
             GroupLocked, group_locked;
             GroupEffective, group;
+            Controls, controls;
         }
     }
 }
@@ -487,6 +492,17 @@ impl StateEventHandler for Layer2Handler<'_> {
     fn group_locked_store(&mut self, val: u32) {
         self.any_state_changed = true;
         self.acc_state.group_locked.0 = val;
+    }
+
+    #[inline]
+    fn controls_load(&self) -> u32 {
+        self.acc_state.controls.0
+    }
+
+    #[inline]
+    fn controls_store(&mut self, val: u32) {
+        self.any_state_changed = true;
+        self.acc_state.controls.0 = val;
     }
 
     #[inline(always)]

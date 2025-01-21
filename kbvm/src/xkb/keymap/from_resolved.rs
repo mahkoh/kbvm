@@ -4,10 +4,10 @@ use {
             group::GroupIdx,
             interner::{Interned, Interner},
             keymap::{
-                actions::RedirectKeyAction, Action, GroupLatchAction, GroupLockAction,
-                GroupSetAction, Indicator, Key, KeyBehavior, KeyGroup, KeyLevel, KeyType,
-                KeyTypeMapping, Keycode, ModMapValue, ModsLatchAction, ModsLockAction,
-                ModsSetAction, VirtualModifier,
+                actions::{ControlsLockAction, ControlsSetAction, RedirectKeyAction},
+                Action, GroupLatchAction, GroupLockAction, GroupSetAction, Indicator, Key,
+                KeyBehavior, KeyGroup, KeyLevel, KeyType, KeyTypeMapping, Keycode, ModMapValue,
+                ModsLatchAction, ModsLockAction, ModsSetAction, VirtualModifier,
             },
             level::Level,
             mod_component::ModComponentMask,
@@ -356,6 +356,20 @@ fn map_action(
                 key_code: kc,
                 mods_to_set: map_action_mods(&m.mods_to_set).unwrap_or_default(),
                 mods_to_clear: map_action_mods(&m.mods_to_clear).unwrap_or_default(),
+            })
+        }
+        ResolvedAction::ResolvedSetControls(m) => Action::ControlsSet(ControlsSetAction {
+            controls: m.controls?.val,
+        }),
+        ResolvedAction::ResolvedLockControls(m) => {
+            let (lock, unlock) = match m.affect.despan() {
+                None => (true, true),
+                Some(a) => (a.lock, a.unlock),
+            };
+            Action::ControlsLock(ControlsLockAction {
+                controls: m.controls?.val,
+                lock,
+                unlock,
             })
         }
     };

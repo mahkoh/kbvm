@@ -28,6 +28,9 @@ KBVM supports a number of syntax extensions:
   - `LatchGroup`
   - `LockGroup`
   - `RedirectKey`
+  - `SetControls`
+  - `LockControls`
+    - Controls have no effect on the state machine.
 - Modifiers are not truncated to the lower 8 bits.
 - Each key can have up to 32 groups.
 - Each key level can have an arbitrary number of symbols and actions.

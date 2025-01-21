@@ -20,9 +20,9 @@ use {
             resolved::{
                 ActionDefaults, Filter, ModMapField, Predicate, ResolvedAction,
                 ResolvedActionAffect, ResolvedActionMods, ResolvedGroupLatch, ResolvedGroupLock,
-                ResolvedGroupSet, ResolvedKeyKind, ResolvedKeycodes, ResolvedModsLatch,
-                ResolvedModsLock, ResolvedModsSet, ResolvedNoAction, ResolvedRedirectKey,
-                ResolvedTypes,
+                ResolvedGroupSet, ResolvedKeyKind, ResolvedKeycodes, ResolvedLockControls,
+                ResolvedModsLatch, ResolvedModsLock, ResolvedModsSet, ResolvedNoAction,
+                ResolvedRedirectKey, ResolvedSetControls, ResolvedTypes,
             },
             span::{Span, SpanExt, SpanResult1, SpanResult2, Spanned},
             string_cooker::StringCooker,
@@ -116,6 +116,12 @@ pub(crate) enum EvalError {
     MissingValueForRedirectKeyClearmods,
     #[error("missing value for RedirectKey(mods)")]
     MissingValueForRedirectKeyMods,
+    #[error("missing value for SetControls(controls)")]
+    MissingValueForSetControlsControls,
+    #[error("missing value for LockControls(controls)")]
+    MissingValueForLockControlsControls,
+    #[error("missing value for LockControls(affect)")]
+    MissingValueForLockControlsAffect,
     #[error("unknown modifier")]
     UnknownModifier,
     #[error("unknown LockMods(affect) value")]
@@ -198,6 +204,10 @@ pub(crate) enum EvalError {
     UnknownKeyType,
     #[error("unknown RedirectKey parameter")]
     UnknownParameterForRedirectKey,
+    #[error("unknown SetControls parameter")]
+    UnknownParameterForSetControls,
+    #[error("unknown LockControls parameter")]
+    UnknownParameterForLockControls,
 }
 
 impl EvalError {
@@ -242,6 +252,8 @@ impl EvalError {
             UnknownParameterForLatchGroup,
             UnknownParameterForLockGroup,
             UnknownParameterForRedirectKey,
+            UnknownParameterForSetControls,
+            UnknownParameterForLockControls,
             MissingValueForSetModsMods,
             MissingValueForLatchModsMods,
             MissingValueForLockModsMods,
@@ -252,6 +264,9 @@ impl EvalError {
             MissingValueForRedirectKeyKey,
             MissingValueForRedirectKeyClearmods,
             MissingValueForRedirectKeyMods,
+            MissingValueForSetControlsControls,
+            MissingValueForLockControlsControls,
+            MissingValueForLockControlsAffect,
             UnknownModifier,
             UnknownLockModsAffect,
             NotOneInterpretFilterArgument,
@@ -1147,7 +1162,7 @@ impl ActionParameters for ResolvedGroupLock {
 }
 
 impl ActionParameters for ResolvedRedirectKey {
-    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForLockGroup;
+    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForRedirectKey;
 
     fn handle_field(
         &mut self,
@@ -1183,6 +1198,72 @@ impl ActionParameters for ResolvedRedirectKey {
             }
             _ => {
                 return Err(UnknownParameterForRedirectKey.spanned2(meaning.span));
+            }
+        }
+        Ok(())
+    }
+}
+
+impl ActionParameters for ResolvedSetControls {
+    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForSetControls;
+
+    fn handle_field(
+        &mut self,
+        interner: &Interner,
+        meaning_cache: &mut MeaningCache,
+        _keycodes: &ResolvedKeycodes,
+        _vmods: &Vmodmap,
+        meaning: Spanned<Meaning>,
+        value: Spanned<ActionParameterValue<'_>>,
+    ) -> Result<(), Spanned<EvalError>> {
+        match meaning.val {
+            Meaning::Controls | Meaning::Ctrls => {
+                self.controls = Some(eval_control_mask(
+                    interner,
+                    meaning_cache,
+                    value!(value, MissingValueForSetControlsControls),
+                )?);
+            }
+            _ => {
+                return Err(UnknownParameterForSetControls.spanned2(meaning.span));
+            }
+        }
+        Ok(())
+    }
+}
+
+impl ActionParameters for ResolvedLockControls {
+    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForLockControls;
+
+    fn handle_field(
+        &mut self,
+        interner: &Interner,
+        meaning_cache: &mut MeaningCache,
+        _keycodes: &ResolvedKeycodes,
+        _vmods: &Vmodmap,
+        meaning: Spanned<Meaning>,
+        value: Spanned<ActionParameterValue<'_>>,
+    ) -> Result<(), Spanned<EvalError>> {
+        match meaning.val {
+            Meaning::Controls | Meaning::Ctrls => {
+                self.controls = Some(eval_control_mask(
+                    interner,
+                    meaning_cache,
+                    value!(value, MissingValueForLockControlsControls),
+                )?);
+            }
+            Meaning::Affect => {
+                self.affect = Some(
+                    eval_action_affect(
+                        interner,
+                        meaning_cache,
+                        value!(value, MissingValueForLockControlsAffect),
+                    )?
+                    .spanned2(value.span),
+                );
+            }
+            _ => {
+                return Err(UnknownParameterForLockControls.spanned2(meaning.span));
             }
         }
         Ok(())
@@ -1291,6 +1372,8 @@ generate_action_name_meta! {
     LatchGroup => ResolvedGroupLatch | group_latch,
     LockGroup => ResolvedGroupLock | group_lock,
     RedirectKey | Redirect => ResolvedRedirectKey | redirect_key,
+    SetControls => ResolvedSetControls | set_controls,
+    LockControls => ResolvedLockControls | lock_controls,
     ;
     MovePtr,
     MovePointer,
@@ -1305,8 +1388,6 @@ generate_action_name_meta! {
     Terminate,
     TerminateServer,
     SwitchScreen,
-    SetControls,
-    LockControls,
     Private,
     ISOLock,
     ActionMessage,

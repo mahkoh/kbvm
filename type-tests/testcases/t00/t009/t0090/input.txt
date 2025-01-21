@@ -1,0 +1,3 @@
+both b
+both c
+both a

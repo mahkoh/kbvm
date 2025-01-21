@@ -5,10 +5,7 @@ mod tests;
 
 use {
     crate::modifier::hidden::{ModifierIndex, ModifierMask},
-    std::{
-        fmt::{Debug, Formatter},
-        ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not},
-    },
+    std::fmt::{Debug, Formatter},
 };
 
 pub(crate) mod hidden {
@@ -160,55 +157,7 @@ impl ModifierMask {
     }
 }
 
-impl BitOr for ModifierMask {
-    type Output = Self;
-
-    fn bitor(self, rhs: Self) -> Self::Output {
-        Self(self.0 | rhs.0)
-    }
-}
-
-impl BitAnd for ModifierMask {
-    type Output = Self;
-
-    fn bitand(self, rhs: Self) -> Self::Output {
-        Self(self.0 & rhs.0)
-    }
-}
-
-impl BitXor for ModifierMask {
-    type Output = Self;
-
-    fn bitxor(self, rhs: Self) -> Self::Output {
-        Self(self.0 ^ rhs.0)
-    }
-}
-
-impl BitOrAssign for ModifierMask {
-    fn bitor_assign(&mut self, rhs: Self) {
-        self.0 |= rhs.0;
-    }
-}
-
-impl BitAndAssign for ModifierMask {
-    fn bitand_assign(&mut self, rhs: Self) {
-        self.0 &= rhs.0;
-    }
-}
-
-impl BitXorAssign for ModifierMask {
-    fn bitxor_assign(&mut self, rhs: Self) {
-        self.0 ^= rhs.0;
-    }
-}
-
-impl Not for ModifierMask {
-    type Output = Self;
-
-    fn not(self) -> Self::Output {
-        Self(!self.0)
-    }
-}
+bitmask!(ModifierMask);
 
 impl IntoIterator for ModifierMask {
     type Item = ModifierIndex;
@@ -230,12 +179,6 @@ impl Iterator for ModifierMaskIter {
         } else {
             None
         }
-    }
-}
-
-impl Debug for ModifierMask {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "0x{:08x}", self.0)
     }
 }
 

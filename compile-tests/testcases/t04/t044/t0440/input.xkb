@@ -1,0 +1,12 @@
+xkb_keymap {
+    xkb_keycodes {
+        <1> = 1;
+        <2> = 2;
+    };
+    xkb_symbols {
+        SetControls.controls = Overlay1;
+        LockControls.controls = Overlay2;
+        key <1> { [ SetControls() ] };
+        key <2> { [ LockControls() ] };
+    };
+};
