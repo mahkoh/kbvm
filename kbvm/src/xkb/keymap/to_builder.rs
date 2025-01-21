@@ -3,16 +3,17 @@ use {crate::lookup::LookupTable, crate::state_machine::StateMachine};
 use {
     crate::{
         builder::{Builder, GroupBuilder, KeyBuilder, LevelBuilder},
-        routine::{Routine, RoutineBuilder, Var},
+        routine::{Global, Routine, RoutineBuilder, Var},
         xkb::{
             controls::ControlMask,
             group::GroupChange,
             keymap::{Action, KeyBehavior, KeyOverlay, KeyType},
+            radio_group::RadioGroup,
             Keymap,
         },
         GroupType, Keycode, ModifierIndex,
     },
-    hashbrown::HashMap,
+    hashbrown::{hash_map::Entry, HashMap},
     isnt::std_1::primitive::IsntSliceExt,
 };
 
@@ -38,6 +39,7 @@ impl Keymap {
             }
             types.insert(&**ty as *const KeyType, builder.build());
         }
+        let mut radio_groups = HashMap::new();
         for key in self.keys.values() {
             let mut kb = KeyBuilder::new(key.keycode);
             kb.repeats(key.repeat);
@@ -62,7 +64,12 @@ impl Keymap {
                 kb.add_group(gb);
             }
             if let Some(behavior) = &key.behavior {
-                kb.routine(&behavior_to_routine(&mut builder, key.keycode, behavior));
+                kb.routine(&behavior_to_routine(
+                    &mut builder,
+                    &mut radio_groups,
+                    key.keycode,
+                    behavior,
+                ));
             }
             builder.add_key(kb);
         }
@@ -70,7 +77,12 @@ impl Keymap {
     }
 }
 
-fn behavior_to_routine(b: &mut Builder, key: Keycode, behavior: &KeyBehavior) -> Routine {
+fn behavior_to_routine(
+    b: &mut Builder,
+    radio_groups: &mut HashMap<RadioGroup, Global>,
+    key: Keycode,
+    behavior: &KeyBehavior,
+) -> Routine {
     let mut builder = RoutineBuilder::default();
     match behavior {
         KeyBehavior::Lock => {
@@ -113,6 +125,39 @@ fn behavior_to_routine(b: &mut Builder, key: Keycode, behavior: &KeyBehavior) ->
                 .key_down(kc)
                 .on_release()
                 .key_up(kc);
+        }
+        KeyBehavior::RadioGroup(g) => {
+            let global = match radio_groups.entry(g.radio_group) {
+                Entry::Occupied(e) => *e.get(),
+                Entry::Vacant(e) => *e.insert(b.add_global()),
+            };
+            let [kc, cur, same] = builder.allocate_vars();
+            let already_down = builder
+                .load_lit(kc, key.raw())
+                .load_global(cur, global)
+                .eq(same, cur, kc)
+                .prepare_skip_if(same);
+            let none_down = builder.prepare_skip_if_not(cur);
+            builder
+                .key_up(cur)
+                .finish_skip(none_down)
+                .key_down(kc)
+                .store_global(global, kc)
+                .finish_skip(already_down)
+                .on_release();
+            if g.allow_none {
+                let did_press = builder.prepare_skip_if_not(same);
+                let other_down = builder
+                    .load_global(cur, global)
+                    .eq(same, cur, kc)
+                    .prepare_skip_if_not(same);
+                builder
+                    .key_up(kc)
+                    .load_lit(cur, 0)
+                    .store_global(global, cur)
+                    .finish_skip(other_down)
+                    .finish_skip(did_press);
+            }
         }
     }
     // let routine = builder.build();

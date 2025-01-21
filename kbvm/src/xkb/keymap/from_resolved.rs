@@ -7,7 +7,8 @@ use {
                 actions::{ControlsLockAction, ControlsSetAction, RedirectKeyAction},
                 Action, GroupLatchAction, GroupLockAction, GroupSetAction, Indicator, Key,
                 KeyBehavior, KeyGroup, KeyLevel, KeyType, KeyTypeMapping, Keycode, ModMapValue,
-                ModsLatchAction, ModsLockAction, ModsSetAction, OverlayBehavior, VirtualModifier,
+                ModsLatchAction, ModsLockAction, ModsSetAction, OverlayBehavior,
+                RadioGroupBehavior, VirtualModifier,
             },
             level::Level,
             mod_component::ModComponentMask,
@@ -264,6 +265,12 @@ fn map_behavior(
                 keycode: *keycode,
             };
             KeyBehavior::Overlay(behavior)
+        }
+        SymbolsKeyBehavior::RadioGroup(allow_none, group) => {
+            KeyBehavior::RadioGroup(RadioGroupBehavior {
+                allow_none: *allow_none,
+                radio_group: *group,
+            })
         }
     };
     Some(behavior)

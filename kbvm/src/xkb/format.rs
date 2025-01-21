@@ -657,6 +657,15 @@ impl Format for Keys<'_> {
                                 f.write_key_name(&b.key_name)?;
                                 f.write(">")?;
                             }
+                            KeyBehavior::RadioGroup(g) => {
+                                if g.allow_none {
+                                    write!(f.f, "allownone")?;
+                                    needs_newline = true;
+                                    handle_newline(&mut needs_newline, f)?;
+                                    f.write_nesting()?;
+                                }
+                                write!(f.f, "radiogroup = {}", g.radio_group.raw())?;
+                            }
                         }
                         needs_newline = true;
                     }

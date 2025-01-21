@@ -20,10 +20,11 @@ use {
                     RedirectKeyAction,
                 },
                 Action, Indicator, Key, KeyBehavior, KeyGroup, KeyLevel, KeyOverlay, KeyType,
-                KeyTypeMapping, ModMapValue, OverlayBehavior, VirtualModifier,
+                KeyTypeMapping, ModMapValue, OverlayBehavior, RadioGroupBehavior, VirtualModifier,
             },
             level::Level,
             mod_component::ModComponentMask,
+            radio_group::RadioGroup,
             resolved::GroupsRedirect,
             x11::sealed::Sealed,
             Keymap,
@@ -756,6 +757,13 @@ where
                         keycode,
                     };
                     key.behavior = Some(KeyBehavior::Overlay(behavior));
+                }
+                BehaviorType::RADIO_GROUP => {
+                    let behavior = behavior.behavior.as_radio_group();
+                    key.behavior = Some(KeyBehavior::RadioGroup(RadioGroupBehavior {
+                        allow_none: behavior.group & 0x80 == 0x80,
+                        radio_group: RadioGroup::new((behavior.group & 31) as u32 + 1).unwrap(),
+                    }));
                 }
                 _ => {}
             }

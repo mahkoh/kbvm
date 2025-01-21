@@ -1,0 +1,7 @@
+both a
+both b
+both c
+both a
+both a
+both b
+both b

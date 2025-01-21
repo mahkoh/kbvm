@@ -1,0 +1,12 @@
+both a
+    key_down(a)
+both a
+
+both b
+    key_down(b)
+both b
+    key_up(b)
+
+both c
+    key_down(c)
+both c

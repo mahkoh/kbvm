@@ -32,6 +32,7 @@ use {
             },
             level::Level,
             mod_component::ModComponentMask,
+            radio_group::RadioGroup,
             resolved::GroupsRedirect,
         },
         Components, ControlsMask, Keysym, ModifierIndex, ModifierMask,
@@ -513,6 +514,8 @@ pub enum KeyBehavior {
     Lock,
     /// The key is affected by an overlay control.
     Overlay(OverlayBehavior),
+    /// The key is affected by a radio-group control.
+    RadioGroup(RadioGroupBehavior),
 }
 
 /// The overlay that affects a key behavior.
@@ -554,6 +557,24 @@ pub struct OverlayBehavior {
     pub(crate) overlay: KeyOverlay,
     pub(crate) key_name: Arc<String>,
     pub(crate) keycode: crate::Keycode,
+}
+
+/// A radio-group behavior.
+///
+/// # Example
+///
+/// ```xkb
+/// xkb_symbols {
+///     key <a> {
+///         radiogroup = 1,
+///         [ a, A ],
+///     };
+/// };
+/// ```
+#[derive(Clone, Debug, PartialEq)]
+pub struct RadioGroupBehavior {
+    pub(crate) allow_none: bool,
+    pub(crate) radio_group: RadioGroup,
 }
 
 /// A key group.
@@ -1599,6 +1620,43 @@ impl OverlayBehavior {
     /// The function returns the keycode of `<b>`.
     pub fn keycode(&self) -> crate::Keycode {
         self.keycode
+    }
+}
+
+impl RadioGroupBehavior {
+    /// Returns whether pressing this key can release the pressed key.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         allownone,
+    ///         radiogroup = 1,
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `true`.
+    pub fn allow_none(&self) -> bool {
+        self.allow_none
+    }
+
+    /// Returns the group that this key belongs to. This is a value between 1 and 32.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         radiogroup = 1,
+    ///     };
+    /// };
+    /// ```
+    ///
+    /// The function returns `1`.
+    pub fn group(&self) -> u32 {
+        self.radio_group.raw()
     }
 }
 

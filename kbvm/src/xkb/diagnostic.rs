@@ -411,6 +411,19 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     UnknownLevel,
+    /// Source refers to an unknown radio group.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         allownone[abcd],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    UnknownRadioGroup,
     /// Encountered a recursive include statement.
     ///
     /// # Example
@@ -764,6 +777,19 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     LevelCalculationOverflow,
+    /// A radio group calculation overflowed.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         allownone = 0xfffffffffff;
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    RadioGroupCalculationOverflow,
     /// An expression in group position has an unexpected form.
     ///
     /// # Example
@@ -810,6 +836,19 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     UnsupportedExpressionForLevel,
+    /// An expression in radio-group position has an unexpected form.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         allownone[1 | 2],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    UnsupportedExpressionForRadioGroup,
     /// An expression in string position has an unexpected form.
     ///
     /// # Example
@@ -1458,7 +1497,7 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     GroupOutOfBounds,
-    /// An expression in level position refers to an out-of-bounds group.
+    /// An expression in level position refers to an out-of-bounds level.
     ///
     /// # Example
     ///
@@ -1471,6 +1510,19 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     LevelOutOfBounds,
+    /// An expression in radio-group position refers to an out-of-bounds radio group.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         allownone[group33],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    RadioGroupOutOfBounds,
     /// The `groups` field in an indicator statement does not have a value.
     ///
     /// # Example
@@ -1850,6 +1902,19 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     MissingKeyOverlayValue,
+    /// The `radiogroup` field in a key statement does not have a value.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         radiogroup;
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    MissingKeyRadiogroupValue,
 }
 
 impl DiagnosticKind {

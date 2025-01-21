@@ -22,6 +22,7 @@ KBVM supports a number of syntax extensions:
   - Locking
   - Overlay1
   - Overlay2
+  - RadioGroup
 - Only the following actions are supported:
   - `SetMods`
   - `LatchMods`

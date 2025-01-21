@@ -18,6 +18,7 @@ use {
             meaning::{Meaning, MeaningCache},
             mod_component::ModComponentMask,
             modmap::Vmodmap,
+            radio_group::RadioGroup,
             resolved::{
                 ActionDefaults, Filter, ModMapField, Predicate, ResolvedAction,
                 ResolvedActionAffect, ResolvedActionMods, ResolvedGroupLatch, ResolvedGroupLock,
@@ -30,7 +31,6 @@ use {
         },
         Keycode, Keysym, ModifierIndex, ModifierMask,
     },
-    isnt::std_1::primitive::IsntU8SliceExt,
     smallvec::SmallVec,
     std::ops::{BitAnd, BitOr, Deref, Not},
     thiserror::Error,
@@ -45,6 +45,8 @@ pub(crate) enum EvalError {
     KeysymCalculationOverflow,
     #[error("level calculation overflowed")]
     LevelCalculationOverflow,
+    #[error("radio group calculation overflowed")]
+    RadioGroupCalculationOverflow,
     #[error("unknown group")]
     UnknownGroup,
     #[error("unsupported expression for group")]
@@ -55,8 +57,12 @@ pub(crate) enum EvalError {
     GroupCalculationOverflow,
     #[error("unknown level")]
     UnknownLevel,
+    #[error("unknown radio group")]
+    UnknownRadioGroup,
     #[error("unsupported expression for level")]
     UnsupportedExpressionForLevel,
+    #[error("unsupported expression for radio group")]
+    UnsupportedExpressionForRadioGroup,
     #[error("unsupported expression for string")]
     UnsupportedExpressionForString,
     #[error("unsupported expression for boolean")]
@@ -165,6 +171,8 @@ pub(crate) enum EvalError {
     GroupOutOfBounds,
     #[error("out of bounds level value")]
     LevelOutOfBounds,
+    #[error("out of bounds radio group value")]
+    RadioGroupOutOfBounds,
     #[error("indicator `groups` argument must have a value")]
     MissingIndicatorGroupsValue,
     #[error("unknown control")]
@@ -197,6 +205,8 @@ pub(crate) enum EvalError {
     MissingKeyActionsValue,
     #[error("key `overlay1`/`overlay2` argument must have a value")]
     MissingKeyOverlayValue,
+    #[error("key `radiogroup` argument must have a value")]
+    MissingKeyRadiogroupValue,
     #[error("key `virtual_modifiers` argument must have a value")]
     MissingKeyVirtualModifiersValue,
     #[error("unknown key `repeating` value")]
@@ -228,12 +238,15 @@ impl EvalError {
             ModsCalculationOverflow,
             KeysymCalculationOverflow,
             LevelCalculationOverflow,
+            RadioGroupCalculationOverflow,
             UnknownGroup,
             UnsupportedExpressionForGroup,
             UnsupportedExpressionForGroupChange,
             GroupCalculationOverflow,
             UnknownLevel,
+            UnknownRadioGroup,
             UnsupportedExpressionForLevel,
+            UnsupportedExpressionForRadioGroup,
             UnsupportedExpressionForString,
             UnsupportedExpressionForBoolean,
             UnsupportedExpressionForKeysym,
@@ -291,6 +304,7 @@ impl EvalError {
             MissingIndicatorModifiersValue,
             GroupOutOfBounds,
             LevelOutOfBounds,
+            RadioGroupOutOfBounds,
             MissingIndicatorGroupsValue,
             UnknownControl,
             MissingIndicatorControlValue,
@@ -311,6 +325,7 @@ impl EvalError {
             MissingKeyTypeValue,
             UnknownKeyType,
             MissingKeyOverlayValue,
+            MissingKeyRadiogroupValue,
         }
     }
 }
@@ -322,7 +337,7 @@ pub(crate) fn eval_group(
     let res = eval_u32_str_prefix(
         interner,
         expr,
-        "group",
+        &["group"],
         UnknownGroup,
         UnsupportedExpressionForGroup,
         GroupCalculationOverflow,
@@ -348,7 +363,7 @@ pub(crate) fn eval_group_mask(
                 Meaning::None => return Ok(0),
                 _ => {}
             };
-            let num = parse_u32_1_to_32_str_prefix(interner, i, "group").ok_or(UnknownGroup)?;
+            let num = parse_u32_1_to_32_str_prefix(interner, i, &["group"]).ok_or(UnknownGroup)?;
             Ok(1 << (num - 1))
         },
     )
@@ -410,7 +425,7 @@ pub(crate) fn eval_level(
     let res = eval_u32_str_prefix(
         interner,
         expr,
-        "level",
+        &["level"],
         UnknownLevel,
         UnsupportedExpressionForLevel,
         LevelCalculationOverflow,
@@ -420,15 +435,48 @@ pub(crate) fn eval_level(
         .span_either(res.span)
 }
 
-fn parse_u32_1_to_32_str_prefix(interner: &Interner, i: Interned, prefix: &str) -> Option<u32> {
+fn eval_radio_group(
+    interner: &Interner,
+    expr: Spanned<&Expr>,
+) -> Result<Spanned<RadioGroup>, Spanned<EvalError>> {
+    let rg = eval_radio_group_or_0(interner, expr)?;
+    rg.val.ok_or(RadioGroupOutOfBounds).span_either(rg.span)
+}
+
+fn eval_radio_group_or_0(
+    interner: &Interner,
+    expr: Spanned<&Expr>,
+) -> Result<Spanned<Option<RadioGroup>>, Spanned<EvalError>> {
+    let res = eval_u32_str_prefix(
+        interner,
+        expr,
+        &["group", "radiogroup", "rg"],
+        UnknownRadioGroup,
+        UnsupportedExpressionForRadioGroup,
+        RadioGroupCalculationOverflow,
+    )?;
+    if res.val == 0 {
+        return Ok(None.spanned2(res.span));
+    }
+    RadioGroup::new(res.val)
+        .map(Some)
+        .ok_or(RadioGroupOutOfBounds)
+        .span_either(res.span)
+}
+
+fn parse_u32_1_to_32_str_prefix(interner: &Interner, i: Interned, prefix: &[&str]) -> Option<u32> {
     let n = interner.get(i);
-    let len = prefix.len();
-    if n.len() < len {
-        return None;
-    }
-    if n[..len].not_eq_ignore_ascii_case(prefix.as_bytes()) {
-        return None;
-    }
+    let mut prefixes = prefix.iter();
+    let len = loop {
+        let prefix = prefixes.next().copied()?;
+        let len = prefix.len();
+        if n.len() < len {
+            continue;
+        }
+        if n[..len].eq_ignore_ascii_case(prefix.as_bytes()) {
+            break len;
+        }
+    };
     let num = &n[len..];
     let num = u32::from_bytes_dec(num)?;
     if num == 0 || num > u32::BITS {
@@ -440,7 +488,7 @@ fn parse_u32_1_to_32_str_prefix(interner: &Interner, i: Interned, prefix: &str) 
 fn eval_u32_str_prefix(
     interner: &Interner,
     expr: Spanned<&Expr>,
-    prefix: &str,
+    prefix: &[&str],
     unknown_value: EvalError,
     unsupported_expression_type: EvalError,
     overflow: EvalError,
@@ -461,7 +509,7 @@ fn eval_u32_str_prefix(
 fn eval_i32_str_prefix(
     interner: &Interner,
     expr: Spanned<&Expr>,
-    prefix: &str,
+    prefix: &[&str],
     unknown_value: EvalError,
     unsupported_expression_type: EvalError,
     overflow: EvalError,
@@ -532,7 +580,7 @@ pub(crate) fn eval_group_change(
     let mut res = eval_i32_str_prefix(
         interner,
         expr.deref().as_ref(),
-        "group",
+        &["group"],
         UnknownGroup,
         UnsupportedExpressionForGroupChange,
         GroupCalculationOverflow,
@@ -1753,6 +1801,8 @@ pub(crate) enum SymbolsField {
     Groupsclamp,
     Groupsredirect(GroupIdx),
     Overlay((KeyOverlay, Interned, Keycode)),
+    AllowNone(bool, u32),
+    RadioGroup(Option<RadioGroup>),
 }
 
 pub(crate) type GroupList<T> = Vec<SmallVec<[Spanned<T>; 1]>>;
@@ -1996,6 +2046,28 @@ pub(crate) fn eval_symbols_field(
                 false => KeyOverlay::Overlay2,
             };
             SymbolsField::Overlay((overlay, kc.0, kc.1))
+        }
+        Meaning::Allownone => {
+            let groups = match try_get_idx!() {
+                None => !0,
+                Some(idx) => eval_radio_group(interner, idx)?.val.to_mask(),
+            };
+            SymbolsField::AllowNone(boolean()?, groups)
+        }
+        Meaning::Radiogroup => {
+            let expr = get_expr!(MissingKeyRadiogroupValue);
+            let group = 'group: {
+                if let Expr::Path(p) = &expr.val {
+                    if let Some(id) = p.unique_ident() {
+                        let meaning = meaning_cache.get_case_insensitive(interner, id);
+                        if meaning == Meaning::None {
+                            break 'group None;
+                        }
+                    }
+                }
+                eval_radio_group_or_0(interner, expr)?.val
+            };
+            SymbolsField::RadioGroup(group)
         }
         _ => return Err(UnknownKeyField.spanned2(span)),
     };

@@ -1,0 +1,4 @@
+both a
+both c
+both b
+both d

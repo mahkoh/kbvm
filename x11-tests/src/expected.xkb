@@ -1076,14 +1076,18 @@ xkb_keymap {
             symbols[Group1] = [ XF86Favorites ]
         };
         key <I165> {
+            radiogroup = 1,
             type[Group1] = "ONE_LEVEL",
             symbols[Group1] = [ XF86MyComputer ]
         };
         key <I166> {
+            radiogroup = 32,
             type[Group1] = "ONE_LEVEL",
             symbols[Group1] = [ XF86Back ]
         };
         key <I167> {
+            allownone,
+            radiogroup = 2,
             type[Group1] = "ONE_LEVEL",
             symbols[Group1] = [ XF86Forward ]
         };
@@ -1091,10 +1095,12 @@ xkb_keymap {
             repeat = true
         };
         key <I169> {
+            radiogroup = 2,
             type[Group1] = "ONE_LEVEL",
             symbols[Group1] = [ XF86Eject ]
         };
         key <I170> {
+            radiogroup = 3,
             type[Group1] = "TWO_LEVEL",
             symbols[Group1] = [ XF86Eject, XF86Eject ]
         };

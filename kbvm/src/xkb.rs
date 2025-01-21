@@ -79,6 +79,7 @@ mod level;
 mod meaning;
 mod mod_component;
 mod modmap;
+mod radio_group;
 #[cfg(feature = "registry")]
 pub mod registry;
 mod resolved;

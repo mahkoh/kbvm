@@ -11,6 +11,7 @@ use {
             level::Level,
             mod_component::ModComponentMask,
             modmap::Vmodmap,
+            radio_group::RadioGroup,
             span::{Span, Spanned},
         },
         Keycode, Keysym, ModifierIndex, ModifierMask,
@@ -166,12 +167,14 @@ pub(crate) struct SymbolsKey {
     pub(crate) groups_redirect: Option<Spanned<GroupsRedirect>>,
     pub(crate) modmap: ModifierMask,
     pub(crate) behavior: Option<Spanned<SymbolsKeyBehavior>>,
+    pub(crate) allow_none: u32,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub(crate) enum SymbolsKeyBehavior {
     Locks(bool),
     Overlay((KeyOverlay, Interned, Keycode)),
+    RadioGroup(bool, RadioGroup),
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
