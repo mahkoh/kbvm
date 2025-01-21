@@ -4,6 +4,7 @@
 //!
 //! The entry point to this module is the [`Keymap`].
 
+mod format;
 mod from_lookup;
 mod from_resolved;
 pub mod iterators;
@@ -11,13 +12,13 @@ pub mod iterators;
 mod tests;
 mod to_builder;
 
+pub use crate::xkb::keymap::format::Formatter;
 use {
     crate::{
         builder::Redirect,
         group::{GroupDelta, GroupIndex},
         xkb::{
             controls::ControlMask,
-            format::FormatFormat,
             group::{GroupIdx, GroupMask},
             group_component::GroupComponent,
             indicator::IndicatorIdx,
@@ -677,19 +678,33 @@ impl Keymap {
 
     /// Returns a type that can be used to format the map in XKB text format.
     ///
-    /// By default, the map will be formatted in a single line. You can enable multi-line
-    /// formatting by using the alternate modifier `#`.
+    /// # Warning
+    ///
+    /// When using this function to create a keymap for Xwayland, compositors should
+    /// enable both [`Formatter::lookup_only`] and [`Formatter::rename_long_keys`].
+    ///
+    /// `lookup_only` prevents key actions and key behaviors from being included in the
+    /// map. This works around a bug in Xwayland where Xwayland will execute the actions
+    /// and behaviors instead of only passing the key events to X clients.
+    ///
+    /// `rename_long_keys` is only necessary if the original keymap contains key names
+    /// that are longer than 4 bytes. Xwayland cannot handle such key names.
     ///
     /// # Example
     ///
     /// ```
     /// # use kbvm::xkb::Keymap;
     /// fn pretty_print_keymap(keymap: &Keymap) -> String {
-    ///     format!("{:#}", keymap.format())
+    ///     format!("{}\n", keymap.format())
     /// }
     /// ```
-    pub fn format(&self) -> impl Display + use<'_> {
-        FormatFormat(self)
+    pub fn format(&self) -> Formatter<'_> {
+        Formatter {
+            keymap: self,
+            single_line: false,
+            lookup_only: false,
+            rename_long_keys: false,
+        }
     }
 }
 
