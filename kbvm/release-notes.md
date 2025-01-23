@@ -1,5 +1,7 @@
 # Unreleased
 
+# 0.1.1 (2025-01-23)
+
 - Levels with multiple actions are no longer formatted by default. For example,
 
   ```xkb
