@@ -71,7 +71,7 @@ impl Output for Ansi {
             "{} {} {:#}",
             self.now(),
             "keymap".color_time(self.theme),
-            keymap.format(),
+            keymap.format().multiple_actions_per_level(true),
         );
     }
 

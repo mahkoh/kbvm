@@ -24,5 +24,5 @@ pub fn main(args: CompileRmlvoArgs) {
         groups.as_deref(),
         options.as_deref(),
     );
-    println!("{:#}", expanded.format());
+    println!("{}", expanded.format().multiple_actions_per_level(true));
 }

@@ -24,7 +24,7 @@ pub fn main(args: CompileXkbArgs) {
     let expanded = context.keymap_from_bytes(WriteToLog, Some(path.as_ref()), &source);
     match expanded {
         Ok(map) => {
-            println!("{:#}", map.format());
+            println!("{}", map.format().multiple_actions_per_level(true));
         }
         Err(_) => {
             log::error!("could not compile keymap");

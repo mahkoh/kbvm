@@ -20,6 +20,7 @@ pub struct Formatter<'a> {
     pub(crate) keymap: &'a Keymap,
     pub(crate) single_line: bool,
     pub(crate) lookup_only: bool,
+    pub(crate) multiple_actions_per_level: bool,
     pub(crate) rename_long_keys: bool,
 }
 
@@ -51,6 +52,17 @@ impl Formatter<'_> {
     /// cannot handle key names longer than 4 bytes.
     pub fn rename_long_keys(mut self, val: bool) -> Self {
         self.rename_long_keys = val;
+        self
+    }
+
+    /// Enables or disables formatting of levels containing more than one action.
+    ///
+    /// By default, such actions are not formatted.
+    ///
+    /// This should almost always be disabled. Xwayland and libxkbcommon will fail to
+    /// parse keymaps that contain levels with multiple actions.
+    pub fn multiple_actions_per_level(mut self, val: bool) -> Self {
+        self.multiple_actions_per_level = val;
         self
     }
 }

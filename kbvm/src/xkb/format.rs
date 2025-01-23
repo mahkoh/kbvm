@@ -41,6 +41,7 @@ where
             nesting: 0,
             multi_line: f.alternate(),
             lookup_only: false,
+            omit_multiple_actions: false,
             long_keys: None,
             newline: match f.alternate() {
                 true => "\n",
@@ -56,6 +57,7 @@ struct Writer<'a, 'b> {
     nesting: usize,
     multi_line: bool,
     lookup_only: bool,
+    omit_multiple_actions: bool,
     long_keys: Option<HashMap<Arc<String>, String>>,
     newline: &'static str,
     f: &'a mut Formatter<'b>,
@@ -177,6 +179,7 @@ impl Display for keymap::Formatter<'_> {
             nesting: 0,
             multi_line: !self.single_line,
             lookup_only: self.lookup_only,
+            omit_multiple_actions: !self.multiple_actions_per_level,
             long_keys,
             newline: match self.single_line {
                 false => "\n",
@@ -700,6 +703,7 @@ impl Format for Keys<'_> {
                 for (offset, group) in key.groups.iter().enumerate() {
                     if let Some(group) = group {
                         let idx = offset + 1;
+                        #[expect(clippy::too_many_arguments)]
                         fn write_levels<T: Format>(
                             needs_newline: &mut bool,
                             idx: usize,
@@ -708,6 +712,7 @@ impl Format for Keys<'_> {
                             name: &str,
                             absent: &str,
                             field: impl Fn(&KeyLevel) -> &SmallVec<[T; 1]>,
+                            is_actions: bool,
                         ) -> fmt::Result {
                             if group.levels.iter().all(|l| field(l).is_empty()) {
                                 return Ok(());
@@ -716,7 +721,10 @@ impl Format for Keys<'_> {
                             f.write_nesting()?;
                             write!(f.f, "{name}[Group{idx}] = [")?;
                             f.write_inline_list(&group.levels, |f, l| {
-                                let list = field(l);
+                                let mut list = &**field(l);
+                                if is_actions && f.omit_multiple_actions && list.len() > 1 {
+                                    list = &[];
+                                }
                                 if list.is_empty() {
                                     f.write(absent)?;
                                 } else if list.len() == 1 {
@@ -740,6 +748,7 @@ impl Format for Keys<'_> {
                             "symbols",
                             "NoSymbol",
                             |l| &l.symbols,
+                            false,
                         )?;
                         if !f.lookup_only {
                             write_levels(
@@ -750,6 +759,7 @@ impl Format for Keys<'_> {
                                 "actions",
                                 "NoAction()",
                                 |l| &l.actions,
+                                true,
                             )?;
                         }
                     }
