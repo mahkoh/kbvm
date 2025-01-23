@@ -724,6 +724,7 @@ impl Keymap {
             keymap: self,
             single_line: false,
             lookup_only: false,
+            multiple_actions_per_level: false,
             rename_long_keys: false,
         }
     }

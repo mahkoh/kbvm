@@ -96,7 +96,7 @@ impl Json {
 impl Output for Json {
     fn keymap(&mut self, keymap: &Keymap) {
         self.msg(Type::Keymap {
-            map: format!("{:#}", keymap.format()),
+            map: format!("{}", keymap.format().multiple_actions_per_level(true)),
         });
     }
 
