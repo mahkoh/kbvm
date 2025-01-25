@@ -9,7 +9,7 @@ use {
         compose::token::Token,
         diagnostic::{DiagnosticKind, DiagnosticSink},
         interner::Interner,
-        span::{SpanExt, Spanned},
+        span::{SpanExt, SpanUnit, Spanned},
     },
     kbvm_proc::ad_hoc_display,
     std::sync::Arc,
@@ -19,7 +19,7 @@ use {
 #[derive(Debug)]
 pub(crate) struct Lexer {
     code: Code,
-    span_lo: u64,
+    span_lo: SpanUnit,
     pos: usize,
     str_buf: Vec<u8>,
 }
@@ -29,7 +29,7 @@ struct LineLexer<'a, 'b, 'c> {
     map: &'a mut CodeMap,
     diagnostics: &'a mut DiagnosticSink<'b, 'c>,
     interner: &'a mut Interner,
-    span_lo: u64,
+    span_lo: SpanUnit,
     pos: usize,
     str_buf: &'a mut Vec<u8>,
 }
@@ -61,7 +61,7 @@ enum One {
 }
 
 impl Lexer {
-    pub(crate) fn new(code: &Code, span_lo: u64) -> Self {
+    pub(crate) fn new(code: &Code, span_lo: SpanUnit) -> Self {
         Self {
             code: code.clone(),
             span_lo,
@@ -135,7 +135,7 @@ impl LineLexer<'_, '_, '_> {
         }
         let mut start = self.pos;
         self.pos += 1;
-        let lo = self.span_lo + start as u64;
+        let lo = self.span_lo + start as SpanUnit;
         'punctuation: {
             let t = match b {
                 b'\n' => return Ok(One::Eol),
@@ -153,11 +153,11 @@ impl LineLexer<'_, '_, '_> {
                 self.pos += 1;
                 match b {
                     b'\n' => {
-                        let hi = self.span_lo + self.pos as u64 - 1;
+                        let hi = self.span_lo + self.pos as SpanUnit - 1;
                         return Err(UnterminatedKeysym.spanned(lo, hi));
                     }
                     b'>' => {
-                        let hi = self.span_lo + self.pos as u64;
+                        let hi = self.span_lo + self.pos as SpanUnit;
                         let end = self.pos - 1;
                         let value = self.interner.intern(&self.code.slice(start..end));
                         return Ok(One::Token(Token::Keysym(value).spanned(lo, hi)));
@@ -165,7 +165,7 @@ impl LineLexer<'_, '_, '_> {
                     _ => {}
                 }
             }
-            let hi = self.span_lo + self.pos as u64;
+            let hi = self.span_lo + self.pos as SpanUnit;
             return Err(UnterminatedKeysym.spanned(lo, hi));
         }
         if b == b'"' {
@@ -177,7 +177,7 @@ impl LineLexer<'_, '_, '_> {
                 self.pos += 1;
                 match b {
                     b'\n' => {
-                        let hi = self.span_lo + self.pos as u64;
+                        let hi = self.span_lo + self.pos as SpanUnit;
                         return Err(UnterminatedString.spanned(lo, hi));
                     }
                     b'\\' => {
@@ -208,7 +208,7 @@ impl LineLexer<'_, '_, '_> {
                                 self.str_buf.push(c);
                             }
                             b'0'..=b'7' => {
-                                let lo = self.span_lo + self.pos as u64 - 1;
+                                let lo = self.span_lo + self.pos as SpanUnit - 1;
                                 let mut c = (b - b'0') as u16;
                                 for _ in 0..2 {
                                     if self.pos >= self.code.len() {
@@ -222,7 +222,7 @@ impl LineLexer<'_, '_, '_> {
                                     self.pos += 1;
                                 }
                                 if c > u8::MAX as u16 {
-                                    let hi = self.span_lo + self.pos as u64;
+                                    let hi = self.span_lo + self.pos as SpanUnit;
                                     self.diagnostics.push(
                                         self.map,
                                         DiagnosticKind::OctalStringEscapeOverflow,
@@ -234,8 +234,8 @@ impl LineLexer<'_, '_, '_> {
                                 }
                             }
                             _ => {
-                                let lo = self.span_lo + self.pos as u64 - 2;
-                                let hi = self.span_lo + self.pos as u64;
+                                let lo = self.span_lo + self.pos as SpanUnit - 2;
+                                let hi = self.span_lo + self.pos as SpanUnit;
                                 self.diagnostics.push(
                                     self.map,
                                     DiagnosticKind::UnknownEscapeSequence,
@@ -255,7 +255,7 @@ impl LineLexer<'_, '_, '_> {
                             self.code.slice(start..end).to_owned()
                         };
                         let value = self.interner.intern(&slice);
-                        let hi = self.span_lo + self.pos as u64;
+                        let hi = self.span_lo + self.pos as SpanUnit;
                         return Ok(One::Token(Token::String(value).spanned(lo, hi)));
                     }
                     _ => {
@@ -263,7 +263,7 @@ impl LineLexer<'_, '_, '_> {
                     }
                 }
             }
-            let hi = self.span_lo + self.pos as u64;
+            let hi = self.span_lo + self.pos as SpanUnit;
             return Err(UnterminatedString.spanned(lo, hi));
         }
         if let b'a'..=b'z' | b'A'..=b'Z' | b'_' = b {
@@ -277,7 +277,7 @@ impl LineLexer<'_, '_, '_> {
             }
             let end = self.pos;
             let value = self.interner.intern(&self.code.slice(start..end));
-            let hi = self.span_lo + self.pos as u64;
+            let hi = self.span_lo + self.pos as SpanUnit;
             return Ok(One::Token(Token::Ident(value).spanned(lo, hi)));
         }
         Err(UnexpectedByte(b).spanned(lo, lo + 1))

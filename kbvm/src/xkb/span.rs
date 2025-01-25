@@ -7,16 +7,18 @@ use {
     },
 };
 
+pub type SpanUnit = u64;
+
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub(crate) struct Span {
-    pub(crate) lo: u64,
-    pub(crate) hi: u64,
+    pub(crate) lo: SpanUnit,
+    pub(crate) hi: SpanUnit,
 }
 
-impl Add<u64> for Span {
+impl Add<SpanUnit> for Span {
     type Output = Self;
 
-    fn add(self, rhs: u64) -> Self::Output {
+    fn add(self, rhs: SpanUnit) -> Self::Output {
         Self {
             lo: self.lo.wrapping_add(rhs),
             hi: self.hi.wrapping_add(rhs),
@@ -94,12 +96,12 @@ impl<T> Spanned<T> {
 }
 
 pub(crate) trait SpanExt: Sized {
-    fn spanned(self, lo: u64, hi: u64) -> Spanned<Self>;
+    fn spanned(self, lo: SpanUnit, hi: SpanUnit) -> Spanned<Self>;
     fn spanned2(self, span: Span) -> Spanned<Self>;
 }
 
 impl<T> SpanExt for T {
-    fn spanned(self, lo: u64, hi: u64) -> Spanned<Self> {
+    fn spanned(self, lo: SpanUnit, hi: SpanUnit) -> Spanned<Self> {
         self.spanned2(Span { lo, hi })
     }
 

@@ -1,5 +1,8 @@
 use {
-    crate::xkb::{code::Code, span::Span},
+    crate::xkb::{
+        code::Code,
+        span::{Span, SpanUnit},
+    },
     hashbrown::HashMap,
     std::{path::PathBuf, sync::Arc},
 };
@@ -15,7 +18,7 @@ struct CodeRange {
     code: Code,
     file: Option<Arc<PathBuf>>,
     canonical_idx: Option<usize>,
-    lines: Option<Vec<u64>>,
+    lines: Option<Vec<SpanUnit>>,
     include_span: Option<Span>,
 }
 
@@ -23,8 +26,8 @@ pub(crate) struct CodeInfo<'a> {
     pub(crate) code: &'a Code,
     pub(crate) span: Span,
     pub(crate) file: Option<&'a Arc<PathBuf>>,
-    pub(crate) lines: &'a [u64],
-    pub(crate) lines_offset: u64,
+    pub(crate) lines: &'a [SpanUnit],
+    pub(crate) lines_offset: SpanUnit,
     pub(crate) include_span: Option<Span>,
 }
 
@@ -42,7 +45,7 @@ impl CodeRange {
                 break;
             };
             code = &code[pos + 1..];
-            lo += pos as u64 + 1;
+            lo += pos as SpanUnit + 1;
             lines.push(lo);
         }
         self.lines = Some(lines);
@@ -63,7 +66,7 @@ impl CodeMap {
             .unwrap_or_default();
         let span = Span {
             lo,
-            hi: lo + code.len() as u64,
+            hi: lo + code.len() as SpanUnit,
         };
         let canonical_idx = self
             .canonical_idx

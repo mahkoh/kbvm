@@ -13,7 +13,7 @@ use {
                 Punctuation,
                 Token::{self, Float, Ident, Integer, KeyName, String},
             },
-            span::{Span, SpanExt, Spanned},
+            span::{Span, SpanExt, SpanUnit, Spanned},
         },
     },
     std::{num::ParseFloatError, path::PathBuf, str::FromStr, sync::Arc},
@@ -24,14 +24,14 @@ use {
 pub(crate) struct Lexer {
     path: Option<Arc<PathBuf>>,
     code: Code,
-    span_lo: u64,
+    span_lo: SpanUnit,
     pos: usize,
 }
 
 struct ItemLexer<'a> {
     code: CodeSlice<'a>,
     interner: &'a mut Interner,
-    span_lo: u64,
+    span_lo: SpanUnit,
     pos: usize,
 }
 
@@ -62,7 +62,7 @@ impl LexerError {
 }
 
 impl Lexer {
-    pub(crate) fn new(path: Option<&Arc<PathBuf>>, code: &Code, span_lo: u64) -> Self {
+    pub(crate) fn new(path: Option<&Arc<PathBuf>>, code: &Code, span_lo: SpanUnit) -> Self {
         Self {
             path: path.cloned(),
             code: code.clone(),
@@ -98,7 +98,7 @@ impl Lexer {
     pub(crate) fn span(&self) -> Span {
         Span {
             lo: self.span_lo,
-            hi: self.span_lo + self.code.len() as u64,
+            hi: self.span_lo + self.code.len() as SpanUnit,
         }
     }
 }
@@ -153,7 +153,7 @@ impl ItemLexer<'_> {
             }
         }
         let start = self.pos;
-        let lo = self.span_lo + start as u64;
+        let lo = self.span_lo + start as SpanUnit;
         self.pos += 1;
         'single_character: {
             let t = match b {
@@ -180,7 +180,7 @@ impl ItemLexer<'_> {
         let next = |err: LexerError, pos: usize| match self.code.get(pos) {
             Some(c) => Ok(*c),
             _ => {
-                let hi = self.span_lo + pos as u64;
+                let hi = self.span_lo + pos as SpanUnit;
                 Err(err.spanned(lo, hi))
             }
         };
@@ -192,7 +192,7 @@ impl ItemLexer<'_> {
                     b'>' => break,
                     b'!'..=b'~' => {}
                     _ => {
-                        let hi = self.span_lo + self.pos as u64 - 1;
+                        let hi = self.span_lo + self.pos as SpanUnit - 1;
                         return Err(UnterminatedKeyName.spanned(lo, hi));
                     }
                 }
@@ -201,7 +201,7 @@ impl ItemLexer<'_> {
             let end = self.pos - 1;
             let slice = self.code.slice(start..end);
             let interned = self.interner.intern(&slice);
-            let hi = self.span_lo + self.pos as u64;
+            let hi = self.span_lo + self.pos as SpanUnit;
             return Ok(Some(KeyName(interned).spanned(lo, hi)));
         }
         if b == b'"' {
@@ -219,7 +219,7 @@ impl ItemLexer<'_> {
             let end = self.pos - 1;
             let slice = self.code.slice(start..end);
             let interned = self.interner.intern(&slice);
-            let hi = self.span_lo + self.pos as u64;
+            let hi = self.span_lo + self.pos as SpanUnit;
             return Ok(Some(String(interned).spanned(lo, hi)));
         }
         if matches!(b, b'_' | b'a'..=b'z' | b'A'..=b'Z') {
@@ -234,7 +234,7 @@ impl ItemLexer<'_> {
             let end = self.pos;
             let slice = self.code.slice(start..end);
             let interned = self.interner.intern(&slice);
-            let hi = self.span_lo + end as u64;
+            let hi = self.span_lo + end as SpanUnit;
             return Ok(Some(Ident(interned).spanned(lo, hi)));
         };
         if b.is_ascii_digit() {
@@ -258,7 +258,7 @@ impl ItemLexer<'_> {
             let end = self.pos;
             let slice = self.code.slice(start..end);
             let interned = self.interner.intern(&slice);
-            let hi = self.span_lo + end as u64;
+            let hi = self.span_lo + end as SpanUnit;
             let token = match have_dot {
                 true => {
                     let digits = std::str::from_utf8(&self.code[digits_start..end]).unwrap();
@@ -274,7 +274,7 @@ impl ItemLexer<'_> {
             };
             return Ok(Some(token.spanned(lo, hi)));
         }
-        let hi = self.span_lo + self.pos as u64;
+        let hi = self.span_lo + self.pos as SpanUnit;
         Err(UnexpectedByte(b).spanned(lo, hi))
     }
 }

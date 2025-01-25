@@ -20,7 +20,7 @@ use {
                 },
                 token::{Punctuation, Token},
             },
-            span::{Span, SpanExt, Spanned},
+            span::{Span, SpanExt, SpanUnit, Spanned},
         },
     },
     kbvm_proc::ad_hoc_display,
@@ -229,7 +229,7 @@ impl Parser<'_, '_, '_> {
         for (offset, c) in val.as_bytes().iter().copied().enumerate() {
             if last_was_percent {
                 last_was_percent = false;
-                let lo = ident.span.lo + offset as u64 - 1;
+                let lo = ident.span.lo + offset as SpanUnit - 1;
                 let hi = lo + 2;
                 match c {
                     b'%' => res.extend_from_slice(b"%"),

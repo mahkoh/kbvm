@@ -8,7 +8,7 @@ use {
         code_slice::CodeSlice,
         diagnostic::{DiagnosticKind, DiagnosticSink},
         interner::{Interned, Interner},
-        span::{Span, SpanExt, Spanned},
+        span::{Span, SpanExt, SpanUnit, Spanned},
     },
     hashbrown::{hash_map::Entry, HashMap},
     std::sync::Arc,
@@ -88,8 +88,8 @@ impl StringCooker {
                     let _ = next!() && next!();
                     if c > 0xff {
                         let span = Span {
-                            lo: lo + start as u64,
-                            hi: lo + i as u64,
+                            lo: lo + start as SpanUnit,
+                            hi: lo + i as SpanUnit,
                         };
                         diagnostics.push(
                             map,
@@ -102,8 +102,8 @@ impl StringCooker {
                 }
                 _ => {
                     let span = Span {
-                        lo: lo + i as u64 - 1,
-                        hi: lo + i as u64,
+                        lo: lo + i as SpanUnit - 1,
+                        hi: lo + i as SpanUnit,
                     };
                     diagnostics.push(
                         map,
