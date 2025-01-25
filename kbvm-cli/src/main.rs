@@ -1,6 +1,6 @@
 #![allow(clippy::single_match)]
 
-use log::LevelFilter;
+use {error_reporter::Report, log::LevelFilter};
 
 mod cli;
 mod compile_rmlvo;
@@ -17,5 +17,8 @@ fn main() {
         .filter_level(LevelFilter::Info)
         .parse_default_env()
         .init();
+    if let Err(e) = utf8_console::enable() {
+        log::error!("could not enable UTF-8: {}", Report::new(e));
+    }
     cli::main();
 }
