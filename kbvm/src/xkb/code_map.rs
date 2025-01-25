@@ -45,7 +45,7 @@ impl CodeRange {
                 break;
             };
             code = &code[pos + 1..];
-            lo += pos as SpanUnit + 1;
+            lo = lo.saturating_add((pos + 1) as SpanUnit);
             lines.push(lo);
         }
         self.lines = Some(lines);
@@ -62,11 +62,11 @@ impl CodeMap {
         let lo = self
             .ranges
             .last()
-            .map(|l| l.span.hi + 1)
+            .map(|l| l.span.hi.saturating_add(1))
             .unwrap_or_default();
         let span = Span {
             lo,
-            hi: lo + code.len() as SpanUnit,
+            hi: lo.saturating_add(code.len() as SpanUnit),
         };
         let canonical_idx = self
             .canonical_idx
@@ -86,7 +86,10 @@ impl CodeMap {
 
     pub(crate) fn get(&mut self, span: Span) -> CodeInfo<'_> {
         let range = self.ranges.binary_search_by_key(&span.lo, |r| r.span.hi);
-        let idx = range.unwrap_or_else(|i| i);
+        let mut idx = range.unwrap_or_else(|i| i);
+        if idx == self.ranges.len() {
+            idx -= 1;
+        }
         let (lo, hi) = self.ranges.split_at_mut(idx);
         let range = &mut hi[0];
         let (lines, lines_offset) = match range.canonical_idx {

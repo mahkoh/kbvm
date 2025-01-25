@@ -2025,7 +2025,7 @@ impl DiagnosticLocation {
             .map(|l| *l - 1)
             .unwrap_or(info.span.hi - info.lines_offset);
         let in_line_offset = (lo - line_lo) as usize;
-        let in_line_len = (hi.min(line_hi) - lo) as usize;
+        let in_line_len = (hi.min(line_hi).saturating_sub(lo)) as usize;
         let line_lo = (line_lo + info.lines_offset - info.span.lo) as usize;
         let line_hi = (line_hi + info.lines_offset - info.span.lo) as usize;
         let slice = info.code.to_slice().slice(line_lo..line_hi).to_owned();

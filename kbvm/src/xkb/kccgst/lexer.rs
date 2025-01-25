@@ -175,12 +175,12 @@ impl ItemLexer<'_> {
                 b'~' => token![~],
                 _ => break 'single_character,
             };
-            return Ok(Some(t.spanned(lo, lo + 1)));
+            return Ok(Some(t.spanned(lo, lo.saturating_add(1))));
         }
         let next = |err: LexerError, pos: usize| match self.code.get(pos) {
             Some(c) => Ok(*c),
             _ => {
-                let hi = self.span_lo + pos as SpanUnit;
+                let hi = self.span_lo.saturating_add(pos as SpanUnit);
                 Err(err.spanned(lo, hi))
             }
         };

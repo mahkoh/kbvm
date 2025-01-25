@@ -175,8 +175,8 @@ impl LineLexer<'_> {
             };
         }
         if start == self.pos {
-            let lo = self.span_lo + self.pos as SpanUnit;
-            return Err(UnexpectedByte(b).spanned(lo, lo + 1));
+            let lo = self.span_lo.saturating_add(self.pos as SpanUnit);
+            return Err(UnexpectedByte(b).spanned(lo, lo.saturating_add(1)));
         }
         let end = self.pos;
         let value = self.interner.intern(&self.code.slice(start..end));
@@ -184,7 +184,7 @@ impl LineLexer<'_> {
             true => Token::GroupName(value),
             false => Token::Ident(value),
         };
-        let hi = self.span_lo + self.pos as SpanUnit;
+        let hi = self.span_lo.saturating_add(self.pos as SpanUnit);
         Ok(One::Token(token.spanned(lo, hi)))
     }
 }

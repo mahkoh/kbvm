@@ -7,7 +7,7 @@ use {
     },
 };
 
-pub type SpanUnit = u64;
+pub type SpanUnit = u32;
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub(crate) struct Span {
