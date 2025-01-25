@@ -26,7 +26,7 @@ pub(crate) struct FlagWrapper {
 
 #[derive(Default, Debug, CloneWithDelta)]
 pub(crate) struct Flags {
-    pub(crate) flags: Vec<FlagWrapper>,
+    pub(crate) flags: Box<[FlagWrapper]>,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, CloneWithDelta)]
@@ -50,7 +50,7 @@ pub(crate) enum ItemType {
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct CompositeMap {
     pub(crate) name: Option<Spanned<Interned>>,
-    pub(crate) config_items: Vec<Spanned<NestedConfigItem>>,
+    pub(crate) config_items: Box<[Spanned<NestedConfigItem>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -81,7 +81,7 @@ pub(crate) struct Keycodes {
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct Decls<T> {
-    pub(crate) decls: Vec<Spanned<Decl<T>>>,
+    pub(crate) decls: Box<[Spanned<Decl<T>>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -98,7 +98,7 @@ pub(crate) enum DirectOrIncluded<T> {
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct Included<T> {
-    pub(crate) components: Vec<Component<T>>,
+    pub(crate) components: Box<[Component<T>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -194,7 +194,7 @@ pub(crate) struct Var {
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct InterpretDecl {
     pub(crate) match_: Spanned<InterpretMatch>,
-    pub(crate) vars: Vec<Spanned<VarDecl>>,
+    pub(crate) vars: Box<[Spanned<VarDecl>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -219,13 +219,13 @@ pub(crate) struct KeyAliasDecl {
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct KeyTypeDecl {
     pub(crate) name: Spanned<Interned>,
-    pub(crate) decls: Vec<Spanned<VarDecl>>,
+    pub(crate) decls: Box<[Spanned<VarDecl>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct KeySymbolsDecl {
     pub(crate) key: Spanned<Interned>,
-    pub(crate) vars: Vec<Spanned<VarOrExpr>>,
+    pub(crate) vars: Box<[Spanned<VarOrExpr>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -237,7 +237,7 @@ pub(crate) enum VarOrExpr {
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct ModMapDecl {
     pub(crate) modifier: Spanned<Interned>,
-    pub(crate) keys: Vec<Spanned<Expr>>,
+    pub(crate) keys: Box<[Spanned<Expr>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -250,7 +250,7 @@ pub(crate) struct GroupCompatDecl {
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct IndicatorMapDecl {
     pub(crate) name: Spanned<Interned>,
-    pub(crate) decls: Vec<Spanned<VarDecl>>,
+    pub(crate) decls: Box<[Spanned<VarDecl>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -269,13 +269,13 @@ pub(crate) struct ShapeDecl {
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) enum ShapeDeclType {
-    OutlineList(Vec<Spanned<Outline>>),
-    CoordList(Vec<Spanned<Coord>>),
+    OutlineList(Box<[Spanned<Outline>]>),
+    CoordList(Box<[Spanned<Coord>]>),
 }
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) enum Outline {
-    CoordList(Vec<Spanned<Coord>>),
+    CoordList(Box<[Spanned<Coord>]>),
     ExprAssignment(ExprAssignment),
     CoordAssignment(CoordAssignment),
 }
@@ -289,7 +289,7 @@ pub(crate) struct ExprAssignment {
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct CoordAssignment {
     pub(crate) name: Spanned<Interned>,
-    pub(crate) coords: Spanned<Vec<Spanned<Coord>>>,
+    pub(crate) coords: Spanned<Box<[Spanned<Coord>]>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -301,7 +301,7 @@ pub(crate) struct Coord {
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct SectionDecl {
     pub(crate) name: Spanned<Interned>,
-    pub(crate) items: Vec<Spanned<SectionItem>>,
+    pub(crate) items: Box<[Spanned<SectionItem>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -315,7 +315,7 @@ pub(crate) enum SectionItem {
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct RowBody {
-    pub(crate) items: Vec<Spanned<RowBodyItem>>,
+    pub(crate) items: Box<[Spanned<RowBodyItem>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -326,7 +326,7 @@ pub(crate) enum RowBodyItem {
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct Keys {
-    pub(crate) keys: Vec<Spanned<Key>>,
+    pub(crate) keys: Box<[Spanned<Key>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -337,13 +337,13 @@ pub(crate) enum Key {
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct KeyExprs {
-    pub(crate) exprs: Vec<Spanned<VarOrExpr>>,
+    pub(crate) exprs: Box<[Spanned<VarOrExpr>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct OverlayDecl {
     pub(crate) name: Spanned<Interned>,
-    pub(crate) items: Vec<Spanned<OverlayItem>>,
+    pub(crate) items: Box<[Spanned<OverlayItem>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -356,12 +356,12 @@ pub(crate) struct OverlayItem {
 pub(crate) struct DoodadDecl {
     pub(crate) ty: Spanned<DoodadType>,
     pub(crate) name: Spanned<Interned>,
-    pub(crate) decls: Vec<Spanned<VarDecl>>,
+    pub(crate) decls: Box<[Spanned<VarDecl>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct VModDecl {
-    pub(crate) defs: Vec<Spanned<VModDef>>,
+    pub(crate) defs: Box<[Spanned<VModDef>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -374,7 +374,7 @@ pub(crate) struct VModDef {
 pub(crate) struct Include {
     pub(crate) mm: Spanned<MergeMode>,
     pub(crate) path: Spanned<Interned>,
-    pub(crate) loaded: Option<Vec<LoadedInclude>>,
+    pub(crate) loaded: Option<Box<[LoadedInclude]>>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -446,14 +446,14 @@ pub(crate) enum Expr {
     Div(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
     Add(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
     Sub(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
-    BracketList(Vec<Spanned<Expr>>),
-    BraceList(Vec<Spanned<Expr>>),
+    BracketList(Box<[Spanned<Expr>]>),
+    BraceList(Box<[Spanned<Expr>]>),
 }
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct Call {
     pub(crate) path: Spanned<Path>,
-    pub(crate) args: Vec<Spanned<CallArg>>,
+    pub(crate) args: Box<[Spanned<CallArg>]>,
 }
 
 #[derive(Debug, CloneWithDelta)]
@@ -473,7 +473,7 @@ impl Path {
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct PathComponent {
     pub(crate) ident: Spanned<Interned>,
-    pub(crate) index: Option<PathIndex>,
+    pub(crate) index: Option<Box<PathIndex>>,
 }
 
 #[derive(Debug, CloneWithDelta)]

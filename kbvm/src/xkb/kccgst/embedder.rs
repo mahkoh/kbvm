@@ -22,7 +22,7 @@ pub(crate) fn embed(item: &mut Item) {
 trait Embeddable: Sized {
     fn embed(decls: &mut DirectOrIncluded<Self>);
 
-    fn unwrap_decls(i: ConfigItemType) -> Vec<Spanned<Decl<Self>>>;
+    fn unwrap_decls(i: ConfigItemType) -> Box<[Spanned<Decl<Self>>]>;
 }
 
 macro_rules! s {
@@ -47,16 +47,16 @@ macro_rules! s {
                             let mut components = vec!();
                             embed_config_item_type2(&mut components, loaded);
                             *decl = DirectOrIncluded::Included(Included {
-                                components,
+                                components: components.into_boxed_slice(),
                             });
                         }
                     }
                 }
 
-                fn unwrap_decls(i: ConfigItemType) -> Vec<Spanned<Decl<Self>>> {
+                fn unwrap_decls(i: ConfigItemType) -> Box<[Spanned<Decl<Self>>]> {
                     match i {
                         ConfigItemType::$var(s) => s.decls.decls,
-                        _ => vec!(),
+                        _ => Box::new([]),
                     }
                 }
             }
@@ -72,10 +72,10 @@ s! {
     GeometryDecl, Geometry;
 }
 
-fn embed_config_item_type2<T: Embeddable>(dst: &mut Vec<Component<T>>, src: Vec<LoadedInclude>) {
+fn embed_config_item_type2<T: Embeddable>(dst: &mut Vec<Component<T>>, src: Box<[LoadedInclude]>) {
     for el in src {
         let mut decls = match el.item.val.ty {
-            ItemType::Composite(_) => vec![],
+            ItemType::Composite(_) => Box::new([]) as _,
             ItemType::Config(c) => T::unwrap_decls(c),
         };
         for decl in &mut decls {

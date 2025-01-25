@@ -37,6 +37,15 @@ where
     }
 }
 
+impl<T> CloneWithDelta for Box<[T]>
+where
+    T: CloneWithDelta,
+{
+    fn clone_with_delta(&self, delta: u64) -> Self {
+        self.iter().map(|t| t.clone_with_delta(delta)).collect()
+    }
+}
+
 macro_rules! copy {
     ($ty:ty) => {
         impl CloneWithDelta for $ty {

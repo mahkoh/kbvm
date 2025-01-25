@@ -114,7 +114,7 @@ impl Includer<'_, '_, '_> {
             );
             return;
         }
-        let resolved = include.loaded.get_or_insert_default();
+        let mut resolved = vec![];
         let mut iter = parse_include(interner, include.path);
         while let Some(i) = iter.next() {
             let i = match i {
@@ -131,7 +131,7 @@ impl Includer<'_, '_, '_> {
                     DiagnosticKind::MaxIncludesReached,
                     ad_hoc_display!("maximum number of includes reached").spanned2(i.file.span),
                 );
-                return;
+                break;
             }
             let mut span = i.file.span;
             if let Some(map) = i.map {
@@ -173,5 +173,6 @@ impl Includer<'_, '_, '_> {
             }
             self.active_includes.remove(&key);
         }
+        include.loaded = Some(resolved.into_boxed_slice());
     }
 }
