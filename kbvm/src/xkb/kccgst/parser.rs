@@ -1287,7 +1287,13 @@ impl Parser<'_, '_, '_> {
             span.hi = last.span.hi;
             components.push(last.val);
         }
-        Ok(Path { components }.spanned2(span))
+        let path = 'path: {
+            if components.len() == 1 && components[0].index.is_none() {
+                break 'path Path::One(components[0].ident.val);
+            }
+            Path::Any(components.into_boxed_slice())
+        };
+        Ok(path.spanned2(span))
     }
 
     fn parse_path_component(
@@ -1462,7 +1468,7 @@ impl Parser<'_, '_, '_> {
                             path,
                             args: args.val,
                         };
-                        return Ok(Expr::Call(call).spanned2(span));
+                        return Ok(Expr::Call(Box::new(call)).spanned2(span));
                     }
                 }
                 Ok(Expr::Path(path.val).spanned2(path.span))

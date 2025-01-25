@@ -888,12 +888,10 @@ pub(crate) fn eval_filter(
     }
     let mut predicate = Predicate::Exactly;
     if let Expr::Call(e) = expr.val {
-        let cs = &e.path.val.components;
-        let c = &cs[0];
-        if cs.len() != 1 || c.index.is_some() {
+        let Some(ident) = e.path.val.unique_ident() else {
             return Err(UnknownFilterPredicate.spanned2(e.path.span));
-        }
-        let meaning = meaning_cache.get_case_insensitive(interner, c.ident.val);
+        };
+        let meaning = meaning_cache.get_case_insensitive(interner, ident);
         predicate = match meaning {
             Meaning::NoneOf => Predicate::NoneOf,
             Meaning::AnyOfOrNone => Predicate::AnyOfOrNone,
@@ -1378,7 +1376,9 @@ fn handle_action_global<T: ActionParameters>(
     var: &Var,
     span: Span,
 ) -> Result<(), Spanned<EvalError>> {
-    let cs = &var.path.val.components;
+    let Some(cs) = var.path.val.components() else {
+        return Err(T::UNKNOWN_PARAMETER.spanned2(span));
+    };
     if cs.len() != 2 || cs[0].index.is_some() || cs[1].index.is_some() {
         return Err(T::UNKNOWN_PARAMETER.spanned2(span));
     }
@@ -1390,7 +1390,7 @@ fn handle_action_global<T: ActionParameters>(
     } else {
         ActionParameterValue::Boolean(true).spanned2(span)
     };
-    let meaning = meaning_cache.get_case_insensitive(interner, c.ident.val);
+    let meaning = meaning_cache.get_case_insensitive(interner, c.ident);
     t.handle_field(
         interner,
         meaning_cache,
@@ -1471,11 +1471,10 @@ fn eval_action(
         Expr::Call(c) => c,
         _ => return Err(UnsupportedExpressionForAction.spanned2(expr.span)),
     };
-    if call.path.val.components.len() > 1 || call.path.val.components[0].index.is_some() {
+    let Some(name) = call.path.val.unique_ident() else {
         return Err(UnknownAction.spanned2(call.path.span));
-    }
-    let name = call.path.val.components[0].ident;
-    let meaning = meaning_cache.get_case_insensitive(interner, name.val);
+    };
+    let meaning = meaning_cache.get_case_insensitive(interner, name);
     macro_rules! handle {
         ($action:ident, $field:ident) => {
             ResolvedAction::$action(create_action(
@@ -1501,8 +1500,7 @@ pub(crate) fn eval_action_default(
     span: Span,
     defaults: &mut ActionDefaults,
 ) -> Result<(), Spanned<EvalError>> {
-    let meaning =
-        meaning_cache.get_case_insensitive(interner, decl.path.val.components[0].ident.val);
+    let meaning = meaning_cache.get_case_insensitive(interner, decl.path.val.first_ident());
     macro_rules! handle {
         ($_:ident, $field:ident) => {
             handle_action_global(
@@ -1539,7 +1537,10 @@ pub(crate) fn eval_interp_field(
     span: Span,
     skip_first: bool,
 ) -> Result<Spanned<InterpField>, Spanned<EvalError>> {
-    let mut cs = &var.path.val.components[..];
+    let Some(cs) = var.path.val.components() else {
+        return Err(UnknownInterpretField.spanned2(var.path.span));
+    };
+    let mut cs = &cs[..];
     if skip_first {
         cs = &cs[1..];
     }
@@ -1550,7 +1551,7 @@ pub(crate) fn eval_interp_field(
     if c.index.is_some() {
         return Err(UnknownInterpretField.spanned2(var.path.span));
     }
-    let meaning = meaning_cache.get_case_insensitive(interner, c.ident.val);
+    let meaning = meaning_cache.get_case_insensitive(interner, c.ident);
     let mut boolean = || match &var.expr {
         Some(e) => eval_boolean(interner, meaning_cache, e.as_ref()),
         _ => Ok(var.not.is_none()),
@@ -1636,7 +1637,10 @@ pub(crate) fn eval_type_field(
     span: Span,
     skip_first: bool,
 ) -> Result<Spanned<TypeField>, Spanned<EvalError>> {
-    let mut cs = &var.path.val.components[..];
+    let Some(cs) = var.path.val.components() else {
+        return Err(UnknownTypeField.spanned2(var.path.span));
+    };
+    let mut cs = &cs[..];
     if skip_first {
         cs = &cs[1..];
     }
@@ -1644,7 +1648,7 @@ pub(crate) fn eval_type_field(
         return Err(UnknownTypeField.spanned2(var.path.span));
     }
     let c = &cs[0];
-    let meaning = meaning_cache.get_case_insensitive(interner, c.ident.val);
+    let meaning = meaning_cache.get_case_insensitive(interner, c.ident);
     let field = match meaning {
         Meaning::Modifiers => {
             if c.index.is_some() {
@@ -1717,7 +1721,10 @@ pub(crate) fn eval_indicator_map_field(
     span: Span,
     skip_first: bool,
 ) -> Result<Spanned<IndicatorMapField>, Spanned<EvalError>> {
-    let mut cs = &var.path.val.components[..];
+    let Some(cs) = var.path.val.components() else {
+        return Err(UnknownIndicatorField.spanned2(var.path.span));
+    };
+    let mut cs = &cs[..];
     if skip_first {
         cs = &cs[1..];
     }
@@ -1725,7 +1732,7 @@ pub(crate) fn eval_indicator_map_field(
         return Err(UnknownIndicatorField.spanned2(var.path.span));
     }
     let c = &cs[0];
-    let meaning = meaning_cache.get_case_insensitive(interner, c.ident.val);
+    let meaning = meaning_cache.get_case_insensitive(interner, c.ident);
     macro_rules! get_expr {
         ($err:ident) => {
             match &var.expr {
@@ -1876,15 +1883,18 @@ pub(crate) fn eval_symbols_field(
     let mut c = None;
     let meaning = match path {
         Some(path) => {
-            let mut cs = &path.val.components[..];
+            let Some(cs) = path.val.components() else {
+                return Err(UnknownKeyField.spanned2(path.span));
+            };
+            let mut cs = &cs[..];
             if skip_first {
                 cs = &cs[1..];
             }
             if cs.len() != 1 {
                 return Err(UnknownKeyField.spanned2(path.span));
             }
-            c = Some(&cs[0]);
-            meaning_cache.get_case_insensitive(interner, cs[0].ident.val)
+            c = Some(cs[0]);
+            meaning_cache.get_case_insensitive(interner, cs[0].ident)
         }
         _ => {
             let mut meaning = Meaning::Symbols;

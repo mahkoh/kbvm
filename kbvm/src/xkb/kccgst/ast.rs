@@ -8,6 +8,7 @@ use {
         },
         Keycode,
     },
+    arrayvec::ArrayVec,
     kbvm_proc::CloneWithDelta,
     std::fmt::Debug,
 };
@@ -436,7 +437,7 @@ pub(crate) enum Expr {
     UnNot(Box<Spanned<Expr>>),
     UnInverse(Box<Spanned<Expr>>),
     Path(Path),
-    Call(Call),
+    Call(Box<Call>),
     String(Interned),
     Integer(Interned, i64),
     Float(Interned, f64),
@@ -457,17 +458,55 @@ pub(crate) struct Call {
 }
 
 #[derive(Debug, CloneWithDelta)]
-pub(crate) struct Path {
-    pub(crate) components: Vec<PathComponent>,
+pub(crate) enum Path {
+    One(Interned),
+    Any(Box<[PathComponent]>),
 }
 
 impl Path {
     pub(crate) fn unique_ident(&self) -> Option<Interned> {
-        if self.components.len() == 1 && self.components[0].index.is_none() {
-            return Some(self.components[0].ident.val);
+        match self {
+            Path::One(i) => Some(*i),
+            Path::Any(_) => None,
         }
-        None
     }
+
+    pub(crate) fn first_ident(&self) -> Interned {
+        match self {
+            Path::One(i) => *i,
+            Path::Any(cs) => cs[0].ident.val,
+        }
+    }
+
+    pub(crate) fn components(&self) -> Option<ArrayVec<PathComponentRef<'_>, 2>> {
+        let mut res = ArrayVec::new();
+        match self {
+            Path::One(o) => {
+                res.push(PathComponentRef {
+                    ident: *o,
+                    index: None,
+                });
+            }
+            Path::Any(cs) => {
+                for pc in cs {
+                    let pc = PathComponentRef {
+                        ident: pc.ident.val,
+                        index: pc.index.as_deref(),
+                    };
+                    if res.try_push(pc).is_err() {
+                        return None;
+                    }
+                }
+            }
+        }
+        Some(res)
+    }
+}
+
+#[derive(Copy, Clone, Debug)]
+pub(crate) struct PathComponentRef<'a> {
+    pub(crate) ident: Interned,
+    pub(crate) index: Option<&'a PathIndex>,
 }
 
 #[derive(Debug, CloneWithDelta)]

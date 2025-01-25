@@ -962,16 +962,21 @@ impl ConfigWalker for TypesResolver<'_, '_, '_, '_> {
                 self.handle_type(mm, name, key);
             }
             TypesDecl::Var(e) => {
-                let c = &e.var.path.val.components[0];
+                let unknown_types_variable =
+                    ad_hoc_display!("unknown types variable").spanned2(span);
+                let Some(cs) = e.var.path.val.components() else {
+                    self.r
+                        .diag(DiagnosticKind::UnknownTypesVariable, unknown_types_variable);
+                    return;
+                };
+                let c = &cs[0];
                 let meaning = self
                     .r
                     .meaning_cache
-                    .get_case_insensitive(self.r.interner, c.ident.val);
+                    .get_case_insensitive(self.r.interner, c.ident);
                 if c.index.is_some() || meaning != Meaning::Type {
-                    self.r.diag(
-                        DiagnosticKind::UnknownTypesVariable,
-                        ad_hoc_display!("unknown types variable").spanned2(span),
-                    );
+                    self.r
+                        .diag(DiagnosticKind::UnknownTypesVariable, unknown_types_variable);
                     return;
                 }
                 if let Some(field) = self.parse_field(e, span, true) {
@@ -1249,15 +1254,24 @@ impl ConfigWalker for CompatResolver<'_, '_, '_, '_> {
                 self.handle_indicator_map(mm, name, indicator_map);
             }
             CompatmapDecl::Var(e) => {
-                let c = &e.var.path.val.components[0];
+                let unknown_compat_variable =
+                    ad_hoc_display!("unknown compat variable").spanned2(span);
+                let Some(cs) = e.var.path.val.components() else {
+                    self.r.diag(
+                        DiagnosticKind::UnknownCompatVariable,
+                        unknown_compat_variable,
+                    );
+                    return;
+                };
+                let c = &cs[0];
                 let meaning = self
                     .r
                     .meaning_cache
-                    .get_case_insensitive(self.r.interner, c.ident.val);
+                    .get_case_insensitive(self.r.interner, c.ident);
                 if c.index.is_some() {
                     self.r.diag(
                         DiagnosticKind::UnknownCompatVariable,
-                        ad_hoc_display!("unknown compat variable").spanned2(span),
+                        unknown_compat_variable,
                     );
                     return;
                 }
@@ -1719,12 +1733,16 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_, '_> {
                 }
             }
             SymbolsDecl::Var(v) => {
-                let cs = &v.var.path.val.components;
                 let unknown_field = ad_hoc_display!("unknown field").spanned2(v.var.path.span);
+                let Some(cs) = v.var.path.val.components() else {
+                    self.r
+                        .diag(DiagnosticKind::UnknownSymbolsVariable, unknown_field);
+                    return;
+                };
                 let meaning = self
                     .r
                     .meaning_cache
-                    .get_case_insensitive(self.r.interner, cs[0].ident.val);
+                    .get_case_insensitive(self.r.interner, cs[0].ident);
                 match meaning {
                     Meaning::Key => {
                         if cs[0].index.is_some() {
