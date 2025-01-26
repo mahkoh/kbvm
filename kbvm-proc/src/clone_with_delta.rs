@@ -75,7 +75,7 @@ pub(crate) fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
     let (impl_generics, type_generics, where_clause) = item.generics.split_for_impl();
     let tokens = quote! {
         impl #impl_generics crate::xkb::clone_with_delta::CloneWithDelta for #ident #type_generics #where_clause {
-            fn clone_with_delta(&self, delta: u64) -> Self {
+            fn clone_with_delta(&self, delta: crate::xkb::span::SpanUnit) -> Self {
                 #body
             }
         }

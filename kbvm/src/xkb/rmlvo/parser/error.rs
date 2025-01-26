@@ -7,7 +7,7 @@ use {
             parser::Parser,
             token::{Punctuation, Token},
         },
-        span::{Span, SpanExt, Spanned},
+        span::{Span, SpanExt, SpanUnit, Spanned},
     },
     bstr::ByteSlice,
     debug_fn::debug_fn,
@@ -201,7 +201,7 @@ impl Parser<'_, '_, '_> {
         offset: usize,
     ) -> Spanned<ParserError> {
         let slice = self.interner.get(ident.val).to_owned();
-        let lo = ident.span.lo + offset as u64;
+        let lo = ident.span.lo + offset as SpanUnit;
         ParserError::IndexStart(slice[offset]).spanned(lo, lo + 1)
     }
 
@@ -214,7 +214,7 @@ impl Parser<'_, '_, '_> {
     pub(super) fn index(&self, ident: Spanned<Interned>, offset: usize) -> Spanned<ParserError> {
         let actual = self.interner.get(ident.val);
         let actual = actual.slice(offset + 1..actual.len() - 1);
-        let lo = ident.span.lo + offset as u64 + 1;
+        let lo = ident.span.lo + offset as SpanUnit + 1;
         let hi = ident.span.hi - 1;
         ParserError::Index(actual.to_owned()).spanned(lo, hi)
     }

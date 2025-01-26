@@ -1,5 +1,5 @@
 use {
-    crate::{cli::CompileArgs, expand_rmlvo::RmlvoArgs},
+    crate::{cli::CompileArgs, compile_xkb::format_keymap, expand_rmlvo::RmlvoArgs},
     clap::Args,
     kbvm::xkb::{diagnostic::WriteToLog, Context},
 };
@@ -24,5 +24,5 @@ pub fn main(args: CompileRmlvoArgs) {
         groups.as_deref(),
         options.as_deref(),
     );
-    println!("{}", expanded.format().multiple_actions_per_level(true));
+    format_keymap(expanded.format().multiple_actions_per_level(true));
 }

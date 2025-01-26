@@ -16,7 +16,7 @@ use {
             diagnostic::{DiagnosticKind, DiagnosticSink},
             interner::Interner,
             meaning::{Meaning, MeaningCache},
-            span::{SpanExt, Spanned},
+            span::{SpanExt, SpanUnit, Spanned},
         },
         Keysym, ModifierMask,
     },
@@ -130,7 +130,7 @@ impl Parser<'_, '_, '_> {
             for (offset, &b) in bytes.as_bytes().iter().enumerate() {
                 if last_was_percent {
                     last_was_percent = false;
-                    let lo = t.span.lo + offset as u64;
+                    let lo = t.span.lo + offset as SpanUnit;
                     let hi = lo + 2;
                     match b {
                         b'%' => out.push(b'%'),

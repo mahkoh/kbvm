@@ -84,7 +84,7 @@ mod radio_group;
 pub mod registry;
 mod resolved;
 pub mod rmlvo;
-mod span;
+pub(crate) mod span;
 mod string_cooker;
 #[cfg(feature = "x11")]
 pub mod x11;

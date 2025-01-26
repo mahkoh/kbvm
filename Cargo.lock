@@ -584,8 +584,10 @@ dependencies = [
  "log",
  "memmap2",
  "owo-colors",
+ "raw-stdio",
  "serde",
  "serde_json",
+ "utf8-console",
  "wayland-client",
  "wayland-protocols",
 ]
@@ -853,6 +855,12 @@ checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 dependencies = [
  "getrandom",
 ]
+
+[[package]]
+name = "raw-stdio"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "43519c1ec59768518e5bb89bf43743b34853db1580e7d643f88c4e2c8421b57c"
 
 [[package]]
 name = "rayon"
@@ -1173,6 +1181,15 @@ name = "unicode-width"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1fc81956842c57dac11422a97c3b8195a1ff727f06e85c84ed2e8aa277c9a0fd"
+
+[[package]]
+name = "utf8-console"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4df64c5026a053d587140154b90cefd04934676fa92d27fc4bda53cedfe2622d"
+dependencies = [
+ "windows-sys 0.59.0",
+]
 
 [[package]]
 name = "utf8parse"

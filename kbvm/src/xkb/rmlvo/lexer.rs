@@ -8,7 +8,7 @@ use {
         diagnostic::DiagnosticKind,
         interner::Interner,
         rmlvo::token::Token,
-        span::{SpanExt, Spanned},
+        span::{SpanExt, SpanUnit, Spanned},
     },
     std::{path::PathBuf, sync::Arc},
     thiserror::Error,
@@ -18,14 +18,14 @@ use {
 pub(crate) struct Lexer {
     path: Arc<PathBuf>,
     code: Code,
-    span_lo: u64,
+    span_lo: SpanUnit,
     pos: usize,
 }
 
 struct LineLexer<'a> {
     code: CodeSlice<'a>,
     interner: &'a mut Interner,
-    span_lo: u64,
+    span_lo: SpanUnit,
     pos: usize,
 }
 
@@ -53,7 +53,7 @@ enum One {
 }
 
 impl Lexer {
-    pub(crate) fn new(path: &Arc<PathBuf>, code: &Code, span_lo: u64) -> Self {
+    pub(crate) fn new(path: &Arc<PathBuf>, code: &Code, span_lo: SpanUnit) -> Self {
         Self {
             path: path.clone(),
             code: code.clone(),
@@ -134,7 +134,7 @@ impl LineLexer<'_> {
                     }
                     if let Some(&b) = self.code.get(self.pos) {
                         if b != b'\n' {
-                            let lo = self.span_lo + self.pos as u64;
+                            let lo = self.span_lo + self.pos as SpanUnit;
                             return Err(UnexpectedByte(b).spanned(lo, lo + 1));
                         }
                         self.pos += 1;
@@ -144,7 +144,7 @@ impl LineLexer<'_> {
             }
         }
         let mut start = self.pos;
-        let lo = self.span_lo + start as u64;
+        let lo = self.span_lo + start as SpanUnit;
         self.pos += 1;
         'punctuation: {
             let t = match b {
@@ -175,8 +175,8 @@ impl LineLexer<'_> {
             };
         }
         if start == self.pos {
-            let lo = self.span_lo + self.pos as u64;
-            return Err(UnexpectedByte(b).spanned(lo, lo + 1));
+            let lo = self.span_lo.saturating_add(self.pos as SpanUnit);
+            return Err(UnexpectedByte(b).spanned(lo, lo.saturating_add(1)));
         }
         let end = self.pos;
         let value = self.interner.intern(&self.code.slice(start..end));
@@ -184,7 +184,7 @@ impl LineLexer<'_> {
             true => Token::GroupName(value),
             false => Token::Ident(value),
         };
-        let hi = self.span_lo + self.pos as u64;
+        let hi = self.span_lo.saturating_add(self.pos as SpanUnit);
         Ok(One::Token(token.spanned(lo, hi)))
     }
 }

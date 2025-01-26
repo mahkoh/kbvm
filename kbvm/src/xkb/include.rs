@@ -14,7 +14,7 @@ use {
             },
             interner::{Interned, Interner},
             kccgst::MergeMode,
-            span::{Span, SpanExt, Spanned},
+            span::{Span, SpanExt, SpanUnit, Spanned},
         },
     },
     kbvm_proc::CloneWithDelta,
@@ -38,7 +38,7 @@ pub(crate) struct IncludeIter<'a> {
     interner: &'a mut Interner,
     s: CodeSlice<'static>,
     pos: usize,
-    span_lo: u64,
+    span_lo: SpanUnit,
     first: bool,
 }
 
@@ -124,11 +124,11 @@ struct Capture<'a> {
 
 fn capture<'a>(
     slice: &'a CodeSlice<'static>,
-    lo: u64,
+    lo: SpanUnit,
     mut pos: usize,
 ) -> Result<Capture<'a>, Spanned<ParseIncludeError>> {
     let mut mm = None;
-    let mm_lo = lo + pos as u64;
+    let mm_lo = lo + pos as SpanUnit;
     match slice[pos] {
         b'|' => {
             mm = Some(MergeMode::Augment.spanned(mm_lo, mm_lo + 1));
@@ -142,8 +142,8 @@ fn capture<'a>(
     };
     if matches!(slice.get(pos), None | Some(b'(' | b'|' | b'+' | b':')) {
         return Err(missing_file_name(Span {
-            lo: lo + pos as u64,
-            hi: lo + pos as u64 + 1,
+            lo: lo + pos as SpanUnit,
+            hi: lo + pos as SpanUnit + 1,
         }));
     }
     let file_start = pos;
@@ -159,7 +159,10 @@ fn capture<'a>(
         let map_end = loop {
             match slice.get(pos) {
                 None => {
-                    return Err(unterminated_map_name(lo + pos as u64, lo + pos as u64 + 1));
+                    return Err(unterminated_map_name(
+                        lo + pos as SpanUnit,
+                        lo + pos as SpanUnit + 1,
+                    ));
                 }
                 Some(b')') => break pos,
                 _ => pos += 1,
@@ -169,7 +172,7 @@ fn capture<'a>(
         map = Some(
             slice
                 .slice(map_start..map_end)
-                .spanned(lo + map_start as u64, lo + map_end as u64),
+                .spanned(lo + map_start as SpanUnit, lo + map_end as SpanUnit),
         );
     }
     let mut group = None;
@@ -179,8 +182,8 @@ fn capture<'a>(
         if !matches!(slice.get(pos), Some(b'0'..=b'9')) {
             return Err(invalid_group(
                 &slice.slice(group_start..group_start + 1),
-                lo + pos as u64,
-                lo + pos as u64 + 1,
+                lo + pos as SpanUnit,
+                lo + pos as SpanUnit + 1,
             ));
         }
         pos += 1;
@@ -191,14 +194,14 @@ fn capture<'a>(
         group = Some(
             slice
                 .slice(group_start..group_end)
-                .spanned(lo + group_start as u64, lo + group_end as u64),
+                .spanned(lo + group_start as SpanUnit, lo + group_end as SpanUnit),
         );
     }
     Ok(Capture {
         mm,
         file: slice
             .slice(file_start..file_end)
-            .spanned(lo + file_start as u64, lo + file_end as u64),
+            .spanned(lo + file_start as SpanUnit, lo + file_end as SpanUnit),
         map,
         group,
         pos,

@@ -1,7 +1,13 @@
 use {
     crate::{cli::CompileArgs, utils::read_path},
     clap::{Args, ValueHint},
+    error_reporter::Report,
     kbvm::xkb::{diagnostic::WriteToLog, Context},
+    raw_stdio::raw_stdout,
+    std::{
+        fmt::Display,
+        io::{BufWriter, Write},
+    },
 };
 
 #[derive(Args, Debug, Default)]
@@ -24,11 +30,19 @@ pub fn main(args: CompileXkbArgs) {
     let expanded = context.keymap_from_bytes(WriteToLog, Some(path.as_ref()), &source);
     match expanded {
         Ok(map) => {
-            println!("{}", map.format().multiple_actions_per_level(true));
+            format_keymap(map.format().multiple_actions_per_level(true));
         }
         Err(_) => {
             log::error!("could not compile keymap");
             std::process::exit(1);
         }
+    }
+}
+
+pub(crate) fn format_keymap(map: impl Display) {
+    let mut stdout = BufWriter::new(raw_stdout());
+    let res = writeln!(stdout, "{}", map);
+    if let Err(e) = res {
+        log::error!("could not format keymap: {}", Report::new(e));
     }
 }

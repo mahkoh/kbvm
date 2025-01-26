@@ -1,3 +1,5 @@
+#![expect(clippy::type_complexity)]
+
 pub(crate) mod error;
 #[cfg(test)]
 mod tests;
@@ -35,7 +37,7 @@ use {
                 },
             },
             meaning::{Meaning, MeaningCache},
-            span::{Span, SpanExt, SpanResult1, Spanned},
+            span::{Span, SpanExt, SpanResult1, SpanUnit, Spanned},
         },
         Keycode,
     },
@@ -54,7 +56,7 @@ struct Parser<'a, 'b, 'c> {
     interner: &'a Interner,
     meaning_cache: &'a mut MeaningCache,
     pos: usize,
-    diagnostic_delta: u64,
+    diagnostic_delta: SpanUnit,
     expr_depth: usize,
     remaining_runtime: &'a mut u64,
 }
@@ -150,7 +152,7 @@ pub(crate) fn parse_item(
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
     tokens: &[Spanned<Token>],
-    diagnostic_delta: u64,
+    diagnostic_delta: SpanUnit,
     remaining_runtime: &mut u64,
 ) -> Result<Spanned<Item>, Spanned<ParserError>> {
     Parser {
@@ -467,7 +469,7 @@ impl Parser<'_, '_, '_> {
     fn parse_config_item<T: Debug, U>(
         &mut self,
         e: &impl ParseDeclExpectation,
-        lo: u64,
+        lo: SpanUnit,
         f: impl FnMut(&mut Self) -> Result<Spanned<Decl<T>>, Spanned<ParserError>>,
         g: impl FnOnce(Option<Spanned<Interned>>, Decls<T>) -> U,
     ) -> Result<Spanned<U>, Spanned<ParserError>> {
@@ -565,12 +567,14 @@ impl Parser<'_, '_, '_> {
             });
             self.pos += 1;
         }
-        Ok(Flags { flags })
+        Ok(Flags {
+            flags: flags.into_boxed_slice(),
+        })
     }
 
     fn parse_interpret_decl(
         &mut self,
-        lo: u64,
+        lo: SpanUnit,
     ) -> Result<Spanned<InterpretDecl>, Spanned<ParserError>> {
         let match_ = self.parse_interpret_match()?;
         let obrace = self.consume_token(Obrace)?;
@@ -606,7 +610,7 @@ impl Parser<'_, '_, '_> {
 
     fn parse_key_alias_decl(
         &mut self,
-        lo: u64,
+        lo: SpanUnit,
     ) -> Result<Spanned<KeyAliasDecl>, Spanned<ParserError>> {
         let name = self.parse_keyname()?;
         self.consume_token(punctuation![=])?;
@@ -618,7 +622,7 @@ impl Parser<'_, '_, '_> {
 
     fn parse_key_type_decl(
         &mut self,
-        lo: u64,
+        lo: SpanUnit,
     ) -> Result<Spanned<KeyTypeDecl>, Spanned<ParserError>> {
         let name = self.parse_string()?;
         let obrace = self.consume_token(Obrace)?;
@@ -638,7 +642,7 @@ impl Parser<'_, '_, '_> {
 
     fn parse_key_symbols_decl(
         &mut self,
-        lo: u64,
+        lo: SpanUnit,
     ) -> Result<Spanned<KeySymbolsDecl>, Spanned<ParserError>> {
         let key = self.parse_keyname()?;
         let obrace = self.consume_token(Obrace)?;
@@ -651,7 +655,10 @@ impl Parser<'_, '_, '_> {
         Ok(decl.spanned(lo, hi))
     }
 
-    fn parse_mod_map_decl(&mut self, lo: u64) -> Result<Spanned<ModMapDecl>, Spanned<ParserError>> {
+    fn parse_mod_map_decl(
+        &mut self,
+        lo: SpanUnit,
+    ) -> Result<Spanned<ModMapDecl>, Spanned<ParserError>> {
         let modifier = self.parse_ident()?;
         let obrace = self.consume_token(Obrace)?;
         let keys = self.parse_expr_list(obrace.lo)?;
@@ -665,16 +672,16 @@ impl Parser<'_, '_, '_> {
 
     fn parse_expr_list(
         &mut self,
-        lo: u64,
-    ) -> Result<Spanned<Vec<Spanned<Expr>>>, Spanned<ParserError>> {
+        lo: SpanUnit,
+    ) -> Result<Spanned<Box<[Spanned<Expr>]>>, Spanned<ParserError>> {
         parse_inline_list!(self, lo, Cbrace, EXPR_TOKENS, |slf| slf
             .parse_expr(EXPR_TOKENS))
     }
 
     fn parse_var_decl_or_expr_list(
         &mut self,
-        lo: u64,
-    ) -> Result<Spanned<Vec<Spanned<VarOrExpr>>>, Spanned<ParserError>> {
+        lo: SpanUnit,
+    ) -> Result<Spanned<Box<[Spanned<VarOrExpr>]>>, Spanned<ParserError>> {
         parse_inline_list!(self, lo, Cbrace, EXPR_TOKENS, |slf| slf
             .parse_var_decl_or_expr())
     }
@@ -711,7 +718,7 @@ impl Parser<'_, '_, '_> {
 
     fn parse_group_compat_decl(
         &mut self,
-        lo: u64,
+        lo: SpanUnit,
     ) -> Result<Spanned<GroupCompatDecl>, Spanned<ParserError>> {
         let (group_name, group) = self.parse_u32()?;
         self.consume_token(punctuation![=])?;
@@ -727,7 +734,7 @@ impl Parser<'_, '_, '_> {
 
     fn parse_indicator_map_decl(
         &mut self,
-        lo: u64,
+        lo: SpanUnit,
     ) -> Result<Spanned<IndicatorMapDecl>, Spanned<ParserError>> {
         let name = self.parse_string()?;
         let obrace = self.consume_token(Obrace)?;
@@ -748,7 +755,7 @@ impl Parser<'_, '_, '_> {
     fn parse_indicator_name_decl(
         &mut self,
         virt: Option<Span>,
-        lo: u64,
+        lo: SpanUnit,
     ) -> Result<Spanned<IndicatorNameDecl>, Spanned<ParserError>> {
         if virt.is_some() {
             let indicator = self.parse_ident()?;
@@ -776,7 +783,10 @@ impl Parser<'_, '_, '_> {
         Ok(decl.spanned(lo, hi))
     }
 
-    fn parse_shape_decl(&mut self, lo: u64) -> Result<Spanned<ShapeDecl>, Spanned<ParserError>> {
+    fn parse_shape_decl(
+        &mut self,
+        lo: SpanUnit,
+    ) -> Result<Spanned<ShapeDecl>, Spanned<ParserError>> {
         let name = self.parse_string()?;
         let ob = self.consume_token(Obrace)?;
         const EXPECTED: &[Expected] = &[
@@ -797,8 +807,8 @@ impl Parser<'_, '_, '_> {
 
     fn parse_coord_list(
         &mut self,
-        lo: u64,
-    ) -> Result<Spanned<Vec<Spanned<Coord>>>, Spanned<ParserError>> {
+        lo: SpanUnit,
+    ) -> Result<Spanned<Box<[Spanned<Coord>]>>, Spanned<ParserError>> {
         parse_inline_list!(
             self,
             lo,
@@ -859,7 +869,7 @@ impl Parser<'_, '_, '_> {
 
     fn parse_section_decl(
         &mut self,
-        lo: u64,
+        lo: SpanUnit,
     ) -> Result<Spanned<SectionDecl>, Spanned<ParserError>> {
         let name = self.parse_string()?;
         let obrace = self.consume_token(Obrace)?;
@@ -898,7 +908,7 @@ impl Parser<'_, '_, '_> {
         }
     }
 
-    fn parse_row_decl(&mut self, lo: u64) -> Result<Spanned<RowBody>, Spanned<ParserError>> {
+    fn parse_row_decl(&mut self, lo: SpanUnit) -> Result<Spanned<RowBody>, Spanned<ParserError>> {
         let obrace = self.consume_token(Obrace)?;
         let items =
             self.parse_item_list(obrace.lo, Cbrace, &[Expected::Punctuation(Cbrace)], |slf| {
@@ -918,7 +928,7 @@ impl Parser<'_, '_, '_> {
         }
     }
 
-    fn parse_keys(&mut self, lo: u64) -> Result<Spanned<Keys>, Spanned<ParserError>> {
+    fn parse_keys(&mut self, lo: SpanUnit) -> Result<Spanned<Keys>, Spanned<ParserError>> {
         let obrace = self.consume_token(Obrace)?;
         let keys =
             parse_inline_list!(self, obrace.lo, Cbrace, KEY_EXPECTED, |slf| slf.parse_key())?;
@@ -942,7 +952,7 @@ impl Parser<'_, '_, '_> {
 
     fn parse_overlay_decl(
         &mut self,
-        lo: u64,
+        lo: SpanUnit,
     ) -> Result<Spanned<OverlayDecl>, Spanned<ParserError>> {
         let name = self.parse_string()?;
         let obrace = self.consume_token(Obrace)?;
@@ -1046,11 +1056,11 @@ impl Parser<'_, '_, '_> {
 
     fn parse_item_list<E: Debug>(
         &mut self,
-        lo: u64,
+        lo: SpanUnit,
         terminator: Punctuation,
         expected: &'static [Expected],
         mut f: impl FnMut(&mut Self) -> Result<Spanned<E>, Spanned<ParserError>>,
-    ) -> Result<Spanned<Vec<Spanned<E>>>, Spanned<ParserError>> {
+    ) -> Result<Spanned<Box<[Spanned<E>]>>, Spanned<ParserError>> {
         let mut res = vec![];
         loop {
             if self.peek(expected)?.val == Token::Punctuation(terminator) {
@@ -1085,17 +1095,17 @@ impl Parser<'_, '_, '_> {
                 .push(diag.map, err.val.diagnostic_kind(), err);
         }
         let hi = self.consume_token(terminator)?.hi;
-        Ok(res.spanned(lo, hi))
+        Ok(res.into_boxed_slice().spanned(lo, hi))
     }
 
     fn parse_inline_list<T>(
         &mut self,
-        lo: u64,
+        lo: SpanUnit,
         terminator: Punctuation,
         expected: &'static [Expected],
         terminator_plus_comma: &'static [Expected],
         mut f: impl FnMut(&mut Self) -> Result<Spanned<T>, Spanned<ParserError>>,
-    ) -> Result<Spanned<Vec<Spanned<T>>>, Spanned<ParserError>> {
+    ) -> Result<Spanned<Box<[Spanned<T>]>>, Spanned<ParserError>> {
         let mut res = vec![];
         let mut consume_comma = false;
         loop {
@@ -1122,7 +1132,7 @@ impl Parser<'_, '_, '_> {
             consume_comma = true;
         }
         let hi = self.consume_token(terminator)?.hi;
-        Ok(res.spanned(lo, hi))
+        Ok(res.into_boxed_slice().spanned(lo, hi))
     }
 
     fn parse_string(&mut self) -> Result<Spanned<Interned>, Spanned<ParserError>> {
@@ -1141,7 +1151,7 @@ impl Parser<'_, '_, '_> {
         }
     }
 
-    fn parse_vmod_decl(&mut self, lo: u64) -> Result<Spanned<VModDecl>, Spanned<ParserError>> {
+    fn parse_vmod_decl(&mut self, lo: SpanUnit) -> Result<Spanned<VModDecl>, Spanned<ParserError>> {
         let defs = parse_inline_list!(self, lo, punctuation![;], &[Expected::AnyIdent], |slf| {
             let name = slf.parse_ident()?;
             let mut span = name.span;
@@ -1277,7 +1287,13 @@ impl Parser<'_, '_, '_> {
             span.hi = last.span.hi;
             components.push(last.val);
         }
-        Ok(Path { components }.spanned2(span))
+        let path = 'path: {
+            if components.len() == 1 && components[0].index.is_none() {
+                break 'path Path::One(components[0].ident.val);
+            }
+            Path::Any(components.into_boxed_slice())
+        };
+        Ok(path.spanned2(span))
     }
 
     fn parse_path_component(
@@ -1293,10 +1309,10 @@ impl Parser<'_, '_, '_> {
         if let Some(t) = self.try_peek() {
             if t.val == Obracket {
                 self.pos += 1;
-                index = Some(PathIndex {
+                index = Some(Box::new(PathIndex {
                     obracket: t,
                     index: self.parse_expr(EXPR_TOKENS)?,
-                });
+                }));
                 span.hi = self.consume_token(Cbracket)?.hi;
             }
         }
@@ -1311,7 +1327,9 @@ impl Parser<'_, '_, '_> {
         }
     }
 
-    fn parse_call_args(&mut self) -> Result<Spanned<Vec<Spanned<CallArg>>>, Spanned<ParserError>> {
+    fn parse_call_args(
+        &mut self,
+    ) -> Result<Spanned<Box<[Spanned<CallArg>]>>, Spanned<ParserError>> {
         let lo = self.consume_token(Oparen)?.lo;
         parse_inline_list!(self, lo, Cparen, EXPR_TOKENS, |slf| {
             if let Some(t) = slf.try_peek() {
@@ -1450,7 +1468,7 @@ impl Parser<'_, '_, '_> {
                             path,
                             args: args.val,
                         };
-                        return Ok(Expr::Call(call).spanned2(span));
+                        return Ok(Expr::Call(Box::new(call)).spanned2(span));
                     }
                 }
                 Ok(Expr::Path(path.val).spanned2(path.span))

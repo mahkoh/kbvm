@@ -883,15 +883,20 @@ impl Format for Path {
     where
         W: Write,
     {
-        for (idx, component) in self.components.iter().enumerate() {
-            if idx > 0 {
-                f.write_all(".")?;
-            }
-            f.write_interned(component.ident.val)?;
-            if let Some(idx) = &component.index {
-                f.write_all("[")?;
-                idx.index.val.format(f)?;
-                f.write_all("]")?;
+        match self {
+            Path::One(i) => f.write_interned(*i)?,
+            Path::Any(components) => {
+                for (idx, component) in components.iter().enumerate() {
+                    if idx > 0 {
+                        f.write_all(".")?;
+                    }
+                    f.write_interned(component.ident.val)?;
+                    if let Some(idx) = &component.index {
+                        f.write_all("[")?;
+                        idx.index.val.format(f)?;
+                        f.write_all("]")?;
+                    }
+                }
             }
         }
         Ok(())

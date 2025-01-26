@@ -2,7 +2,7 @@ use {
     crate::xkb::{
         code_slice::CodeSlice,
         diagnostic::DiagnosticKind,
-        span::{Span, SpanExt, Spanned},
+        span::{Span, SpanExt, SpanUnit, Spanned},
     },
     bstr::ByteSlice,
     thiserror::Error,
@@ -35,7 +35,7 @@ pub(super) fn missing_file_name(span: Span) -> Spanned<ParseIncludeError> {
     ParseIncludeError::MissingFileName.spanned2(span)
 }
 
-pub(super) fn unterminated_map_name(lo: u64, hi: u64) -> Spanned<ParseIncludeError> {
+pub(super) fn unterminated_map_name(lo: SpanUnit, hi: SpanUnit) -> Spanned<ParseIncludeError> {
     ParseIncludeError::UnterminatedMapName.spanned(lo, hi)
 }
 
@@ -43,6 +43,10 @@ pub(super) fn missing_merge_mode(span: Span) -> Spanned<ParseIncludeError> {
     ParseIncludeError::MissingMergeMode.spanned2(span)
 }
 
-pub(super) fn invalid_group(s: &CodeSlice<'_>, lo: u64, hi: u64) -> Spanned<ParseIncludeError> {
+pub(super) fn invalid_group(
+    s: &CodeSlice<'_>,
+    lo: SpanUnit,
+    hi: SpanUnit,
+) -> Spanned<ParseIncludeError> {
     ParseIncludeError::InvalidGroupIndex(s.to_owned()).spanned(lo, hi)
 }

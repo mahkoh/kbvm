@@ -28,7 +28,7 @@ use {
                     RuleKey,
                 },
             },
-            span::{Span, SpanExt, Spanned},
+            span::{Span, SpanExt, SpanUnit, Spanned},
         },
     },
     hashbrown::{hash_set::Entry, HashMap, HashSet},
@@ -474,7 +474,7 @@ fn expand(
                 write!(stash.val, "{}", idx + 1).unwrap();
                 flush_once(mm, stash.as_ref().map(|s| &***s));
                 if mm.is_none() {
-                    let lo = stash.span.lo + len as u64;
+                    let lo = stash.span.lo + len as SpanUnit;
                     mm = Some(MergeMode::Override.spanned(lo, lo + 3));
                 }
             }
@@ -499,8 +499,8 @@ fn expand(
                         }
                     }
                 }
-                let lo = value.span.lo + $start as u64;
-                let hi = value.span.lo + $end as u64;
+                let lo = value.span.lo + $start as SpanUnit;
+                let hi = value.span.lo + $end as SpanUnit;
                 flush(map, includes, interner, mm, stash.spanned(lo, hi));
             }
         }};
@@ -515,7 +515,7 @@ fn expand(
                 true => MergeMode::Override,
                 false => MergeMode::Augment,
             };
-            let lo = value.span.lo + offset as u64;
+            let lo = value.span.lo + offset as SpanUnit;
             mm = Some(mode.spanned(lo, lo + 1));
             offset += 1;
             start = offset;
@@ -569,8 +569,8 @@ fn expand(
         let encoding = match encoding {
             Some(e) => e,
             _ => {
-                let lo = value.span.lo + encoding_start as u64;
-                let hi = value.span.lo + encoding_end as u64;
+                let lo = value.span.lo + encoding_start as SpanUnit;
+                let hi = value.span.lo + encoding_end as SpanUnit;
                 diagnostics.push(
                     map,
                     DiagnosticKind::InvalidPercentEncoding,
@@ -662,7 +662,7 @@ fn parse_percent_encoding(
     bytes: &[u8],
     offset: &mut usize,
     last_was_colon: bool,
-    span_lo: u64,
+    span_lo: SpanUnit,
 ) -> Option<PercentEncoding> {
     let start = *offset;
     find_percent_encoding_range(bytes, offset)?;
@@ -680,7 +680,7 @@ fn parse_percent_encoding(
             true => MergeMode::Augment,
             false => MergeMode::Override,
         };
-        let hi = span_lo + *offset as u64;
+        let hi = span_lo + *offset as SpanUnit;
         merge_mode = Some(mm.spanned(hi - 1, hi));
         bytes = &bytes[1..];
     } else if matches!(b, b'-' | b'_') {

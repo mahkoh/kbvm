@@ -1,5 +1,5 @@
 use {
-    crate::cli::CompileArgs,
+    crate::{cli::CompileArgs, compile_xkb::format_keymap},
     clap::Args,
     isnt::std_1::vec::IsntVecExt,
     kbvm::xkb::{diagnostic::WriteToLog, rmlvo::Group, Context},
@@ -69,5 +69,5 @@ pub fn main(args: ExpandRmlvoArgs) {
         groups.as_deref(),
         options.as_deref(),
     );
-    println!("{:#}", expanded.format());
+    format_keymap(expanded.format());
 }
