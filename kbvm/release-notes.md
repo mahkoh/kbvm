@@ -1,5 +1,9 @@
 # Unreleased
 
+# 0.1.2 (2025-01-26)
+
+- Reduced CPU and memory usage when parsing XKB maps.
+
 # 0.1.1 (2025-01-23)
 
 - Levels with multiple actions are no longer formatted by default. For example,

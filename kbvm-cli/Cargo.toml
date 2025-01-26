@@ -1,6 +1,6 @@
 [package]
 name = "kbvm-cli"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2021"
 repository = "https://github.com/mahkoh/kbvm"
 license = "GPL-3.0-only"
@@ -14,7 +14,7 @@ name = "kbvm"
 path = "src/main.rs"
 
 [dependencies]
-kbvm = { version = "0.1.1", path = "../kbvm", features = ["compose"] }
+kbvm = { version = "0.1.2", path = "../kbvm", features = ["compose"] }
 clap = { version = "4.5.26", features = ["derive"] }
 clap_complete = "4.5.42"
 wayland-client = "0.31.7"
