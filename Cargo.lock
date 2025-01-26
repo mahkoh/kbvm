@@ -587,6 +587,7 @@ dependencies = [
  "raw-stdio",
  "serde",
  "serde_json",
+ "uapi",
  "utf8-console",
  "wayland-client",
  "wayland-protocols",
