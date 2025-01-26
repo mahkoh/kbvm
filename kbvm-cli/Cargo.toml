@@ -32,3 +32,6 @@ isnt = "0.1.0"
 error_reporter = "1.0.0"
 raw-stdio = "0.1.0"
 utf8-console = "0.1.0"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+uapi = "0.2.13"

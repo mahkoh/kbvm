@@ -31,6 +31,8 @@ use {
             wl_keyboard::{self, KeyState, WlKeyboard},
             wl_registry::{self, WlRegistry},
             wl_seat::{self, WlSeat},
+            wl_shm::WlShm,
+            wl_shm_pool::WlShmPool,
             wl_surface::WlSurface,
         },
         Connection, Dispatch, QueueHandle, WEnum,
@@ -218,6 +220,7 @@ struct Window {
 #[derive(Default)]
 struct Registry {
     wl_compositor: Option<WlCompositor>,
+    wl_shm: Option<WlShm>,
     wl_seats: HashMap<u32, RawSeat>,
     wp_viewporter: Option<WpViewporter>,
     xdg_wm_base: Option<XdgWmBase>,
@@ -260,6 +263,8 @@ delegate_noop!(State: ignore WpViewporter);
 delegate_noop!(State: ignore WlSurface);
 delegate_noop!(State: ignore WlBuffer);
 delegate_noop!(State: ignore WpViewport);
+delegate_noop!(State: ignore WlShm);
+delegate_noop!(State: ignore WlShmPool);
 
 impl State {
     fn handle_seat_capabilities(&mut self, name: u32) {
@@ -326,6 +331,7 @@ impl Dispatch<WlRegistry, ()> for State {
                 "wl_compositor" => {
                     state.registry.wl_compositor = Some(proxy.bind(name, version, qh, ()))
                 }
+                "wl_shm" => state.registry.wl_shm = Some(proxy.bind(name, version, qh, ())),
                 "xdg_wm_base" => {
                     state.registry.xdg_wm_base = Some(proxy.bind(name, version, qh, ()))
                 }
@@ -487,7 +493,6 @@ impl Dispatch<WlCallback, InitialRoundtrip> for State {
                 check_singleton!(xdg_wm_base);
                 check_singleton!(wl_compositor);
                 check_singleton!(wp_viewporter);
-                check_singleton!(wp_single_pixel_buffer_manager_v1);
                 let surface = r.wl_compositor.as_ref().unwrap().create_surface(qh, ());
                 let viewport = r
                     .wp_viewporter
@@ -505,12 +510,20 @@ impl Dispatch<WlCallback, InitialRoundtrip> for State {
                     decoration.set_mode(zxdg_toplevel_decoration_v1::Mode::ServerSide);
                 }
                 surface.commit();
-                let buffer = state
-                    .registry
-                    .wp_single_pixel_buffer_manager_v1
-                    .as_ref()
-                    .unwrap()
-                    .create_u32_rgba_buffer(0, 0, 0, !0, qh, ());
+                #[allow(unused_labels)]
+                let buffer = 'buffer: {
+                    #[cfg(target_os = "linux")]
+                    if state.registry.wp_single_pixel_buffer_manager_v1.is_none() {
+                        break 'buffer create_shm_buffer(state, qh);
+                    }
+                    check_singleton!(wp_single_pixel_buffer_manager_v1);
+                    state
+                        .registry
+                        .wp_single_pixel_buffer_manager_v1
+                        .as_ref()
+                        .unwrap()
+                        .create_u32_rgba_buffer(0, 0, 0, !0, qh, ())
+                };
                 state.window = Some(Window {
                     surface,
                     buffer,
@@ -705,4 +718,33 @@ where
             WEnum::Unknown(f) => T::from_bits_retain(f),
         }
     }
+}
+
+#[cfg(target_os = "linux")]
+fn create_shm_buffer(state: &State, qh: &QueueHandle<State>) -> WlBuffer {
+    use {
+        std::{io::Write, os::fd::AsFd},
+        uapi::c,
+        wayland_client::protocol::wl_shm::Format,
+    };
+    let mem = uapi::memfd_create("buffer", c::MFD_CLOEXEC | c::MFD_ALLOW_SEALING);
+    let mut mem = match mem {
+        Ok(m) => m,
+        Err(e) => {
+            log::error!("could not create memfd: {}", Report::new(e));
+            std::process::exit(1);
+        }
+    };
+    if let Err(e) = mem.write_all(&[0, 0, 0, !0]) {
+        log::error!("could not write to memfd: {}", e);
+        std::process::exit(1);
+    }
+    let _ = uapi::fcntl_add_seals(mem.raw(), c::F_SEAL_SHRINK);
+    let pool = state
+        .registry
+        .wl_shm
+        .as_ref()
+        .unwrap()
+        .create_pool(mem.as_fd(), 4, qh, ());
+    pool.create_buffer(0, 1, 1, 4, Format::Xrgb8888, qh, ())
 }
