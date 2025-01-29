@@ -8,6 +8,7 @@ description = "An implementation of the XKB specification"
 keywords = ["parser", "protocol", "linux", "xkb", "wayland"]
 categories = ["api-bindings", "compilers", "parser-implementations"]
 rust-version = "1.83.0"
+exclude = ["*.xkb", "*.xml"]
 
 [features]
 default = ["log"]
