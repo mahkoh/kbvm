@@ -37,7 +37,10 @@ mod tests;
 #[expect(unused_imports)]
 use crate::{builder::Builder, Components};
 use {
-    crate::{builder::Redirect, group::GroupIndex, GroupType, Keycode, Keysym, ModifierMask},
+    crate::{
+        builder::Redirect, group::GroupIndex, key_storage::KeyStorage, GroupType, Keycode, Keysym,
+        ModifierMask,
+    },
     smallvec::SmallVec,
     std::fmt::{Debug, Formatter},
 };
@@ -229,7 +232,7 @@ use {
 pub struct LookupTable {
     pub(crate) ctrl: Option<ModifierMask>,
     pub(crate) caps: Option<ModifierMask>,
-    pub(crate) keys: Vec<Option<KeyGroups>>,
+    pub(crate) keys: KeyStorage<KeyGroups>,
 }
 
 #[derive(Default, Clone, Debug)]
@@ -464,7 +467,7 @@ impl LookupTable {
         let mut groups = &[][..];
         let mut syms = &[][..];
         let mut repeats = true;
-        if let Some(Some(key)) = self.keys.get(keycode.0 as usize) {
+        if let Some(key) = self.keys.get(keycode) {
             repeats = key.repeats;
             groups = &key.groups;
             if key.groups.len() > 0 {
@@ -502,7 +505,7 @@ impl LookupTable {
     /// groups in the keymap. In this case, the effective group is calculated using
     /// the [`Redirect`] setting of the key.
     pub fn effective_group(&self, group: GroupIndex, keycode: Keycode) -> Option<GroupIndex> {
-        if let Some(Some(key)) = self.keys.get(keycode.0 as usize) {
+        if let Some(key) = self.keys.get(keycode) {
             if key.groups.len() > 0 {
                 let group = key.redirect.apply(group, key.groups.len());
                 return Some(GroupIndex(group as u32));
@@ -513,7 +516,7 @@ impl LookupTable {
 
     /// Returns whether the key repeats.
     pub fn repeats(&self, keycode: Keycode) -> bool {
-        if let Some(Some(key)) = self.keys.get(keycode.0 as usize) {
+        if let Some(key) = self.keys.get(keycode) {
             return key.repeats;
         }
         true

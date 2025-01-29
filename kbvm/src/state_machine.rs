@@ -32,6 +32,7 @@ use {
         components::Components,
         controls::ControlsMask,
         group::{GroupDelta, GroupIndex},
+        key_storage::KeyStorage,
         modifier::{NUM_MODS, NUM_MODS_MASK},
         routine::{run, Flag, Lo, Register, Routine, StateEventHandler},
         GroupType, Keycode, ModifierMask,
@@ -71,7 +72,7 @@ pub struct StateMachine {
     pub(crate) num_groups: u32,
     pub(crate) num_globals: usize,
     // pub(crate) keys: HashMap<Keycode, KeyGroups>,
-    pub(crate) keys: Vec<Option<KeyGroups>>,
+    pub(crate) keys: KeyStorage<KeyGroups>,
     pub(crate) has_layer1: bool,
 }
 
@@ -277,7 +278,7 @@ impl StateEventHandler for Layer1Handler<'_> {
         let mut on_press = None;
         let mut on_release = None;
         let mut spill = 0;
-        if let Some(Some(key_groups)) = self.machine.keys.get(key.0 as usize) {
+        if let Some(key_groups) = self.machine.keys.get(key) {
             if key_groups.groups.is_not_empty() {
                 let group = key_groups.redirect.apply(group, key_groups.groups.len());
                 if let Some(key_group) = &key_groups.groups[group] {
@@ -800,7 +801,7 @@ impl StateMachine {
         let mut on_press = None;
         let mut on_release = None;
         let mut spill = 0;
-        if let Some(Some(key_groups)) = self.keys.get(key.0 as usize) {
+        if let Some(key_groups) = self.keys.get(key) {
             if let Some(routine) = &key_groups.routine {
                 on_press = Some(&routine.on_press);
                 on_release = Some(routine.on_release.clone());

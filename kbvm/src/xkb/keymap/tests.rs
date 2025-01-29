@@ -16,15 +16,16 @@ use crate::{
 
 #[test]
 fn from_lookup() {
-    let map = include_str!("map1.xkb");
-    let keymap = Context::default()
-        .keymap_from_bytes(WriteToStderr, None, map)
-        .unwrap();
-    let lookup = keymap.to_builder().build_lookup_table();
-    let out = lookup.to_xkb_keymap();
-    let str = format!("{:#}\n", out.format());
-    println!("{}", str);
-    assert_eq!(map, str);
+    for map in [include_str!("map1.xkb"), include_str!("map3.xkb")] {
+        let keymap = Context::default()
+            .keymap_from_bytes(WriteToStderr, None, map)
+            .unwrap();
+        let lookup = keymap.to_builder().build_lookup_table();
+        let out = lookup.to_xkb_keymap();
+        let str = format!("{:#}\n", out.format());
+        println!("{}", str);
+        assert_eq!(map, str);
+    }
 }
 
 #[test]
