@@ -1951,6 +1951,32 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     InvalidUnicodeCodepoint,
+    /// A keysym string does not contain only valid UTF-8.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ "\377" ]
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    KeysymStringNotUtf8,
+    /// An interpret statement contains multiple keysyms.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_compat {
+    ///     interpret "abcd" {
+    ///         repeat = false;
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    MultipleKeysymsInInterpret,
 }
 
 impl DiagnosticKind {

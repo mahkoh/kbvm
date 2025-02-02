@@ -1,0 +1,63 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 1;
+        <x> = 2;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+
+        type "FOUR_LEVEL" {
+            modifiers = Shift;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            level_name[Level3] = "AltGr";
+            level_name[Level4] = "Shift AltGr";
+            map[None] = Level1;
+            map[Shift] = Level2;
+        };
+
+        type "ONE_LEVEL" {
+            modifiers = None;
+            level_name[Level1] = "Any";
+            map[None] = Level1;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        modmap Mod1 { <a> };
+        modmap Mod1 { <x> };
+
+        key.repeat = true;
+
+        key <a> {
+            type[Group1] = "ONE_LEVEL",
+            type[Group2] = "ONE_LEVEL",
+            type[Group3] = "ONE_LEVEL",
+            type[Group4] = "FOUR_LEVEL",
+            type[Group5] = "FOUR_LEVEL",
+            type[Group6] = "ONE_LEVEL",
+            symbols[Group1] = [ { U65e5, U672c, U8a9e, kana_A } ],
+            symbols[Group2] = [ { a, U65e5, U672c, U8a9e, a, b } ],
+            symbols[Group3] = [ { a, b } ],
+            symbols[Group4] = [ a, NoSymbol, b ],
+            symbols[Group5] = [ a, NoSymbol, b ],
+            symbols[Group6] = [ { u, U308 } ]
+        };
+        key <x> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ x ]
+        };
+    };
+};
