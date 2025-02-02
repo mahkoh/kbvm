@@ -1,0 +1,49 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+        <c> = 3;
+        <d> = 4;
+        <e> = 5;
+        <f> = 6;
+        <g> = 7;
+    };
+    xkb_compat {
+        interpret "日" {
+            action = SetMods(mods = Mod1);
+        };
+        interpret "日x" {
+            action = SetMods(mods = Mod2);
+        };
+        interpret "yz" {
+            action = SetMods(mods = Mod3);
+        };
+        interpret "v" + Mod4 {
+            action = SetMods(mods = modmapmods);
+        };
+    };
+    xkb_symbols {
+        key <a> {
+            [ "日" ],
+        };
+        key <b> {
+            [ "日x" ],
+        };
+        key <c> {
+            [ "x" ],
+        };
+        key <d> {
+            [ "y" ],
+        };
+        key <e> {
+            [ "z" ],
+        };
+        key <f> {
+            [ "v" ],
+        };
+        key <g> {
+            [ "v" ],
+        };
+        modmap Mod4 { <g> };
+    };
+};
