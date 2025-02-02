@@ -5,11 +5,12 @@ use {
             Call, CallArg, Compat, CompatmapDecl, Component, CompositeMap, ConfigItem,
             ConfigItemType, Coord, Decl, Decls, DirectOrIncluded, DoodadDecl, DoodadType, Expr,
             Flags, Geometry, GeometryDecl, GroupCompatDecl, Include, Included, IndicatorMapDecl,
-            IndicatorNameDecl, InterpretDecl, InterpretMatch, Item, ItemType, Key, KeyAliasDecl,
-            KeyExprs, KeyNameDecl, KeySymbolsDecl, KeyTypeDecl, KeycodeDecl, Keycodes, Keys,
-            MergeMode, ModMapDecl, NamedParam, NestedConfigItem, Outline, OverlayDecl, Path,
-            RowBody, RowBodyItem, SectionDecl, SectionItem, ShapeDecl, ShapeDeclType, Symbols,
-            SymbolsDecl, Types, TypesDecl, VModDecl, VModDef, Var, VarDecl, VarOrExpr,
+            IndicatorNameDecl, InterpretDecl, InterpretMatch, InterpretSym, Item, ItemType, Key,
+            KeyAliasDecl, KeyExprs, KeyNameDecl, KeySymbolsDecl, KeyTypeDecl, KeycodeDecl,
+            Keycodes, Keys, MergeMode, ModMapDecl, NamedParam, NestedConfigItem, Outline,
+            OverlayDecl, Path, RowBody, RowBodyItem, SectionDecl, SectionItem, ShapeDecl,
+            ShapeDeclType, Symbols, SymbolsDecl, Types, TypesDecl, VModDecl, VModDef, Var, VarDecl,
+            VarOrExpr,
         },
     },
     std::io::{self, Write},
@@ -437,7 +438,10 @@ impl Format for InterpretMatch {
     where
         W: Write,
     {
-        f.write_interned(self.sym.val)?;
+        match self.sym.val {
+            InterpretSym::Ident(i) => f.write_interned(i)?,
+            InterpretSym::String(i) => f.write_string(i)?,
+        }
         if let Some(filter) = &self.filter {
             f.write_all(" + ")?;
             filter.val.format(f)?;

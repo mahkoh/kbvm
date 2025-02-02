@@ -200,8 +200,14 @@ pub(crate) struct InterpretDecl {
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct InterpretMatch {
-    pub(crate) sym: Spanned<Interned>,
+    pub(crate) sym: Spanned<InterpretSym>,
     pub(crate) filter: Option<Spanned<Expr>>,
+}
+
+#[derive(Debug, CloneWithDelta)]
+pub(crate) enum InterpretSym {
+    Ident(Interned),
+    String(Interned),
 }
 
 #[derive(Debug, CloneWithDelta)]

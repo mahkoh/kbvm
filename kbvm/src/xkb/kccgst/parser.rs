@@ -17,12 +17,12 @@ use {
                     Coord, CoordAssignment, Decl, Decls, DirectOrIncluded, DoodadDecl, DoodadType,
                     Expr, ExprAssignment, Flag, FlagWrapper, Flags, Geometry, GeometryDecl,
                     GroupCompatDecl, Include, IndicatorMapDecl, IndicatorNameDecl, InterpretDecl,
-                    InterpretMatch, Item, ItemType, Key, KeyAliasDecl, KeyExprs, KeyNameDecl,
-                    KeySymbolsDecl, KeyTypeDecl, KeycodeDecl, Keycodes, Keys, MergeMode,
-                    ModMapDecl, NamedParam, NestedConfigItem, Outline, OverlayDecl, OverlayItem,
-                    Path, PathComponent, PathIndex, RowBody, RowBodyItem, SectionDecl, SectionItem,
-                    ShapeDecl, ShapeDeclType, Symbols, SymbolsDecl, Types, TypesDecl, VModDecl,
-                    VModDef, Var, VarDecl, VarOrExpr,
+                    InterpretMatch, InterpretSym, Item, ItemType, Key, KeyAliasDecl, KeyExprs,
+                    KeyNameDecl, KeySymbolsDecl, KeyTypeDecl, KeycodeDecl, Keycodes, Keys,
+                    MergeMode, ModMapDecl, NamedParam, NestedConfigItem, Outline, OverlayDecl,
+                    OverlayItem, Path, PathComponent, PathIndex, RowBody, RowBodyItem, SectionDecl,
+                    SectionItem, ShapeDecl, ShapeDeclType, Symbols, SymbolsDecl, Types, TypesDecl,
+                    VModDecl, VModDef, Var, VarDecl, VarOrExpr,
                 },
                 parser::error::{
                     CompatmapDeclExpectation, Expected, GeometryDeclExpectation,
@@ -593,7 +593,14 @@ impl Parser<'_, '_, '_> {
     }
 
     fn parse_interpret_match(&mut self) -> Result<Spanned<InterpretMatch>, Spanned<ParserError>> {
-        let sym = self.parse_ident()?;
+        let expected = &[Expected::AnyIdent, Expected::String];
+        let token = self.next(expected)?;
+        let sym = match token.val {
+            Token::Ident(i) => InterpretSym::Ident(i),
+            Token::String(i) => InterpretSym::String(i),
+            _ => return Err(self.unexpected_token(expected, token)),
+        };
+        let sym = sym.spanned2(token.span);
         let mut span = sym.span;
         let mut filter = None;
         if let Some(t) = self.try_peek() {
