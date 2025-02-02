@@ -104,6 +104,7 @@ pub mod evdev;
 mod from_bytes;
 mod group;
 pub mod group_type;
+mod key_storage;
 mod keycode;
 pub mod keysym;
 pub mod lookup;

@@ -1,5 +1,7 @@
 # Unreleased
 
+- Reduce memory usage when keymap contains large keycodes.
+
 # 0.1.2 (2025-01-26)
 
 - Reduced CPU and memory usage when parsing XKB maps.

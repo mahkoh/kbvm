@@ -1,0 +1,13 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+        <XA> = 0xfffe;
+        <XB> = 0xffff;
+    };
+    xkb_symbols {
+        key <a> { [ RedirectKey(key = <XA> ) ] };
+        key <b> { [ RedirectKey(key = <XB> ) ] };
+        key <XA> { [ a ] };
+        key <XB> { [ b ] };
+    };
+};

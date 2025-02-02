@@ -125,11 +125,7 @@ impl LookupTable {
         let mut keys = Vec::with_capacity(self.keys.len());
         let mut key_types = HashMap::<_, Arc<KeyType>>::new();
         let mut mod_maps = vec![];
-        for (kc, kg) in self.keys.iter().enumerate() {
-            let Some(kg) = kg else {
-                continue;
-            };
-            let kc = crate::Keycode(kc as u32);
+        for (kc, kg) in &self.keys {
             max_keycode = max_keycode.max(kc.0);
             let name = Arc::new(kc.0.to_string());
             keycodes.push(Keycode {
