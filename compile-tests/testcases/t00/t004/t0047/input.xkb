@@ -5,6 +5,11 @@ xkb_keymap {
         <c> = 3;
         <d> = 4;
     };
+    xkb_types {
+        type "X" {
+            map[Shift] = Level30;
+        };
+    };
     xkb_compat {
         interpret A + NoneOf(Mod1+Mod2) {
             action = SetMods(mods = Mod1);
@@ -23,6 +28,7 @@ xkb_keymap {
         };
     };
     xkb_symbols {
+        key.type = "X";
         key <a> {
             [ A, B, C, D, E ],
         };

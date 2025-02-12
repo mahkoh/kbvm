@@ -14,10 +14,9 @@ xkb_keymap {
     xkb_types {
         virtual_modifiers Dummy;
 
-        type "ONE_LEVEL" {
+        type "X" {
             modifiers = None;
-            level_name[Level1] = "Any";
-            map[None] = Level1;
+            map[Shift] = Level30;
         };
     };
 
@@ -38,23 +37,23 @@ xkb_keymap {
         key.repeat = true;
 
         key <a> {
-            type[Group1] = "ONE_LEVEL",
+            type[Group1] = "X",
             symbols[Group1] = [ A, B, C, D, E ],
             actions[Group1] = [ NoAction(), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), NoAction(), NoAction() ]
         };
         key <b> {
             repeat = false,
-            type[Group1] = "ONE_LEVEL",
+            type[Group1] = "X",
             symbols[Group1] = [ A, B, C, D, E ],
             actions[Group1] = [ SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), NoAction(), NoAction(), NoAction() ]
         };
         key <c> {
-            type[Group1] = "ONE_LEVEL",
+            type[Group1] = "X",
             symbols[Group1] = [ A, B, C, D, E, F ],
             actions[Group1] = [ NoAction(), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), NoAction() ]
         };
         key <d> {
-            type[Group1] = "ONE_LEVEL",
+            type[Group1] = "X",
             symbols[Group1] = [ A, B, C, D, E, F, G, H ],
             actions[Group1] = [ NoAction(), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), SetMods(modifiers = Mod1), NoAction(), NoAction(), NoAction(), NoAction() ]
         };

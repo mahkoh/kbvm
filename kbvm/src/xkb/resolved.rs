@@ -91,6 +91,7 @@ pub(crate) struct ResolvedKeyType {
     pub(crate) map: IndexMap<ModifierMask, Spanned<Level>, DefaultHashBuilder>,
     pub(crate) preserved: IndexMap<ModifierMask, Spanned<ModifierMask>, DefaultHashBuilder>,
     pub(crate) names: HashMap<Level, Spanned<Interned>>,
+    pub(crate) num_levels: usize,
 }
 
 #[derive(Default, Debug)]
@@ -161,7 +162,7 @@ pub(crate) struct IndicatorMap {
 #[derive(Default, Clone, Debug)]
 pub(crate) struct SymbolsKey {
     pub(crate) groups: Vec<SymbolsKeyGroup>,
-    pub(crate) default_key_type: Option<Spanned<Interned>>,
+    pub(crate) default_key_type: Option<Spanned<KeyTypeRef>>,
     pub(crate) virtualmodifiers: Option<Spanned<ModifierMask>>,
     pub(crate) repeating: Option<Spanned<Option<bool>>>,
     pub(crate) groups_redirect: Option<Spanned<GroupsRedirect>>,
@@ -187,6 +188,7 @@ pub(crate) enum GroupsRedirect {
 #[derive(Default, Clone, Debug)]
 pub(crate) struct SymbolsKeyGroup {
     pub(crate) levels: Vec<SymbolsKeyLevel>,
+    pub(crate) reachable_levels: usize,
     pub(crate) key_type: Option<KeyTypeRef>,
     pub(crate) has_explicit_symbols: bool,
     pub(crate) has_explicit_actions: bool,
@@ -219,7 +221,7 @@ impl BuiltInKeytype {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Debug)]
 pub(crate) enum KeyTypeRef {
     BuiltIn(BuiltInKeytype),
     Named(Spanned<Interned>),

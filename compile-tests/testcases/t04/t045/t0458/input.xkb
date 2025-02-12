@@ -1,0 +1,17 @@
+xkb_keymap {
+    xkb_keycodes {
+        <1> = 1;
+    };
+    xkb_types {
+        type "X" {
+            map[Shift] = Level2;
+        };
+    };
+    xkb_symbols {
+        key <1> {
+            type = "X",
+            [ a, a, b ],
+        };
+        modmap Mod1 { b };
+    };
+};
