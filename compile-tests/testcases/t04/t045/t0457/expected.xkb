@@ -1,0 +1,166 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <1> = 1;
+        <2> = 2;
+        <3> = 3;
+        <4> = 4;
+        <5> = 5;
+        <6> = 6;
+        <7> = 7;
+        <8> = 8;
+    };
+
+    xkb_types {
+        virtual_modifiers LevelThree = Mod3;
+        virtual_modifiers NumLock = Mod2;
+
+        type "ALPHABETIC" {
+            modifiers = Shift+Lock;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Caps";
+            map[Shift] = Level2;
+            map[Lock] = Level2;
+        };
+
+        type "FOUR_LEVEL" {
+            modifiers = Shift+Mod3;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            level_name[Level3] = "AltGr";
+            level_name[Level4] = "Shift AltGr";
+            map[None] = Level1;
+            map[Shift] = Level2;
+            map[Mod3] = Level3;
+            map[Shift+Mod3] = Level4;
+        };
+
+        type "FOUR_LEVEL_ALPHABETIC" {
+            modifiers = Shift+Lock+Mod3;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            level_name[Level3] = "AltGr";
+            level_name[Level4] = "Shift AltGr";
+            map[None] = Level1;
+            map[Shift+Lock] = Level1;
+            map[Shift] = Level2;
+            map[Lock] = Level2;
+            map[Mod3] = Level3;
+            map[Shift+Lock+Mod3] = Level3;
+            map[Shift+Mod3] = Level4;
+            map[Lock+Mod3] = Level4;
+        };
+
+        type "FOUR_LEVEL_KEYPAD" {
+            modifiers = Shift+Mod2+Mod3;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift/Numlock";
+            level_name[Level3] = "AltGr";
+            level_name[Level4] = "Shift/Numlock AltGr";
+            map[None] = Level1;
+            map[Shift+Mod2] = Level1;
+            map[Shift] = Level2;
+            map[Mod2] = Level2;
+            map[Mod3] = Level3;
+            map[Shift+Mod2+Mod3] = Level3;
+            map[Shift+Mod3] = Level4;
+            map[Mod2+Mod3] = Level4;
+        };
+
+        type "FOUR_LEVEL_SEMIALPHABETIC" {
+            modifiers = Shift+Lock+Mod3;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            level_name[Level3] = "AltGr";
+            level_name[Level4] = "Shift AltGr";
+            map[None] = Level1;
+            map[Shift+Lock] = Level1;
+            map[Shift] = Level2;
+            map[Lock] = Level2;
+            map[Mod3] = Level3;
+            map[Lock+Mod3] = Level3;
+            preserve[Lock+Mod3] = Lock;
+            map[Shift+Mod3] = Level4;
+            map[Shift+Lock+Mod3] = Level4;
+            preserve[Shift+Lock+Mod3] = Lock;
+        };
+
+        type "KEYPAD" {
+            modifiers = Shift+Mod2;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Number";
+            map[None] = Level1;
+            map[Shift+Mod2] = Level1;
+            map[Mod2] = Level2;
+        };
+
+        type "ONE_LEVEL" {
+            modifiers = None;
+            level_name[Level1] = "Any";
+            map[None] = Level1;
+        };
+
+        type "TWO_LEVEL" {
+            modifiers = Shift;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            map[Shift] = Level2;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        modmap Mod1 { <1> };
+        modmap Mod1 { <2> };
+        modmap Mod1 { <3> };
+        modmap Mod1 { <4> };
+        modmap Mod1 { <5> };
+        modmap Mod1 { <6> };
+        modmap Mod1 { <7> };
+        modmap Mod1 { <8> };
+
+        key.repeat = true;
+
+        key <1> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ b ]
+        };
+        key <2> {
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ a, c ]
+        };
+        key <3> {
+            type[Group1] = "KEYPAD",
+            symbols[Group1] = [ a, d ]
+        };
+        key <4> {
+            type[Group1] = "ALPHABETIC",
+            symbols[Group1] = [ a, e ]
+        };
+        key <5> {
+            type[Group1] = "FOUR_LEVEL",
+            symbols[Group1] = [ a, a, a, f ]
+        };
+        key <6> {
+            type[Group1] = "FOUR_LEVEL_ALPHABETIC",
+            symbols[Group1] = [ a, a, a, g ]
+        };
+        key <7> {
+            type[Group1] = "FOUR_LEVEL_SEMIALPHABETIC",
+            symbols[Group1] = [ a, a, a, h ]
+        };
+        key <8> {
+            type[Group1] = "FOUR_LEVEL_KEYPAD",
+            symbols[Group1] = [ a, a, a, i ]
+        };
+    };
+};

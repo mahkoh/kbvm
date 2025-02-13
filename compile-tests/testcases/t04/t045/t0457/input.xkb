@@ -1,0 +1,50 @@
+xkb_keymap {
+    xkb_keycodes {
+        <1> = 1;
+        <2> = 2;
+        <3> = 3;
+        <4> = 4;
+        <5> = 5;
+        <6> = 6;
+        <7> = 7;
+        <8> = 8;
+    };
+    xkb_symbols {
+        virtual_modifiers NumLock = Mod2;
+        virtual_modifiers LevelThree = Mod3;
+
+        key <1> {
+            type = "ONE_LEVEL",
+            [ b ],
+        };
+        key <2> {
+            type = "TWO_LEVEL",
+            [ a, c ],
+        };
+        key <3> {
+            type = "KEYPAD",
+            [ a, d ],
+        };
+        key <4> {
+            type = "ALPHABETIC",
+            [ a, e ],
+        };
+        key <5> {
+            type = "FOUR_LEVEL",
+            [ a, a, a, f ],
+        };
+        key <6> {
+            type = "FOUR_LEVEL_ALPHABETIC",
+            [ a, a, a, g ],
+        };
+        key <7> {
+            type = "FOUR_LEVEL_SEMIALPHABETIC",
+            [ a, a, a, h ],
+        };
+        key <8> {
+            type = "FOUR_LEVEL_KEYPAD",
+            [ a, a, a, i ],
+        };
+        modmap Mod1 { b, c, d, e, f, g, h, i };
+    };
+};

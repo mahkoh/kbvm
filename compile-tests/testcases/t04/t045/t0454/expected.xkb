@@ -5,8 +5,8 @@ xkb_keymap {
 
         indicator 1 = "DUMMY";
 
-        <a> = 1;
-        <b> = 2;
+        <1> = 1;
+        <2> = 2;
     };
 
     xkb_types {
@@ -14,8 +14,14 @@ xkb_keymap {
 
         type "ONE_LEVEL" {
             modifiers = None;
-            level_name[Level1] = "Any";
-            map[None] = Level1;
+            map[Shift] = Level30;
+        };
+
+        type "TWO_LEVEL" {
+            modifiers = Shift;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            map[Shift] = Level2;
         };
     };
 
@@ -26,17 +32,17 @@ xkb_keymap {
     };
 
     xkb_symbols {
-        modmap Mod1 { <a> };
+        modmap Mod1 { <1> };
 
         key.repeat = true;
 
-        key <a> {
+        key <1> {
             type[Group1] = "ONE_LEVEL",
-            symbols[Group1] = [ { x, a } ]
+            symbols[Group1] = [ a, b ]
         };
-        key <b> {
-            type[Group1] = "ONE_LEVEL",
-            symbols[Group1] = [ a ]
+        key <2> {
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ a, b ]
         };
     };
 };

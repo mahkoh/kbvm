@@ -5,7 +5,7 @@ xkb_keymap {
 
         indicator 1 = "DUMMY";
 
-        <a> = 1;
+        <1> = 1;
     };
 
     xkb_types {
@@ -25,14 +25,14 @@ xkb_keymap {
     };
 
     xkb_symbols {
-        modmap Mod1 { <a> };
+        modmap Mod1 { <1> };
+        modmap Mod2 { x }; // <1>
 
         key.repeat = true;
 
-        key <a> {
-            repeat = false,
-            type[Group2] = "ONE_LEVEL",
-            symbols[Group2] = [ a ]
+        key <1> {
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ x ]
         };
     };
 };

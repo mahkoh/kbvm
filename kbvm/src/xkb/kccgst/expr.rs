@@ -20,11 +20,11 @@ use {
             modmap::Vmodmap,
             radio_group::RadioGroup,
             resolved::{
-                ActionDefaults, Filter, ModMapField, Predicate, ResolvedAction,
-                ResolvedActionAffect, ResolvedActionMods, ResolvedGroupLatch, ResolvedGroupLock,
-                ResolvedGroupSet, ResolvedKeyKind, ResolvedKeycodes, ResolvedLockControls,
-                ResolvedModsLatch, ResolvedModsLock, ResolvedModsSet, ResolvedNoAction,
-                ResolvedRedirectKey, ResolvedSetControls, ResolvedTypes,
+                ActionDefaults, BuiltInKeytype, Filter, KeyTypeRef, ModMapField, Predicate,
+                ResolvedAction, ResolvedActionAffect, ResolvedActionMods, ResolvedGroupLatch,
+                ResolvedGroupLock, ResolvedGroupSet, ResolvedKeyKind, ResolvedKeycodes,
+                ResolvedLockControls, ResolvedModsLatch, ResolvedModsLock, ResolvedModsSet,
+                ResolvedNoAction, ResolvedRedirectKey, ResolvedSetControls, ResolvedTypes,
             },
             span::{Span, SpanExt, SpanResult1, SpanResult2, Spanned},
             string_cooker::StringCooker,
@@ -1797,8 +1797,8 @@ pub(crate) fn eval_mod_map_field(
 }
 
 pub(crate) enum SymbolsField {
-    GroupKeyType(GroupIdx, Interned),
-    DefaultKeyType(Interned),
+    GroupKeyType(GroupIdx, KeyTypeRef),
+    DefaultKeyType(KeyTypeRef),
     Symbols((Option<GroupIdx>, GroupList<Keysym>)),
     Actions((Option<GroupIdx>, GroupList<ResolvedAction>)),
     Virtualmodifiers(ModifierMask),
@@ -1948,24 +1948,30 @@ pub(crate) fn eval_symbols_field(
                 cooker,
                 get_expr!(MissingKeyTypeValue),
             )?;
-            if !key_types.key_types.contains_key(&name.val) {
-                match meaning_cache.get_case_sensitive(interner, name.val) {
-                    Meaning::ONE_LEVEL
-                    | Meaning::ALPHABETIC
-                    | Meaning::KEYPAD
-                    | Meaning::TWO_LEVEL
-                    | Meaning::FOUR_LEVEL_ALPHABETIC
-                    | Meaning::FOUR_LEVEL_SEMIALPHABETIC
-                    | Meaning::FOUR_LEVEL_KEYPAD
-                    | Meaning::FOUR_LEVEL => {}
-                    _ => return Err(UnknownKeyType.spanned2(name.span)),
-                }
-            }
+            let ty = 'ty: {
+                let bi = match meaning_cache.get_case_sensitive(interner, name.val) {
+                    Meaning::ONE_LEVEL => BuiltInKeytype::OneLevel,
+                    Meaning::ALPHABETIC => BuiltInKeytype::Alphabetic,
+                    Meaning::KEYPAD => BuiltInKeytype::Keypad,
+                    Meaning::TWO_LEVEL => BuiltInKeytype::TwoLevel,
+                    Meaning::FOUR_LEVEL_ALPHABETIC => BuiltInKeytype::FourLevelAlphabetic,
+                    Meaning::FOUR_LEVEL_SEMIALPHABETIC => BuiltInKeytype::FourLevelSemialphabetic,
+                    Meaning::FOUR_LEVEL_KEYPAD => BuiltInKeytype::FourLevelKeypad,
+                    Meaning::FOUR_LEVEL => BuiltInKeytype::FourLevel,
+                    _ => {
+                        if !key_types.key_types.contains_key(&name.val) {
+                            return Err(UnknownKeyType.spanned2(name.span));
+                        }
+                        break 'ty KeyTypeRef::Named(name);
+                    }
+                };
+                KeyTypeRef::BuiltIn(bi)
+            };
             match try_get_idx!() {
-                None => SymbolsField::DefaultKeyType(name.val),
+                None => SymbolsField::DefaultKeyType(ty),
                 Some(idx) => {
                     let group = eval_group(interner, idx)?;
-                    SymbolsField::GroupKeyType(group.val, name.val)
+                    SymbolsField::GroupKeyType(group.val, ty)
                 }
             }
         }

@@ -1,0 +1,17 @@
+xkb_keymap {
+    xkb_keycodes {
+        <1> = 1;
+        <2> = 2;
+    };
+    xkb_symbols {
+        virtual_modifiers LevelThree = Mod2;
+
+        key <1> {
+            [ a, b, a, a, a ],
+        };
+        key <2> {
+            [ a, a, b ],
+        };
+        modmap Mod1 { b };
+    };
+};

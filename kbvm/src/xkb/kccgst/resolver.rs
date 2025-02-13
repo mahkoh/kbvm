@@ -42,7 +42,7 @@ use {
         },
         Keycode, Keysym, ModifierIndex, ModifierMask,
     },
-    hashbrown::{hash_map::Entry, DefaultHashBuilder},
+    hashbrown::{hash_map::Entry, DefaultHashBuilder, HashSet},
     indexmap::IndexMap,
     isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::ad_hoc_display,
@@ -85,6 +85,7 @@ pub(crate) fn resolve(
         data: Default::default(),
     }
     .resolve(item);
+    fix_resolved_types(&mut types);
 
     let mut compat = CompatResolver {
         r: &mut resolver,
@@ -103,7 +104,7 @@ pub(crate) fn resolve(
         data: Default::default(),
     }
     .resolve(item);
-    fix_resolved_symbols(&mut symbols);
+    fix_resolved_symbols(&mut resolver, &types, &mut symbols);
 
     fix_combined_properties(&mut mods, &mut types, &mut compat, &mut symbols);
 
@@ -202,6 +203,18 @@ fn fix_resolved_keycodes(r: &mut Resolver<'_, '_, '_>, keycodes: &mut ResolvedKe
     *keycodes = res;
 }
 
+fn fix_resolved_types(types: &mut ResolvedTypes) {
+    for ty in types.key_types.values_mut() {
+        ty.ty.num_levels = ty
+            .ty
+            .map
+            .values()
+            .map(|v| v.val.to_offset() + 1)
+            .max()
+            .unwrap_or(0);
+    }
+}
+
 fn fix_resolved_compat(
     resolver: &mut Resolver<'_, '_, '_>,
     keycodes: &mut ResolvedKeycodes,
@@ -261,16 +274,59 @@ fn fix_resolved_compat(
     });
 }
 
-fn fix_resolved_symbols(symbols: &mut ResolvedSymbols) {
+fn fix_resolved_symbols(
+    resolver: &mut Resolver,
+    types: &ResolvedTypes,
+    symbols: &mut ResolvedSymbols,
+) {
     for key in symbols.keys.values_mut() {
         for group in &mut key.key.groups {
             if group.key_type.is_none() {
                 if let Some(def) = key.key.default_key_type {
-                    group.key_type = Some(KeyTypeRef::Named(def));
+                    group.key_type = Some(def.val);
                 }
             }
-            if group.key_type.is_none() {
-                group.key_type = Some(KeyTypeRef::BuiltIn(infer_key_type(group)));
+            let key_type = match group.key_type {
+                Some(t) => t,
+                _ => {
+                    let t = KeyTypeRef::BuiltIn(infer_key_type(group));
+                    group.key_type = Some(t);
+                    t
+                }
+            };
+            let num_levels = match key_type {
+                KeyTypeRef::BuiltIn(bi) => {
+                    let mut num_levels = match bi {
+                        BuiltInKeytype::OneLevel => 1,
+                        BuiltInKeytype::Alphabetic
+                        | BuiltInKeytype::Keypad
+                        | BuiltInKeytype::TwoLevel => 2,
+                        BuiltInKeytype::FourLevelAlphabetic
+                        | BuiltInKeytype::FourLevelSemialphabetic
+                        | BuiltInKeytype::FourLevelKeypad
+                        | BuiltInKeytype::FourLevel => 4,
+                    };
+                    if let Some(name) = resolver.interner.get_existing(bi.name().as_bytes()) {
+                        if let Some(kt) = types.key_types.get(&name) {
+                            num_levels = num_levels.max(kt.ty.num_levels);
+                        }
+                    }
+                    num_levels
+                }
+                KeyTypeRef::Named(n) => types
+                    .key_types
+                    .get(&n.val)
+                    .map(|t| t.ty.num_levels)
+                    .unwrap_or_default(),
+            };
+            group.reachable_levels = num_levels;
+        }
+    }
+    let mut mod_map_keys = HashSet::new();
+    for entry in symbols.mod_map_entries.values() {
+        if entry.modifier.is_some() {
+            if let ModMapField::Keycode(keycode) = entry.key.val {
+                mod_map_keys.insert(keycode);
             }
         }
     }
@@ -289,6 +345,9 @@ fn fix_resolved_symbols(symbols: &mut ResolvedSymbols) {
                             break;
                         }
                         for (level_idx, level) in group.levels.iter().enumerate() {
+                            if level_idx >= group.reachable_levels {
+                                break;
+                            }
                             if (group_idx, level_idx) > (max_group, max_level) {
                                 break;
                             }
@@ -310,6 +369,11 @@ fn fix_resolved_symbols(symbols: &mut ResolvedSymbols) {
                     }
                 }
                 entry.key.val = ModMapField::Keysym(ks, keycode);
+                if let Some(keycode) = keycode {
+                    if mod_map_keys.insert(keycode) {
+                        entry.key.val = ModMapField::Keycode(keycode);
+                    }
+                }
                 keycode
             }
             ModMapField::Keycode(kc) => Some(kc),
@@ -1402,8 +1466,7 @@ impl SymbolsKey {
 
         match f.val {
             SymbolsField::GroupKeyType(g, e) => {
-                get_group(&mut self.groups, Some(g), |_| false).key_type =
-                    Some(KeyTypeRef::Named(e.spanned2(f.span)));
+                get_group(&mut self.groups, Some(g), |_| false).key_type = Some(e);
             }
             SymbolsField::DefaultKeyType(e) => {
                 self.default_key_type = Some(e.spanned2(f.span));
@@ -1492,14 +1555,14 @@ impl SymbolsResolver<'_, '_, '_, '_> {
         let mm = mm.unwrap_or(MergeMode::Override);
         let augment = mm == MergeMode::Augment;
         let entry = self.data.mod_map_entries.entry(key.val);
-        if augment && matches!(entry, Entry::Occupied(_)) {
+        if augment && matches!(entry, indexmap::map::Entry::Occupied(_)) {
             self.r.diag(
                 DiagnosticKind::IgnoredModMapEntry,
                 ad_hoc_display!("ignoring duplicate mod map entry").spanned2(key.span),
             );
             return;
         }
-        entry.insert(ModMapEntryWithKey { key, modifier });
+        entry.insert_entry(ModMapEntryWithKey { key, modifier });
     }
 
     fn handle_key(&mut self, mm: Option<MergeMode>, name: Spanned<Interned>, key: SymbolsKey) {

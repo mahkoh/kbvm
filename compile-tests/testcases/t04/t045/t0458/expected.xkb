@@ -5,16 +5,15 @@ xkb_keymap {
 
         indicator 1 = "DUMMY";
 
-        <a> = 1;
+        <1> = 1;
     };
 
     xkb_types {
         virtual_modifiers Dummy;
 
-        type "ONE_LEVEL" {
+        type "X" {
             modifiers = None;
-            level_name[Level1] = "Any";
-            map[None] = Level1;
+            map[Shift] = Level2;
         };
     };
 
@@ -25,14 +24,11 @@ xkb_keymap {
     };
 
     xkb_symbols {
-        modmap Mod1 { <a> };
-
         key.repeat = true;
 
-        key <a> {
-            repeat = false,
-            type[Group2] = "ONE_LEVEL",
-            symbols[Group2] = [ a ]
+        key <1> {
+            type[Group1] = "X",
+            symbols[Group1] = [ a, a, b ]
         };
     };
 };
