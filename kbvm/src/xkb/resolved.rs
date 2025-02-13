@@ -252,7 +252,7 @@ pub(crate) enum ModMapField {
 
 #[derive(Default, Debug)]
 pub(crate) struct ResolvedSymbols {
-    pub(crate) mod_map_entries: HashMap<ModMapField, ModMapEntryWithKey>,
+    pub(crate) mod_map_entries: IndexMap<ModMapField, ModMapEntryWithKey, DefaultHashBuilder>,
     pub(crate) action_defaults: ActionDefaults,
     pub(crate) key_default: SymbolsKey,
     pub(crate) keys: HashMap<Keycode, SymbolsKeyWithKey>,

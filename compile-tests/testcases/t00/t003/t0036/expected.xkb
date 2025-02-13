@@ -33,7 +33,7 @@ xkb_keymap {
     };
 
     xkb_symbols {
-        modmap Mod1 { a }; // <b>
+        modmap Mod1 { <b> };
 
         key.repeat = true;
 

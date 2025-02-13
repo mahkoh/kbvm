@@ -5,18 +5,17 @@ xkb_keymap {
 
         indicator 1 = "DUMMY";
 
-        <a> = 1;
+        <1> = 1;
     };
 
     xkb_types {
         virtual_modifiers Dummy;
 
-        type "ALPHABETIC" {
-            modifiers = Shift+Lock;
+        type "TWO_LEVEL" {
+            modifiers = Shift;
             level_name[Level1] = "Base";
-            level_name[Level2] = "Caps";
+            level_name[Level2] = "Shift";
             map[Shift] = Level2;
-            map[Lock] = Level2;
         };
     };
 
@@ -27,13 +26,14 @@ xkb_keymap {
     };
 
     xkb_symbols {
-        modmap Mod1 { <a> };
+        modmap Mod1 { <1> };
+        modmap Mod2 { x }; // <1>
 
         key.repeat = true;
 
-        key <a> {
-            type[Group1] = "ALPHABETIC",
-            symbols[Group1] = [ a, A ]
+        key <1> {
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ x, y ]
         };
     };
 };

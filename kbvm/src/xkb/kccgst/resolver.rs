@@ -42,7 +42,7 @@ use {
         },
         Keycode, Keysym, ModifierIndex, ModifierMask,
     },
-    hashbrown::{hash_map::Entry, DefaultHashBuilder},
+    hashbrown::{hash_map::Entry, DefaultHashBuilder, HashSet},
     indexmap::IndexMap,
     isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::ad_hoc_display,
@@ -274,6 +274,14 @@ fn fix_resolved_symbols(symbols: &mut ResolvedSymbols) {
             }
         }
     }
+    let mut mod_map_keys = HashSet::new();
+    for entry in symbols.mod_map_entries.values() {
+        if entry.modifier.is_some() {
+            if let ModMapField::Keycode(keycode) = entry.key.val {
+                mod_map_keys.insert(keycode);
+            }
+        }
+    }
     for entry in symbols.mod_map_entries.values_mut() {
         let Some(modifier) = entry.modifier else {
             continue;
@@ -310,6 +318,11 @@ fn fix_resolved_symbols(symbols: &mut ResolvedSymbols) {
                     }
                 }
                 entry.key.val = ModMapField::Keysym(ks, keycode);
+                if let Some(keycode) = keycode {
+                    if mod_map_keys.insert(keycode) {
+                        entry.key.val = ModMapField::Keycode(keycode);
+                    }
+                }
                 keycode
             }
             ModMapField::Keycode(kc) => Some(kc),
@@ -1492,14 +1505,14 @@ impl SymbolsResolver<'_, '_, '_, '_> {
         let mm = mm.unwrap_or(MergeMode::Override);
         let augment = mm == MergeMode::Augment;
         let entry = self.data.mod_map_entries.entry(key.val);
-        if augment && matches!(entry, Entry::Occupied(_)) {
+        if augment && matches!(entry, indexmap::map::Entry::Occupied(_)) {
             self.r.diag(
                 DiagnosticKind::IgnoredModMapEntry,
                 ad_hoc_display!("ignoring duplicate mod map entry").spanned2(key.span),
             );
             return;
         }
-        entry.insert(ModMapEntryWithKey { key, modifier });
+        entry.insert_entry(ModMapEntryWithKey { key, modifier });
     }
 
     fn handle_key(&mut self, mm: Option<MergeMode>, name: Spanned<Interned>, key: SymbolsKey) {
