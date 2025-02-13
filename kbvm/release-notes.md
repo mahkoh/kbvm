@@ -1,5 +1,7 @@
 # Unreleased
 
+# 0.1.3 (2025-02-13)
+
 - Reduce memory usage when keymap contains large keycodes.
 - Fixed the following scenario:
 
