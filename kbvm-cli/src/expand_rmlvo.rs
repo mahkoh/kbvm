@@ -69,5 +69,5 @@ pub fn main(args: ExpandRmlvoArgs) {
         groups.as_deref(),
         options.as_deref(),
     );
-    format_keymap(expanded.format());
+    format_keymap(format_args!("{:#}", expanded.format()));
 }
