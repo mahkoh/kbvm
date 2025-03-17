@@ -1,10 +1,11 @@
+#[cfg(unix)]
+use crate::test_wayland::{self, TestWaylandArgs};
 use {
     crate::{
         compile_rmlvo::{self, CompileRmlvoArgs},
         compile_xkb::{self, CompileXkbArgs},
         expand_rmlvo::{self, ExpandRmlvoArgs},
         generate::{self, GenerateArgs},
-        test_wayland::{self, TestWaylandArgs},
     },
     clap::{Args, Parser, Subcommand, ValueHint},
     kbvm::xkb::ContextBuilder,
@@ -20,6 +21,7 @@ pub struct Kbvm {
 #[derive(Subcommand, Debug)]
 enum Cmd {
     /// Test keymaps and compose files via wayland input events.
+    #[cfg(unix)]
     TestWayland(TestWaylandArgs),
     /// Expand RMLVO names.
     ExpandRmlvo(ExpandRmlvoArgs),
@@ -61,6 +63,7 @@ impl CompileArgs {
 pub fn main() {
     let args = Kbvm::parse();
     match args.command {
+        #[cfg(unix)]
         Cmd::TestWayland(args) => test_wayland::main(args),
         Cmd::ExpandRmlvo(args) => expand_rmlvo::main(args),
         Cmd::CompileRmlvo(args) => compile_rmlvo::main(args),

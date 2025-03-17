@@ -1,4 +1,5 @@
 #![allow(clippy::single_match)]
+#![allow(clippy::collapsible_else_if)]
 
 use {error_reporter::Report, log::LevelFilter};
 
@@ -8,9 +9,13 @@ mod compile_xkb;
 mod evdev;
 mod expand_rmlvo;
 mod generate;
+#[cfg_attr(not(unix), expect(dead_code))]
 mod output;
+#[cfg(unix)]
 mod test_wayland;
 mod utils;
+#[cfg(unix)]
+mod wayland_protocols;
 
 fn main() {
     env_logger::builder()
