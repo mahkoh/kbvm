@@ -716,7 +716,9 @@ impl VmodResolver<'_, '_, '_, '_> {
             return;
         };
         if vmod.def.is_none() || vmod.def == value || mm.is_not_augment() {
-            vmod.def = value;
+            if value.is_some() {
+                vmod.def = value;
+            }
         } else {
             self.r.diag(
                 DiagnosticKind::IgnoringVmodRedefinition,

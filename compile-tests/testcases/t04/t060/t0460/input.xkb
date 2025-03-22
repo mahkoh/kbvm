@@ -1,0 +1,6 @@
+xkb_keymap {
+    xkb_types {
+        virtual_modifiers a = 1;
+        virtual_modifiers a;
+    };
+};
