@@ -1,5 +1,30 @@
 # Unreleased
 
+- Fixed the following scenario:
+
+  ```xkb
+  xkb_types {
+      virtual_modifiers a = 1;
+      virtual_modifiers a;
+  };
+  ```
+  
+  This is now the same as
+
+  ```xkb
+  xkb_types {
+      virtual_modifiers a = 1;
+  };
+  ```
+  
+  whereas previously it was the same as
+
+  ```xkb
+  xkb_types {
+      virtual_modifiers a;
+  };
+  ```
+
 # 0.1.3 (2025-02-13)
 
 - Reduce memory usage when keymap contains large keycodes.
