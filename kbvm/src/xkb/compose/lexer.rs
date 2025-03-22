@@ -198,9 +198,9 @@ impl LineLexer<'_, '_, '_> {
                                     }
                                     b = self.code[self.pos];
                                     match b {
-                                        b'0'..=b'9' => c = c << 4 | (b - b'0'),
-                                        b'a'..=b'f' => c = c << 4 | (b - b'a' + 10),
-                                        b'A'..=b'F' => c = c << 4 | (b - b'A' + 10),
+                                        b'0'..=b'9' => c = (c << 4) | (b - b'0'),
+                                        b'a'..=b'f' => c = (c << 4) | (b - b'a' + 10),
+                                        b'A'..=b'F' => c = (c << 4) | (b - b'A' + 10),
                                         _ => break,
                                     }
                                     self.pos += 1;

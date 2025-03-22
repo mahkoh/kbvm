@@ -90,7 +90,7 @@ const IS_UPPER: u8 = 1 << 3;
 const IS_SECONDARY_IDX: u8 = 1 << 4;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-#[repr(packed)]
+#[repr(Rust, packed)]
 struct KeysymData {
     keysym_or_definitive_idx: u32,
     name_start: u16,
@@ -99,14 +99,14 @@ struct KeysymData {
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-#[repr(packed)]
+#[repr(Rust, packed)]
 struct KeysymChar {
     keysym: u16,
     char: char,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-#[repr(packed)]
+#[repr(Rust, packed)]
 struct KeysymCaseMapping {
     keysym: u16,
     other: u32,
