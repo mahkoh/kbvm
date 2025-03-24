@@ -1,0 +1,11 @@
+xkb_keymap {
+    xkb_keycodes {
+        indicator 1 = "A";
+        indicator 2 = "B";
+        indicator 1 = "A";
+        indicator 1 = "B";
+        indicator 3 = "C";
+        augment indicator 3 = "D";
+        augment indicator 3 = "B";
+    };
+};
