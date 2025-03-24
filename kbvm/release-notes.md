@@ -25,6 +25,33 @@
   };
   ```
 
+- Fixed the following scenario:
+
+  ```xkb
+  xkb_keycodes {
+      indicator 1 = "A";
+      indicator 2 = "B";
+      indicator 1 = "B";
+  };
+  ```
+  
+  Previously this would produce
+
+  ```xkb
+  xkb_keycodes {
+      indicator 1 = "B";
+      indicator 2 = "B";
+  };
+  ```
+  
+  Instead, this now produces
+
+  ```xkb
+  xkb_keycodes {
+      indicator 1 = "B";
+  };
+  ```
+
 # 0.1.3 (2025-02-13)
 
 - Reduce memory usage when keymap contains large keycodes.

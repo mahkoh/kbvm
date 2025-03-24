@@ -1,0 +1,7 @@
+xkb_keymap {
+    xkb_keycodes {
+        indicator 1 = "A";
+        indicator 2 = "B";
+        indicator 1 = "B";
+    };
+};

@@ -836,16 +836,28 @@ impl KeycodesResolver<'_, '_, '_, '_> {
         virt: Option<Span>,
     ) {
         let augment = mm.is_augment();
-        let i = Indicator { idx, name, virt };
-        for indicator in &mut self.data.indicators {
-            if indicator.idx == idx || indicator.name == name {
+        let indi = Indicator { idx, name, virt };
+        let mut i = 0;
+        while i < self.data.indicators.len() {
+            let old = &self.data.indicators[i];
+            if old.idx == idx || old.name == name {
                 if !augment {
-                    *indicator = i;
+                    self.data.indicators[i] = indi;
+                    i += 1;
+                    while i < self.data.indicators.len() {
+                        let old = &self.data.indicators[i];
+                        if old.idx == idx || old.name == name {
+                            self.data.indicators.swap_remove(i);
+                        } else {
+                            i += 1;
+                        }
+                    }
                 }
                 return;
             }
+            i += 1;
         }
-        self.data.indicators.push(i);
+        self.data.indicators.push(indi);
     }
 }
 
