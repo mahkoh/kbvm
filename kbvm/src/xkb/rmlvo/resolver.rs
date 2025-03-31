@@ -290,7 +290,9 @@ pub(crate) fn create_includes(
                 for (mk, rk) in mapping_keys.iter().zip(k.iter()) {
                     match mk {
                         MappingKey::Model => match rk {
-                            RuleKey::Star => {}
+                            RuleKey::Star | RuleKey::Any => {}
+                            RuleKey::None => matches = model.is_none(),
+                            RuleKey::Some => matches = model.is_some(),
                             RuleKey::Macro(g) => {
                                 matches = macros
                                     .get(g)
@@ -303,7 +305,9 @@ pub(crate) fn create_includes(
                             }
                         },
                         MappingKey::Option => match rk {
-                            RuleKey::Star => {}
+                            RuleKey::Star | RuleKey::Any => {}
+                            RuleKey::None => matches = options.len() == 0,
+                            RuleKey::Some => matches = options.len() > 0,
                             RuleKey::Macro(g) => {
                                 matches = macros
                                     .get(g)
@@ -349,7 +353,9 @@ pub(crate) fn create_includes(
                                     _ => group.variant,
                                 };
                                 let matches = match rk {
-                                    RuleKey::Star => key.is_some(),
+                                    RuleKey::Any => true,
+                                    RuleKey::None => key.is_none(),
+                                    RuleKey::Star | RuleKey::Some => key.is_some(),
                                     RuleKey::Macro(m) => macros
                                         .get(m)
                                         .iter()

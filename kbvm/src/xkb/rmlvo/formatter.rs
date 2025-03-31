@@ -111,6 +111,9 @@ impl Format for Line<'_> {
                             f.write_interned(*l)?;
                         }
                         RuleKey::Ident(l) => f.write_interned(*l)?,
+                        RuleKey::Any => f.write_all("<any>")?,
+                        RuleKey::Some => f.write_all("<some>")?,
+                        RuleKey::None => f.write_all("<none>")?,
                     }
                 }
                 f.write_all(" =")?;
