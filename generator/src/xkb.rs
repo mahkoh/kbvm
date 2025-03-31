@@ -14,7 +14,7 @@ pub fn main() {
     std::fs::write("kbvm/src/xkb/meaning/generated.rs", output).unwrap();
 }
 
-const STRINGS: [&str; 224] = [
+const STRINGS: [&str; 227] = [
     "accel",
     "accelerate",
     "AccessXFeedback",
@@ -34,6 +34,7 @@ const STRINGS: [&str; 224] = [
     "Alt",
     "alternate",
     "alternate_group",
+    "<any>",
     "any",
     "anylevel",
     "AnyOf",
@@ -158,6 +159,7 @@ const STRINGS: [&str; 224] = [
     "neither",
     "no",
     "NoAction",
+    "<none>",
     "none",
     "NoneOf",
     "nosymbol",
@@ -199,6 +201,7 @@ const STRINGS: [&str; 224] = [
     "Shift",
     "SlowKeys",
     "solid",
+    "<some>",
     "StickyKeys",
     "SwitchScreen",
     "symbols",
@@ -309,6 +312,12 @@ fn to_camel(s: &str) -> String {
     for c in s.chars() {
         if c == '_' {
             is_first = true;
+        } else if c == '<' {
+            is_first = true;
+            res.push_str("LessThan_");
+        } else if c == '>' {
+            is_first = true;
+            res.push_str("_GreaterThan");
         } else if is_first {
             if c.is_ascii_uppercase() && !res.is_empty() {
                 res.push('_');

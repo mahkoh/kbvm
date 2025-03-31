@@ -84,6 +84,9 @@ pub(crate) enum MappingKeyIndex {
 #[derive(Debug)]
 pub(crate) enum RuleKey {
     Star,
+    Any,
+    Some,
+    None,
     Macro(Interned),
     Ident(Interned),
 }
@@ -381,7 +384,14 @@ impl Parser<'_, '_, '_> {
             let key = match key.val {
                 token![=] => break,
                 token![*] => RuleKey::Star,
-                Token::Ident(i) => RuleKey::Ident(i),
+                Token::Ident(i) => {
+                    match self.meaning_cache.get_case_insensitive(self.interner, i) {
+                        Meaning::LessThan_Any_GreaterThan => RuleKey::Any,
+                        Meaning::LessThan_None_GreaterThan => RuleKey::None,
+                        Meaning::LessThan_Some_GreaterThan => RuleKey::Some,
+                        _ => RuleKey::Ident(i),
+                    }
+                }
                 Token::GroupName(i) => RuleKey::Macro(i),
                 _ => return Err(self.unexpected_token(RULE_KEY, key)),
             };
