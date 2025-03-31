@@ -84,8 +84,9 @@ impl Writer<'_, '_> {
                 '\n' => self.write(r"\n")?,
                 '\r' => self.write(r"\r")?,
                 '\t' => self.write(r"\t")?,
-                '"' => self.write(r#"\""#)?,
-                _ if (c as u32) < 0x20 || c == '\x7f' => write!(self.f, r"\{:03o}", c as u32)?,
+                _ if (c as u32) < 0x20 || c == '\x7f' || c == '"' => {
+                    write!(self.f, r"\{:03o}", c as u32)?
+                }
                 _ => self.f.write_char(c)?,
             }
         }
