@@ -1,0 +1,5 @@
+keycodes = "evdev"
+types = "complete"
+compat = "complete"
+symbols = "pc+l10:1+l20:2+l30(v2):3+l2:4"
+geometry = ""

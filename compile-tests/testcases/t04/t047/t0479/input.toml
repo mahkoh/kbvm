@@ -1,0 +1,15 @@
+rules = "extended-wild-cards"
+
+[[groups]]
+layout = "l1"
+
+[[groups]]
+layout = "l1"
+variant = "v1"
+
+[[groups]]
+layout = "l1"
+variant = "v2"
+
+[[groups]]
+layout = "l2"

@@ -69,6 +69,9 @@
   In RMLVO and compose files, line feeds are significant.
 - The character `^` can now be used to signify the `replace` merge mode
   wherever `+` and `|` could already be used.
+- The expressions `<any>`, `<none>`, and `<some>` can now be used in RMLVO files
+  in the same places where the wildcard `*` could already be used. They match
+  always, if the needle is empty, and if the needle is non-empty, respectively.
 
 # 0.1.3 (2025-02-13)
 
