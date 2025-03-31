@@ -928,6 +928,7 @@ impl Format for RmlvoIncludes<'_> {
             match e.merge_mode {
                 MergeMode::Augment => f.write("augment ")?,
                 MergeMode::Override => f.write("override ")?,
+                MergeMode::Replace => f.write("replace ")?,
             }
             f.write_string(&e.include)?;
             f.write_newline()?;

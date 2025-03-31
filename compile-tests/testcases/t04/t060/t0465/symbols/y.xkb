@@ -1,0 +1,5 @@
+default xkb_symbols {
+    key <x> {
+        symbols[Group1] = [ y ],
+    };
+};

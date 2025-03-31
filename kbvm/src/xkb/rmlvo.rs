@@ -72,6 +72,8 @@ pub enum MergeMode {
     Augment,
     /// In case of conflict, the new definition overrides the old one.
     Override,
+    /// In case of conflict, the new definition replaces the old one.
+    Replace,
 }
 
 /// An include statement in an XKB section.

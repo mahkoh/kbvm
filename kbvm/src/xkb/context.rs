@@ -554,7 +554,11 @@ impl Context {
                 .map(|i| Element {
                     merge_mode: match i.val.mm.val {
                         kccgst::MergeMode::Augment => rmlvo::MergeMode::Augment,
-                        _ => rmlvo::MergeMode::Override,
+                        kccgst::MergeMode::Replace => rmlvo::MergeMode::Replace,
+                        kccgst::MergeMode::Include | kccgst::MergeMode::Override => {
+                            rmlvo::MergeMode::Override
+                        }
+                        _ => unreachable!(),
                     },
                     include: interner.get(i.val.path.val).as_bstr().to_string(),
                 })
