@@ -35,7 +35,7 @@ fn cook(s: &str) -> String {
 fn success() {
     assert_eq!(cook(r#""#), "");
     assert_eq!(cook(r#"abc"#), "abc");
-    assert_eq!(cook(r#"\\\n\t\r\b\f\v\e"#), "\\\n\t\r\x08\x0c\x0b\x1b");
+    assert_eq!(cook(r#"\\\n\t\r\b\f\v\e\""#), "\\\n\t\r\x08\x0c\x0b\x1b\"");
     assert_eq!(cook(r#"\1"#), (0o1 as char).to_string());
     assert_eq!(cook(r#"\12"#), (0o12 as char).to_string());
     assert_eq!(cook(r#"\123"#), (0o123 as char).to_string());
