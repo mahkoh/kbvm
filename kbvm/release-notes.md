@@ -24,7 +24,6 @@
       virtual_modifiers a;
   };
   ```
-
 - Fixed the following scenario:
 
   ```xkb
@@ -51,6 +50,8 @@
       indicator 1 = "B";
   };
   ```
+- Fixed an arithmetic underflow when printing diagnostic messages containing
+  non-ascii text.
 
 # 0.1.3 (2025-02-13)
 

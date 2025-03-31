@@ -2063,26 +2063,30 @@ impl DiagnosticLocation {
             f.write_str(":\n")?;
             write!(f, ">> ")?;
             let (prefix, suffix) = self.line.split_at(self.in_line_offset);
-            let (content, suffix) = suffix.split_at(self.in_line_len);
+            let mut in_line_len = self.in_line_len;
+            while in_line_len < suffix.len() && suffix[in_line_len].leading_ones() == 1 {
+                in_line_len += 1;
+            }
+            let (content, suffix) = suffix.split_at(in_line_len);
             let mut send = |s: &[u8]| {
-                let mut counter = s.len();
                 if s.iter().any(|c| !matches!(*c, 0x20..=0x7E)) {
+                    let mut counter = 0;
                     for c in s.as_bstr().chars() {
                         if c == '\t' {
-                            counter += 3;
+                            counter += 4;
                             f.write_str("    ")?;
                         } else {
-                            counter -= c.len_utf8();
                             if let Some(w) = c.width() {
                                 counter += w;
                                 f.write_char(c)?;
                             }
                         }
                     }
+                    Ok(counter)
                 } else {
                     write!(f, "{}", s.as_bstr())?;
+                    Ok(s.len())
                 }
-                Ok(counter)
             };
             let offset = send(prefix)?;
             let len = send(content)?;
