@@ -40,6 +40,8 @@ fn success() {
     assert_eq!(cook(r#"\12"#), (0o12 as char).to_string());
     assert_eq!(cook(r#"\123"#), (0o123 as char).to_string());
     assert_eq!(cook(r#"\1234"#), format!("{}4", 0o123 as char));
+    assert_eq!(cook(r#"\u{65e5}"#), format!("日"));
+    assert_eq!(cook(r#"a\u{65e5}b"#), format!("a日b"));
 }
 
 #[test]
@@ -53,4 +55,27 @@ fn warning() {
     assert_eq!(c, "\n\n");
     assert_eq!(d.len(), 1);
     assert_eq!(d[0].kind(), DiagnosticKind::UnknownEscapeSequence);
+
+    let (c, d) = cook_(r#"\n\u{65e5"#);
+    assert_eq!(c, "\n");
+    assert_eq!(d.len(), 1);
+    assert_eq!(d[0].kind(), DiagnosticKind::UnterminatedUnicodeEscape);
+
+    let (c, d) = cook_(r#"\n\u_65e5}"#);
+    assert_eq!(c, "\n");
+    assert_eq!(d.len(), 1);
+    assert_eq!(d[0].kind(), DiagnosticKind::UnopenedUnicodeEscape);
+
+    let (c, d) = cook_(r#"\n\u{x}\n"#);
+    assert_eq!(c, "\n\n");
+    assert_eq!(d.len(), 1);
+    assert_eq!(
+        d[0].kind(),
+        DiagnosticKind::InvalidUnicodeEscapeRepresentation
+    );
+
+    let (c, d) = cook_(r#"\n\u{aaaaaaaa}\n"#);
+    assert_eq!(c, "\n\n");
+    assert_eq!(d.len(), 1);
+    assert_eq!(d[0].kind(), DiagnosticKind::InvalidUnicodeCodepoint);
 }

@@ -1,0 +1,18 @@
+xkb_keymap {
+    xkb_keycodes {
+        indicator 1 = "\u{1}";
+        indicator 2 = "\u{8a9e}";
+        indicator 3 = "\u{65E5}";
+        indicator 4 = "\u{1}\u{2}\u{3}";
+        indicator 5 = "x\u{1}\u{2}\u{3}y";
+        indicator 6 = "\u{41}\u{42}\u{43}";
+        indicator 7 = "A\u{41";
+        indicator 8 = "B\u41}";
+        indicator 9 = "C\u{41 hello world";
+        indicator 10 = "D\u{41 hello world} test";
+        indicator 11 = "E\u{AAAAAAAA}";
+        indicator 12 = "F\u}";
+        indicator 13 = "G\u";
+        indicator 14 = "H\u{ 8a9e }";
+    };
+};
