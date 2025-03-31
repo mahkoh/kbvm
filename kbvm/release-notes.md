@@ -72,6 +72,9 @@
 - The expressions `<any>`, `<none>`, and `<some>` can now be used in RMLVO files
   in the same places where the wildcard `*` could already be used. They match
   always, if the needle is empty, and if the needle is non-empty, respectively.
+- Strings can now contain unicode escape sequences of the form `\u{N}` where `N`
+  should be a hexadecimal number. The escape sequence will be expanded to the
+  UTF-8 representation of the unicode code point `U+N`.
 
 # 0.1.3 (2025-02-13)
 

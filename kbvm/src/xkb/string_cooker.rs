@@ -2,14 +2,18 @@
 mod tests;
 
 use {
-    crate::xkb::{
-        code::Code,
-        code_map::CodeMap,
-        code_slice::CodeSlice,
-        diagnostic::{DiagnosticKind, DiagnosticSink},
-        interner::{Interned, Interner},
-        span::{Span, SpanExt, SpanUnit, Spanned},
+    crate::{
+        from_bytes::FromBytes,
+        xkb::{
+            code::Code,
+            code_map::CodeMap,
+            code_slice::CodeSlice,
+            diagnostic::{DiagnosticKind, DiagnosticSink},
+            interner::{Interned, Interner},
+            span::{Span, SpanExt, SpanUnit, Spanned},
+        },
     },
+    bstr::ByteSlice,
     hashbrown::{hash_map::Entry, HashMap},
     std::sync::Arc,
     thiserror::Error,
@@ -26,6 +30,14 @@ pub(crate) enum StringCookerError {
     OctalOverflow,
     #[error("Unknown escape sequence {:?}", *.0 as char)]
     UnknownSequence(u8),
+    #[error("Unterminated unicode escape sequence {:?}", .0.as_bstr())]
+    UnterminatedUnicodeEscape(CodeSlice<'static>),
+    #[error("Unicode escape sequence doesn't start with a `{{`")]
+    UnopenedUnicodeEscape,
+    #[error("Unicode escape sequence contains invalid representation {:?}", .0.as_bstr())]
+    InvalidUnicodeEscapeRepresentation(CodeSlice<'static>),
+    #[error("Code point is not valid: U+{:X}", .0)]
+    InvalidUnicodeCodepoint(u32),
 }
 
 impl StringCooker {
@@ -48,7 +60,7 @@ impl StringCooker {
         let lo = interned.span.lo + 1;
         let mut res = Vec::with_capacity(uncooked.len());
         let mut i = 0;
-        while i < uncooked.len() {
+        'outer: while i < uncooked.len() {
             let mut b = uncooked[i];
             if b != b'\\' {
                 res.push(b);
@@ -99,6 +111,72 @@ impl StringCooker {
                         continue;
                     }
                     c as u8
+                }
+                b'u' => {
+                    let start = i - 1;
+                    loop {
+                        if i == uncooked.len() {
+                            let span = Span {
+                                lo: lo + start as SpanUnit - 1,
+                                hi: lo + i as SpanUnit,
+                            };
+                            diagnostics.push(
+                                map,
+                                DiagnosticKind::UnterminatedUnicodeEscape,
+                                StringCookerError::UnterminatedUnicodeEscape(
+                                    uncooked.slice(start - 1..i).to_owned(),
+                                )
+                                .spanned2(span),
+                            );
+                            continue 'outer;
+                        }
+                        let b = uncooked[i];
+                        i += 1;
+                        if b == b'}' {
+                            break;
+                        }
+                    }
+                    if uncooked[start + 1] != b'{' {
+                        let span = Span {
+                            lo: lo + start as SpanUnit + 1,
+                            hi: lo + start as SpanUnit + 2,
+                        };
+                        diagnostics.push(
+                            map,
+                            DiagnosticKind::UnopenedUnicodeEscape,
+                            StringCookerError::UnopenedUnicodeEscape.spanned2(span),
+                        );
+                        continue;
+                    }
+                    let start = start + 2;
+                    let end = i - 1;
+                    let bytes = &uncooked[start..end];
+                    let span = Span {
+                        lo: lo + start as SpanUnit,
+                        hi: lo + end as SpanUnit,
+                    };
+                    let Some(codepoint) = u32::from_bytes_hex(bytes) else {
+                        diagnostics.push(
+                            map,
+                            DiagnosticKind::InvalidUnicodeEscapeRepresentation,
+                            StringCookerError::InvalidUnicodeEscapeRepresentation(
+                                uncooked.slice(start..end).to_owned(),
+                            )
+                            .spanned2(span),
+                        );
+                        continue;
+                    };
+                    let Some(codepoint) = char::from_u32(codepoint) else {
+                        diagnostics.push(
+                            map,
+                            DiagnosticKind::InvalidUnicodeCodepoint,
+                            StringCookerError::InvalidUnicodeCodepoint(codepoint).spanned2(span),
+                        );
+                        continue;
+                    };
+                    let mut buf = [0; 4];
+                    res.extend_from_slice(codepoint.encode_utf8(&mut buf).as_bytes());
+                    continue;
                 }
                 _ => {
                     let span = Span {

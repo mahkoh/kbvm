@@ -110,7 +110,7 @@ pub enum DiagnosticKind {
     /// # Example
     ///
     /// ```xkb
-    /// xkb_keymap "\u" { };
+    /// xkb_keymap "\q" { };
     /// ```
     #[severity = Error]
     UnknownEscapeSequence,
@@ -1915,6 +1915,42 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     MissingKeyRadiogroupValue,
+    /// A unicode escape sequence is unterminated.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_keymap "\u{123" { };
+    /// ```
+    #[severity = Error]
+    UnterminatedUnicodeEscape,
+    /// The first character after a unicode escape is not `{`.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_keymap "\uABCD}" { };
+    /// ```
+    #[severity = Error]
+    UnopenedUnicodeEscape,
+    /// The contents of a unicode escape sequence are not a valid hex-encoded u32 number.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_keymap "\u{xyz}" { };
+    /// ```
+    #[severity = Error]
+    InvalidUnicodeEscapeRepresentation,
+    /// A unicode escape sequence references an invalid code point.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_keymap "\u{aaaaaaaa}" { };
+    /// ```
+    #[severity = Error]
+    InvalidUnicodeCodepoint,
 }
 
 impl DiagnosticKind {
