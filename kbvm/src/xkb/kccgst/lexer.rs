@@ -14,6 +14,7 @@ use {
                 Token::{self, Float, Ident, Integer, KeyName, String},
             },
             span::{Span, SpanExt, SpanUnit, Spanned},
+            whitespace::consume_whitespace,
         },
     },
     std::{num::ParseFloatError, path::PathBuf, str::FromStr, sync::Arc},
@@ -125,13 +126,7 @@ impl ItemLexer<'_> {
         use LexerError::*;
         let mut b;
         loop {
-            while self.pos < self.code.len() {
-                if matches!(self.code[self.pos], b' ' | b'\t'..=b'\r') {
-                    self.pos += 1;
-                } else {
-                    break;
-                }
-            }
+            consume_whitespace(&mut self.pos, &self.code, false);
             match self.code.get(self.pos) {
                 Some(c) => b = *c,
                 _ => return Ok(None),

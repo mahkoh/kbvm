@@ -10,6 +10,7 @@ use {
         diagnostic::{DiagnosticKind, DiagnosticSink},
         interner::Interner,
         span::{SpanExt, SpanUnit, Spanned},
+        whitespace::consume_whitespace,
     },
     kbvm_proc::ad_hoc_display,
     std::sync::Arc,
@@ -111,13 +112,7 @@ impl LineLexer<'_, '_, '_> {
 
     fn lex_one(&mut self) -> Result<One, Spanned<LexerError>> {
         use LexerError::*;
-        while self.pos < self.code.len() {
-            if matches!(self.code[self.pos], b' ' | b'\t' | b'\r') {
-                self.pos += 1;
-            } else {
-                break;
-            }
-        }
+        consume_whitespace(&mut self.pos, &self.code, true);
         let mut b = match self.code.get(self.pos) {
             Some(c) => *c,
             _ => return Ok(One::Eof),

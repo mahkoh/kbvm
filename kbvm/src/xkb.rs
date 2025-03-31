@@ -86,5 +86,6 @@ mod resolved;
 pub mod rmlvo;
 pub(crate) mod span;
 mod string_cooker;
+mod whitespace;
 #[cfg(feature = "x11")]
 pub mod x11;

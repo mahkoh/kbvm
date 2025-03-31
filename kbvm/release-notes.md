@@ -52,6 +52,21 @@
   ```
 - Fixed an arithmetic underflow when printing diagnostic messages containing
   non-ascii text.
+- The following characters are now always treated as insignificant whitespace
+  between tokens
+  - U+0009 - tab
+  - U+000b - vertical tab
+  - U+000c - form feed
+  - U+000d - carriage return
+  - U+0020 - space
+  - U+0085 - next line
+  - U+200e - left-to-right mark
+  - U+200f - right-to-left mark
+  - U+2028 - line separator
+  - U+2029 - paragraph separator
+  In xkb files, the following character is also insignificant whitespace
+  - U+000a - line feed
+  In RMLVO and compose files, line feeds are significant.
 
 # 0.1.3 (2025-02-13)
 
