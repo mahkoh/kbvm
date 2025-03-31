@@ -138,9 +138,16 @@ fn capture<'a>(
             mm = Some(MergeMode::Override.spanned(mm_lo, mm_lo + 1));
             pos += 1;
         }
+        b'^' => {
+            mm = Some(MergeMode::Replace.spanned(mm_lo, mm_lo + 1));
+            pos += 1;
+        }
         _ => {}
     };
-    if matches!(slice.get(pos), None | Some(b'(' | b'|' | b'+' | b':')) {
+    if matches!(
+        slice.get(pos),
+        None | Some(b'(' | b'|' | b'+' | b'^' | b':')
+    ) {
         return Err(missing_file_name(Span {
             lo: lo + pos as SpanUnit,
             hi: lo + pos as SpanUnit + 1,
@@ -148,7 +155,7 @@ fn capture<'a>(
     }
     let file_start = pos;
     pos += 1;
-    while pos < slice.len() && !matches!(slice[pos], b'(' | b'|' | b'+' | b':') {
+    while pos < slice.len() && !matches!(slice[pos], b'(' | b'|' | b'+' | b'^' | b':') {
         pos += 1;
     }
     let file_end = pos;

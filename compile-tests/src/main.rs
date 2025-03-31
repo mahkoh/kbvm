@@ -213,6 +213,7 @@ impl From<Expanded> for RmlvoOutput {
                     let mm = match e.merge_mode {
                         MergeMode::Augment => "|",
                         MergeMode::Override => "+",
+                        MergeMode::Replace => "^",
                         _ => unreachable!(),
                     };
                     res.push_str(mm);

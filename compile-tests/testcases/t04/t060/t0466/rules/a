@@ -1,0 +1,5 @@
+! layout[any] = symbols
+  *           = a
+
+! layout[any] = symbols
+  *           = ^b

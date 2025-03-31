@@ -509,11 +509,13 @@ fn expand(
         let b = bytes[offset];
         last_was_colon = last_was_colon_next;
         last_was_colon_next = b == b':';
-        if matches!(b, b'+' | b'|') {
+        if matches!(b, b'+' | b'|' | b'^') {
             flush!(start, offset);
-            let mode = match b == b'+' {
-                true => MergeMode::Override,
-                false => MergeMode::Augment,
+            let mode = match b {
+                b'+' => MergeMode::Override,
+                b'|' => MergeMode::Augment,
+                b'^' => MergeMode::Replace,
+                _ => unreachable!(),
             };
             let lo = value.span.lo + offset as SpanUnit;
             mm = Some(mode.spanned(lo, lo + 1));
@@ -632,7 +634,7 @@ fn find_percent_encoding_range(bytes: &[u8], offset: &mut usize) -> Option<()> {
         }
         return None;
     }
-    if matches!(b, b'+' | b'|' | b'-' | b'_') {
+    if matches!(b, b'+' | b'|' | b'^' | b'-' | b'_') {
         b = *bytes.get(*offset)?;
         *offset += 1;
     }
@@ -675,10 +677,12 @@ fn parse_percent_encoding(
     let mut merge_mode = None;
     let mut prefix = None;
     let b = *bytes.first()?;
-    if matches!(b, b'|' | b'+') {
-        let mm = match b == b'|' {
-            true => MergeMode::Augment,
-            false => MergeMode::Override,
+    if matches!(b, b'|' | b'+' | b'^') {
+        let mm = match b {
+            b'|' => MergeMode::Augment,
+            b'+' => MergeMode::Override,
+            b'^' => MergeMode::Replace,
+            _ => unreachable!(),
         };
         let hi = span_lo + *offset as SpanUnit;
         merge_mode = Some(mm.spanned(hi - 1, hi));

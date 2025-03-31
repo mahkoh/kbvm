@@ -1,0 +1,6 @@
+default xkb_symbols {
+    key <x> {
+        symbols[Group1] = [ x ],
+        symbols[Group2] = [ x ],
+    };
+};

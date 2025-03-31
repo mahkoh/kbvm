@@ -67,6 +67,8 @@
   In xkb files, the following character is also insignificant whitespace
   - U+000a - line feed
   In RMLVO and compose files, line feeds are significant.
+- The character `^` can now be used to signify the `replace` merge mode
+  wherever `+` and `|` could already be used.
 
 # 0.1.3 (2025-02-13)
 
