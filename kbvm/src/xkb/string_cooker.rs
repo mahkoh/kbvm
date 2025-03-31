@@ -79,6 +79,7 @@ impl StringCooker {
                 b'f' => b'\x0c',
                 b'v' => b'\x0b',
                 b'e' => b'\x1b',
+                b'"' => b'"',
                 b'0'..=b'7' => {
                     let start = i - 1;
                     let mut c = b as u32 - b'0' as u32;
