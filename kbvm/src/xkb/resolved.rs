@@ -129,7 +129,7 @@ pub(crate) struct InterpWithKey {
 
 #[derive(Clone, Default, Debug)]
 pub(crate) struct Interp {
-    pub(crate) action: Option<Spanned<ResolvedAction>>,
+    pub(crate) actions: Option<Spanned<SmallVec<[Spanned<ResolvedAction>; 1]>>>,
     pub(crate) virtual_modifier: Option<Spanned<ModifierIndex>>,
     pub(crate) repeat: Option<Spanned<bool>>,
     pub(crate) level_one_only: Option<Spanned<bool>>,

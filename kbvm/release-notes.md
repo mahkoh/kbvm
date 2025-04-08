@@ -78,6 +78,16 @@
 - Fixed an error where certain keysyms would be formatted in a way that could
   not be parsed back. For example, the keysym `0x01000000` will now be formatted
   as `0x01000000` instead of `U0`.
+- The `action` field in an `interpret` statement can now contain multiple
+  actions written as a brace list. For example
+
+  ```xkb
+  xkb_compat {
+      interpret a {
+          action = { SetMods(mods = Mod1), SetGroup(group = 1) };
+      };
+  };
+  ```
 
 # 0.1.3 (2025-02-13)
 
