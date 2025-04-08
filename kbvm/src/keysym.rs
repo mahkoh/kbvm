@@ -595,15 +595,7 @@ fn from_str<const CASE_INSENSITIVE: bool>(s: &[u8]) -> Option<Keysym> {
     }
     if s.len() > 1 && (b[0] == b'U' || (CASE_INSENSITIVE && b[0] == b'u')) {
         if let Some(cp) = u32::from_bytes_hex(&s[1..]) {
-            let v = match cp {
-                0x000000..=0x00001f => None,
-                0x000020..=0x00007e => Some(cp),
-                0x00007f..=0x00009f => None,
-                0x0000a0..=0x0000ff => Some(cp),
-                0x000100..=0x10ffff => Some(cp | 0x01_00_00_00),
-                0x110000.. => None,
-            };
-            return v.map(Keysym);
+            return keysym_from_cp(cp);
         }
         return None;
     }
@@ -627,6 +619,18 @@ fn from_str<const CASE_INSENSITIVE: bool>(s: &[u8]) -> Option<Keysym> {
         }
     }
     None
+}
+
+fn keysym_from_cp(cp: u32) -> Option<Keysym> {
+    let v = match cp {
+        0x000000..=0x00001f => None,
+        0x000020..=0x00007e => Some(cp),
+        0x00007f..=0x00009f => None,
+        0x0000a0..=0x0000ff => Some(cp),
+        0x000100..=0x10ffff => Some(cp | 0x01_00_00_00),
+        0x110000.. => None,
+    };
+    v.map(Keysym)
 }
 
 impl FromStr for Keysym {
@@ -656,7 +660,9 @@ impl Display for Keysym {
         }
         if self.is_in_unicode_range() {
             let d = self.0 & 0xff_ff_ff;
-            return write!(f, "U{d:x}");
+            if keysym_from_cp(d) == Some(*self) {
+                return write!(f, "U{d:x}");
+            }
         }
         write!(f, "0x{:08x}", self.0)
     }

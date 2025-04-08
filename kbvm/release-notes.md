@@ -75,6 +75,9 @@
 - Strings can now contain unicode escape sequences of the form `\u{N}` where `N`
   should be a hexadecimal number. The escape sequence will be expanded to the
   UTF-8 representation of the unicode code point `U+N`.
+- Fixed an error where certain keysyms would be formatted in a way that could
+  not be parsed back. For example, the keysym `0x01000000` will now be formatted
+  as `0x01000000` instead of `U0`.
 
 # 0.1.3 (2025-02-13)
 

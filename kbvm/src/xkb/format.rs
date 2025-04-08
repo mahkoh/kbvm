@@ -782,14 +782,7 @@ impl Format for Keys<'_> {
 
 impl Format for Keysym {
     fn format(&self, f: &mut Writer<'_, '_>) -> fmt::Result {
-        if let Some(name) = self.name() {
-            f.write(name)
-        } else if self.is_in_unicode_range() {
-            let d = self.0 & 0xff_ff_ff;
-            write!(f.f, "U{d:x}")
-        } else {
-            write!(f.f, "0x{:08x}", self.0)
-        }
+        Display::fmt(self, f.f)
     }
 }
 
