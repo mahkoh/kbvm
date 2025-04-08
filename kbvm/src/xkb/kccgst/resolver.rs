@@ -491,8 +491,8 @@ fn fix_combined_properties(
                         continue;
                     };
                     interp.version = version;
-                    if let Some(a) = interp.interp.action {
-                        level.actions.push(a);
+                    if let Some(a) = &interp.interp.actions {
+                        level.actions.extend(a.val.iter().cloned());
                     }
                     if (group_idx, level_idx) == (0, 0) || !interp.interp.level_one_only() {
                         if let Some(fm) = interp.interp.virtual_modifier {
@@ -1069,8 +1069,8 @@ impl ConfigWalker for TypesResolver<'_, '_, '_, '_> {
 impl Interp {
     fn apply_field(&mut self, field: Spanned<InterpField>) {
         match field.val {
-            InterpField::Action(a) => {
-                self.action = Some(a.spanned2(field.span));
+            InterpField::Actions(a) => {
+                self.actions = Some(a.spanned2(field.span));
             }
             InterpField::VirtualModifier(m) => {
                 self.virtual_modifier = Some(m.spanned2(field.span));
@@ -1118,6 +1118,8 @@ impl CompatResolver<'_, '_, '_, '_> {
         skip_first: bool,
     ) -> Option<Spanned<InterpField>> {
         let res = eval_interp_field(
+            self.r.map,
+            self.r.diagnostics,
             self.r.interner,
             self.r.meaning_cache,
             self.keycodes,
@@ -1200,7 +1202,7 @@ impl CompatResolver<'_, '_, '_, '_> {
                     }
                 };
             }
-            opt!(action);
+            opt!(actions);
             opt!(virtual_modifier);
             opt!(repeat);
             opt!(level_one_only);

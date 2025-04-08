@@ -1,0 +1,72 @@
+xkb_keymap {
+    xkb_keycodes {
+        minimum = 8;
+        maximum = 255;
+
+        indicator 1 = "DUMMY";
+
+        <a> = 1;
+        <b> = 2;
+        <c> = 3;
+        <d> = 4;
+        <e> = 5;
+    };
+
+    xkb_types {
+        virtual_modifiers Dummy;
+
+        type "ONE_LEVEL" {
+            modifiers = None;
+            level_name[Level1] = "Any";
+            map[None] = Level1;
+        };
+
+        type "TWO_LEVEL" {
+            modifiers = Shift;
+            level_name[Level1] = "Base";
+            level_name[Level2] = "Shift";
+            map[Shift] = Level2;
+        };
+    };
+
+    xkb_compat {
+        interpret VoidSymbol {
+            repeat = false;
+        };
+    };
+
+    xkb_symbols {
+        key.repeat = true;
+
+        key <a> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ x ],
+            actions[Group1] = [ { SetMods(modifiers = Mod1), SetMods(modifiers = Mod2) } ]
+        };
+        key <b> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ { x, y } ],
+            actions[Group1] = [ { SetMods(modifiers = Mod1), SetMods(modifiers = Mod2), SetGroup(group = Group1), LatchGroup(group = Group2) } ]
+        };
+        key <c> {
+            repeat = false,
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ y ],
+            actions[Group1] = [ { SetGroup(group = Group1), LatchGroup(group = Group2) } ]
+        };
+        key <d> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ x, y ],
+            actions[Group1] = [ { SetMods(modifiers = Mod1), SetMods(modifiers = Mod2) }, { SetGroup(group = Group1), LatchGroup(group = Group2) } ]
+        };
+        key <e> {
+            repeat = false,
+            type[Group1] = "TWO_LEVEL",
+            symbols[Group1] = [ x, { y, x } ],
+            actions[Group1] = [ { SetMods(modifiers = Mod1), SetMods(modifiers = Mod2) }, { SetGroup(group = Group1), LatchGroup(group = Group2), SetMods(modifiers = Mod1), SetMods(modifiers = Mod2) } ]
+        };
+    };
+};

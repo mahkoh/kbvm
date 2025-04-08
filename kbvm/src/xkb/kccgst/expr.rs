@@ -1491,6 +1491,29 @@ fn eval_action(
     Ok(action.spanned2(expr.span))
 }
 
+fn eval_action_or_no_action(
+    interner: &Interner,
+    meaning_cache: &mut MeaningCache,
+    keycodes: &ResolvedKeycodes,
+    vmods: &Vmodmap,
+    action_defaults: &ActionDefaults,
+    expr: Spanned<&Expr>,
+) -> Result<Option<Spanned<ResolvedAction>>, Spanned<EvalError>> {
+    let action = eval_action(
+        interner,
+        meaning_cache,
+        keycodes,
+        vmods,
+        action_defaults,
+        expr,
+    )?;
+    let action = match action.val {
+        ResolvedAction::ResolvedNoAction(_) => None,
+        _ => Some(action),
+    };
+    Ok(action)
+}
+
 pub(crate) fn eval_action_default(
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
@@ -1519,7 +1542,7 @@ pub(crate) fn eval_action_default(
 }
 
 pub(crate) enum InterpField {
-    Action(ResolvedAction),
+    Actions(SmallVec<[Spanned<ResolvedAction>; 1]>),
     VirtualModifier(ModifierIndex),
     Repeat(bool),
     Locking(bool),
@@ -1528,6 +1551,8 @@ pub(crate) enum InterpField {
 
 #[expect(clippy::too_many_arguments)]
 pub(crate) fn eval_interp_field(
+    map: &mut CodeMap,
+    diagnostics: &mut DiagnosticSink<'_, '_>,
     interner: &Interner,
     meaning_cache: &mut MeaningCache,
     keycodes: &ResolvedKeycodes,
@@ -1562,17 +1587,17 @@ pub(crate) fn eval_interp_field(
                 None => return Err(MissingInterpretActionValue.spanned2(span)),
                 Some(e) => e,
             };
-            InterpField::Action(
-                eval_action(
+            let actions = eval_brace_list(e.as_ref(), map, diagnostics, |e| {
+                eval_action_or_no_action(
                     interner,
                     meaning_cache,
                     keycodes,
                     vmods,
                     action_defaults,
-                    e.as_ref(),
-                )?
-                .val,
-            )
+                    e,
+                )
+            });
+            InterpField::Actions(actions)
         }
         Meaning::Virtualmodifier | Meaning::Virtualmod => {
             let e = match &var.expr {
@@ -1814,6 +1839,35 @@ pub(crate) enum SymbolsField {
 
 pub(crate) type GroupList<T> = Vec<SmallVec<[Spanned<T>; 1]>>;
 
+fn eval_brace_list<T>(
+    e: Spanned<&Expr>,
+    map: &mut CodeMap,
+    diagnostic: &mut DiagnosticSink,
+    mut eval: impl FnMut(Spanned<&Expr>) -> Result<Option<Spanned<T>>, Spanned<EvalError>>,
+) -> SmallVec<[Spanned<T>; 1]> {
+    let mut elements = SmallVec::new();
+    let mut handle = |e: Spanned<&Expr>| match eval(e) {
+        Ok(v) => v,
+        Err(e) => {
+            diagnostic.push(map, e.val.diagnostic_kind(), e);
+            None
+        }
+    };
+    if let Expr::BraceList(b) = e.val {
+        elements.reserve_exact(b.len());
+        for e in b {
+            if let Some(e) = handle(e.as_ref()) {
+                elements.push(e);
+            }
+        }
+    } else {
+        if let Some(e) = handle(e) {
+            elements.push(e);
+        }
+    }
+    elements
+}
+
 fn eval_symbols_list<T>(
     group_expr: Option<Spanned<&Expr>>,
     map: &mut CodeMap,
@@ -1831,26 +1885,7 @@ fn eval_symbols_list<T>(
     };
     let mut levels = Vec::with_capacity(b.len());
     for e in b {
-        let mut elements = SmallVec::new();
-        let mut handle = |e: Spanned<&Expr>| match eval(e) {
-            Ok(v) => v,
-            Err(e) => {
-                diagnostic.push(map, e.val.diagnostic_kind(), e);
-                None
-            }
-        };
-        if let Expr::BraceList(b) = &e.val {
-            elements.reserve_exact(b.len());
-            for e in b {
-                if let Some(e) = handle(e.as_ref()) {
-                    elements.push(e);
-                }
-            }
-        } else {
-            if let Some(e) = handle(e.as_ref()) {
-                elements.push(e);
-            }
-        }
+        let elements = eval_brace_list(e.as_ref(), map, diagnostic, &mut eval);
         levels.push(elements);
     }
     while let Some(last) = levels.last() {
@@ -1998,13 +2033,14 @@ pub(crate) fn eval_symbols_field(
             diagnostics,
             get_expr!(MissingKeyActionsValue),
             |e| {
-                let action =
-                    eval_action(interner, meaning_cache, keycodes, mods, action_defaults, e)?;
-                let action = match action.val {
-                    ResolvedAction::ResolvedNoAction(_) => None,
-                    _ => Some(action),
-                };
-                Ok(action)
+                eval_action_or_no_action(
+                    interner,
+                    meaning_cache,
+                    keycodes,
+                    mods,
+                    action_defaults,
+                    e,
+                )
             },
         )
         .map(SymbolsField::Actions)?,

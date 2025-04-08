@@ -1,0 +1,24 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+        <c> = 3;
+        <d> = 4;
+        <e> = 5;
+    };
+    xkb_compat {
+        interpret x {
+            action = { SetMods(mods = Mod1), SetMods(mods = Mod2) };
+        };
+        interpret y {
+            action = { SetGroup(group = 1), LatchGroup(group = 2) };
+        };
+    };
+    xkb_symbols {
+        key <a> { [ x ] };
+        key <b> { [ { x, y } ] };
+        key <c> { [ y ] };
+        key <d> { [ x, y ] };
+        key <e> { [ x, { y, x } ] };
+    };
+};
