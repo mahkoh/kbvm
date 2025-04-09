@@ -1,0 +1,18 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <x> = 2;
+    };
+    xkb_symbols {
+        key <a> {
+            [ "日本語ア" ],
+            [ { a, "日本語a", b } ],
+            [ { a, "", b } ],
+            [ a, "", b ],
+            [ a, "日\377語", b ],
+            [ "u\314\210" ], // U+0308 ◌̈  COMBINING DIAERESIS
+        };
+        key <x> { [ x ] };
+        modmap Mod1 { "日x" };
+    };
+};

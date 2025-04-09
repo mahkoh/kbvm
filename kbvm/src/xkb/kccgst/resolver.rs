@@ -12,16 +12,15 @@ use {
             interner::{Interned, Interner},
             kccgst::{
                 ast::{
-                    CompatmapDecl, ConfigItemType, Decls, DirectOrIncluded, Expr, Item, ItemType,
-                    KeycodeDecl, MergeModeExt, Path, SymbolsDecl, TypesDecl, VModDecl, VarDecl,
-                    VarOrExpr,
+                    CompatmapDecl, ConfigItemType, Decls, DirectOrIncluded, Expr, InterpretSym,
+                    Item, ItemType, KeycodeDecl, MergeModeExt, Path, SymbolsDecl, TypesDecl,
+                    VModDecl, VarDecl, VarOrExpr,
                 },
                 expr::{
                     eval_action_default, eval_filter, eval_group, eval_indicator_map_field,
-                    eval_interp_field, eval_mod_map_field, eval_real_mods, eval_string,
-                    eval_symbols_field, eval_type_field, ident_to_real_mod_index,
-                    keysym_from_ident, GroupList, IndicatorMapField, InterpField, SymbolsField,
-                    TypeField,
+                    eval_interp_field, eval_keysyms, eval_mod_map_field, eval_real_mods,
+                    eval_string, eval_symbols_field, eval_type_field, ident_to_real_mod_index,
+                    EvalError, GroupList, IndicatorMapField, InterpField, SymbolsField, TypeField,
                 },
                 MergeMode,
             },
@@ -102,6 +101,7 @@ pub(crate) fn resolve(
         keycodes: &keycodes,
         types: &types,
         data: Default::default(),
+        mod_map_fields: Default::default(),
     }
     .resolve(item);
     fix_resolved_symbols(&mut resolver, &types, &mut symbols);
@@ -160,6 +160,7 @@ struct SymbolsResolver<'a, 'b, 'c, 'd> {
     keycodes: &'a ResolvedKeycodes,
     types: &'a ResolvedTypes,
     data: ResolvedSymbols,
+    mod_map_fields: Vec<Spanned<ModMapField>>,
 }
 
 fn fix_resolved_keycodes(r: &mut Resolver<'_, '_, '_>, keycodes: &mut ResolvedKeycodes) {
@@ -1290,18 +1291,32 @@ impl ConfigWalker for CompatResolver<'_, '_, '_, '_> {
     fn handle_decl(&mut self, mm: Option<MergeMode>, decl: &Self::Decl, span: Span) {
         match decl {
             CompatmapDecl::Interpret(e) => {
-                let keysym = match keysym_from_ident(
-                    self.r.interner,
-                    self.r.meaning_cache,
-                    e.match_.val.sym,
-                ) {
-                    Ok(k) => k,
-                    Err(e) => {
-                        self.r.diag(e.val.diagnostic_kind(), e);
-                        return;
-                    }
+                let expr = match e.match_.val.sym.val {
+                    InterpretSym::Ident(i) => Expr::Path(Path::One(i)),
+                    InterpretSym::String(s) => Expr::String(s),
                 };
-                let keysym = (keysym.val != syms::NoSymbol).then_some(keysym);
+                let mut keysym = None;
+                let res = eval_keysyms(
+                    self.r.map,
+                    self.r.diagnostics,
+                    self.r.interner,
+                    self.r.cooker,
+                    self.r.meaning_cache,
+                    (&expr).spanned2(e.match_.val.sym.span),
+                    |sym| {
+                        if sym != syms::NoSymbol {
+                            if keysym.is_some() {
+                                return Err(EvalError::MultipleKeysymsInInterpret);
+                            }
+                            keysym = Some(sym.spanned2(e.match_.val.sym.span));
+                        }
+                        Ok(())
+                    },
+                );
+                if let Err(e) = res {
+                    self.r.diag(e.val.diagnostic_kind(), e);
+                    return;
+                }
                 let filter = match &e.match_.val.filter {
                     None => None,
                     Some(e) => {
@@ -1795,21 +1810,27 @@ impl ConfigWalker for SymbolsResolver<'_, '_, '_, '_> {
                 };
                 for key in &m.keys {
                     let res = eval_mod_map_field(
+                        self.r.map,
+                        self.r.diagnostics,
                         self.r.interner,
+                        self.r.cooker,
                         self.r.meaning_cache,
                         self.keycodes,
                         &key.val,
                         key.span,
+                        |key| {
+                            self.mod_map_fields.push(key);
+                        },
                     );
-                    let key = match res {
-                        Ok(k) => k,
-                        Err(e) => {
-                            self.r.diag(e.val.diagnostic_kind(), e);
-                            return;
-                        }
-                    };
+                    if let Err(e) = res {
+                        self.r.diag(e.val.diagnostic_kind(), e);
+                    }
+                }
+                let mut mod_map_fields = mem::take(&mut self.mod_map_fields);
+                for key in mod_map_fields.drain(..) {
                     self.handle_mod_map_entry(mm, key, modifier);
                 }
+                self.mod_map_fields = mod_map_fields;
             }
             SymbolsDecl::Var(v) => {
                 let unknown_field = ad_hoc_display!("unknown field").spanned2(v.var.path.span);

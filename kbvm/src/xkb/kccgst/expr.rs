@@ -221,6 +221,10 @@ pub(crate) enum EvalError {
     UnknownParameterForSetControls,
     #[error("unknown LockControls parameter")]
     UnknownParameterForLockControls,
+    #[error("keysym string does not contain valid UTF-8")]
+    KeysymStringNotUtf8,
+    #[error("interpret declaration contains multiple keysyms")]
+    MultipleKeysymsInInterpret,
 }
 
 impl EvalError {
@@ -326,6 +330,8 @@ impl EvalError {
             UnknownKeyType,
             MissingKeyOverlayValue,
             MissingKeyRadiogroupValue,
+            KeysymStringNotUtf8,
+            MultipleKeysymsInInterpret,
         }
     }
 }
@@ -730,25 +736,47 @@ pub(crate) fn keysym_from_ident(
     Ok(sym.spanned2(ident.span))
 }
 
-pub(crate) fn eval_keysym(
-    interner: &Interner,
+pub(crate) fn eval_keysyms(
+    map: &mut CodeMap,
+    diagnostics: &mut DiagnosticSink<'_, '_>,
+    interner: &mut Interner,
+    cooker: &mut StringCooker,
     meaning_cache: &mut MeaningCache,
     expr: Spanned<&Expr>,
-) -> Result<Spanned<Keysym>, Spanned<EvalError>> {
-    let res = match &expr.val {
-        Expr::Path(p) => match p.unique_ident() {
-            Some(id) => return keysym_from_ident(interner, meaning_cache, id.spanned2(expr.span)),
-            _ => Err(UnknownKeysym),
-        },
-        Expr::Integer(_, i) => match *i {
-            0..=9 => Ok(Keysym(syms::_0.0 + *i as u32)),
-            _ => u32::try_from(*i)
-                .map(Keysym)
-                .map_err(|_| KeysymCalculationOverflow),
-        },
-        _ => Err(UnsupportedExpressionForKeysym),
-    };
-    res.span_either(expr.span)
+    mut handle: impl FnMut(Keysym) -> Result<(), EvalError>,
+) -> Result<(), Spanned<EvalError>> {
+    let mut handle = |sym| handle(sym).map_err(|e| e.spanned2(expr.span));
+    match &expr.val {
+        Expr::Path(p) => {
+            let sym = match p.unique_ident() {
+                Some(id) => keysym_from_ident(interner, meaning_cache, id.spanned2(expr.span))?.val,
+                _ => return Err(UnknownKeysym.spanned2(expr.span)),
+            };
+            handle(sym)?;
+        }
+        Expr::Integer(_, i) => {
+            let sym = match *i {
+                0..=9 => Keysym(syms::_0.0 + *i as u32),
+                _ => u32::try_from(*i)
+                    .map(Keysym)
+                    .map_err(|_| KeysymCalculationOverflow.spanned2(expr.span))?,
+            };
+            handle(sym)?;
+        }
+        Expr::String(s) => {
+            let s = cooker.cook(map, diagnostics, interner, (*s).spanned2(expr.span));
+            let s = interner.get(s);
+            let s = match std::str::from_utf8(s) {
+                Ok(s) => s,
+                _ => return Err(KeysymStringNotUtf8.spanned2(expr.span)),
+            };
+            for c in s.chars() {
+                handle(Keysym::from_char(c))?;
+            }
+        }
+        _ => return Err(UnsupportedExpressionForKeysym.spanned2(expr.span)),
+    }
+    Ok(())
 }
 
 fn meaning_to_real_mod_index(meaning: Meaning) -> Option<ModifierIndex> {
@@ -1553,7 +1581,7 @@ pub(crate) enum InterpField {
 pub(crate) fn eval_interp_field(
     map: &mut CodeMap,
     diagnostics: &mut DiagnosticSink<'_, '_>,
-    interner: &Interner,
+    interner: &mut Interner,
     meaning_cache: &mut MeaningCache,
     keycodes: &ResolvedKeycodes,
     vmods: &Vmodmap,
@@ -1587,16 +1615,24 @@ pub(crate) fn eval_interp_field(
                 None => return Err(MissingInterpretActionValue.spanned2(span)),
                 Some(e) => e,
             };
-            let actions = eval_brace_list(e.as_ref(), map, diagnostics, |e| {
-                eval_action_or_no_action(
-                    interner,
-                    meaning_cache,
-                    keycodes,
-                    vmods,
-                    action_defaults,
-                    e,
-                )
-            });
+            let actions = eval_brace_list(
+                e.as_ref(),
+                map,
+                interner,
+                diagnostics,
+                |_, interner, _, e, elements| {
+                    let action = eval_action_or_no_action(
+                        interner,
+                        meaning_cache,
+                        keycodes,
+                        vmods,
+                        action_defaults,
+                        e,
+                    )?;
+                    elements.extend(action);
+                    Ok(())
+                },
+            );
             InterpField::Actions(actions)
         }
         Meaning::Virtualmodifier | Meaning::Virtualmod => {
@@ -1800,25 +1836,41 @@ pub(crate) fn eval_indicator_map_field(
     Ok(field.spanned2(span))
 }
 
+#[expect(clippy::too_many_arguments)]
 pub(crate) fn eval_mod_map_field(
-    interner: &Interner,
+    map: &mut CodeMap,
+    diagnostics: &mut DiagnosticSink<'_, '_>,
+    interner: &mut Interner,
+    cooker: &mut StringCooker,
     meaning_cache: &mut MeaningCache,
     keycodes: &ResolvedKeycodes,
     expr: &Expr,
     span: Span,
-) -> Result<Spanned<ModMapField>, Spanned<EvalError>> {
+    mut handler: impl FnMut(Spanned<ModMapField>),
+) -> Result<(), Spanned<EvalError>> {
     if let Expr::KeyName(n) = expr {
         if let Some(c) = keycodes.name_to_key.get(n) {
             let code = match c.kind {
                 ResolvedKeyKind::Real(kc) => kc.val,
                 ResolvedKeyKind::Alias(_, kc, _) => kc,
             };
-            return Ok(ModMapField::Keycode(code).spanned2(span));
+            handler(ModMapField::Keycode(code).spanned2(span));
+            return Ok(());
         }
         return Err(UnknownKeycode.spanned2(span));
     }
-    eval_keysym(interner, meaning_cache, expr.spanned2(span))
-        .span_map(|s| ModMapField::Keysym(s, None))
+    eval_keysyms(
+        map,
+        diagnostics,
+        interner,
+        cooker,
+        meaning_cache,
+        expr.spanned2(span),
+        |sym| {
+            handler(ModMapField::Keysym(sym, None).spanned2(span));
+            Ok(())
+        },
+    )
 }
 
 pub(crate) enum SymbolsField {
@@ -1842,28 +1894,29 @@ pub(crate) type GroupList<T> = Vec<SmallVec<[Spanned<T>; 1]>>;
 fn eval_brace_list<T>(
     e: Spanned<&Expr>,
     map: &mut CodeMap,
+    interner: &mut Interner,
     diagnostic: &mut DiagnosticSink,
-    mut eval: impl FnMut(Spanned<&Expr>) -> Result<Option<Spanned<T>>, Spanned<EvalError>>,
+    mut eval: impl FnMut(
+        &mut CodeMap,
+        &mut Interner,
+        &mut DiagnosticSink,
+        Spanned<&Expr>,
+        &mut SmallVec<[Spanned<T>; 1]>,
+    ) -> Result<(), Spanned<EvalError>>,
 ) -> SmallVec<[Spanned<T>; 1]> {
-    let mut elements = SmallVec::new();
-    let mut handle = |e: Spanned<&Expr>| match eval(e) {
-        Ok(v) => v,
-        Err(e) => {
+    let mut handle = |e: Spanned<&Expr>, elements: &mut SmallVec<[Spanned<T>; 1]>| {
+        if let Err(e) = eval(map, interner, diagnostic, e, elements) {
             diagnostic.push(map, e.val.diagnostic_kind(), e);
-            None
         }
     };
+    let mut elements = SmallVec::new();
     if let Expr::BraceList(b) = e.val {
         elements.reserve_exact(b.len());
         for e in b {
-            if let Some(e) = handle(e.as_ref()) {
-                elements.push(e);
-            }
+            handle(e.as_ref(), &mut elements);
         }
     } else {
-        if let Some(e) = handle(e) {
-            elements.push(e);
-        }
+        handle(e, &mut elements);
     }
     elements
 }
@@ -1871,10 +1924,16 @@ fn eval_brace_list<T>(
 fn eval_symbols_list<T>(
     group_expr: Option<Spanned<&Expr>>,
     map: &mut CodeMap,
-    interner: &Interner,
+    interner: &mut Interner,
     diagnostic: &mut DiagnosticSink,
     expr: Spanned<&Expr>,
-    mut eval: impl FnMut(Spanned<&Expr>) -> Result<Option<Spanned<T>>, Spanned<EvalError>>,
+    mut eval: impl FnMut(
+        &mut CodeMap,
+        &mut Interner,
+        &mut DiagnosticSink,
+        Spanned<&Expr>,
+        &mut SmallVec<[Spanned<T>; 1]>,
+    ) -> Result<(), Spanned<EvalError>>,
 ) -> Result<(Option<GroupIdx>, GroupList<T>), Spanned<EvalError>> {
     let mut group = None;
     if let Some(e) = group_expr {
@@ -1885,7 +1944,7 @@ fn eval_symbols_list<T>(
     };
     let mut levels = Vec::with_capacity(b.len());
     for e in b {
-        let elements = eval_brace_list(e.as_ref(), map, diagnostic, &mut eval);
+        let elements = eval_brace_list(e.as_ref(), map, interner, diagnostic, &mut eval);
         levels.push(elements);
     }
     while let Some(last) = levels.last() {
@@ -2016,13 +2075,21 @@ pub(crate) fn eval_symbols_field(
             interner,
             diagnostics,
             get_expr!(MissingKeySymbolsValue),
-            |e| {
-                let ks = eval_keysym(interner, meaning_cache, e)?;
-                let ks = match ks.val {
-                    syms::NoSymbol => None,
-                    _ => Some(ks),
-                };
-                Ok(ks)
+            |map, interner, diagnostics, e, elements| {
+                eval_keysyms(
+                    map,
+                    diagnostics,
+                    interner,
+                    cooker,
+                    meaning_cache,
+                    e,
+                    |sym| {
+                        if sym != syms::NoSymbol {
+                            elements.push(sym.spanned2(e.span));
+                        }
+                        Ok(())
+                    },
+                )
             },
         )
         .map(SymbolsField::Symbols)?,
@@ -2032,15 +2099,17 @@ pub(crate) fn eval_symbols_field(
             interner,
             diagnostics,
             get_expr!(MissingKeyActionsValue),
-            |e| {
-                eval_action_or_no_action(
+            |_, interner, _, e, elements| {
+                let action = eval_action_or_no_action(
                     interner,
                     meaning_cache,
                     keycodes,
                     mods,
                     action_defaults,
                     e,
-                )
+                )?;
+                elements.extend(action);
+                Ok(())
             },
         )
         .map(SymbolsField::Actions)?,
