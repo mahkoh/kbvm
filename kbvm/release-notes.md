@@ -54,6 +54,7 @@
   non-ascii text.
 - The following characters are now always treated as insignificant whitespace
   between tokens
+
   - U+0009 - tab
   - U+000b - vertical tab
   - U+000c - form feed
@@ -64,8 +65,11 @@
   - U+200f - right-to-left mark
   - U+2028 - line separator
   - U+2029 - paragraph separator
+
   In xkb files, the following character is also insignificant whitespace
+
   - U+000a - line feed
+
   In RMLVO and compose files, line feeds are significant.
 - The character `^` can now be used to signify the `replace` merge mode
   wherever `+` and `|` could already be used.
