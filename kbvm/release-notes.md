@@ -1,5 +1,7 @@
 # Unreleased
 
+# 0.1.4 (2025-04-21)
+
 - Fixed the following scenario:
 
   ```xkb
