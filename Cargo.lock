@@ -951,6 +951,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
+name = "run-on-drop"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1c9afdcca45aed5b357d64e0d033f6400c07a668aa4f9b92d25d39a884889457"
+
+[[package]]
 name = "rustix"
 version = "0.38.43"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1472,9 +1478,9 @@ dependencies = [
 
 [[package]]
 name = "wl-client"
-version = "0.1.1"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f7f8f66575439474cd289ef33b3df17ded77407d902024ac521c095473db731"
+checksum = "8b0da147fb6f7dd0751cfc0ceb3af65d2b35f7472c26a1f0c8035a1c31285c21"
 dependencies = [
  "cfg-if",
  "isnt",
@@ -1482,13 +1488,14 @@ dependencies = [
  "libloading",
  "mio",
  "parking_lot",
+ "run-on-drop",
 ]
 
 [[package]]
 name = "wl-client-builder"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c756dbc603d4624de5d56e41287e3efca43d21f5fbe58659a3b14cfa71ef689"
+checksum = "cce22d12f03c9763c113b05fe515a8e0728864df3a061585fa67dd0c8d8c24b6"
 dependencies = [
  "debug-fn",
  "phf",
