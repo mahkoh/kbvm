@@ -17,7 +17,7 @@ use {
             level::Level,
             meaning::{Meaning, MeaningCache},
             mod_component::ModComponentMask,
-            modmap::Vmodmap,
+            modmap::{ModifierTree, Vmodmap},
             radio_group::RadioGroup,
             resolved::{
                 ActionDefaults, BuiltInKeytype, Filter, KeyTypeRef, ModMapField, Predicate,
@@ -822,9 +822,11 @@ pub(crate) fn eval_real_mods(
     meaning_cache: &mut MeaningCache,
     expr: Spanned<&Expr>,
 ) -> Result<Spanned<ModifierMask>, Spanned<EvalError>> {
-    eval_mods_(expr, &mut |ident| {
+    eval_mods_(expr, true, &mut |ident| {
         ident_to_real_mod_mask(interner, meaning_cache, ident)
+            .map(|v| ModifierTree::Num(ModifierMask(v)))
     })
+    .span_map(|t| t.eval_real().0)
 }
 
 pub(crate) fn eval_mods(
@@ -832,10 +834,11 @@ pub(crate) fn eval_mods(
     meaning_cache: &mut MeaningCache,
     vmods: &Vmodmap,
     expr: Spanned<&Expr>,
-) -> Result<Spanned<ModifierMask>, Spanned<EvalError>> {
-    eval_mods_(expr, &mut |ident| {
+) -> Result<Spanned<ModifierTree>, Spanned<EvalError>> {
+    eval_mods_(expr, true, &mut |ident| {
         ident_to_real_mod_mask(interner, meaning_cache, ident)
-            .or_else(|| vmods.get(ident).map(|m| m.idx.to_mask().0))
+            .map(|v| ModifierTree::Num(ModifierMask(v)))
+            .or_else(|| vmods.get(ident).map(|m| ModifierTree::VMod(m.clone())))
     })
 }
 
@@ -843,46 +846,45 @@ pub(crate) fn eval_virtual_mods(
     vmods: &Vmodmap,
     expr: Spanned<&Expr>,
 ) -> Result<Spanned<ModifierMask>, Spanned<EvalError>> {
-    eval_mods_(expr, &mut |ident| {
-        vmods.get(ident).map(|m| m.idx.to_mask().0)
-    })
+    let res = eval_mods_(expr, false, &mut |ident| {
+        vmods.get(ident).map(|m| ModifierTree::VMod(m.clone()))
+    })?;
+    let (v, _) = res.val.eval_virtual();
+    Ok(v.spanned2(res.span))
 }
 
 fn eval_mods_(
     expr: Spanned<&Expr>,
-    name_to_mod: &mut impl FnMut(Interned) -> Option<u32>,
-) -> Result<Spanned<ModifierMask>, Spanned<EvalError>> {
+    allow_integer: bool,
+    name_to_mod: &mut impl FnMut(Interned) -> Option<ModifierTree>,
+) -> Result<Spanned<ModifierTree>, Spanned<EvalError>> {
+    let mut eval = |e: &Spanned<Expr>| eval_mods_(e.as_ref(), allow_integer, name_to_mod);
     let res = match &expr.val {
         Expr::UnInverse(v) => {
-            return eval_mods_(v.deref().as_ref(), name_to_mod).map(|mut v| {
-                let only_real = v.val.0 & !0xff == 0;
-                v.val.0 = !v.val.0;
-                if only_real {
-                    // assume that only real modifiers are desired here
-                    v.val.0 &= 0xff;
-                }
-                v.val.spanned2(expr.span)
-            });
+            let v = eval(v)?;
+            Ok(ModifierTree::Not(Box::new(v)))
         }
         Expr::Path(p) => p
             .unique_ident()
             .and_then(name_to_mod)
             .ok_or(UnknownModifier),
-        Expr::Integer(_, v) => u32::try_from(*v).map_err(|_| ModsCalculationOverflow),
-        Expr::Parenthesized(v) => return eval_mods_(v.deref().as_ref(), name_to_mod),
+        Expr::Integer(_, v) if allow_integer => u32::try_from(*v)
+            .map_err(|_| ModsCalculationOverflow)
+            .map(|m| ModifierTree::Num(ModifierMask(m))),
+        Expr::Parenthesized(v) => return eval(v),
         Expr::Add(l, r) => {
-            let l = eval_mods_(l.deref().as_ref(), name_to_mod)?;
-            let r = eval_mods_(r.deref().as_ref(), name_to_mod)?;
-            Ok(l.val.0 | r.val.0)
+            let l = eval(l)?;
+            let r = eval(r)?;
+            Ok(ModifierTree::Add(Box::new(l), Box::new(r)))
         }
         Expr::Sub(l, r) => {
-            let l = eval_mods_(l.deref().as_ref(), name_to_mod)?;
-            let r = eval_mods_(r.deref().as_ref(), name_to_mod)?;
-            Ok(l.val.0 & !r.val.0)
+            let l = eval(l)?;
+            let r = eval(r)?;
+            Ok(ModifierTree::Sub(Box::new(l), Box::new(r)))
         }
         _ => Err(UnsupportedExpressionForModMask),
     };
-    res.map(ModifierMask).span_either(expr.span)
+    res.span_either(expr.span)
 }
 
 pub(crate) fn eval_interned(
@@ -1680,9 +1682,9 @@ pub(crate) fn eval_interp_field(
 }
 
 pub(crate) enum TypeField {
-    Modifiers(Spanned<ModifierMask>),
-    Map(Spanned<ModifierMask>, Spanned<Level>),
-    Preserve(Spanned<ModifierMask>, Spanned<ModifierMask>),
+    Modifiers(Spanned<ModifierTree>),
+    Map(Spanned<ModifierTree>, Spanned<Level>),
+    Preserve(Spanned<ModifierTree>, Spanned<ModifierTree>),
     LevelName(Spanned<Level>, Spanned<Interned>),
 }
 
@@ -1767,7 +1769,7 @@ pub(crate) fn eval_type_field(
 }
 
 pub(crate) enum IndicatorMapField {
-    Modifiers(Spanned<ModifierMask>),
+    Modifiers(Spanned<ModifierTree>),
     Groups(Spanned<GroupMask>),
     Controls(Spanned<ControlMask>),
     WhichModifierState(Spanned<ModComponentMask>),

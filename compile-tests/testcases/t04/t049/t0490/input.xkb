@@ -1,0 +1,15 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+    };
+    xkb_symbols {
+        virtual_modifiers X = 0xf0000000;
+        key <a> {
+            actions = [ SetMods(mods = 0x100) ],
+        };
+        key <b> {
+            actions = [ SetMods(mods = X) ],
+        };
+    };
+};

@@ -1,5 +1,77 @@
 # Unreleased
 
+- Fixed the following scenario that was previously bugged in all XKB
+  implementations:
+
+  ```
+  xkb_symbols {
+      virtual_modifiers Alt = Mod1;
+      key <a> {
+          actions = [ SetMods(mods = Alt - Mod1) ],
+      };
+  };
+  ```
+
+  This now compiles to 
+
+  ```
+  xkb_symbols {
+      virtual_modifiers Alt = Mod1;
+      key <a> {
+        actions = [ SetMods(mods = None) ],
+      };
+  };
+  ```
+  
+  whereas previously it would compile to
+
+  ```
+  xkb_symbols {
+      virtual_modifiers Alt = Mod1;
+      key <a> {
+        actions = [ SetMods(mods = Mod1) ],
+      };
+  };
+  ```
+- Fixed the following scenario that was previously bugged in all XKB
+  implementations:
+
+  ```
+  xkb_symbols {
+      virtual_modifiers Alt = Mod1;
+      key <a> {
+          actions = [ SetMods(mods = 0x100) ],
+      };
+  };
+  ```
+  
+  Previously this compiled to
+
+  ```
+  xkb_symbols {
+      virtual_modifiers Alt = Mod1;
+      key <a> {
+          actions = [ SetMods(mods = Mod1) ],
+      };
+  };
+  ```
+  
+  because the `Alt` virtual modifier was internally assigned the mask `0x100`.
+  This behavior depended on implementation details and the parsing order of
+  virtual modifiers.
+
+  Instead, integer literals in modifiers are now used as-is, and this now
+  compiles to
+
+  ```
+  xkb_symbols {
+      virtual_modifiers Alt = Mod1;
+      key <a> {
+          actions = [ SetMods(mods = 0x100) ],
+      };
+  };
+  ```
+
 # 0.1.4 (2025-04-21)
 
 - Fixed the following scenario:
