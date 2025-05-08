@@ -43,7 +43,7 @@ impl Keymap {
         for m in &resolved.mods {
             virtual_modifiers.push(VirtualModifier {
                 name: get_string(m.name.val),
-                values: m.def.despan().unwrap_or_default(),
+                values: m.def.get().despan().unwrap_or_default(),
             });
         }
         virtual_modifiers.sort_unstable_by(|l, r| l.name.cmp(&r.name));
@@ -56,10 +56,10 @@ impl Keymap {
         let mut used_types = HashSet::new();
         for ty in resolved.types.key_types.values() {
             let mut mappings = Vec::with_capacity(ty.ty.map.len());
-            for (n, v) in &ty.ty.map {
+            for (n, v, p) in &ty.ty.map_preserve {
                 mappings.push(KeyTypeMapping {
                     modifiers: *n,
-                    preserved: ty.ty.preserved.get(n).copied().despan().unwrap_or_default(),
+                    preserved: p.despan().unwrap_or_default(),
                     level: v.val,
                 });
             }
@@ -71,7 +71,12 @@ impl Keymap {
             level_names.sort_unstable_by_key(|l| l.0);
             let t = KeyType {
                 name: get_string(ty.name.val),
-                modifiers: ty.ty.modifiers.despan().unwrap_or_default(),
+                modifiers: ty
+                    .ty
+                    .modifiers
+                    .as_ref()
+                    .map(|v| v.val.get_effective())
+                    .unwrap_or_default(),
                 mappings,
                 level_names,
             };
@@ -90,7 +95,11 @@ impl Keymap {
         let mut indicators = Vec::with_capacity(resolved.compat.indicator_maps.len());
         for i in resolved.compat.indicator_maps.values() {
             let map = &i.indicator_map;
-            let modifier_mask = map.modifiers.despan().unwrap_or_default();
+            let modifier_mask = map
+                .modifiers
+                .as_ref()
+                .map(|v| v.val.get_effective())
+                .unwrap_or_default();
             let group_mask = map.groups.despan().unwrap_or_default();
             let mut mod_components = map.which_modifier_state.despan().unwrap_or_default();
             if modifier_mask.0 == 0 {
@@ -331,10 +340,10 @@ fn map_action(
 ) -> Option<Action> {
     let map_action_mods = |mods: &Option<Spanned<ResolvedActionMods>>| {
         let mods = mods
-            .despan()
-            .map(|m| match m {
+            .as_ref()
+            .map(|m| match &m.val {
                 ResolvedActionMods::ModMap => modmap,
-                ResolvedActionMods::Explicit(e) => e,
+                ResolvedActionMods::Explicit(e) => e.get_effective(),
             })
             .unwrap_or_default();
         (mods.0 != 0).then_some(mods)

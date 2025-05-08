@@ -26,16 +26,18 @@ xkb_keymap {
         type "B" {
             modifiers = Shift+Mod2;
             map[Mod2] = Level2;
+            preserve[Mod2] = Mod2;
         };
 
         type "C" {
             modifiers = Shift+Mod2;
             map[Mod2] = Level2;
+            preserve[Mod2] = Mod2;
         };
 
         type "D" {
             modifiers = Shift+Mod2;
-            map[Mod2] = Level3;
+            map[Mod2] = Level2;
             preserve[Mod2] = Mod2;
         };
 

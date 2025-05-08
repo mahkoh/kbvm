@@ -1,0 +1,16 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_types {
+        virtual_modifiers X;
+        type "ONE_LEVEL" {
+            modifiers = Mod1 + X;
+            map[Mod1]     = Level1;
+            map[Mod1 + X] = Level2;
+        };
+    };
+    xkb_symbols {
+        key <a> { [ a ] };
+    };
+};

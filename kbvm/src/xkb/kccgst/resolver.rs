@@ -30,18 +30,17 @@ use {
             resolved::{
                 BuiltInKeytype, Filter, GroupsRedirect, Indicator, IndicatorMap,
                 IndicatorMapWithKey, Interp, InterpWithKey, KeyTypeRef, ModMapEntryWithKey,
-                ModMapField, Predicate, Resolved, ResolvedAction, ResolvedActionMods,
-                ResolvedCompat, ResolvedKey, ResolvedKeyKind, ResolvedKeyType,
-                ResolvedKeyTypeWithName, ResolvedKeycodes, ResolvedSymbols, ResolvedTypes,
-                SymbolsKey, SymbolsKeyBehavior, SymbolsKeyGroup, SymbolsKeyLevel,
-                SymbolsKeyWithKey,
+                ModMapField, Predicate, Resolved, ResolvedAction, ResolvedCompat, ResolvedKey,
+                ResolvedKeyKind, ResolvedKeyType, ResolvedKeyTypeWithName, ResolvedKeycodes,
+                ResolvedSymbols, ResolvedTypes, SymbolsKey, SymbolsKeyBehavior, SymbolsKeyGroup,
+                SymbolsKeyLevel, SymbolsKeyWithKey,
             },
             span::{Span, SpanExt, Spanned},
             string_cooker::StringCooker,
         },
         Keycode, Keysym, ModifierIndex, ModifierMask,
     },
-    hashbrown::{hash_map::Entry, DefaultHashBuilder, HashSet},
+    hashbrown::{hash_map::Entry, DefaultHashBuilder, HashMap, HashSet},
     indexmap::IndexMap,
     isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::ad_hoc_display,
@@ -65,7 +64,7 @@ pub(crate) fn resolve(
         cooker,
     };
 
-    let mut mods = VmodResolver {
+    let mods = VmodResolver {
         r: &mut resolver,
         data: Default::default(),
     }
@@ -106,7 +105,7 @@ pub(crate) fn resolve(
     .resolve(item);
     fix_resolved_symbols(&mut resolver, &types, &mut symbols);
 
-    fix_combined_properties(&mut mods, &mut types, &mut compat, &mut symbols);
+    fix_combined_properties(&mods, &mut types, &mut compat, &mut symbols);
 
     let mut name = None;
     if let ItemType::Composite(c) = &item.ty {
@@ -209,8 +208,8 @@ fn fix_resolved_types(types: &mut ResolvedTypes) {
         ty.ty.num_levels = ty
             .ty
             .map
-            .values()
-            .map(|v| v.val.to_offset() + 1)
+            .iter()
+            .map(|v| v.1.val.to_offset() + 1)
             .max()
             .unwrap_or(0);
     }
@@ -436,7 +435,7 @@ fn infer_key_type(group: &SymbolsKeyGroup) -> BuiltInKeytype {
 }
 
 fn fix_combined_properties(
-    mods: &mut Vmodmap,
+    mods: &Vmodmap,
     types: &mut ResolvedTypes,
     compat: &mut ResolvedCompat,
     symbols: &mut ResolvedSymbols,
@@ -515,9 +514,11 @@ fn fix_combined_properties(
             key.virtualmodifiers = virtual_modifiers.map(|m| m.spanned2(key_with_key.name.span));
         }
         if let Some(mm) = key.virtualmodifiers {
-            for m in &mut *mods {
+            for m in mods {
                 if mm.val.contains(m.idx.to_mask()) {
-                    m.def.get_or_insert(key.modmap.spanned2(m.name.span)).val |= key.modmap;
+                    let mut mask = m.def.get();
+                    mask.get_or_insert(key.modmap.spanned2(m.name.span)).val |= key.modmap;
+                    m.def.set(mask);
                 }
             }
         }
@@ -525,62 +526,36 @@ fn fix_combined_properties(
 
     for ty in types.key_types.values_mut() {
         let ty = &mut ty.ty;
-        if let Some(mask) = &mut ty.modifiers {
-            mask.val = mods.get_effective(mask.val);
-        }
-        let mut new_map = IndexMap::with_hasher(DefaultHashBuilder::default());
-        let mut new_preserved = IndexMap::with_hasher(DefaultHashBuilder::default());
-        for (mask, val) in &ty.preserved {
-            if let indexmap::map::Entry::Vacant(v) = ty.map.entry(*mask) {
-                v.insert(Level::ONE.spanned2(val.span));
-            }
-        }
-        for (mask, val) in &ty.map {
-            let Ok(effective) = mods.try_get_effective(*mask) else {
-                continue;
-            };
-            if let indexmap::map::Entry::Vacant(v) = new_map.entry(effective) {
-                v.insert(*val);
-                if let Some(p) = ty.preserved.get(mask) {
-                    let val = mods.get_effective(p.val);
-                    new_preserved.insert(effective, val.spanned2(p.span));
+        let mut map_effective = IndexMap::with_hasher(DefaultHashBuilder::default());
+        let mut preserve_effective = HashMap::new();
+        for (mask, lvl) in &ty.map {
+            match mask.try_get_effective() {
+                Ok(v) => {
+                    map_effective.insert(v, Some(*lvl));
+                }
+                Err(v) => {
+                    map_effective.entry(v).or_insert(None);
                 }
             }
         }
-        ty.map = new_map;
-        ty.preserved = new_preserved;
-    }
-
-    let fix_action_mods = |action_mods: &mut Option<Spanned<ResolvedActionMods>>| {
-        if let Some(action_mods) = action_mods {
-            if let ResolvedActionMods::Explicit(e) = &mut action_mods.val {
-                *e = mods.get_effective(*e);
+        for (mask, preserve) in &ty.preserved {
+            let mask = mask.get_effective();
+            if let indexmap::map::Entry::Vacant(v) = map_effective.entry(mask) {
+                v.insert(Some(Level::ONE.spanned2(preserve.span)));
+            }
+            preserve_effective.insert(mask, preserve);
+        }
+        for (mask, val) in &map_effective {
+            if let Some(val) = val {
+                let preserve = preserve_effective
+                    .get(mask)
+                    .map(|v| v.val.get_effective().spanned2(v.span));
+                ty.map_preserve.push((*mask, *val, preserve));
             }
         }
-    };
-    for key in symbols.keys.values_mut() {
-        for group in &mut key.key.groups {
-            for level in &mut group.levels {
-                for action in &mut level.actions {
-                    match &mut action.val {
-                        ResolvedAction::ResolvedModsSet(e) => fix_action_mods(&mut e.modifiers),
-                        ResolvedAction::ResolvedModsLatch(e) => fix_action_mods(&mut e.modifiers),
-                        ResolvedAction::ResolvedModsLock(e) => fix_action_mods(&mut e.modifiers),
-                        ResolvedAction::ResolvedRedirectKey(e) => {
-                            fix_action_mods(&mut e.mods_to_set);
-                            fix_action_mods(&mut e.mods_to_clear);
-                        }
-                        _ => {}
-                    }
-                }
-            }
-        }
-    }
-
-    for indicator in compat.indicator_maps.values_mut() {
-        if let Some(mask) = &mut indicator.indicator_map.modifiers {
-            mask.val = mods.get_effective(mask.val);
-        }
+        drop(preserve_effective);
+        ty.map.clear();
+        ty.preserved.clear();
     }
 }
 
@@ -659,7 +634,7 @@ impl VmodResolver<'_, '_, '_, '_> {
         f(self);
         let child = mem::replace(&mut self.data, parent);
         for vmod in child {
-            self.handle_vmod(mm, vmod.name, vmod.def);
+            self.handle_vmod(mm, vmod.name, vmod.def.get());
         }
     }
 
@@ -716,9 +691,9 @@ impl VmodResolver<'_, '_, '_, '_> {
             );
             return;
         };
-        if vmod.def.is_none() || vmod.def == value || mm.is_not_augment() {
+        if vmod.def.get().is_none() || vmod.def.get() == value || mm.is_not_augment() {
             if value.is_some() {
-                vmod.def = value;
+                vmod.def.set(value);
             }
         } else {
             self.r.diag(
@@ -959,10 +934,10 @@ impl ResolvedKeyType {
                 self.modifiers = Some(m);
             }
             TypeField::Map(k, v) => {
-                self.map.insert(k.val, v);
+                self.map.push((k.val, v));
             }
             TypeField::Preserve(k, v) => {
-                self.preserved.insert(k.val, v);
+                self.preserved.push((k.val, v));
             }
             TypeField::LevelName(n, v) => {
                 self.names.insert(n.val, v);

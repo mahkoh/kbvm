@@ -10,7 +10,7 @@ use {
             keymap::KeyOverlay,
             level::Level,
             mod_component::ModComponentMask,
-            modmap::Vmodmap,
+            modmap::{ModifierTree, Vmodmap},
             radio_group::RadioGroup,
             span::{Span, Spanned},
         },
@@ -87,9 +87,10 @@ pub(crate) struct ResolvedKeyTypeWithName {
 
 #[derive(Clone, Default, Debug)]
 pub(crate) struct ResolvedKeyType {
-    pub(crate) modifiers: Option<Spanned<ModifierMask>>,
-    pub(crate) map: IndexMap<ModifierMask, Spanned<Level>, DefaultHashBuilder>,
-    pub(crate) preserved: IndexMap<ModifierMask, Spanned<ModifierMask>, DefaultHashBuilder>,
+    pub(crate) modifiers: Option<Spanned<ModifierTree>>,
+    pub(crate) map: Vec<(ModifierTree, Spanned<Level>)>,
+    pub(crate) preserved: Vec<(ModifierTree, Spanned<ModifierTree>)>,
+    pub(crate) map_preserve: Vec<(ModifierMask, Spanned<Level>, Option<Spanned<ModifierMask>>)>,
     pub(crate) names: HashMap<Level, Spanned<Interned>>,
     pub(crate) num_levels: usize,
 }
@@ -152,7 +153,7 @@ pub(crate) struct IndicatorMapWithKey {
 pub(crate) struct IndicatorMap {
     pub(crate) idx: Option<IndicatorIdx>,
     pub(crate) virt: bool,
-    pub(crate) modifiers: Option<Spanned<ModifierMask>>,
+    pub(crate) modifiers: Option<Spanned<ModifierTree>>,
     pub(crate) groups: Option<Spanned<GroupMask>>,
     pub(crate) controls: Option<Spanned<ControlMask>>,
     pub(crate) which_modifier_state: Option<Spanned<ModComponentMask>>,
@@ -262,7 +263,7 @@ pub(crate) struct ResolvedSymbols {
 }
 
 #[expect(clippy::enum_variant_names)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub(crate) enum ResolvedAction {
     ResolvedNoAction(ResolvedNoAction),
     ResolvedModsSet(ResolvedModsSet),
@@ -279,10 +280,10 @@ pub(crate) enum ResolvedAction {
 #[derive(Copy, Clone, Debug, Default)]
 pub(crate) struct ResolvedNoAction;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub(crate) enum ResolvedActionMods {
     ModMap,
-    Explicit(ModifierMask),
+    Explicit(ModifierTree),
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -291,20 +292,20 @@ pub(crate) struct ResolvedActionAffect {
     pub(crate) unlock: bool,
 }
 
-#[derive(Copy, Clone, Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub(crate) struct ResolvedModsSet {
     pub(crate) clear_locks: Option<Spanned<bool>>,
     pub(crate) modifiers: Option<Spanned<ResolvedActionMods>>,
 }
 
-#[derive(Copy, Clone, Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub(crate) struct ResolvedModsLatch {
     pub(crate) clear_locks: Option<Spanned<bool>>,
     pub(crate) latch_to_lock: Option<Spanned<bool>>,
     pub(crate) modifiers: Option<Spanned<ResolvedActionMods>>,
 }
 
-#[derive(Copy, Clone, Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub(crate) struct ResolvedModsLock {
     pub(crate) modifiers: Option<Spanned<ResolvedActionMods>>,
     pub(crate) affect: Option<Spanned<ResolvedActionAffect>>,
@@ -338,7 +339,7 @@ impl GroupsRedirect {
     }
 }
 
-#[derive(Copy, Clone, Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub(crate) struct ResolvedRedirectKey {
     pub(crate) keycode: Option<Spanned<(Interned, Keycode)>>,
     pub(crate) mods_to_set: Option<Spanned<ResolvedActionMods>>,

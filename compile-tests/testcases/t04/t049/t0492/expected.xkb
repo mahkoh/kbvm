@@ -9,12 +9,11 @@ xkb_keymap {
     };
 
     xkb_types {
-        virtual_modifiers X = Mod1;
+        virtual_modifiers X;
 
-        type "A" {
+        type "ONE_LEVEL" {
             modifiers = Mod1;
-            map[Mod1] = Level2;
-            preserve[Mod1] = Mod3;
+            map[Mod1] = Level1;
         };
     };
 
@@ -28,8 +27,8 @@ xkb_keymap {
         key.repeat = true;
 
         key <a> {
-            type[Group1] = "A",
-            symbols[Group1] = [ A ]
+            type[Group1] = "ONE_LEVEL",
+            symbols[Group1] = [ a ]
         };
     };
 };

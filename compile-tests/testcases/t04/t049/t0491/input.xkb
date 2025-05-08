@@ -1,0 +1,11 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+    };
+    xkb_symbols {
+        virtual_modifiers Alt = Mod1;
+        key <a> {
+            actions = [ SetMods(mods = Mod2 + Alt - Mod1) ],
+        };
+    };
+};
