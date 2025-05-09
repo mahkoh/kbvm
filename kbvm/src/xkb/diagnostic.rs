@@ -995,6 +995,19 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     UnknownParameterForNoAction,
+    /// An unknown parameter appears in a `VoidAction` action.
+    ///
+    /// # Example
+    ///
+    /// ```xkb
+    /// xkb_symbols {
+    ///     key <a> {
+    ///         [ VoidAction(abcd = 1) ],
+    ///     };
+    /// };
+    /// ```
+    #[severity = Error]
+    UnknownParameterForVoidAction,
     /// An unknown parameter appears in a `SetMods` action.
     ///
     /// # Example

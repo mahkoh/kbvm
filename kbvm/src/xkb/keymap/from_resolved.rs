@@ -1,6 +1,7 @@
 use {
     crate::{
         xkb::{
+            controls::ControlMask,
             group::GroupIdx,
             interner::{Interned, Interner},
             keymap::{
@@ -350,6 +351,11 @@ fn map_action(
     };
     let action = match a {
         ResolvedAction::ResolvedNoAction(_) => return None,
+        ResolvedAction::ResolvedVoidAction(_) => Action::ControlsLock(ControlsLockAction {
+            controls: ControlMask::NONE,
+            lock: false,
+            unlock: false,
+        }),
         ResolvedAction::ResolvedModsSet(m) => Action::ModsSet(ModsSetAction {
             clear_locks: m.clear_locks.despan().unwrap_or_default(),
             modifiers: map_action_mods(&m.modifiers)?,

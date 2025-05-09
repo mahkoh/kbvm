@@ -14,7 +14,7 @@ pub fn main() {
     std::fs::write("kbvm/src/xkb/meaning/generated.rs", output).unwrap();
 }
 
-const STRINGS: [&str; 227] = [
+const STRINGS: [&str; 228] = [
     "accel",
     "accelerate",
     "AccessXFeedback",
@@ -223,6 +223,7 @@ const STRINGS: [&str; 227] = [
     "virtualmodifiers",
     "virtualmods",
     "vmods",
+    "VoidAction",
     "voidsymbol",
     "whichgroupstate",
     "whichmodifierstate",
