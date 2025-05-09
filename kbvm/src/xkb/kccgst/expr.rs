@@ -25,6 +25,7 @@ use {
                 ResolvedGroupLock, ResolvedGroupSet, ResolvedKeyKind, ResolvedKeycodes,
                 ResolvedLockControls, ResolvedModsLatch, ResolvedModsLock, ResolvedModsSet,
                 ResolvedNoAction, ResolvedRedirectKey, ResolvedSetControls, ResolvedTypes,
+                ResolvedVoidAction,
             },
             span::{Span, SpanExt, SpanResult1, SpanResult2, Spanned},
             string_cooker::StringCooker,
@@ -91,6 +92,8 @@ pub(crate) enum EvalError {
     UnimplementedAction,
     #[error("unknown NoAction parameter")]
     UnknownParameterForNoAction,
+    #[error("unknown VoidAction parameter")]
+    UnknownParameterForVoidAction,
     #[error("unknown SetMods parameter")]
     UnknownParameterForSetMods,
     #[error("unknown LatchMods parameter")]
@@ -265,6 +268,7 @@ impl EvalError {
             UnknownAction,
             UnimplementedAction,
             UnknownParameterForNoAction,
+            UnknownParameterForVoidAction,
             UnknownParameterForSetMods,
             UnknownParameterForLatchMods,
             UnknownParameterForLockMods,
@@ -1045,6 +1049,22 @@ impl ActionParameters for ResolvedNoAction {
     }
 }
 
+impl ActionParameters for ResolvedVoidAction {
+    const UNKNOWN_PARAMETER: EvalError = UnknownParameterForVoidAction;
+
+    fn handle_field(
+        &mut self,
+        _interner: &Interner,
+        _meaning_cache: &mut MeaningCache,
+        _keycodes: &ResolvedKeycodes,
+        _vmods: &Vmodmap,
+        meaning: Spanned<Meaning>,
+        _value: Spanned<ActionParameterValue<'_>>,
+    ) -> Result<(), Spanned<EvalError>> {
+        Err(UnknownParameterForVoidAction.spanned2(meaning.span))
+    }
+}
+
 impl ActionParameters for ResolvedModsSet {
     const UNKNOWN_PARAMETER: EvalError = UnknownParameterForSetMods;
 
@@ -1447,6 +1467,7 @@ macro_rules! generate_action_name_meta {
 
 generate_action_name_meta! {
     NoAction => ResolvedNoAction | no_action,
+    VoidAction => ResolvedVoidAction | void_action,
     SetMods => ResolvedModsSet | mods_set,
     LatchMods => ResolvedModsLatch | mods_latch,
     LockMods => ResolvedModsLock | mods_lock,
