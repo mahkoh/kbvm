@@ -109,6 +109,7 @@ pub(crate) struct ResolvedCompat {
 #[derive(Default, Debug)]
 pub(crate) struct ActionDefaults {
     pub(crate) no_action: ResolvedNoAction,
+    pub(crate) void_action: ResolvedVoidAction,
     pub(crate) mods_set: ResolvedModsSet,
     pub(crate) mods_latch: ResolvedModsLatch,
     pub(crate) mods_lock: ResolvedModsLock,
@@ -266,6 +267,7 @@ pub(crate) struct ResolvedSymbols {
 #[derive(Clone, Debug)]
 pub(crate) enum ResolvedAction {
     ResolvedNoAction(ResolvedNoAction),
+    ResolvedVoidAction(ResolvedVoidAction),
     ResolvedModsSet(ResolvedModsSet),
     ResolvedModsLatch(ResolvedModsLatch),
     ResolvedModsLock(ResolvedModsLock),
@@ -279,6 +281,9 @@ pub(crate) enum ResolvedAction {
 
 #[derive(Copy, Clone, Debug, Default)]
 pub(crate) struct ResolvedNoAction;
+
+#[derive(Copy, Clone, Default, Debug)]
+pub(crate) struct ResolvedVoidAction;
 
 #[derive(Clone, Debug)]
 pub(crate) enum ResolvedActionMods {

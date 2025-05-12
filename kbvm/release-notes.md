@@ -71,6 +71,8 @@
       };
   };
   ```
+- Added support for `VoidAction()`. This is an alias for
+  `LockControls(controls=none, affect=neither)`.
 
 # 0.1.4 (2025-04-21)
 
