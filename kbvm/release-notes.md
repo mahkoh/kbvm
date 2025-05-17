@@ -3,7 +3,7 @@
 - Fixed the following scenario that was previously bugged in all XKB
   implementations:
 
-  ```
+  ```xkb
   xkb_symbols {
       virtual_modifiers Alt = Mod1;
       key <a> {
@@ -14,7 +14,7 @@
 
   This now compiles to 
 
-  ```
+  ```xkb
   xkb_symbols {
       virtual_modifiers Alt = Mod1;
       key <a> {
@@ -25,7 +25,7 @@
   
   whereas previously it would compile to
 
-  ```
+  ```xkb
   xkb_symbols {
       virtual_modifiers Alt = Mod1;
       key <a> {
@@ -36,7 +36,7 @@
 - Fixed the following scenario that was previously bugged in all XKB
   implementations:
 
-  ```
+  ```xkb
   xkb_symbols {
       virtual_modifiers Alt = Mod1;
       key <a> {
@@ -47,7 +47,7 @@
   
   Previously this compiled to
 
-  ```
+  ```xkb
   xkb_symbols {
       virtual_modifiers Alt = Mod1;
       key <a> {
@@ -63,7 +63,7 @@
   Instead, integer literals in modifiers are now used as-is, and this now
   compiles to
 
-  ```
+  ```xkb
   xkb_symbols {
       virtual_modifiers Alt = Mod1;
       key <a> {
@@ -73,6 +73,23 @@
   ```
 - Added support for `VoidAction()`. This is an alias for
   `LockControls(controls=none, affect=neither)`.
+- In compose files, later productions now always override earlier productions.
+  That is, all of the following are the same:
+
+  ```compose
+  <a> <b>:     X
+  ```
+
+  ```compose
+  <a>:         Y
+  <a> <b>:     X
+  ```
+
+  ```compose
+  <a>:         Y
+  <a> <b> <c>: Y
+  <a> <b>:     X
+  ```
 
 # 0.1.4 (2025-04-21)
 

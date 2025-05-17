@@ -1,0 +1,4 @@
+a
+    composed
+        replacement
+b
