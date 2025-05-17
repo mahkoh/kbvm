@@ -1,6 +1,5 @@
-A
+a
     pending
-B
+b
     composed
-        bar B
-C
+        replacement
