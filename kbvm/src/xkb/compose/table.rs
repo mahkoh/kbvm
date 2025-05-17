@@ -152,22 +152,34 @@ impl ComposeTable {
         //     <Multi_key> <a> <b>: X
         //     <Multi_key> <c>:     Y
         //     <Multi_key> <c>:     Z
+        //     <Multi_key> <d> <e>: U
+        //     <Multi_key> <d>:     V
+        //     <Multi_key> <f>:     I
+        //     <Multi_key> <f> <g>: J
         //
         // these vectors will the contain
         //
         //     <Multi_key>:         (no production)
-        //     <Multi_key> <c>:     Z
+        //     <Multi_key> <a>:     (no production)
+        //     <Multi_key> <a> <b>: X
         //     <Multi_key>:         (no production)
         //     <Multi_key> <c>:     Y
         //     <Multi_key>:         (no production)
-        //     <Multi_key> <a>:     (no production)
-        //     <Multi_key> <a> <b>: X
-        //
-        // note that the order of productions has been reversed
+        //     <Multi_key> <c>:     Z
+        //     <Multi_key>:         (no production)
+        //     <Multi_key> <d>:     (no production)
+        //     <Multi_key> <d> <e>: U
+        //     <Multi_key>:         (no production)
+        //     <Multi_key> <d>:     V
+        //     <Multi_key>:         (no production)
+        //     <Multi_key> <f>:     I
+        //     <Multi_key>:         (no production)
+        //     <Multi_key> <f>:     (no production)
+        //     <Multi_key> <f> <g>: J
         let mut steps = vec![];
         let mut pre_datas = vec![];
 
-        for (idx, production) in productions.iter().enumerate().rev() {
+        for (idx, production) in productions.iter().enumerate() {
             let start = steps.len();
             if u32::MAX as usize - steps.len() - 1 <= production.val.steps.len() {
                 // ensure that the maximum number of nodes fits into u32 with 1 node to
@@ -187,20 +199,85 @@ impl ComposeTable {
         }
 
         // this sort is stable and therefore preserves the order of compose rules that
-        // have the same set of steps. note that above we inserted into pre_datas in
-        // reverse order, meaning that later rules overwrite earlier rules.
+        // have the same set of steps.
         //
         // after this step, pre_datas has the following form in our example
         //
         //     <Multi_key>:         (no production)
         //     <Multi_key>:         (no production)
+        //     <Multi_key>:         (no production)
+        //     <Multi_key>:         (no production)
+        //     <Multi_key>:         (no production)
+        //     <Multi_key>:         (no production)
+        //     <Multi_key>:         (no production)
+        //     <Multi_key> <a>:     (no production)
+        //     <Multi_key> <a> <b>: X
+        //     <Multi_key> <c>:     Y
+        //     <Multi_key> <c>:     Z
+        //     <Multi_key> <d>:     (no production)
+        //     <Multi_key> <d>:     V
+        //     <Multi_key> <d> <e>: U
+        //     <Multi_key> <f>:     I
+        //     <Multi_key> <f>:     (no production)
+        //     <Multi_key> <f> <g>: J
+        //
+        // the duplicates are removed by the next step
+        pre_datas.sort_by_key(|k| &steps[k.step_range.clone()]);
+
+        let mut warn_duplicate = |pre_data: &PreData| {
+            if let Some(pl) = pre_data.production {
+                let pl = &productions[pl];
+                diagnostics.push(
+                    map,
+                    DiagnosticKind::ComposeProductionOverwritten,
+                    ad_hoc_display!("compose production has been overwritten").spanned2(pl.span),
+                );
+            }
+        };
+
+        // this step deduplicates events. there are two scenarios:
+        //
+        // 1. for each list of steps, we choose the last PreData with this list
+        // 2. if we've selected a PreData X that contains a production, then any PreData whose list
+        //    of steps is an extension of X's list of steps is discarded
+        //
+        // since pre_datas is sorted in order in which the rules were parsed, this implies that
+        // later rules overwrite earlier rules.
+        //
+        // after this step, pre_datas_dedup has the following form in our example
+        //
+        //     <Multi_key>:         (no production)
         //     <Multi_key> <a>:     (no production)
         //     <Multi_key> <a> <b>: X
         //     <Multi_key> <c>:     Z
-        //     <Multi_key> <c>:     Y
-        //
-        // the duplicates are removed by hte next step
-        pre_datas.sort_by_key(|k| &steps[k.step_range.clone()]);
+        //     <Multi_key> <d>:     V
+        //     <Multi_key> <f>:     (no production)
+        //     <Multi_key> <f> <g>: J
+        let mut pre_datas_dedup = Vec::<&PreData>::new();
+        let mut prev_step = None;
+        let mut prev_len = 0;
+        let mut prev_production = false;
+        for k in &pre_datas {
+            let len = k.step_range.len();
+            // NOTE: This is untested because the lookup logic always terminates anyway
+            //       if it finds a production. So this is just an optimization.
+            if prev_production && len > prev_len {
+                warn_duplicate(k);
+                continue;
+            }
+            let step = steps[k.step_range.end - 1];
+            if (Some(step), len) == (prev_step, prev_len) {
+                // NOTE: This is untested because the stdlib binary search always chooses
+                //       the last matching entry.
+                if let Some(prev) = pre_datas_dedup.pop() {
+                    warn_duplicate(prev);
+                }
+            }
+            prev_step = Some(step);
+            prev_len = len;
+            prev_production = k.production.is_some();
+            pre_datas_dedup.push(k);
+        }
 
         struct Data {
             step: Step,
@@ -215,48 +292,23 @@ impl ComposeTable {
         // the next steps deduplicates the contents of pre_datas and counts for each entry
         // how many children it has. in our example
         //
-        //     root node:           1 child
-        //     <Multi_key>:         2 children
-        //     <Multi_key> <a>:     1 child
-        //     <Multi_key> <a> <b>: 0 children (production = X)
-        //     <Multi_key> <c>:     0 children (production = Z, the Y production was discarded)
+        //     root node:                 1 child
+        //       <Multi_key>:             4 children
+        //         <Multi_key> <a>:       1 child
+        //           <Multi_key> <a> <b>: 0 children (production = X)
+        //         <Multi_key> <c>:       0 children (production = Z)
+        //         <Multi_key> <d>:       0 children (production = V)
+        //         <Multi_key> <f>:       1 child
+        //           <Multi_key> <f> <g>: 0 children (production = J)
         let mut datas: Vec<Data> = vec![];
         let mut num_root = 0;
 
         let mut stack: Vec<u32> = vec![];
-        let mut prev_step = None;
         let mut prev_len = 0;
-        let mut prev_production = None::<usize>;
 
-        for pre_data in pre_datas {
-            let step = steps[pre_data.step_range.end - 1];
+        for pre_data in pre_datas_dedup {
             let len = pre_data.step_range.len();
-            let is_duplicate = (Some(step), len) == (prev_step, prev_len);
-            if is_duplicate {
-                // this block contains no business logic, only diagnostics
-                if let Some(pl) = pre_data.production {
-                    let pl = &productions[pl];
-                    if let Some(prev) = prev_production {
-                        let prev = &productions[prev];
-                        if (&pl.val.string, pl.val.keysym) != (&prev.val.string, prev.val.keysym) {
-                            diagnostics.push(
-                                map,
-                                DiagnosticKind::IgnoringDuplicateComposeEntry,
-                                ad_hoc_display!("ignoring duplicate compose entry")
-                                    .spanned2(pl.span),
-                            );
-                        }
-                    } else {
-                        diagnostics.push(
-                            map,
-                            DiagnosticKind::IgnoringComposePrefix,
-                            ad_hoc_display!("ignoring compose prefix").spanned2(pl.span),
-                        );
-                    }
-                }
-                continue;
-            }
-            prev_production = pre_data.production;
+            let step = steps[pre_data.step_range.end - 1];
             if len <= prev_len {
                 // pop siblings, nephews, etc. off the stack
                 for _ in 0..prev_len - len + 1 {
@@ -267,14 +319,6 @@ impl ComposeTable {
                 Some(&idx) => {
                     let data = &mut datas[idx as usize];
                     data.num_children += 1;
-                    if let Some(pl) = data.production.take() {
-                        let pl = &productions[pl];
-                        diagnostics.push(
-                            map,
-                            DiagnosticKind::IgnoringComposePrefix,
-                            ad_hoc_display!("ignoring compose prefix").spanned2(pl.span),
-                        );
-                    }
                     Some(idx)
                 }
                 _ => {
@@ -282,7 +326,6 @@ impl ComposeTable {
                     None
                 }
             };
-            prev_step = Some(step);
             prev_len = len;
             stack.push(datas.len() as u32);
             datas.push(Data {
@@ -300,9 +343,12 @@ impl ComposeTable {
         // children will be positioned in the heap. in our example
         //
         //     <Multi_key>:         pos 1, children start at pos 2
-        //     <Multi_key> <a>:     pos 2, children start at pos 4
-        //     <Multi_key> <a> <b>: pos 4
+        //     <Multi_key> <a>:     pos 2, children start at pos 6
+        //     <Multi_key> <a> <b>: pos 6
         //     <Multi_key> <c>:     pos 3
+        //     <Multi_key> <d>:     pos 4
+        //     <Multi_key> <f>:     pos 5, children start at pos 7
+        //     <Multi_key> <f> <g>: pos 7
         let mut next_free_node_position = num_root as u32 + 1;
         let mut next_root_pos = 1;
 
@@ -327,9 +373,12 @@ impl ComposeTable {
         // sort the nodes by their position in the heap. in our example
         //
         //     <Multi_key>:         pos 1, children start at pos 2
-        //     <Multi_key> <a>:     pos 2, children start at pos 4
+        //     <Multi_key> <a>:     pos 2, children start at pos 6
         //     <Multi_key> <c>:     pos 3
-        //     <Multi_key> <a> <b>: pos 4
+        //     <Multi_key> <d>:     pos 4
+        //     <Multi_key> <f>:     pos 5
+        //     <Multi_key> <a> <b>: pos 6
+        //     <Multi_key> <f> <g>: pos 7
         datas.sort_unstable_by_key(|d| d.heap_pos.get());
 
         // the next step converts the datas to the final node structure

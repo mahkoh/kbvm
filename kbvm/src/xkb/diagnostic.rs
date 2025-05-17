@@ -1819,26 +1819,33 @@ pub enum DiagnosticKind {
     /// ```
     #[severity = Error]
     LocaleComposeFileNotResolved,
-    /// A compose file contains duplicate entries.
+    /// Deprecated.
     ///
-    /// # Example
-    ///
-    /// ```rmlvo
-    /// <a>: "A"
-    /// <a>: "B"
-    /// ```
+    /// Due to a change in semantics, this diagnostic is no longer emitted.
     #[severity = Debug]
     IgnoringDuplicateComposeEntry,
-    /// A compose file contains an entry that is a prefix of another entry.
+    /// Deprecated.
     ///
-    /// # Example
-    ///
-    /// ```rmlvo
-    /// <a>: "A"
-    /// <a> <b>: "B"
-    /// ```
+    /// Due to a change in semantics, this diagnostic is no longer emitted.
     #[severity = Debug]
     IgnoringComposePrefix,
+    /// A compose production has been overwritten by another production.
+    ///
+    /// # Example 1
+    ///
+    /// ```compose
+    /// <a>:     "replaced"
+    /// <a> <b>: "new"
+    /// ```
+    ///
+    /// # Example 2
+    ///
+    /// ```compose
+    /// <a> <b>: "replaced"
+    /// <a>:     "new"
+    /// ```
+    #[severity = Debug]
+    ComposeProductionOverwritten,
     /// A file path is not valid UTF-8.
     ///
     /// # Example
