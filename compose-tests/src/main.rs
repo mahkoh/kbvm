@@ -16,7 +16,7 @@ use {
     thiserror::Error,
 };
 
-// const SINGLE: Option<&str> = Some("t0019");
+// const SINGLE: Option<&str> = Some("t0054");
 const SINGLE: Option<&str> = None;
 const WRITE_MISSING: bool = true;
 const WRITE_FAILED: bool = false;
@@ -76,6 +76,8 @@ enum ResultError {
     WriteActualFailed(#[source] io::Error),
     #[error("could not create compose table")]
     CreateComposeTable,
+    #[error("unknown modifier `{0}`")]
+    UnknownModifier(String),
 }
 
 fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), ResultError> {
@@ -115,16 +117,32 @@ fn test_case2(diagnostics: &mut Vec<Diagnostic>, case: &Path) -> Result<(), Resu
         if let Some((pre, _)) = line.split_once("#") {
             line = pre;
         }
-        line = line.trim();
-        if line.is_empty() {
-            continue;
+        let mut iter = line.split_whitespace();
+        match iter.next() {
+            Some(l) => line = l,
+            _ => continue,
+        }
+        let mut accept = None;
+        for modifier in iter {
+            match modifier {
+                "use" => accept = Some(true),
+                "skip" => accept = Some(false),
+                _ => return Err(ResultError::UnknownModifier(modifier.to_string())),
+            }
         }
         let Some(keysym) = Keysym::from_str(line) else {
             return Err(ResultError::UnknownKeysym(line.to_string()));
         };
-        let Some(res) = table.feed(&mut state, keysym) else {
+        let Some(mut out) = table.feed2(&mut state, keysym) else {
             continue;
         };
+        if let Some(accept) = accept {
+            match accept {
+                true => out.use_intermediate_composed(),
+                false => out.skip_intermediate_composed(),
+            }
+        }
+        let res = out.apply();
         match res {
             FeedResult::Pending => actual.push_str("    pending\n"),
             FeedResult::Aborted => actual.push_str("    aborted\n"),

@@ -74,7 +74,7 @@
 - Added support for `VoidAction()`. This is an alias for
   `LockControls(controls=none, affect=neither)`.
 - In compose files, later productions now always override earlier productions.
-  That is, all of the following are the same:
+  That is, all of the following are the same in the `ComposeTable::feed` API.
 
   ```compose
   <a> <b>:     X
@@ -90,6 +90,10 @@
   <a> <b> <c>: Y
   <a> <b>:     X
   ```
+- A new function `ComposeTable::feed2` has been added to give more control over
+  situations such as the above. In the last example above, after inputting
+  `<a> <b>`, the application can choose to either use the `X` output or proceed
+  to the next possible sequence.
 
 # 0.1.4 (2025-04-21)
 

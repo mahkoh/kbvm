@@ -1,0 +1,6 @@
+a
+    composed
+        B
+a
+    composed
+        B

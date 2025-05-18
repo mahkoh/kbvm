@@ -1,0 +1,9 @@
+a
+    composed
+        B
+
+a skip
+    pending
+a
+    composed
+        A

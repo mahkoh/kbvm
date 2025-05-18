@@ -39,15 +39,31 @@ pub(crate) struct Payload {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Node {
     pub(crate) keysym: Keysym,
-    data: [u32; 2],
+    data: [u32; 4],
 }
 
-#[derive(Clone, PartialEq)]
-enum NodeType {
-    /// The range is the range of the children of this node in the table.
-    Intermediate { range: Range<usize> },
-    /// The payload is the index of the payload in the table.
-    Leaf { payload: usize },
+#[derive(Debug, Clone, PartialEq)]
+struct NodeData {
+    children: Range<usize>,
+    payload: Option<usize>,
+    is_old_terminal: bool,
+}
+
+#[derive(Debug)]
+struct NodePayload<'a> {
+    payload: &'a Payload,
+    is_old_terminal: bool,
+}
+
+#[derive(Debug)]
+enum NodeType<'a> {
+    Intermediate {
+        children: Range<usize>,
+        payload: Option<NodePayload<'a>>,
+    },
+    Leaf {
+        payload: &'a Payload,
+    },
 }
 
 /// A compose table.
@@ -76,6 +92,60 @@ enum NodeType {
 /// Some(Pending)
 /// Some(Composed { string: Some("´"), keysym: Some(acute) })
 /// ```
+///
+/// # Data Structure
+///
+/// This type represents a tree parsed from one or more compose files. For example, the compose file
+///
+/// ```compose
+/// <a>:         "foo"
+/// <a> <d>:     "bar"
+/// <a> <a> <d>: "baz"
+/// <c> <c>:     "yolo"
+/// ```
+///
+/// would produce the following tree (with an implicit root node):
+///
+/// ```txt
+///          ┌────────┐                   ┌───┐
+///          │  <a>   │                   │<c>│
+///          │        │                   └─┬─┘
+///          │-> "foo"│                     │
+///          └────┬───┘                     │
+///               │                         │
+///     ┌─────────┴───────┐                 │
+///     ▼                 ▼                 ▼
+/// ┌────────┐          ┌───┐          ┌─────────┐
+/// │  <d>   │          │<a>│          │   <c>   │
+/// │        │          └─┬─┘          │         │
+/// │-> "bar"│            │            │-> "yolo"│
+/// └────────┘            │            └─────────┘
+///                       │
+///                       │
+///                       ▼
+///                   ┌────────┐
+///                   │  <d>   │
+///                   │        │
+///                   │-> "baz"│
+///                   └────────┘
+/// ```
+///
+/// A [`State`] object is a pointer into this tree, encoding the current position. Feeding a
+/// [`Keysym`] into the [`State`] advances the [`State`] to the next child or resets it to the root
+/// node if no continuation exists.
+///
+/// # Intermediate Nodes with Data
+///
+/// Classic compose APIs do not support non-leaf nodes producing an output. In the example above,
+/// the top-left `<a>` node is such a node. Those APIs behave as if the `<a>` node did not produce
+/// an output.
+///
+/// This is the behavior of the [`ComposeTable::feed`] function. If more control is desired, then
+/// the [`ComposeTable::feed2`] function should be used instead. It allows the application decide
+/// if the intermediate node should
+///
+/// - be treated as a leaf node, and the state be reset to the root node, or
+/// - be treated as an intermediate node without an output.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ComposeTable {
     nodes: Box<[Node]>,
@@ -110,27 +180,250 @@ pub enum FeedResult<'a> {
     },
 }
 
-impl NodeType {
-    fn serialize(self) -> [u32; 2] {
-        // This is fine because we ensure that there are no more than u32::MAX nodes in
-        // the table and we generally assume that usize >= u32.
-        match self {
-            NodeType::Intermediate { range } => [range.start as u32, range.end as u32],
-            NodeType::Leaf { payload } => [!0, payload as u32],
+/// The output of a [`ComposeTable::feed2`] call.
+///
+/// Dropping this object without calling [`Self::apply`] does not update the state.
+#[derive(Debug)]
+pub struct Feed2Result<'a, 'b> {
+    state: &'b mut State,
+    table: &'a ComposeTable,
+    node: Option<NodeType<'a>>,
+    accept: Option<bool>,
+}
+
+impl<'a> Feed2Result<'a, '_> {
+    /// Returns the continuation-state of the node.
+    ///
+    /// This function returns `None` if no node was found or the node is not an intermediate node.
+    ///
+    /// # Example
+    ///
+    /// ```compose
+    /// <a>:     X
+    /// <a> <b>: Y
+    /// ```
+    ///
+    /// After feeding `<a>`, this function returns `Some`.
+    ///
+    /// After feeding `<u>`, this function returns `None`.
+    ///
+    /// ```compose
+    /// <a>: Y
+    /// ```
+    ///
+    /// After feeding `<a>`, this function returns `None`.
+    pub fn continuation(&self) -> Option<State> {
+        let node = self.node.as_ref()?;
+        match node {
+            NodeType::Intermediate { children, .. } => Some(State {
+                range: children.clone(),
+            }),
+            NodeType::Leaf { .. } => None,
+        }
+    }
+
+    /// Returns the output produced by the node.
+    ///
+    /// If no node was found, [`FeedResult::Aborted`] is returned. If the node produces no output
+    /// [`FeedResult::Pending`] is returned. Otherwise this function returns
+    /// [`FeedResult::Composed`].
+    ///
+    /// If this function return [`FeedResult::Composed`], then [`Feed2Result::continuation`] can be
+    /// used to determine if this is an intermediate node or a leaf node.
+    ///
+    /// # Example
+    ///
+    /// ```compose
+    /// <a>:     X
+    /// <a> <b>: Y
+    /// ```
+    ///
+    /// After feeding `<a>`, this function returns `X`.
+    ///
+    /// ```compose
+    /// <a> <b>: Y
+    /// ```
+    ///
+    /// After feeding `<a>`, this function returns [`FeedResult::Pending`].
+    pub fn output(&self) -> FeedResult<'a> {
+        let Some(node) = &self.node else {
+            return FeedResult::Aborted;
+        };
+        match node {
+            NodeType::Intermediate {
+                payload: Some(NodePayload { payload, .. }),
+                ..
+            }
+            | NodeType::Leaf { payload } => payload.to_composed(),
+            NodeType::Intermediate { payload: None, .. } => FeedResult::Pending,
+        }
+    }
+
+    /// Returns whether the selected node is a terminal in the xkbcommon API.
+    ///
+    /// This function returns true if the node is a leaf node or it is an intermediate node and its
+    /// production was declared after all productions of all child nodes.
+    ///
+    /// # Examples
+    ///
+    /// ```compose
+    /// <a>:     X
+    /// <a> <b>: Y
+    /// ```
+    ///
+    /// After feeding `<a>`, this function returns `false`.
+    ///
+    /// ```compose
+    /// <a> <b>: Y
+    /// <a>:     X
+    /// ```
+    ///
+    /// After feeding `<a>`, this function returns `true`.
+    pub fn is_classic_terminal(&self) -> bool {
+        let Some(node) = &self.node else {
+            return false;
+        };
+        matches!(
+            node,
+            NodeType::Intermediate {
+                payload: Some(NodePayload {
+                    is_old_terminal: true,
+                    ..
+                }),
+                ..
+            } | NodeType::Leaf { .. }
+        )
+    }
+
+    /// Uses the output of an intermediate node and resets the state to the initial state.
+    ///
+    /// This function has no effect if the selected node is not an intermediate node with output.
+    ///
+    /// This function only configures this object. The effect is not applied until
+    /// [`Feed2Result::apply`] is called.
+    ///
+    /// # Example
+    ///
+    /// ```compose
+    /// <a>:     X
+    /// <a> <b>: Y
+    /// ```
+    ///
+    /// After feeding `<a>`, calling this function causes the result to be [`FeedResult::Composed`].
+    pub fn use_intermediate_composed(&mut self) {
+        self.accept = Some(true);
+    }
+
+    /// Skips the output of an intermediate node and proceeds to its children.
+    ///
+    /// This function has no effect if the selected node is not an intermediate node with output.
+    ///
+    /// This function only configures this object. The effect is not applied until
+    /// [`Feed2Result::apply`] is called.
+    ///
+    /// # Example
+    ///
+    /// ```compose
+    /// <a>:     X
+    /// <a> <b>: Y
+    /// ```
+    ///
+    /// After feeding `<a>`, calling this function causes the result to be [`FeedResult::Pending`]
+    /// and the state to accept `<b>` as the next input.
+    pub fn skip_intermediate_composed(&mut self) {
+        self.accept = Some(false);
+    }
+
+    /// Updates the state and returns its result.
+    ///
+    /// If no matching node was found, the state is reset to the initial state and the result is
+    /// [`FeedResult::Aborted`].
+    ///
+    /// Otherwise, if the node is a leaf node, the state is reset to the initial state and the
+    /// result is [`FeedResult::Composed`].
+    ///
+    /// Otherwise, if the node is an intermediate node without output, the state is set to the node
+    /// and the result is [`FeedResult::Pending`].
+    ///
+    /// Otherwise the node is an intermediate node with output and the behavior is as follows:
+    ///
+    /// - If [`Feed2Result::use_intermediate_composed`] was called, the state is reset to the
+    ///   initial state and the result is [`FeedResult::Composed`].
+    /// - If [`Feed2Result::skip_intermediate_composed`] was called, the state is set to the node
+    ///   and the result is [`FeedResult::Pending`].
+    /// - If neither function was called:
+    ///   - If the production for the output was declared after all productions for any of the child
+    ///     nodes, the state is reset to the initial state and the result is
+    ///     [`FeedResult::Composed`].
+    ///   - Otherwise, the state is set to the node and the result is [`FeedResult::Pending`].
+    ///
+    /// If [`Feed2Result::use_intermediate_composed`] and [`Feed2Result::skip_intermediate_composed`]
+    /// are both called, only the last function call is considered.
+    pub fn apply(self) -> FeedResult<'a> {
+        let Some(node) = &self.node else {
+            *self.state = self.table.create_state();
+            return FeedResult::Aborted;
+        };
+        match node {
+            NodeType::Leaf { payload } => {
+                *self.state = self.table.create_state();
+                payload.to_composed()
+            }
+            NodeType::Intermediate {
+                children,
+                payload: None,
+            } => {
+                self.state.range = children.clone();
+                FeedResult::Pending
+            }
+            NodeType::Intermediate {
+                children,
+                payload: Some(pl),
+            } => {
+                let accept = self.accept.unwrap_or(pl.is_old_terminal);
+                match accept {
+                    true => {
+                        *self.state = self.table.create_state();
+                        pl.payload.to_composed()
+                    }
+                    false => {
+                        self.state.range = children.clone();
+                        FeedResult::Pending
+                    }
+                }
+            }
         }
     }
 }
 
+const HAS_PAYLOAD: u32 = 1 << 0;
+const IS_OLD_TERMINAL: u32 = 1 << 1;
+
+impl NodeData {
+    fn serialize(self) -> [u32; 4] {
+        let mut res = [0; 4];
+        res[0] = self.children.start as u32;
+        res[1] = self.children.end as u32;
+        if let Some(payload) = self.payload {
+            res[2] = payload as u32;
+            res[3] |= HAS_PAYLOAD;
+            if self.is_old_terminal {
+                res[3] |= IS_OLD_TERMINAL;
+            }
+        }
+        res
+    }
+}
+
 impl Node {
-    fn deserialize(&self) -> NodeType {
-        if self.data[0] == !0 {
-            NodeType::Leaf {
-                payload: self.data[1] as usize,
-            }
-        } else {
-            NodeType::Intermediate {
-                range: (self.data[0] as usize)..(self.data[1] as usize),
-            }
+    fn deserialize(&self) -> NodeData {
+        let flags = self.data[3];
+        let has_payload = flags & HAS_PAYLOAD != 0;
+        let is_old_terminal = flags & IS_OLD_TERMINAL != 0;
+        NodeData {
+            children: (self.data[0] as usize)..(self.data[1] as usize),
+            payload: has_payload.then_some(self.data[2] as usize),
+            is_old_terminal,
         }
     }
 }
@@ -144,6 +437,7 @@ impl ComposeTable {
         struct PreData {
             step_range: Range<usize>,
             production: Option<usize>,
+            is_old_terminal: bool,
         }
 
         // the next step will add all prefixes of all productions to these vectors.
@@ -191,11 +485,14 @@ impl ComposeTable {
                 pre_datas.push(PreData {
                     step_range: start..steps.len(),
                     production: None,
+                    is_old_terminal: false,
                 });
             }
             // unwrap is fine because the parser guarantees that each production has at
             // least 1 step.
-            pre_datas.last_mut().unwrap().production = Some(idx);
+            let last = pre_datas.last_mut().unwrap();
+            last.production = Some(idx);
+            last.is_old_terminal = true;
         }
 
         // this sort is stable and therefore preserves the order of compose rules that
@@ -224,17 +521,6 @@ impl ComposeTable {
         // the duplicates are removed by the next step
         pre_datas.sort_by_key(|k| &steps[k.step_range.clone()]);
 
-        let mut warn_duplicate = |pre_data: &PreData| {
-            if let Some(pl) = pre_data.production {
-                let pl = &productions[pl];
-                diagnostics.push(
-                    map,
-                    DiagnosticKind::ComposeProductionOverwritten,
-                    ad_hoc_display!("compose production has been overwritten").spanned2(pl.span),
-                );
-            }
-        };
-
         // this step deduplicates events. there are two scenarios:
         //
         // 1. for each list of steps, we choose the last PreData with this list
@@ -253,29 +539,30 @@ impl ComposeTable {
         //     <Multi_key> <d>:     V
         //     <Multi_key> <f>:     (no production)
         //     <Multi_key> <f> <g>: J
-        let mut pre_datas_dedup = Vec::<&PreData>::new();
+        let mut pre_datas_dedup = Vec::<&mut PreData>::new();
         let mut prev_step = None;
         let mut prev_len = 0;
-        let mut prev_production = false;
-        for k in &pre_datas {
+        for k in &mut pre_datas {
             let len = k.step_range.len();
-            // NOTE: This is untested because the lookup logic always terminates anyway
-            //       if it finds a production. So this is just an optimization.
-            if prev_production && len > prev_len {
-                warn_duplicate(k);
-                continue;
-            }
             let step = steps[k.step_range.end - 1];
             if (Some(step), len) == (prev_step, prev_len) {
-                // NOTE: This is untested because the stdlib binary search always chooses
-                //       the last matching entry.
-                if let Some(prev) = pre_datas_dedup.pop() {
-                    warn_duplicate(prev);
+                let prev = pre_datas_dedup.pop().unwrap();
+                if k.production.is_some() {
+                    if let Some(pl) = prev.production {
+                        let pl = &productions[pl];
+                        diagnostics.push(
+                            map,
+                            DiagnosticKind::ComposeProductionOverwritten,
+                            ad_hoc_display!("compose production has been overwritten")
+                                .spanned2(pl.span),
+                        );
+                    }
+                } else {
+                    k.production = prev.production;
                 }
             }
             prev_step = Some(step);
             prev_len = len;
-            prev_production = k.production.is_some();
             pre_datas_dedup.push(k);
         }
 
@@ -287,6 +574,7 @@ impl ComposeTable {
             heap_pos: Cell<u32>,
             children_heap_pos: Cell<u32>,
             next_child_pos: Cell<u32>,
+            is_old_terminal: bool,
         }
 
         // the next steps deduplicates the contents of pre_datas and counts for each entry
@@ -336,6 +624,7 @@ impl ComposeTable {
                 heap_pos: Cell::new(0),
                 children_heap_pos: Cell::new(0),
                 next_child_pos: Cell::new(0),
+                is_old_terminal: pre_data.is_old_terminal,
             });
         }
 
@@ -384,17 +673,20 @@ impl ComposeTable {
         // the next step converts the datas to the final node structure
         let mut payloads = vec![];
         let mut nodes = Vec::with_capacity(datas.len() + 1);
+        let root_children = 1..1 + num_root;
         // the root node
         nodes.push(Node {
             keysym: Default::default(),
-            data: NodeType::Intermediate {
-                range: 1..1 + num_root,
+            data: NodeData {
+                children: root_children.clone(),
+                payload: None,
+                is_old_terminal: false,
             }
             .serialize(),
         });
 
         for data in datas {
-            let ty = match data.production {
+            let payload = match data.production {
                 Some(idx) => {
                     let production = &productions[idx];
                     let pos = payloads.len();
@@ -406,13 +698,21 @@ impl ComposeTable {
                             .map(|s| s.as_bstr().to_string().into_boxed_str()),
                         keysym: production.val.keysym,
                     });
-                    NodeType::Leaf { payload: pos }
+                    Some(pos)
                 }
-                _ => {
-                    let lo = data.children_heap_pos.get() as usize;
-                    let hi = lo + data.num_children as usize;
-                    NodeType::Intermediate { range: lo..hi }
-                }
+                _ => None,
+            };
+            let children = if data.num_children > 0 {
+                let lo = data.children_heap_pos.get() as usize;
+                let hi = lo + data.num_children as usize;
+                lo..hi
+            } else {
+                root_children.clone()
+            };
+            let ty = NodeData {
+                children,
+                payload,
+                is_old_terminal: data.is_old_terminal,
             };
             nodes.push(Node {
                 keysym: data.step.keysym,
@@ -430,16 +730,50 @@ impl ComposeTable {
     ///
     /// The returned state is in the initial state.
     pub fn create_state(&self) -> State {
-        let NodeType::Intermediate { range } = self.nodes[0].deserialize() else {
-            unreachable!();
-        };
-        State { range }
+        State {
+            range: self.nodes[0].deserialize().children,
+        }
     }
 
-    /// Advance the compose state.
+    /// Advances the compose state.
     ///
     /// The `state` should have been created by [`Self::create_state`]. Otherwise this function
     /// might panic.
+    ///
+    /// This function is the same as calling [`Self::feed2`] immediately followed by
+    /// [`Feed2Result::apply`]. This corresponds to the behavior of xkbcommon.
+    ///
+    /// This function does not support productions were one is a prefix of another. For example, the
+    /// following compose files behave the same with this function:
+    ///
+    /// ```compose
+    /// <a> <b>:     X
+    /// ```
+    ///
+    /// ```compose
+    /// <a>:         Y
+    /// <a> <b>:     X
+    /// ```
+    ///
+    /// ```compose
+    /// <a>:         Y
+    /// <a> <b> <c>: Y
+    /// <a> <b>:     X
+    /// ```
+    ///
+    /// If more control is needed over the behavior of overlapping productions, [`Self::feed2`]
+    /// should be used instead.
+    pub fn feed(&self, state: &mut State, sym: Keysym) -> Option<FeedResult<'_>> {
+        self.feed2(state, sym).map(|o| o.apply())
+    }
+
+    /// Finds the next step in a compose sequence.
+    ///
+    /// The `state` should have been created by [`Self::create_state`]. Otherwise this function
+    /// might panic.
+    ///
+    /// This function does not update the `state`. The state can be updated by calling
+    /// [`Feed2Result::apply`].
     ///
     /// This function returns `None` if the call had no effect. This happens in two
     /// situations:
@@ -448,43 +782,48 @@ impl ComposeTable {
     /// - The state is in the initial state (that is, there is no ongoing compose
     ///   sequence) and the keysym does not start a compose sequence.
     ///
-    /// Otherwise, this function returns a [`FeedResult`] as follows:
-    ///
-    /// - If the keysym/modifiers combination matches no candidate,
-    ///   [`FeedResult::Aborted`] is returned and the state is reset to the initial state.
-    /// - Otherwise, if the candidate completes the compose sequence,
-    ///   [`FeedResult::Composed`] is returned with the output and `state` is reset to the
-    ///   initial state.
-    /// - Otherwise, [`FeedResult::Pending`] is returned and `state` is updated to match
-    ///   the new pending state.
-    pub fn feed(&self, state: &mut State, sym: Keysym) -> Option<FeedResult<'_>> {
+    /// Otherwise, the [`Feed2Result`] can be used to inspect the selected node. See the
+    /// documentation of [`ComposeTable`] for a description of nodes.
+    pub fn feed2<'a, 'b>(
+        &'a self,
+        state: &'b mut State,
+        sym: Keysym,
+    ) -> Option<Feed2Result<'a, 'b>> {
         if sym.is_modifier() {
             return None;
         }
         let range = &self.nodes[state.range.clone()];
-        if let Ok(node) = range.binary_search_by_key(&sym, |n| n.keysym) {
-            let node = &range[node];
-            let res = match node.deserialize() {
-                NodeType::Intermediate { range } => {
-                    state.range = range;
-                    FeedResult::Pending
-                }
-                NodeType::Leaf { payload } => {
-                    *state = self.create_state();
-                    let payload = &self.payloads[payload];
-                    FeedResult::Composed {
-                        string: payload.string.as_deref(),
-                        keysym: payload.keysym,
+        let node = match range.binary_search_by_key(&sym, |n| n.keysym) {
+            Ok(node) => {
+                let node = range[node].deserialize();
+                let ty = if node.children.start > 1 {
+                    NodeType::Intermediate {
+                        children: node.children.clone(),
+                        payload: node.payload.map(|pl| NodePayload {
+                            payload: &self.payloads[pl],
+                            is_old_terminal: node.is_old_terminal,
+                        }),
                     }
+                } else {
+                    NodeType::Leaf {
+                        payload: &self.payloads[node.payload.unwrap()],
+                    }
+                };
+                Some(ty)
+            }
+            Err(..) => {
+                if state.range.start == 1 {
+                    return None;
                 }
-            };
-            return Some(res);
-        }
-        if state.range.start == 1 {
-            return None;
-        }
-        *state = self.create_state();
-        Some(FeedResult::Aborted)
+                None
+            }
+        };
+        Some(Feed2Result {
+            state,
+            table: self,
+            node,
+            accept: None,
+        })
     }
 
     /// Creates an iterator over the rules in this table.
@@ -522,6 +861,15 @@ impl ComposeTable {
     /// ```
     pub fn format(&self) -> impl Display + use<'_> {
         FormatFormat(self)
+    }
+}
+
+impl Payload {
+    fn to_composed(&self) -> FeedResult<'_> {
+        FeedResult::Composed {
+            string: self.string.as_deref(),
+            keysym: self.keysym,
+        }
     }
 }
 
@@ -655,7 +1003,6 @@ pub struct Iter<'a> {
 impl<'a> Iter<'a> {
     /// Returns the next element of the iterator.
     pub fn next(&mut self) -> Option<MatchRule<'_, 'a>> {
-        self.stack.pop();
         loop {
             let mut range = self.child_range.pop()?;
             let Some(idx) = range.next() else {
@@ -665,17 +1012,19 @@ impl<'a> Iter<'a> {
             self.child_range.push(range);
             let node = &self.table.nodes[idx];
             self.stack.push(MatchStep { node });
-            match node.deserialize() {
-                NodeType::Intermediate { range } => {
-                    self.child_range.push(range);
-                }
-                NodeType::Leaf { payload } => {
-                    let payload = &self.table.payloads[payload];
-                    return Some(MatchRule {
-                        steps: &self.stack,
-                        payload,
-                    });
-                }
+            let data = node.deserialize();
+            let child_range = if data.children.start > 1 {
+                data.children
+            } else {
+                0..0
+            };
+            self.child_range.push(child_range);
+            if let Some(payload) = data.payload {
+                let payload = &self.table.payloads[payload];
+                return Some(MatchRule {
+                    steps: &self.stack,
+                    payload,
+                });
             }
         }
     }
