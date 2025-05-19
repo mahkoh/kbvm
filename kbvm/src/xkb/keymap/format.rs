@@ -59,8 +59,8 @@ impl Formatter<'_> {
     ///
     /// By default, such actions are not formatted.
     ///
-    /// This should almost always be disabled. Xwayland and libxkbcommon will fail to
-    /// parse keymaps that contain levels with multiple actions.
+    /// This should almost always be disabled. Xwayland and libxkbcommon \<1.8 will fail 
+    /// to parse keymaps that contain levels with multiple actions.
     pub fn multiple_actions_per_level(mut self, val: bool) -> Self {
         self.multiple_actions_per_level = val;
         self
