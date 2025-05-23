@@ -1,0 +1,7 @@
+down leftshift
+down leftctrl
+both a
+up leftctrl
+
+both media_repeat
+up leftshift

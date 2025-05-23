@@ -282,6 +282,12 @@ fn map_behavior(
                 radio_group: *group,
             })
         }
+        SymbolsKeyBehavior::RepeatLastKey(b) => {
+            if !*b {
+                return None;
+            }
+            KeyBehavior::RepeatLastKey
+        }
     };
     Some(behavior)
 }

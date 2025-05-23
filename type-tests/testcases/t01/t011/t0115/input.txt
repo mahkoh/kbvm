@@ -1,0 +1,4 @@
+both capslock
+both b
+
+both media_repeat

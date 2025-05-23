@@ -1910,6 +1910,7 @@ pub(crate) enum SymbolsField {
     Overlay((KeyOverlay, Interned, Keycode)),
     AllowNone(bool, u32),
     RadioGroup(Option<RadioGroup>),
+    RepeatLastKey(bool),
 }
 
 pub(crate) type GroupList<T> = Vec<SmallVec<[Spanned<T>; 1]>>;
@@ -2212,6 +2213,10 @@ pub(crate) fn eval_symbols_field(
                 eval_radio_group_or_0(interner, expr)?.val
             };
             SymbolsField::RadioGroup(group)
+        }
+        Meaning::RepeatLastKey => {
+            deny_idx!();
+            SymbolsField::RepeatLastKey(boolean()?)
         }
         _ => return Err(UnknownKeyField.spanned2(span)),
     };

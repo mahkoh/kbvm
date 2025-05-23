@@ -320,6 +320,16 @@ impl StateEventHandler for Layer1Handler<'_> {
     }
 
     #[inline]
+    fn mods_pressed_inc(&mut self, mods: ModifierMask) {
+        self.next.mods_pressed_inc(mods);
+    }
+
+    #[inline]
+    fn mods_pressed_dec(&mut self, mods: ModifierMask) {
+        self.next.mods_pressed_dec(mods);
+    }
+
+    #[inline]
     fn mods_pressed_load(&self) -> u32 {
         self.next.acc_state.mods_pressed.0
     }

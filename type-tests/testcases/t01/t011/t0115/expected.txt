@@ -1,0 +1,14 @@
+both capslock
+    key_down(capslock)
+    sym = Caps_Lock
+    controls = 0x00000400
+    key_up(capslock)
+both b
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+
+both media_repeat
+    key_down(b)
+    sym = b, char = 'b'
+    key_up(b)

@@ -1,0 +1,18 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <b> {
+            allowNone,
+            radiogroup = 1,
+            [ b ],
+        };
+
+
+
+        key <media_repeat> {
+            repeatLastKey,
+        };
+    };
+};

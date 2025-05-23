@@ -85,7 +85,9 @@ fn behavior_to_routine(
 ) -> Routine {
     let mut builder = RoutineBuilder::default();
     let [saved_pressed_mods] = builder.allocate_vars();
-    builder.mods_pressed_load(saved_pressed_mods);
+    if !matches!(behavior, KeyBehavior::RepeatLastKey) {
+        builder.mods_pressed_load(saved_pressed_mods);
+    }
     let update_last = |kc: Option<Var>| {
         move |builder: &mut RoutineBuilder| {
             let [did_inc] = builder.allocate_vars();
@@ -180,6 +182,21 @@ fn behavior_to_routine(
                     .finish_skip(other_down)
                     .finish_skip(did_press);
             }
+        }
+        KeyBehavior::RepeatLastKey => {
+            let [kc, mods] = builder.allocate_vars();
+            let anchor = builder.last_key_load(kc).prepare_skip_if_not(kc);
+            let anchor = builder
+                .last_pressed_mods_load(mods)
+                .mods_pressed_inc(mods)
+                .key_down(kc)
+                .finish_skip(anchor)
+                .on_release()
+                .prepare_skip_if_not(kc);
+            builder
+                .key_up(kc)
+                .mods_pressed_dec(mods)
+                .finish_skip(anchor);
         }
     }
     // let routine = builder.build();

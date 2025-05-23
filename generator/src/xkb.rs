@@ -14,7 +14,7 @@ pub fn main() {
     std::fs::write("kbvm/src/xkb/meaning/generated.rs", output).unwrap();
 }
 
-const STRINGS: [&str; 228] = [
+const STRINGS: [&str; 229] = [
     "accel",
     "accelerate",
     "AccessXFeedback",
@@ -184,6 +184,7 @@ const STRINGS: [&str; 228] = [
     "repeat",
     "repeating",
     "RepeatKeys",
+    "repeatLastKey",
     "repeats",
     "replace",
     "report",

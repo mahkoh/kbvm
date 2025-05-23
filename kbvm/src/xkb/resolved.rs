@@ -178,6 +178,7 @@ pub(crate) enum SymbolsKeyBehavior {
     Locks(bool),
     Overlay((KeyOverlay, Interned, Keycode)),
     RadioGroup(bool, RadioGroup),
+    RepeatLastKey(bool),
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
