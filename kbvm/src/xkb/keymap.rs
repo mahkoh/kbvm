@@ -516,6 +516,8 @@ pub enum KeyBehavior {
     Overlay(OverlayBehavior),
     /// The key is affected by a radio-group control.
     RadioGroup(RadioGroupBehavior),
+    /// The key repeats the last non-modifier key (except keys with this behavior).
+    RepeatLastKey,
 }
 
 /// The overlay that affects a key behavior.

@@ -90,6 +90,9 @@
   <a> <b> <c>: Y
   <a> <b>:     X
   ```
+- Added support for the `repeatLastKey` key behavior. This key behavior repeats
+  the last pressed key that did not have the `repeatLastKey` behavior and did
+  not invoke a `SetMods`, `LatchMods`, or `LockMods` action.
 
 # 0.1.4 (2025-04-21)
 

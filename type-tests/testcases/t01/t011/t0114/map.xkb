@@ -1,0 +1,29 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <a> {
+            lock,
+            [ a ],
+        };
+        key <leftshift> {
+            [ Shift_L ],
+            [ SetMods(mods = Shift) ],
+        };
+        key <capslock> {
+            [ Caps_Lock ],
+            [ LockMods(mods = Lock) ],
+        };
+        key <leftctrl> {
+            [ Control_L ],
+            [ SetMods(mods = Control) ],
+        };
+
+
+
+        key <media_repeat> {
+            repeatLastKey,
+        };
+    };
+};

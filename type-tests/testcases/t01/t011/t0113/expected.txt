@@ -1,0 +1,30 @@
+down leftshift
+    key_down(leftshift)
+    sym = Shift_L
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+up leftshift
+    key_up(leftshift)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+
+both media_repeat
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000
+both media_repeat
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+    mods_pressed = 0x00000000
+    mods_effective = 0x00000000

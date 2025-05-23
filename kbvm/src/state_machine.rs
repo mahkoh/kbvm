@@ -111,7 +111,11 @@ pub struct State {
 struct Layer2State {
     layer3: Vec<Layer3>,
     mods_pressed_count: [u32; NUM_MODS],
-    components: Components,
+    pub_state: Components,
+    acc_state: Components,
+    any_state_changed: bool,
+    last_key: u32,
+    last_pressed_mods: u32,
 }
 
 impl Layer2State {
@@ -119,15 +123,100 @@ impl Layer2State {
         &'a mut self,
         events: &'a mut Vec<Event>,
         machine: &'a StateMachine,
+        flags: &'a mut StaticMap<Flag, u32>,
     ) -> Layer2Handler<'a> {
         Layer2Handler {
             num_groups: machine.num_groups,
-            mods_pressed_count: &mut self.mods_pressed_count,
-            acc_state: self.components,
-            pub_state: &mut self.components,
+            state: self,
             events,
-            any_state_changed: false,
-            layer3: &mut self.layer3,
+            flags,
+        }
+    }
+
+    #[inline(always)]
+    fn flush_state(&mut self, num_groups: u32, events: &mut Vec<Event>) {
+        if !self.any_state_changed {
+            return;
+        }
+        self.flush_state_(num_groups, events);
+    }
+
+    #[inline(never)]
+    fn flush_state_(&mut self, num_groups: u32, events: &mut Vec<Event>) {
+        self.any_state_changed = false;
+        let acs = &mut self.acc_state;
+        acs.mods = acs.mods_pressed | acs.mods_latched | acs.mods_locked;
+        acs.group = acs.group_locked + acs.group_pressed + acs.group_latched;
+        macro_rules! wrap_group {
+            ($value:expr) => {
+                if $value.0 >= num_groups {
+                    let tmp = $value.0 as i32 as i64;
+                    $value.0 = if tmp < 0 {
+                        (tmp % num_groups as i64 + num_groups as i64) as u32
+                    } else {
+                        (tmp % num_groups as i64) as u32
+                    };
+                }
+            };
+        }
+        wrap_group!(acs.group_locked);
+        wrap_group!(acs.group);
+        macro_rules! flush {
+            ($($camel:ident, $field:ident;)*) => {
+                $(
+                    if acs.$field != self.pub_state.$field {
+                        self.pub_state.$field = acs.$field;
+                        events.push(Event::$camel(acs.$field));
+                    }
+                )*
+            };
+        }
+        flush! {
+            ModsPressed, mods_pressed;
+            ModsLatched, mods_latched;
+            ModsLocked, mods_locked;
+            ModsEffective, mods;
+            GroupPressed, group_pressed;
+            GroupLatched, group_latched;
+            GroupLocked, group_locked;
+            GroupEffective, group;
+            Controls, controls;
+        }
+    }
+
+    #[inline]
+    fn mods_pressed_inc(&mut self, mods: ModifierMask) {
+        let mut changed = false;
+        for idx in mods {
+            let count = &mut self.mods_pressed_count[idx.raw() as usize & NUM_MODS_MASK];
+            if *count == 0 {
+                *count = 1;
+                changed = true;
+            } else {
+                *count = count.saturating_add(1);
+            }
+        }
+        if changed {
+            self.any_state_changed = true;
+            self.acc_state.mods_pressed |= mods;
+        }
+    }
+
+    #[inline]
+    fn mods_pressed_dec(&mut self, mods: ModifierMask) {
+        let mut changed = ModifierMask(0);
+        for idx in mods {
+            let count = &mut self.mods_pressed_count[idx.raw() as usize & NUM_MODS_MASK];
+            if *count == 1 {
+                *count = 0;
+                changed |= idx.to_mask();
+            } else {
+                *count = count.saturating_sub(1);
+            }
+        }
+        if changed.0 != 0 {
+            self.any_state_changed = true;
+            self.acc_state.mods_pressed &= !changed;
         }
     }
 }
@@ -210,6 +299,7 @@ struct Layer1Handler<'a> {
     layer2: &'a mut Vec<Layer2Base>,
     next: &'a mut Layer2State,
     events: &'a mut Vec<Event>,
+    flags: StaticMap<Flag, u32>,
 }
 
 #[inline(always)]
@@ -225,38 +315,73 @@ fn adjust_spill(spill: &mut Box<[u32]>, size: usize) {
 
 impl StateEventHandler for Layer1Handler<'_> {
     #[inline]
+    fn flags(&mut self) -> &mut StaticMap<Flag, u32> {
+        &mut self.flags
+    }
+
+    #[inline]
+    fn mods_pressed_inc(&mut self, mods: ModifierMask) {
+        self.next.mods_pressed_inc(mods);
+    }
+
+    #[inline]
+    fn mods_pressed_dec(&mut self, mods: ModifierMask) {
+        self.next.mods_pressed_dec(mods);
+    }
+
+    #[inline]
     fn mods_pressed_load(&self) -> u32 {
-        self.next.components.mods_pressed.0
+        self.next.acc_state.mods_pressed.0
     }
 
     #[inline]
     fn mods_latched_load(&self) -> u32 {
-        self.next.components.mods_latched.0
+        self.next.acc_state.mods_latched.0
     }
 
     #[inline]
     fn mods_locked_load(&self) -> u32 {
-        self.next.components.mods_locked.0
+        self.next.acc_state.mods_locked.0
     }
 
     #[inline]
     fn group_pressed_load(&self) -> u32 {
-        self.next.components.group_pressed.0
+        self.next.acc_state.group_pressed.0
     }
 
     #[inline]
     fn group_latched_load(&self) -> u32 {
-        self.next.components.group_latched.0
+        self.next.acc_state.group_latched.0
     }
 
     #[inline]
     fn group_locked_load(&self) -> u32 {
-        self.next.components.group_locked.0
+        self.next.acc_state.group_locked.0
     }
 
     #[inline]
     fn controls_load(&self) -> u32 {
-        self.next.components.controls.0
+        self.next.acc_state.controls.0
+    }
+
+    #[inline]
+    fn last_key_load(&self) -> u32 {
+        self.next.last_key
+    }
+
+    #[inline]
+    fn last_key_store(&mut self, val: u32) {
+        self.next.last_key = val;
+    }
+
+    #[inline]
+    fn last_pressed_mods_load(&self) -> u32 {
+        self.next.last_pressed_mods
+    }
+
+    #[inline]
+    fn last_pressed_mods_store(&mut self, val: u32) {
+        self.next.last_pressed_mods = val;
     }
 
     #[inline(always)]
@@ -273,8 +398,8 @@ impl StateEventHandler for Layer1Handler<'_> {
             layer2.rc = layer2.rc.saturating_add(1);
             return;
         }
-        let group = self.next.components.group;
-        let mods = self.next.components.mods;
+        let group = self.next.acc_state.group;
+        let mods = self.next.acc_state.mods;
         let mut on_press = None;
         let mut on_release = None;
         let mut spill = 0;
@@ -309,27 +434,26 @@ impl StateEventHandler for Layer1Handler<'_> {
         layer2.rc = 1;
         layer2.actuation = self.actuation + 1;
         layer2.registers_log = Default::default();
-        layer2.flags = Default::default();
         layer2.on_release = on_release;
         adjust_spill(&mut layer2.spill, spill);
-        let mut handler = self.next.create_handler(self.events, self.machine);
+        let mut handler = self
+            .next
+            .create_handler(self.events, self.machine, &mut self.flags);
         if let Some(on_press) = on_press {
             run(
                 &mut handler,
                 on_press,
                 &mut layer2.registers_log,
                 globals,
-                &mut layer2.flags,
                 &mut layer2.spill,
             );
         } else {
             handler.key_down(globals, key);
-            if handler.acc_state.any_latched() {
+            if handler.state.acc_state.any_latched() {
                 handler.mods_latched_store(0);
                 handler.group_latched_store(0);
             }
         }
-        handler.flush_state();
     }
 
     #[inline(always)]
@@ -343,18 +467,18 @@ impl StateEventHandler for Layer1Handler<'_> {
             if layer2.rc != 0 {
                 return;
             }
-            layer2.flags[Flag::LaterKeyActuated] = (layer2.actuation < self.actuation) as u32;
-            let mut handler = self.next.create_handler(self.events, self.machine);
+            self.flags[Flag::LaterKeyActuated] = (layer2.actuation < self.actuation) as u32;
+            let mut handler = self
+                .next
+                .create_handler(self.events, self.machine, &mut self.flags);
             if let Some(release) = &layer2.on_release {
                 run(
                     &mut handler,
                     release,
                     &mut layer2.registers_log,
                     globals,
-                    &mut layer2.flags,
                     &mut layer2.spill,
                 );
-                handler.flush_state();
             } else {
                 handler.key_up(globals, key);
             }
@@ -366,186 +490,109 @@ impl StateEventHandler for Layer1Handler<'_> {
 
 struct Layer2Handler<'a> {
     num_groups: u32,
-    mods_pressed_count: &'a mut [u32; NUM_MODS],
-    pub_state: &'a mut Components,
-    any_state_changed: bool,
-    acc_state: Components,
+    state: &'a mut Layer2State,
     events: &'a mut Vec<Event>,
-    layer3: &'a mut Vec<Layer3>,
-}
-
-impl Layer2Handler<'_> {
-    #[inline(always)]
-    fn flush_state(&mut self) {
-        if !self.any_state_changed {
-            return;
-        }
-        self.flush_state_();
-    }
-
-    #[inline(never)]
-    fn flush_state_(&mut self) {
-        self.any_state_changed = false;
-        let acs = &mut self.acc_state;
-        acs.mods = acs.mods_pressed | acs.mods_latched | acs.mods_locked;
-        acs.group = acs.group_locked + acs.group_pressed + acs.group_latched;
-        macro_rules! wrap_group {
-            ($value:expr) => {
-                if $value.0 >= self.num_groups {
-                    let tmp = $value.0 as i32 as i64;
-                    $value.0 = if tmp < 0 {
-                        (tmp % self.num_groups as i64 + self.num_groups as i64) as u32
-                    } else {
-                        (tmp % self.num_groups as i64) as u32
-                    };
-                }
-            };
-        }
-        wrap_group!(acs.group_locked);
-        wrap_group!(acs.group);
-        macro_rules! flush {
-            ($($camel:ident, $field:ident;)*) => {
-                $(
-                    if acs.$field != self.pub_state.$field {
-                        self.pub_state.$field = acs.$field;
-                        self.events.push(Event::$camel(acs.$field));
-                    }
-                )*
-            };
-        }
-        flush! {
-            ModsPressed, mods_pressed;
-            ModsLatched, mods_latched;
-            ModsLocked, mods_locked;
-            ModsEffective, mods;
-            GroupPressed, group_pressed;
-            GroupLatched, group_latched;
-            GroupLocked, group_locked;
-            GroupEffective, group;
-            Controls, controls;
-        }
-    }
+    flags: &'a mut StaticMap<Flag, u32>,
 }
 
 impl StateEventHandler for Layer2Handler<'_> {
     #[inline]
+    fn flags(&mut self) -> &mut StaticMap<Flag, u32> {
+        self.flags
+    }
+
+    #[inline]
     fn mods_pressed_inc(&mut self, mods: ModifierMask) {
-        let mut changed = false;
-        for idx in mods {
-            let count = &mut self.mods_pressed_count[idx.raw() as usize & NUM_MODS_MASK];
-            if *count == 0 {
-                *count = 1;
-                changed = true;
-            } else {
-                *count = count.saturating_add(1);
-            }
-        }
-        if changed {
-            self.any_state_changed = true;
-            self.acc_state.mods_pressed |= mods;
-        }
+        self.state.mods_pressed_inc(mods);
     }
 
     #[inline]
     fn mods_pressed_dec(&mut self, mods: ModifierMask) {
-        let mut changed = ModifierMask(0);
-        for idx in mods {
-            let count = &mut self.mods_pressed_count[idx.raw() as usize & NUM_MODS_MASK];
-            if *count == 1 {
-                *count = 0;
-                changed |= idx.to_mask();
-            } else {
-                *count = count.saturating_sub(1);
-            }
-        }
-        if changed.0 != 0 {
-            self.any_state_changed = true;
-            self.acc_state.mods_pressed &= !changed;
-        }
+        self.state.mods_pressed_dec(mods);
     }
 
     #[inline]
     fn mods_pressed_load(&self) -> u32 {
-        self.acc_state.mods_pressed.0
+        self.state.acc_state.mods_pressed.0
     }
 
     #[inline]
     fn mods_pressed_store(&mut self, val: u32) {
-        self.any_state_changed = true;
-        self.acc_state.mods_pressed.0 = val;
+        self.state.any_state_changed = true;
+        self.state.acc_state.mods_pressed.0 = val;
     }
 
     #[inline]
     fn mods_latched_load(&self) -> u32 {
-        self.acc_state.mods_latched.0
+        self.state.acc_state.mods_latched.0
     }
 
     #[inline]
     fn mods_latched_store(&mut self, val: u32) {
-        self.any_state_changed = true;
-        self.acc_state.mods_latched.0 = val;
+        self.state.any_state_changed = true;
+        self.state.acc_state.mods_latched.0 = val;
     }
 
     #[inline]
     fn mods_locked_load(&self) -> u32 {
-        self.acc_state.mods_locked.0
+        self.state.acc_state.mods_locked.0
     }
 
     #[inline]
     fn mods_locked_store(&mut self, val: u32) {
-        self.any_state_changed = true;
-        self.acc_state.mods_locked.0 = val;
+        self.state.any_state_changed = true;
+        self.state.acc_state.mods_locked.0 = val;
     }
 
     #[inline]
     fn group_pressed_load(&self) -> u32 {
-        self.acc_state.group_pressed.0
+        self.state.acc_state.group_pressed.0
     }
 
     #[inline]
     fn group_pressed_store(&mut self, val: u32) {
-        self.any_state_changed = true;
-        self.acc_state.group_pressed.0 = val;
+        self.state.any_state_changed = true;
+        self.state.acc_state.group_pressed.0 = val;
     }
 
     #[inline]
     fn group_latched_load(&self) -> u32 {
-        self.acc_state.group_latched.0
+        self.state.acc_state.group_latched.0
     }
 
     #[inline]
     fn group_latched_store(&mut self, val: u32) {
-        self.any_state_changed = true;
-        self.acc_state.group_latched.0 = val;
+        self.state.any_state_changed = true;
+        self.state.acc_state.group_latched.0 = val;
     }
 
     #[inline]
     fn group_locked_load(&self) -> u32 {
-        self.acc_state.group_locked.0
+        self.state.acc_state.group_locked.0
     }
 
     #[inline]
     fn group_locked_store(&mut self, val: u32) {
-        self.any_state_changed = true;
-        self.acc_state.group_locked.0 = val;
+        self.state.any_state_changed = true;
+        self.state.acc_state.group_locked.0 = val;
     }
 
     #[inline]
     fn controls_load(&self) -> u32 {
-        self.acc_state.controls.0
+        self.state.acc_state.controls.0
     }
 
     #[inline]
     fn controls_store(&mut self, val: u32) {
-        self.any_state_changed = true;
-        self.acc_state.controls.0 = val;
+        self.state.any_state_changed = true;
+        self.state.acc_state.controls.0 = val;
     }
 
     #[inline(always)]
     fn key_down(&mut self, _globals: &mut [u32], keycode: Keycode) {
         // println!("down {:?}", self.layer3);
         let mut slot = None;
-        for key in &mut *self.layer3 {
+        for key in &mut *self.state.layer3 {
             if key.key == Some(keycode) {
                 key.rc = key.rc.saturating_add(1);
                 return;
@@ -556,13 +603,13 @@ impl StateEventHandler for Layer2Handler<'_> {
         let layer3 = match slot {
             Some(layer3) => layer3,
             _ => {
-                self.layer3.push(Layer3 { key: None, rc: 0 });
-                self.layer3.last_mut().unwrap()
+                self.state.layer3.push(Layer3 { key: None, rc: 0 });
+                self.state.layer3.last_mut().unwrap()
             }
         };
         layer3.key = Some(keycode);
         layer3.rc = 1;
-        self.flush_state();
+        self.state.flush_state(self.num_groups, self.events);
         self.events.push(Event::KeyDown(keycode));
     }
 
@@ -570,7 +617,7 @@ impl StateEventHandler for Layer2Handler<'_> {
     fn key_up(&mut self, _globals: &mut [u32], keycode: Keycode) {
         // println!("up   {:?}", self.layer3);
         'find_key: {
-            for key in &mut *self.layer3 {
+            for key in &mut *self.state.layer3 {
                 if key.key != Some(keycode) {
                     continue;
                 }
@@ -583,7 +630,7 @@ impl StateEventHandler for Layer2Handler<'_> {
             }
             return;
         }
-        self.flush_state();
+        self.state.flush_state(self.num_groups, self.events);
         self.events.push(Event::KeyUp(keycode));
     }
 }
@@ -613,7 +660,6 @@ struct Layer2 {
     actuation: u64,
     rc: u32,
     registers_log: StaticMap<Register, u32>,
-    flags: StaticMap<Flag, u32>,
     on_release: Option<Arc<[Lo]>>,
     spill: Box<[u32]>,
 }
@@ -733,6 +779,7 @@ impl StateMachine {
     ) {
         self.handle_key_(state, events, key, direction);
         state.actuation += 1;
+        state.next.flush_state(self.num_groups, events);
     }
 
     fn handle_key_(
@@ -748,6 +795,7 @@ impl StateMachine {
             events,
             next: &mut state.next,
             layer2: &mut state.layer2,
+            flags: Default::default(),
         };
         if !self.has_layer1 {
             match direction {
@@ -786,7 +834,6 @@ impl StateMachine {
                     release,
                     &mut layer1.registers_log,
                     &mut state.globals,
-                    &mut StaticMap::default(),
                     &mut layer1.spill,
                 );
             } else {
@@ -830,11 +877,15 @@ impl StateMachine {
                 on_press,
                 &mut layer1.registers_log,
                 &mut state.globals,
-                &mut StaticMap::default(),
                 &mut layer1.spill,
             );
         } else {
+            let last_mods = handler.next.acc_state.mods_pressed.0;
             handler.key_down(&mut state.globals, key);
+            if handler.flags[Flag::DidIncMods] == 0 {
+                handler.next.last_pressed_mods = last_mods;
+                handler.next.last_key = key.0;
+            }
         }
     }
 }

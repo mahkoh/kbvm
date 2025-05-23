@@ -1514,6 +1514,9 @@ impl SymbolsKey {
                     SymbolsKeyBehavior::RadioGroup(allow_none, rg).spanned2(f.span)
                 });
             }
+            SymbolsField::RepeatLastKey(b) => {
+                self.behavior = Some(SymbolsKeyBehavior::RepeatLastKey(b).spanned2(f.span));
+            }
         }
     }
 }

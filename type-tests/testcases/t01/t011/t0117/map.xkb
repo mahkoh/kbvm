@@ -1,0 +1,28 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "generated"
+    };
+    xkb_symbols {
+        key <a> {
+            [ a ],
+        };
+        key <b> {
+            overlay = <a>,
+            [ b ],
+        };
+        key <leftshift> {
+            [ Shift_L ],
+            [ SetMods(mods = Shift) ],
+        };
+        key <capslock> {
+            [ Caps_Lock ],
+            [ LockControls(controls = Overlay1) ],
+        };
+
+
+
+        key <media_repeat> {
+            repeatLastKey,
+        };
+    };
+};

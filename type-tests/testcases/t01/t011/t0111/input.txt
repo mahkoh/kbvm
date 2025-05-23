@@ -1,0 +1,7 @@
+both capslock
+down leftshift
+both a
+up leftshift
+
+both capslock
+both media_repeat

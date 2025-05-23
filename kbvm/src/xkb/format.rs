@@ -670,6 +670,9 @@ impl Format for Keys<'_> {
                                 }
                                 write!(f.f, "radiogroup = {}", g.radio_group.raw())?;
                             }
+                            KeyBehavior::RepeatLastKey => {
+                                f.write("repeatLastKey")?;
+                            }
                         }
                         needs_newline = true;
                     }

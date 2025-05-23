@@ -1,0 +1,14 @@
+both a
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)
+both b
+    key_down(b)
+    sym = b, char = 'b'
+    mods_pressed = 0x00000001
+    mods_effective = 0x00000001
+
+both media_repeat
+    key_down(a)
+    sym = a, char = 'a'
+    key_up(a)

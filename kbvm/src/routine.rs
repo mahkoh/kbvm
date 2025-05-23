@@ -237,12 +237,14 @@ pub(crate) enum UnOp {
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd, Linearize)]
 pub(crate) enum Flag {
     LaterKeyActuated,
+    DidIncMods,
 }
 
 impl Debug for Flag {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let s = match self {
             Flag::LaterKeyActuated => "later_key_actuated",
+            Flag::DidIncMods => "did_inc_mods",
         };
         f.write_str(s)
     }
@@ -257,6 +259,8 @@ enum Component {
     GroupLatched,
     GroupLocked,
     Controls,
+    LastKey,
+    LastPressedMods,
 }
 
 impl Debug for Component {
@@ -269,6 +273,8 @@ impl Debug for Component {
             Component::GroupLatched => "group_latched",
             Component::GroupLocked => "group_locked",
             Component::Controls => "controls",
+            Component::LastKey => "last_key",
+            Component::LastPressedMods => "last_pressed_mods",
         };
         f.write_str(s)
     }
@@ -547,10 +553,14 @@ lo!(
         GroupLatched = GroupLatchedLoad, GroupLatchedStore,
         GroupLocked = GroupLockedLoad, GroupLockedStore,
         Controls = ControlsLoad, ControlsStore,
+        LastKey = LastKeyLoad, LastKeyStore,
+        LastPressedMods = LastPressedModsLoad, LastPressedModsStore,
         ;
 );
 
 pub(crate) trait StateEventHandler {
+    fn flags(&mut self) -> &mut StaticMap<Flag, u32>;
+
     fn mods_pressed_inc(&mut self, mods: ModifierMask) {
         let _ = mods;
     }
@@ -615,6 +625,22 @@ pub(crate) trait StateEventHandler {
         let _ = val;
     }
 
+    fn last_key_load(&self) -> u32 {
+        0
+    }
+
+    fn last_key_store(&mut self, val: u32) {
+        let _ = val;
+    }
+
+    fn last_pressed_mods_load(&self) -> u32 {
+        0
+    }
+
+    fn last_pressed_mods_store(&mut self, val: u32) {
+        let _ = val;
+    }
+
     fn key_down(&mut self, globals: &mut [u32], keycode: Keycode) {
         let _ = globals;
         let _ = keycode;
@@ -666,7 +692,6 @@ pub(crate) fn run<H>(
     ops: &[Lo],
     registers: &mut StaticMap<Register, u32>,
     globals: &mut [u32],
-    flags: &mut StaticMap<Flag, u32>,
     spill: &mut [u32],
 ) where
     H: StateEventHandler,
@@ -794,13 +819,14 @@ pub(crate) fn run<H>(
             Lo::PressedModsInc { rs } => {
                 let s = registers[rs];
                 h.mods_pressed_inc(ModifierMask(s));
+                h.flags()[Flag::DidIncMods] = 1;
             }
             Lo::PressedModsDec { rs } => {
                 let s = registers[rs];
                 h.mods_pressed_dec(ModifierMask(s));
             }
             Lo::FlagLoad { rd, flag } => {
-                registers[rd] = flags[flag];
+                registers[rd] = h.flags()[flag];
             }
             Lo::KeyDown { rs } => {
                 let s = registers[rs];
@@ -824,6 +850,10 @@ pub(crate) fn run<H>(
             Lo::GroupLockedStore { rs } => h.group_locked_store(registers[rs]),
             Lo::ControlsLoad { rd } => registers[rd] = h.controls_load(),
             Lo::ControlsStore { rs } => h.controls_store(registers[rs]),
+            Lo::LastKeyLoad { rd } => registers[rd] = h.last_key_load(),
+            Lo::LastKeyStore { rs } => h.last_key_store(registers[rs]),
+            Lo::LastPressedModsLoad { rd } => registers[rd] = h.last_pressed_mods_load(),
+            Lo::LastPressedModsStore { rs } => h.last_pressed_mods_store(registers[rs]),
         }
         i = i.saturating_add(1);
     }
@@ -1327,6 +1357,26 @@ impl RoutineBuilder {
         self.component_store(rs, Component::Controls)
     }
 
+    /// `rd = last_key`
+    pub fn last_key_load(&mut self, rd: Var) -> &mut Self {
+        self.component_load(rd, Component::LastKey)
+    }
+
+    /// `last_key = rs`
+    pub fn last_key_store(&mut self, rs: Var) -> &mut Self {
+        self.component_store(rs, Component::LastKey)
+    }
+
+    /// `rd = last_pressed_mods`
+    pub fn last_pressed_mods_load(&mut self, rd: Var) -> &mut Self {
+        self.component_load(rd, Component::LastPressedMods)
+    }
+
+    /// `last_pressed_mods = rs`
+    pub fn last_pressed_mods_store(&mut self, rs: Var) -> &mut Self {
+        self.component_store(rs, Component::LastPressedMods)
+    }
+
     fn flag_load(&mut self, rd: Var, flag: Flag) -> &mut Self {
         self.ops.push(Hi::FlagLoad { rd, flag });
         self
@@ -1335,6 +1385,11 @@ impl RoutineBuilder {
     /// `rd = later_key_actuated`
     pub fn later_key_actuated_load(&mut self, rd: Var) -> &mut Self {
         self.flag_load(rd, Flag::LaterKeyActuated)
+    }
+
+    /// `rd = mods_pressed_inc_called`
+    pub fn mods_pressed_inc_called_load(&mut self, rd: Var) -> &mut Self {
+        self.flag_load(rd, Flag::DidIncMods)
     }
 
     /// `key_down(rs)`
@@ -1906,6 +1961,8 @@ impl RegisterAllocator {
                         GroupLatched => GroupLatchedLoad,
                         GroupLocked => GroupLockedLoad,
                         Controls => ControlsLoad,
+                        LastKey => LastKeyLoad,
+                        LastPressedMods => LastPressedModsLoad,
                     };
                     self.out.push_front(lo);
                 }
@@ -1928,6 +1985,8 @@ impl RegisterAllocator {
                         GroupLatched => GroupLatchedStore,
                         GroupLocked => GroupLockedStore,
                         Controls => ControlsStore,
+                        LastKey => LastKeyStore,
+                        LastPressedMods => LastPressedModsStore,
                     };
                     self.out.push_front(lo);
                 }

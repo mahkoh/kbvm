@@ -1,0 +1,10 @@
+both b
+    key_down(b)
+    sym = b, char = 'b'
+both b
+    key_up(b)
+
+both media_repeat
+    key_down(b)
+    sym = b, char = 'b'
+    key_up(b)

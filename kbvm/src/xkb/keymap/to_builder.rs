@@ -84,6 +84,27 @@ fn behavior_to_routine(
     behavior: &KeyBehavior,
 ) -> Routine {
     let mut builder = RoutineBuilder::default();
+    let [saved_pressed_mods] = builder.allocate_vars();
+    if !matches!(behavior, KeyBehavior::RepeatLastKey) {
+        builder.mods_pressed_load(saved_pressed_mods);
+    }
+    let update_last = |kc: Option<Var>| {
+        move |builder: &mut RoutineBuilder| {
+            let [did_inc] = builder.allocate_vars();
+            let anchor = builder
+                .mods_pressed_inc_called_load(did_inc)
+                .prepare_skip_if(did_inc);
+            let kc = kc.unwrap_or_else(|| {
+                let kc = builder.allocate_var();
+                builder.load_lit(kc, key.0);
+                kc
+            });
+            builder
+                .last_key_store(kc)
+                .last_pressed_mods_store(saved_pressed_mods)
+                .finish_skip(anchor);
+        }
+    };
     match behavior {
         KeyBehavior::Lock => {
             let global = b.add_global();
@@ -97,6 +118,7 @@ fn behavior_to_routine(
                 .load_lit(kc, key.raw())
                 .key_down(kc)
                 .finish_skip(anchor)
+                .apply(update_last(Some(kc)))
                 .on_release()
                 .prepare_skip_if_not(state_old);
             builder
@@ -123,6 +145,7 @@ fn behavior_to_routine(
                 .load_lit(kc, key.raw())
                 .finish_skip(anchor2)
                 .key_down(kc)
+                .apply(update_last(None))
                 .on_release()
                 .key_up(kc);
         }
@@ -144,6 +167,7 @@ fn behavior_to_routine(
                 .key_down(kc)
                 .store_global(global, kc)
                 .finish_skip(already_down)
+                .apply(update_last(Some(kc)))
                 .on_release();
             if g.allow_none {
                 let did_press = builder.prepare_skip_if_not(same);
@@ -158,6 +182,21 @@ fn behavior_to_routine(
                     .finish_skip(other_down)
                     .finish_skip(did_press);
             }
+        }
+        KeyBehavior::RepeatLastKey => {
+            let [kc, mods] = builder.allocate_vars();
+            let anchor = builder.last_key_load(kc).prepare_skip_if_not(kc);
+            let anchor = builder
+                .last_pressed_mods_load(mods)
+                .mods_pressed_inc(mods)
+                .key_down(kc)
+                .finish_skip(anchor)
+                .on_release()
+                .prepare_skip_if_not(kc);
+            builder
+                .key_up(kc)
+                .mods_pressed_dec(mods)
+                .finish_skip(anchor);
         }
     }
     // let routine = builder.build();
@@ -512,5 +551,16 @@ fn encode_actions(
                     .controls_store(controls);
             }
         }
+    }
+}
+
+trait Apply {
+    fn apply(&mut self, f: impl FnOnce(&mut Self)) -> &mut Self;
+}
+
+impl<T> Apply for T {
+    fn apply(&mut self, f: impl FnOnce(&mut Self)) -> &mut Self {
+        f(self);
+        self
     }
 }
