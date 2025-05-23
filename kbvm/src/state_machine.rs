@@ -114,6 +114,8 @@ struct Layer2State {
     pub_state: Components,
     acc_state: Components,
     any_state_changed: bool,
+    last_key: u32,
+    last_pressed_mods: u32,
 }
 
 impl Layer2State {
@@ -121,11 +123,13 @@ impl Layer2State {
         &'a mut self,
         events: &'a mut Vec<Event>,
         machine: &'a StateMachine,
+        flags: &'a mut StaticMap<Flag, u32>,
     ) -> Layer2Handler<'a> {
         Layer2Handler {
             num_groups: machine.num_groups,
             state: self,
             events,
+            flags,
         }
     }
 
@@ -295,6 +299,7 @@ struct Layer1Handler<'a> {
     layer2: &'a mut Vec<Layer2Base>,
     next: &'a mut Layer2State,
     events: &'a mut Vec<Event>,
+    flags: StaticMap<Flag, u32>,
 }
 
 #[inline(always)]
@@ -309,6 +314,11 @@ fn adjust_spill(spill: &mut Box<[u32]>, size: usize) {
 }
 
 impl StateEventHandler for Layer1Handler<'_> {
+    #[inline]
+    fn flags(&mut self) -> &mut StaticMap<Flag, u32> {
+        &mut self.flags
+    }
+
     #[inline]
     fn mods_pressed_load(&self) -> u32 {
         self.next.acc_state.mods_pressed.0
@@ -342,6 +352,26 @@ impl StateEventHandler for Layer1Handler<'_> {
     #[inline]
     fn controls_load(&self) -> u32 {
         self.next.acc_state.controls.0
+    }
+
+    #[inline]
+    fn last_key_load(&self) -> u32 {
+        self.next.last_key
+    }
+
+    #[inline]
+    fn last_key_store(&mut self, val: u32) {
+        self.next.last_key = val;
+    }
+
+    #[inline]
+    fn last_pressed_mods_load(&self) -> u32 {
+        self.next.last_pressed_mods
+    }
+
+    #[inline]
+    fn last_pressed_mods_store(&mut self, val: u32) {
+        self.next.last_pressed_mods = val;
     }
 
     #[inline(always)]
@@ -394,17 +424,17 @@ impl StateEventHandler for Layer1Handler<'_> {
         layer2.rc = 1;
         layer2.actuation = self.actuation + 1;
         layer2.registers_log = Default::default();
-        layer2.flags = Default::default();
         layer2.on_release = on_release;
         adjust_spill(&mut layer2.spill, spill);
-        let mut handler = self.next.create_handler(self.events, self.machine);
+        let mut handler = self
+            .next
+            .create_handler(self.events, self.machine, &mut self.flags);
         if let Some(on_press) = on_press {
             run(
                 &mut handler,
                 on_press,
                 &mut layer2.registers_log,
                 globals,
-                &mut layer2.flags,
                 &mut layer2.spill,
             );
         } else {
@@ -427,15 +457,16 @@ impl StateEventHandler for Layer1Handler<'_> {
             if layer2.rc != 0 {
                 return;
             }
-            layer2.flags[Flag::LaterKeyActuated] = (layer2.actuation < self.actuation) as u32;
-            let mut handler = self.next.create_handler(self.events, self.machine);
+            self.flags[Flag::LaterKeyActuated] = (layer2.actuation < self.actuation) as u32;
+            let mut handler = self
+                .next
+                .create_handler(self.events, self.machine, &mut self.flags);
             if let Some(release) = &layer2.on_release {
                 run(
                     &mut handler,
                     release,
                     &mut layer2.registers_log,
                     globals,
-                    &mut layer2.flags,
                     &mut layer2.spill,
                 );
             } else {
@@ -451,9 +482,15 @@ struct Layer2Handler<'a> {
     num_groups: u32,
     state: &'a mut Layer2State,
     events: &'a mut Vec<Event>,
+    flags: &'a mut StaticMap<Flag, u32>,
 }
 
 impl StateEventHandler for Layer2Handler<'_> {
+    #[inline]
+    fn flags(&mut self) -> &mut StaticMap<Flag, u32> {
+        self.flags
+    }
+
     #[inline]
     fn mods_pressed_inc(&mut self, mods: ModifierMask) {
         self.state.mods_pressed_inc(mods);
@@ -613,7 +650,6 @@ struct Layer2 {
     actuation: u64,
     rc: u32,
     registers_log: StaticMap<Register, u32>,
-    flags: StaticMap<Flag, u32>,
     on_release: Option<Arc<[Lo]>>,
     spill: Box<[u32]>,
 }
@@ -749,6 +785,7 @@ impl StateMachine {
             events,
             next: &mut state.next,
             layer2: &mut state.layer2,
+            flags: Default::default(),
         };
         if !self.has_layer1 {
             match direction {
@@ -787,7 +824,6 @@ impl StateMachine {
                     release,
                     &mut layer1.registers_log,
                     &mut state.globals,
-                    &mut StaticMap::default(),
                     &mut layer1.spill,
                 );
             } else {
@@ -831,11 +867,15 @@ impl StateMachine {
                 on_press,
                 &mut layer1.registers_log,
                 &mut state.globals,
-                &mut StaticMap::default(),
                 &mut layer1.spill,
             );
         } else {
+            let last_mods = handler.next.acc_state.mods_pressed.0;
             handler.key_down(&mut state.globals, key);
+            if handler.flags[Flag::DidIncMods] == 0 {
+                handler.next.last_pressed_mods = last_mods;
+                handler.next.last_key = key.0;
+            }
         }
     }
 }

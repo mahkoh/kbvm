@@ -562,6 +562,9 @@ impl KeyBuilder {
     ///
     /// - On press:
     ///   - `key_down` for the keycode.
+    ///   - If the `key_down` did not call [`RoutineBuilder::mods_pressed_inc`]:
+    ///     - `last_key` is set to the keycode.
+    ///     - `last_pressed_mods` is set to the pressed mods immediately before this event.
     /// - On release:
     ///   - `key_up` for the keycode.
     ///

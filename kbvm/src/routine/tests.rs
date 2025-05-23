@@ -1,15 +1,20 @@
 use {
     crate::routine::{
-        convert_to_ssa, run, Global, Hi, Register, Routine, RoutineBuilder, StateEventHandler,
+        convert_to_ssa, run, Flag, Global, Hi, Register, Routine, RoutineBuilder, StateEventHandler,
     },
     isnt::std_1::vec::IsntVecExt,
     linearize::{Linearize, StaticMap},
     std::{array, mem},
 };
 
-struct DummyHandler;
+#[derive(Default)]
+struct DummyHandler(StaticMap<Flag, u32>);
 
-impl StateEventHandler for DummyHandler {}
+impl StateEventHandler for DummyHandler {
+    fn flags(&mut self) -> &mut StaticMap<Flag, u32> {
+        &mut self.0
+    }
+}
 
 const NUM_GLOBALS: usize = 16;
 
@@ -24,15 +29,13 @@ fn test(builder: RoutineBuilder, global: &[u32]) {
     println!("{:#?}", routine);
     let mut registers = StaticMap::default();
     let mut globals = [0; NUM_GLOBALS];
-    let mut flags = StaticMap::default();
     let mut spill = vec![0; routine.spill];
     for ops in [&routine.on_press, &routine.on_release] {
         run(
-            &mut DummyHandler,
+            &mut DummyHandler::default(),
             ops,
             &mut registers,
             &mut globals,
-            &mut flags,
             &mut spill,
         );
     }
