@@ -1,0 +1,7 @@
+a
+    pending
+a
+    pending
+a
+    composed
+        C
