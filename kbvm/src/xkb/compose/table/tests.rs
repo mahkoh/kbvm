@@ -1,6 +1,6 @@
 use crate::{
     syms,
-    xkb::{diagnostic::WriteToStderr, Context},
+    xkb::{Context, diagnostic::WriteToStderr},
 };
 
 #[test]

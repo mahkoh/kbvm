@@ -1,9 +1,9 @@
 use {
     crate::{
         output::{
+            Output,
             ansi::{Ansi, Theme},
             json::Json,
-            Output,
         },
         utils::read_path,
         wayland_protocols::{
@@ -38,20 +38,20 @@ use {
     error_reporter::Report,
     hashbrown::HashMap,
     kbvm::{
+        Components, Keycode,
         lookup::LookupTable,
         state_machine::{self, Direction, Event, StateMachine},
         xkb::{
+            Context,
             compose::{self, ComposeTable, FeedResult},
             diagnostic::WriteToLog,
-            Context,
         },
-        Components, Keycode,
     },
     memmap2::MmapOptions,
     std::{cell::RefCell, os::fd::OwnedFd, rc::Rc},
     wl_client::{
-        proxy::{self, OwnedProxy},
         Libwayland,
+        proxy::{self, OwnedProxy},
     },
 };
 

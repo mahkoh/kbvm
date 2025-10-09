@@ -3,9 +3,9 @@ use {
     integration_test_utils::run,
     isnt::std_1::{primitive::IsntStrExt, vec::IsntVecExt},
     kbvm::xkb::{
+        Context, Keymap,
         diagnostic::Diagnostic,
         rmlvo::{self, Element, Expanded, MergeMode},
-        Context, Keymap,
     },
     serde::{Deserialize, Serialize},
     std::{

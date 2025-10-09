@@ -1,10 +1,10 @@
 use crate::{
+    GroupIndex, Keycode, Keysym, ModifierMask,
     builder::Builder,
     evdev,
     lookup::{Lookup, LookupTable},
     syms,
-    xkb::{diagnostic::WriteToStderr, Context},
-    GroupIndex, Keycode, Keysym, ModifierMask,
+    xkb::{Context, diagnostic::WriteToStderr},
 };
 
 fn lookup_table(map: &str) -> LookupTable {

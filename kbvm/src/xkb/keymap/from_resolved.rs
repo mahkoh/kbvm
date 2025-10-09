@@ -1,15 +1,17 @@
 use {
     crate::{
+        ModifierMask,
         xkb::{
+            Keymap,
             controls::ControlMask,
             group::GroupIdx,
             interner::{Interned, Interner},
             keymap::{
-                actions::{ControlsLockAction, ControlsSetAction, RedirectKeyAction},
                 Action, GroupLatchAction, GroupLockAction, GroupSetAction, Indicator, Key,
                 KeyBehavior, KeyGroup, KeyLevel, KeyType, KeyTypeMapping, Keycode, ModMapValue,
                 ModsLatchAction, ModsLockAction, ModsSetAction, OverlayBehavior,
                 RadioGroupBehavior, VirtualModifier,
+                actions::{ControlsLockAction, ControlsSetAction, RedirectKeyAction},
             },
             level::Level,
             mod_component::ModComponentMask,
@@ -18,14 +20,12 @@ use {
                 ResolvedActionMods, ResolvedKeyKind, SymbolsKeyBehavior, SymbolsKeyGroup,
             },
             span::{Despan, Spanned},
-            Keymap,
         },
-        ModifierMask,
     },
     arrayvec::ArrayVec,
     bstr::ByteSlice,
-    hashbrown::{hash_map::Entry, HashMap, HashSet},
-    linearize::{static_map, Linearize, StaticMap},
+    hashbrown::{HashMap, HashSet, hash_map::Entry},
+    linearize::{Linearize, StaticMap, static_map},
     std::sync::Arc,
 };
 

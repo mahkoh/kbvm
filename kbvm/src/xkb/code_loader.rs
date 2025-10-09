@@ -176,7 +176,7 @@ impl Iterator for CodeIter<'_> {
                     return Some(Err(CodeLoaderError {
                         path: path.display().to_string(),
                         err,
-                    }))
+                    }));
                 }
             };
             let code = Code::new(&code);

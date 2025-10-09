@@ -1,6 +1,6 @@
 use {
     crate::{evdev::MAP, generate_map},
-    std::collections::{hash_map::Entry, HashMap, HashSet},
+    std::collections::{HashMap, HashSet, hash_map::Entry},
 };
 
 pub fn main() {

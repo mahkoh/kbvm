@@ -1,8 +1,8 @@
 use {
-    criterion::{black_box, criterion_group, criterion_main, Criterion},
+    criterion::{Criterion, black_box, criterion_group, criterion_main},
     kbvm::{
         syms,
-        xkb::{diagnostic::WriteToStderr, Context},
+        xkb::{Context, diagnostic::WriteToStderr},
     },
 };
 

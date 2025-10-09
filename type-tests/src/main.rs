@@ -11,9 +11,9 @@ use {
     integration_test_utils::run,
     isnt::std_1::vec::IsntVecExt,
     kbvm::{
-        state_machine::{Direction, Event},
-        xkb::{diagnostic::Diagnostic, Context},
         GroupIndex, Keycode, ModifierMask,
+        state_machine::{Direction, Event},
+        xkb::{Context, diagnostic::Diagnostic},
     },
     phf_map::PhfMap,
     std::{

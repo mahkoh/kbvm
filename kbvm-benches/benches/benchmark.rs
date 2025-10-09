@@ -1,5 +1,5 @@
 use {
-    criterion::{black_box, criterion_group, criterion_main, Criterion},
+    criterion::{Criterion, black_box, criterion_group, criterion_main},
     kbvm::Keysym,
     libxkbcommon_test_linker::{
         xkb_keysym_from_name, xkb_keysym_get_name, xkb_keysym_to_upper, xkb_keysym_to_utf32,

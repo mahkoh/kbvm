@@ -1,6 +1,6 @@
 use {
     crate::xkb::code_slice::CodeSlice,
-    hashbrown::{hash_map::EntryRef, Equivalent, HashMap},
+    hashbrown::{Equivalent, HashMap, hash_map::EntryRef},
     kbvm_proc::CloneWithDelta,
     std::fmt::{Debug, Formatter},
 };

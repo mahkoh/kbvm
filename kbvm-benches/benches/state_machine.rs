@@ -1,9 +1,9 @@
 use {
-    criterion::{criterion_group, criterion_main, Criterion},
+    criterion::{Criterion, criterion_group, criterion_main},
     kbvm::{
         evdev::{A, B, C, CAPSLOCK, LEFTSHIFT},
         state_machine::Direction,
-        xkb::{diagnostic::WriteToLog, Context},
+        xkb::{Context, diagnostic::WriteToLog},
     },
     libxkbcommon_test_linker::XState,
 };

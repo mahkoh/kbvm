@@ -5,8 +5,8 @@ use {
     integration_test_utils::run,
     isnt::std_1::vec::IsntVecExt,
     kbvm::{
-        xkb::{compose::FeedResult, diagnostic::Diagnostic, Context},
         Keysym,
+        xkb::{Context, compose::FeedResult, diagnostic::Diagnostic},
     },
     std::{
         fmt::Write,

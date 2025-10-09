@@ -1,6 +1,6 @@
 use crate::{
-    xkb::{diagnostic::WriteToStderr, Context},
     Keycode,
+    xkb::{Context, diagnostic::WriteToStderr},
 };
 
 #[test]

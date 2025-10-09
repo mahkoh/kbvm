@@ -1,7 +1,7 @@
 use {
     crate::{
-        xkb::{interner::Interned, span::Spanned},
         ModifierIndex, ModifierMask,
+        xkb::{interner::Interned, span::Spanned},
     },
     arrayvec::ArrayVec,
     std::{cell::Cell, ops::Deref, rc::Rc},

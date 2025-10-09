@@ -13,7 +13,7 @@ use {
     },
     arrayvec::ArrayVec,
     bstr::ByteSlice,
-    hashbrown::{hash_map::Entry, HashMap},
+    hashbrown::{HashMap, hash_map::Entry},
 };
 
 #[derive(Default)]

@@ -1,6 +1,6 @@
 use {
     error_reporter::Report,
-    kbvm::xkb::{diagnostic::WriteToLog, x11::KbvmX11Ext, Context},
+    kbvm::xkb::{Context, diagnostic::WriteToLog, x11::KbvmX11Ext},
     std::{
         fs::File,
         io::{Read, Write},
@@ -8,8 +8,9 @@ use {
         process::{Command, Stdio},
     },
     uapi::{
+        OwnedFd,
         c::{self},
-        fork, kill, OwnedFd,
+        fork, kill,
     },
     x11rb::rust_connection::RustConnection,
 };

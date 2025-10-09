@@ -3,7 +3,7 @@ mod tests;
 
 use {
     crate::{
-        syms,
+        Keycode, Keysym, ModifierIndex, ModifierMask, syms,
         xkb::{
             code_map::CodeMap,
             diagnostic::{DiagnosticKind, DiagnosticSink},
@@ -11,18 +11,18 @@ use {
             indicator::IndicatorIdx,
             interner::{Interned, Interner},
             kccgst::{
+                MergeMode,
                 ast::{
                     CompatmapDecl, ConfigItemType, Decls, DirectOrIncluded, Expr, InterpretSym,
                     Item, ItemType, KeycodeDecl, MergeModeExt, Path, SymbolsDecl, TypesDecl,
                     VModDecl, VarDecl, VarOrExpr,
                 },
                 expr::{
+                    EvalError, GroupList, IndicatorMapField, InterpField, SymbolsField, TypeField,
                     eval_action_default, eval_filter, eval_group, eval_indicator_map_field,
                     eval_interp_field, eval_keysyms, eval_mod_map_field, eval_real_mods,
                     eval_string, eval_symbols_field, eval_type_field, ident_to_real_mod_index,
-                    EvalError, GroupList, IndicatorMapField, InterpField, SymbolsField, TypeField,
                 },
-                MergeMode,
             },
             level::Level,
             meaning::{Meaning, MeaningCache},
@@ -38,9 +38,8 @@ use {
             span::{Span, SpanExt, Spanned},
             string_cooker::StringCooker,
         },
-        Keycode, Keysym, ModifierIndex, ModifierMask,
     },
-    hashbrown::{hash_map::Entry, DefaultHashBuilder, HashMap, HashSet},
+    hashbrown::{DefaultHashBuilder, HashMap, HashSet, hash_map::Entry},
     indexmap::IndexMap,
     isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::ad_hoc_display,

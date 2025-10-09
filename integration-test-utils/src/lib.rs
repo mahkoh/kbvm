@@ -41,10 +41,10 @@ where
             }
             for f in read_dir(f.path()).unwrap() {
                 let f = f.unwrap();
-                if let Some(s) = single {
-                    if f.file_name() != s {
-                        continue;
-                    }
+                if let Some(s) = single
+                    && f.file_name() != s
+                {
+                    continue;
                 }
                 cases.push(f.path());
             }
@@ -60,8 +60,7 @@ where
             scope.spawn(|| test_thread(&results, &f));
         }
     });
-    let x = mem::take(&mut *results.results.lock());
-    x
+    mem::take(&mut *results.results.lock())
 }
 
 fn test_thread<E, F>(results: &Results<E>, f: F)

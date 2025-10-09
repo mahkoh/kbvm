@@ -1,6 +1,6 @@
 use {
     quote::quote,
-    syn::{parse_quote, Meta, Path},
+    syn::{Meta, Path, parse_quote},
 };
 
 pub(crate) fn expand(input: proc_macro::TokenStream) -> proc_macro::TokenStream {

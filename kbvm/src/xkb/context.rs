@@ -21,7 +21,7 @@ use {
             },
             keymap::Keymap,
             meaning::MeaningCache,
-            rmlvo::{self, parser::MappingValue, resolver::Group, Element},
+            rmlvo::{self, Element, parser::MappingValue, resolver::Group},
             span::{SpanExt, Spanned},
             string_cooker::StringCooker,
         },

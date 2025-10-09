@@ -1,17 +1,17 @@
 use crate::{
+    Components, ControlsMask, GroupDelta, GroupIndex, ModifierMask,
     builder::Redirect,
     syms,
     xkb::{
+        Context,
         controls::ControlMask,
         diagnostic::WriteToStderr,
         group::GroupMask,
         group_component::GroupComponent,
         indicator::IndicatorIdx,
-        keymap::{actions::ModsSetAction, Action, Indicator, KeyBehavior},
+        keymap::{Action, Indicator, KeyBehavior, actions::ModsSetAction},
         mod_component::ModComponentMask,
-        Context,
     },
-    Components, ControlsMask, GroupDelta, GroupIndex, ModifierMask,
 };
 
 #[test]

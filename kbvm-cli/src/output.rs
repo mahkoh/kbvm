@@ -1,4 +1,4 @@
-use kbvm::{xkb::Keymap, ControlsMask, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask};
+use kbvm::{ControlsMask, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask, xkb::Keymap};
 
 pub mod ansi;
 pub mod json;

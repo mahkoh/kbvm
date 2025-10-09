@@ -35,11 +35,11 @@
 mod tests;
 
 #[expect(unused_imports)]
-use crate::{builder::Builder, Components};
+use crate::{Components, builder::Builder};
 use {
     crate::{
-        builder::Redirect, group::GroupIndex, key_storage::KeyStorage, GroupType, Keycode, Keysym,
-        ModifierMask,
+        GroupType, Keycode, Keysym, ModifierMask, builder::Redirect, group::GroupIndex,
+        key_storage::KeyStorage,
     },
     smallvec::SmallVec,
     std::fmt::{Debug, Formatter},

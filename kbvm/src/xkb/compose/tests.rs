@@ -1,5 +1,5 @@
 use {
-    crate::xkb::{diagnostic::WriteToStderr, Context},
+    crate::xkb::{Context, diagnostic::WriteToStderr},
     std::path::Path,
 };
 

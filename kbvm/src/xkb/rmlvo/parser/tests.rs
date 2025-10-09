@@ -11,7 +11,7 @@ use {
             rmlvo::{
                 formatter::{Format, Formatter},
                 lexer::Lexer,
-                parser::{parse_line, ParserCache},
+                parser::{ParserCache, parse_line},
             },
         },
     },

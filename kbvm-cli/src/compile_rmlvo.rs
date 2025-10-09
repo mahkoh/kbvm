@@ -1,7 +1,7 @@
 use {
     crate::{cli::CompileArgs, compile_xkb::format_keymap, expand_rmlvo::RmlvoArgs},
     clap::Args,
-    kbvm::xkb::{diagnostic::WriteToLog, Context},
+    kbvm::xkb::{Context, diagnostic::WriteToLog},
 };
 
 #[derive(Args, Debug, Default)]

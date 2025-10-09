@@ -6,6 +6,7 @@ mod tests;
 
 use {
     crate::{
+        Keycode,
         xkb::{
             code_loader::CodeType,
             code_map::CodeMap,
@@ -25,11 +26,10 @@ use {
                     VModDecl, VModDef, Var, VarDecl, VarOrExpr,
                 },
                 parser::error::{
-                    CompatmapDeclExpectation, Expected, GeometryDeclExpectation,
-                    KeycodeDeclExpectation, ParseDeclExpectation, ParserError,
-                    SymbolsDeclExpectation, TypesDeclExpectation, CONFIG_ITEM_EXPECTED,
-                    EXPR_TOKENS, FLAGS_EXPECTED, KEY_EXPECTED, OUTLINE_TOKENS,
-                    SECTION_ITEM_EXPECTED,
+                    CONFIG_ITEM_EXPECTED, CompatmapDeclExpectation, EXPR_TOKENS, Expected,
+                    FLAGS_EXPECTED, GeometryDeclExpectation, KEY_EXPECTED, KeycodeDeclExpectation,
+                    OUTLINE_TOKENS, ParseDeclExpectation, ParserError, SECTION_ITEM_EXPECTED,
+                    SymbolsDeclExpectation, TypesDeclExpectation,
                 },
                 token::{
                     Punctuation::{self, Cbracket, Cparen, Oparen},
@@ -39,10 +39,9 @@ use {
             meaning::{Meaning, MeaningCache},
             span::{Span, SpanExt, SpanResult1, SpanUnit, Spanned},
         },
-        Keycode,
     },
-    std::fmt::Debug,
     Punctuation::{Cbrace, Obrace, Obracket},
+    std::fmt::Debug,
 };
 
 struct Diag<'a, 'b, 'c> {

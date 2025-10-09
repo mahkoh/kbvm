@@ -1,7 +1,7 @@
 use crate::{
+    GroupIndex, ModifierMask,
     state_machine::{Direction, Event, Keycode},
     xkb::Context,
-    GroupIndex, ModifierMask,
 };
 
 const KEY_CONTROL_L: Keycode = Keycode(37);

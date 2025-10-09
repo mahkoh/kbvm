@@ -1,5 +1,6 @@
 use {
     crate::{
+        Keycode, Keysym, ModifierIndex, ModifierMask,
         builder::Redirect,
         xkb::{
             controls::ControlMask,
@@ -14,7 +15,6 @@ use {
             radio_group::RadioGroup,
             span::{Span, Spanned},
         },
-        Keycode, Keysym, ModifierIndex, ModifierMask,
     },
     hashbrown::{DefaultHashBuilder, HashMap},
     indexmap::IndexMap,

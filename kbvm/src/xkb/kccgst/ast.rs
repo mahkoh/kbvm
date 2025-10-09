@@ -1,12 +1,12 @@
 use {
     crate::{
+        Keycode,
         xkb::{
             include::IncludeGroup,
             interner::Interned,
             kccgst::token::Token,
             span::{Span, Spanned},
         },
-        Keycode,
     },
     arrayvec::ArrayVec,
     kbvm_proc::CloneWithDelta,

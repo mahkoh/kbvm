@@ -10,11 +10,11 @@ mod xml;
 use crate::xkb::ContextBuilder;
 use {
     crate::xkb::{
+        Context,
         code::Code,
         code_map::CodeMap,
         diagnostic::{DiagnosticHandler, DiagnosticKind, DiagnosticSink},
         span::SpanExt,
-        Context,
     },
     arrayvec::ArrayVec,
     error_reporter::Report,
