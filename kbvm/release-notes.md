@@ -1,5 +1,8 @@
 # Unreleased
 
+# 0.1.5 (2025-10-09)
+
+- Added new keysyms from xorgproto.
 - Fixed the following scenario that was previously bugged in all XKB
   implementations:
 
