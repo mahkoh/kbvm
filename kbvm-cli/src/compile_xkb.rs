@@ -2,7 +2,7 @@ use {
     crate::{cli::CompileArgs, utils::read_path},
     clap::{Args, ValueHint},
     error_reporter::Report,
-    kbvm::xkb::{diagnostic::WriteToLog, Context},
+    kbvm::xkb::{Context, diagnostic::WriteToLog},
     raw_stdio::raw_stdout,
     std::{
         fmt::Display,

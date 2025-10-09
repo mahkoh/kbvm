@@ -13,11 +13,11 @@ use {
         meaning::Meaning,
         span::{Span, SpanExt, Spanned},
     },
+    Punctuation::Oparen,
     bstr::ByteSlice,
     debug_fn::debug_fn,
     std::fmt::{self, Formatter},
     thiserror::Error,
-    Punctuation::Oparen,
 };
 
 #[derive(Debug, Clone, Error)]

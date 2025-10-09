@@ -1,9 +1,9 @@
 use {
     crate::{evdev::keycode_to_name, output::Output},
-    kbvm::{xkb::Keymap, ControlsMask, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask},
+    kbvm::{ControlsMask, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask, xkb::Keymap},
     serde::Serialize,
     std::{
-        io::{stdout, Write},
+        io::{Write, stdout},
         time::SystemTime,
     },
 };

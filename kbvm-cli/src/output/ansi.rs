@@ -1,7 +1,7 @@
 use {
     crate::{evdev::keycode_to_name, output::Output},
     debug_fn::debug_fn,
-    kbvm::{xkb::Keymap, ControlsMask, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask},
+    kbvm::{ControlsMask, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask, xkb::Keymap},
     owo_colors::{OwoColorize, Stream::Stdout},
     std::{
         fmt::{Display, Formatter},
@@ -260,19 +260,6 @@ where
     }
 }
 
-pub struct Now;
-
-impl Display for Now {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let millis = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .as_millis()
-            % 1_000_000_000;
-        write!(f, "[{:07}.{:03}]", millis / 1000, millis % 1000)
-    }
-}
-
 pub struct Now2(Theme);
 
 impl Display for Now2 {
@@ -310,7 +297,6 @@ impl Display for KeyDirection {
             true => "key down",
             false => "key up  ",
         };
-        let res = s.color_key_up_down(self.theme).fmt(f);
-        res
+        s.color_key_up_down(self.theme).fmt(f)
     }
 }

@@ -15,7 +15,7 @@ use {
             meaning::{Meaning, MeaningCache},
             rmlvo::{
                 parser::error::{
-                    Expected, ParserError, AFTER_EXCLAM, MAPPING_KEY, MAPPING_VALUE, MLVO,
+                    AFTER_EXCLAM, Expected, MAPPING_KEY, MAPPING_VALUE, MLVO, ParserError,
                     RULE_KEY, START_OF_LINE,
                 },
                 token::{Punctuation, Token},

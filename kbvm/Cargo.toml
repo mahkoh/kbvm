@@ -1,13 +1,13 @@
 [package]
 name = "kbvm"
 version = "0.1.4"
-edition = "2021"
+edition = "2024"
 repository = "https://github.com/mahkoh/kbvm"
 license = "MIT OR Apache-2.0"
 description = "An implementation of the XKB specification"
 keywords = ["parser", "protocol", "linux", "xkb", "wayland"]
 categories = ["api-bindings", "compilers", "parser-implementations"]
-rust-version = "1.83.0"
+rust-version = "1.85.0"
 exclude = ["*.xkb", "*.xml"]
 
 [features]

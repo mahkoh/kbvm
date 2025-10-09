@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build
         run: |
-          rustup override set 1.83.0
+          rustup override set 1.85.0
           cd kbvm
           cargo update
           cargo check --all-features --verbose

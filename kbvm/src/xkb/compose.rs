@@ -7,18 +7,18 @@ pub use table::{ComposeTable, FeedResult, Iter, MatchRule, MatchStep, State};
 use {crate::xkb::ContextBuilder, secure_execution::requires_secure_execution};
 use {
     crate::xkb::{
+        Context,
         code::Code,
         code_map::CodeMap,
         code_slice::CodeSlice,
         compose::{
             lexer::Lexer,
-            parser::{parse_line, Line},
+            parser::{Line, parse_line},
         },
         diagnostic::{DiagnosticHandler, DiagnosticKind, DiagnosticSink},
         interner::Interner,
         meaning::MeaningCache,
         span::SpanExt,
-        Context,
     },
     bstr::ByteSlice,
     hashbrown::HashSet,

@@ -9,9 +9,9 @@ use {
 };
 
 pub(crate) mod hidden {
-    use {crate::group_type::Data, std::sync::Arc};
     #[allow(unused_imports)]
-    use {crate::group_type::GroupTypeBuilder, crate::lookup::Lookup, crate::ModifierMask};
+    use {crate::ModifierMask, crate::group_type::GroupTypeBuilder, crate::lookup::Lookup};
+    use {crate::group_type::Data, std::sync::Arc};
 
     /// The type of a key group.
     ///

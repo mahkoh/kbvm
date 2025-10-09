@@ -5,34 +5,33 @@
 
 use {
     crate::{
+        Components, Keycode, Keysym, ModifierIndex, ModifierMask,
         controls::ControlsMask,
         group::{GroupDelta, GroupIndex},
         xkb::{
+            Keymap,
             controls::ControlMask,
             group::{GroupChange, GroupIdx, GroupMask},
             group_component::GroupComponent,
             indicator::IndicatorIdx,
             keymap::{
-                self,
+                self, Action, Indicator, Key, KeyBehavior, KeyGroup, KeyLevel, KeyOverlay, KeyType,
+                KeyTypeMapping, ModMapValue, OverlayBehavior, RadioGroupBehavior, VirtualModifier,
                 actions::{
                     ControlsLockAction, ControlsSetAction, GroupLatchAction, GroupLockAction,
                     GroupSetAction, ModsLatchAction, ModsLockAction, ModsSetAction,
                     RedirectKeyAction,
                 },
-                Action, Indicator, Key, KeyBehavior, KeyGroup, KeyLevel, KeyOverlay, KeyType,
-                KeyTypeMapping, ModMapValue, OverlayBehavior, RadioGroupBehavior, VirtualModifier,
             },
             level::Level,
             mod_component::ModComponentMask,
             radio_group::RadioGroup,
             resolved::GroupsRedirect,
             x11::sealed::Sealed,
-            Keymap,
         },
-        Components, Keycode, Keysym, ModifierIndex, ModifierMask,
     },
     bstr::ByteSlice,
-    hashbrown::{hash_map::Entry, DefaultHashBuilder, HashMap, HashSet},
+    hashbrown::{DefaultHashBuilder, HashMap, HashSet, hash_map::Entry},
     indexmap::IndexMap,
     std::sync::Arc,
     thiserror::Error,
@@ -43,9 +42,9 @@ use {
         protocol::{
             xkb::{
                 self, BehaviorType, BoolCtrl, ConnectionExt as E2, DeviceSpec, GetControlsReply,
-                GetIndicatorMapReply, GetMapReply, GetNamesReply, IDSpec, IMGroupsWhich,
-                IMModsWhich, LedClass, MapPart, NameDetail, SAIsoLockFlag, SAType, VMod, XIFeature,
-                ID, SA,
+                GetIndicatorMapReply, GetMapReply, GetNamesReply, ID, IDSpec, IMGroupsWhich,
+                IMModsWhich, LedClass, MapPart, NameDetail, SA, SAIsoLockFlag, SAType, VMod,
+                XIFeature,
             },
             xproto::{Atom, ConnectionExt as E1, GetAtomNameReply},
         },

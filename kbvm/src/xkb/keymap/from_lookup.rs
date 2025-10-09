@@ -1,10 +1,12 @@
 use {
     crate::{
+        ModifierIndex,
         builder::Redirect,
         group_type,
         lookup::LookupTable,
         syms,
         xkb::{
+            Keymap,
             group::GroupIdx,
             keymap::{
                 Indicator, Key, KeyGroup, KeyLevel, KeyType, KeyTypeMapping, Keycode, ModMapValue,
@@ -12,11 +14,9 @@ use {
             },
             level::Level,
             resolved::GroupsRedirect,
-            Keymap,
         },
-        ModifierIndex,
     },
-    hashbrown::{hash_map::Entry, HashMap},
+    hashbrown::{HashMap, hash_map::Entry},
     std::sync::Arc,
 };
 

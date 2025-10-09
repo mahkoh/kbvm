@@ -4,12 +4,13 @@ mod tests;
 
 use {
     crate::{
+        Keysym, ModifierMask,
         xkb::{
             code::Code,
             code_map::CodeMap,
             code_slice::CodeSlice,
             compose::{
-                parser::error::{Expected, ParserError, LHS},
+                parser::error::{Expected, LHS, ParserError},
                 token::Token,
             },
             context::Environment,
@@ -18,7 +19,6 @@ use {
             meaning::{Meaning, MeaningCache},
             span::{SpanExt, SpanUnit, Spanned},
         },
-        Keysym, ModifierMask,
     },
     isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::ad_hoc_display,

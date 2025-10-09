@@ -8,7 +8,7 @@ use {
         interner::Interner,
         kccgst::formatter::{Format, Formatter},
         meaning::MeaningCache,
-        rmlvo::resolver::{create_item, Group},
+        rmlvo::resolver::{Group, create_item},
         span::SpanExt,
     },
     bstr::ByteSlice,

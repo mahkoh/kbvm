@@ -10,7 +10,7 @@ use {
         interner::{Interned, Interner},
         kccgst::{
             ast::Item,
-            ast_cache::error::{not_found, AstCacheError},
+            ast_cache::error::{AstCacheError, not_found},
             lexer::Lexer,
             parser::{parse_item, snoop_ty_and_name},
             token::Token,
@@ -18,7 +18,7 @@ use {
         meaning::MeaningCache,
         span::{Span, SpanExt, Spanned},
     },
-    hashbrown::{hash_map::Entry, HashMap},
+    hashbrown::{HashMap, hash_map::Entry},
     kbvm_proc::ad_hoc_display,
     std::{collections::VecDeque, path::PathBuf, sync::Arc},
 };

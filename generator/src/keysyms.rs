@@ -4,7 +4,7 @@ use {
     regex::Regex,
     std::{
         borrow::Cow,
-        collections::{hash_map::Entry, HashMap},
+        collections::{HashMap, hash_map::Entry},
         fmt::{Debug, Formatter},
     },
 };
@@ -162,11 +162,7 @@ fn handle_yaml(output: &mut IndexMap<u32, KeysymInfo>) {
                 l = v;
             }
             l = l.trim_ascii_end();
-            if l.is_empty() {
-                None
-            } else {
-                Some(l)
-            }
+            if l.is_empty() { None } else { Some(l) }
         })
         .peekable();
     while let Some(keysym) = lines.next() {
@@ -229,11 +225,11 @@ fn handle_yaml(output: &mut IndexMap<u32, KeysymInfo>) {
         info.code_point = code_point;
         info.lower = lower;
         info.upper = upper;
-        if let Some(cp) = code_point {
-            if let Some(c) = char::from_u32(cp) {
-                info.is_lower = c.is_lowercase();
-                info.is_upper = c.is_uppercase();
-            }
+        if let Some(cp) = code_point
+            && let Some(c) = char::from_u32(cp)
+        {
+            info.is_lower = c.is_lowercase();
+            info.is_upper = c.is_uppercase();
         }
     }
 }
@@ -268,10 +264,10 @@ fn validate(output: &IndexMap<u32, KeysymInfo>) {
                 }
             }
         }
-        if let Some(cp) = v.code_point {
-            if char::from_u32(cp).is_none() {
-                unreachable!("Keysym code point is invalid: {v:#x?}");
-            }
+        if let Some(cp) = v.code_point
+            && char::from_u32(cp).is_none()
+        {
+            unreachable!("Keysym code point is invalid: {v:#x?}");
         }
         if v.keysym >> 24 == 0x01 {
             let cp = v.keysym << 8 >> 8;
@@ -478,16 +474,16 @@ fn generate_idx_to_char(output: &IndexMap<u32, KeysymInfo>) -> String {
 fn generate_char_to_bespoke_idx(output: &IndexMap<u32, KeysymInfo>) -> String {
     let mut map = HashMap::new();
     for v in output.values() {
-        if let Some(o) = v.code_point {
-            if v.keysym >> 24 != 0x01 {
-                match map.entry(char::from_u32(o).unwrap()) {
-                    Entry::Vacant(e) => {
+        if let Some(o) = v.code_point
+            && v.keysym >> 24 != 0x01
+        {
+            match map.entry(char::from_u32(o).unwrap()) {
+                Entry::Vacant(e) => {
+                    e.insert(v);
+                }
+                Entry::Occupied(mut e) => {
+                    if e.get().names.iter().all(|n| n.deprecated) {
                         e.insert(v);
-                    }
-                    Entry::Occupied(mut e) => {
-                        if e.get().names.iter().all(|n| n.deprecated) {
-                            e.insert(v);
-                        }
                     }
                 }
             }

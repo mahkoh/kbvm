@@ -2,7 +2,7 @@ use {
     crate::{cli::CompileArgs, compile_xkb::format_keymap},
     clap::Args,
     isnt::std_1::vec::IsntVecExt,
-    kbvm::xkb::{diagnostic::WriteToLog, rmlvo::Group, Context},
+    kbvm::xkb::{Context, diagnostic::WriteToLog, rmlvo::Group},
 };
 
 #[derive(Args, Debug, Default)]

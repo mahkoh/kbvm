@@ -1,7 +1,7 @@
 use {
     proc_macro2::Ident,
     quote::quote,
-    syn::{parse_quote, spanned::Spanned, Data, GenericParam, Index},
+    syn::{Data, GenericParam, Index, parse_quote, spanned::Spanned},
 };
 
 pub(crate) fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {

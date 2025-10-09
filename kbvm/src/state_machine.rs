@@ -28,14 +28,14 @@ mod tests;
 use crate::evdev;
 use {
     crate::{
+        GroupType, Keycode, ModifierMask,
         builder::Redirect,
         components::Components,
         controls::ControlsMask,
         group::{GroupDelta, GroupIndex},
         key_storage::KeyStorage,
         modifier::{NUM_MODS, NUM_MODS_MASK},
-        routine::{run, Flag, Lo, Register, Routine, StateEventHandler},
-        GroupType, Keycode, ModifierMask,
+        routine::{Flag, Lo, Register, Routine, StateEventHandler, run},
     },
     isnt::std_1::primitive::IsntSliceExt,
     linearize::StaticMap,

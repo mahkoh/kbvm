@@ -2,18 +2,18 @@
 use {crate::lookup::LookupTable, crate::state_machine::StateMachine};
 use {
     crate::{
+        GroupType, Keycode, ModifierIndex,
         builder::{Builder, GroupBuilder, KeyBuilder, LevelBuilder},
         routine::{Global, Routine, RoutineBuilder, Var},
         xkb::{
+            Keymap,
             controls::ControlMask,
             group::GroupChange,
             keymap::{Action, KeyBehavior, KeyOverlay, KeyType},
             radio_group::RadioGroup,
-            Keymap,
         },
-        GroupType, Keycode, ModifierIndex,
     },
-    hashbrown::{hash_map::Entry, HashMap},
+    hashbrown::{HashMap, hash_map::Entry},
     isnt::std_1::primitive::IsntSliceExt,
 };
 

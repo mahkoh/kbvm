@@ -5,6 +5,7 @@ mod tests;
 use crate::{syms, xkb::Context};
 use {
     crate::{
+        Keysym,
         xkb::{
             code_map::CodeMap,
             compose::parser::{Production, Step},
@@ -12,7 +13,6 @@ use {
             format::FormatFormat,
             span::{SpanExt, Spanned},
         },
-        Keysym,
     },
     bstr::ByteSlice,
     kbvm_proc::ad_hoc_display,

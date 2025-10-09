@@ -5,7 +5,7 @@ use {
 
 fn init_env() {
     static ONCE: Once = Once::new();
-    ONCE.call_once(|| {
+    ONCE.call_once(|| unsafe {
         set_var("HOME", "a");
         set_var("XDG_CONFIG_HOME", "b");
         set_var("XKB_CONFIG_EXTRA_PATH", "c");

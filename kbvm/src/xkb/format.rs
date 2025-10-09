@@ -1,24 +1,23 @@
 use {
     crate::{
+        Keysym, ModifierMask,
         xkb::{
+            Keymap,
             controls::ControlMask,
             group::GroupChange,
             group_component::GroupComponent,
             keymap::{
-                self,
+                self, Action, Indicator, KeyBehavior, KeyGroup, KeyLevel, KeyOverlay, KeyType,
                 actions::{
                     ControlsLockAction, ControlsSetAction, GroupLatchAction, GroupLockAction,
                     GroupSetAction, ModsLatchAction, ModsLockAction, ModsSetAction,
                     RedirectKeyAction,
                 },
-                Action, Indicator, KeyBehavior, KeyGroup, KeyLevel, KeyOverlay, KeyType,
             },
             mod_component::ModComponentMask,
             resolved::GroupsRedirect,
             rmlvo::{self, MergeMode},
-            Keymap,
         },
-        Keysym, ModifierMask,
     },
     debug_fn::debug_fn,
     hashbrown::{HashMap, HashSet},

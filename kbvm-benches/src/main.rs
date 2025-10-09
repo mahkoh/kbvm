@@ -1,7 +1,7 @@
 use kbvm::{
     evdev::A,
     state_machine::Direction,
-    xkb::{diagnostic::WriteToLog, Context},
+    xkb::{Context, diagnostic::WriteToLog},
 };
 
 fn main() {

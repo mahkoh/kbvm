@@ -13,28 +13,28 @@ use {
             group::GroupIdx,
             interner::{Interned, Interner},
             kccgst::{
+                MergeMode,
                 ast::{
                     Compat, CompatmapDecl, CompositeMap, ConfigItem, ConfigItemType, Decl, Decls,
                     DirectOrIncluded, Geometry, GeometryDecl, Include, Item, ItemType, KeycodeDecl,
                     Keycodes, NestedConfigItem, Symbols, SymbolsDecl, Types, TypesDecl,
                 },
-                MergeMode,
             },
             meaning::MeaningCache,
             rmlvo::{
                 lexer::Lexer,
                 parser::{
-                    parse_line, Line, MappingKey, MappingKeyIndex, MappingValue, ParserCache,
-                    RuleKey,
+                    Line, MappingKey, MappingKeyIndex, MappingValue, ParserCache, RuleKey,
+                    parse_line,
                 },
             },
             span::{Span, SpanExt, SpanUnit, Spanned},
         },
     },
-    hashbrown::{hash_set::Entry, HashMap, HashSet},
+    hashbrown::{HashMap, HashSet, hash_set::Entry},
     isnt::std_1::primitive::IsntSliceExt,
     kbvm_proc::ad_hoc_display,
-    linearize::{static_map, StaticMap},
+    linearize::{StaticMap, static_map},
     std::{collections::VecDeque, io::Write, path::PathBuf, sync::Arc},
 };
 

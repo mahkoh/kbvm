@@ -2,7 +2,7 @@ use {
     crate::xkb::{
         code::Code,
         code_map::CodeMap,
-        include::{error::ParseIncludeError, parse_include, IncludeIter},
+        include::{IncludeIter, error::ParseIncludeError, parse_include},
         interner::{Interned, Interner},
         kccgst::MergeMode,
         span::SpanExt,

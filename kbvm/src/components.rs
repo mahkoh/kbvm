@@ -4,10 +4,10 @@ mod tests;
 #[allow(unused_imports)]
 use crate::state_machine::StateMachine;
 use crate::{
+    ModifierMask,
     controls::ControlsMask,
     group::{GroupDelta, GroupIndex},
     state_machine::Event,
-    ModifierMask,
 };
 
 /// The active modifiers/group of a keyboard.

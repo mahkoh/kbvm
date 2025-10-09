@@ -1,8 +1,8 @@
 use {
     crate::{
         keysym::{
-            generated::{LEN, LONGEST_NAME},
             Keysym,
+            generated::{LEN, LONGEST_NAME},
         },
         syms,
     },

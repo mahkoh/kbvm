@@ -1,6 +1,6 @@
 use {
     crate::{phf, phf::PhfHash},
-    rand::{distributions::Standard, rngs::SmallRng, Rng, SeedableRng},
+    rand::{Rng, SeedableRng, distributions::Standard, rngs::SmallRng},
 };
 
 const DEFAULT_LAMBDA: usize = 5;

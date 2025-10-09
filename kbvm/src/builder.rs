@@ -9,12 +9,12 @@ mod tests;
 use crate::{routine::RoutineBuilder, state_machine::State, xkb::Keymap};
 use {
     crate::{
+        GroupType, Keycode, Keysym, ModifierIndex, ModifierMask,
         group::GroupIndex,
         key_storage::KeyStorage,
         lookup::{self, LookupTable},
         routine::{Global, Routine},
         state_machine::{self, StateMachine},
-        GroupType, Keycode, Keysym, ModifierIndex, ModifierMask,
     },
     hashbrown::HashMap,
     isnt::std_1::primitive::IsntSliceExt,

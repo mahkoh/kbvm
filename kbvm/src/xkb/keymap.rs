@@ -15,6 +15,7 @@ mod to_builder;
 pub use crate::xkb::keymap::format::Formatter;
 use {
     crate::{
+        Components, ControlsMask, Keysym, ModifierIndex, ModifierMask,
         builder::Redirect,
         group::{GroupDelta, GroupIndex},
         xkb::{
@@ -35,7 +36,6 @@ use {
             radio_group::RadioGroup,
             resolved::GroupsRedirect,
         },
-        Components, ControlsMask, Keysym, ModifierIndex, ModifierMask,
     },
     hashbrown::DefaultHashBuilder,
     indexmap::IndexMap,
@@ -259,8 +259,8 @@ pub enum Action {
 pub mod actions {
     use {
         crate::{
-            xkb::{controls::ControlMask, group},
             ModifierMask,
+            xkb::{controls::ControlMask, group},
         },
         std::sync::Arc,
     };

@@ -1,8 +1,8 @@
 use {
     quote::quote,
     syn::{
-        parse::{Parse, ParseStream},
         Expr, Index, Token, Type,
+        parse::{Parse, ParseStream},
     },
 };
 

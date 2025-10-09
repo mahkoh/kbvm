@@ -109,11 +109,11 @@
 mod tests;
 
 #[allow(unused_imports)]
-use {crate::builder::Builder, crate::state_machine::StateMachine, crate::Components};
+use {crate::Components, crate::builder::Builder, crate::state_machine::StateMachine};
 use {
     crate::{Keycode, ModifierMask},
     debug_fn::debug_fn,
-    hashbrown::{hash_map::Entry, HashMap, HashSet},
+    hashbrown::{HashMap, HashSet, hash_map::Entry},
     isnt::std_1::primitive::IsntSliceExt,
     linearize::{Linearize, StaticMap},
     smallvec::SmallVec,
@@ -344,7 +344,7 @@ impl Debug for Hi {
                 if idx > 0 {
                     write!(f, ", ")?;
                 }
-                write!(f, "v{} = v{}", arg.0 .0, arg.1 .0)?;
+                write!(f, "v{} = v{}", arg.0.0, arg.1.0)?;
             }
             Ok(())
         };
@@ -736,13 +736,7 @@ pub(crate) fn run<H>(
             Lo::Add { rd, rl, rr } => binop!(rd, rl, rr, rl.wrapping_add(rr)),
             Lo::Sub { rd, rl, rr } => binop!(rd, rl, rr, rl.wrapping_sub(rr)),
             Lo::Mul { rd, rl, rr } => binop!(rd, rl, rr, rl.wrapping_mul(rr)),
-            Lo::Udiv { rd, rl, rr } => binop!(rd, rl, rr, {
-                if rr == 0 {
-                    0
-                } else {
-                    rl / rr
-                }
-            }),
+            Lo::Udiv { rd, rl, rr } => binop!(rd, rl, rr, if rr == 0 { 0 } else { rl / rr }),
             Lo::Idiv { rd, rl, rr } => binop!(rd, rl, rr, {
                 let rl = rl as i32;
                 let rr = rr as i32;
@@ -754,13 +748,7 @@ pub(crate) fn run<H>(
                     (rl / rr) as u32
                 }
             }),
-            Lo::Urem { rd, rl, rr } => binop!(rd, rl, rr, {
-                if rr == 0 {
-                    0
-                } else {
-                    rl % rr
-                }
-            }),
+            Lo::Urem { rd, rl, rr } => binop!(rd, rl, rr, if rr == 0 { 0 } else { rl % rr }),
             Lo::Irem { rd, rl, rr } => binop!(rd, rl, rr, {
                 let rl = rl as i32;
                 let rr = rr as i32;
@@ -1413,7 +1401,7 @@ fn convert_to_ssa(mut next_var: u64, blocks: &mut [Vec<Hi>]) {
         for arg in current_block_arguments.drain() {
             block_arguments[idx].push((Var(0), arg));
         }
-        block_arguments[idx].sort_by_key(|v| v.1 .0);
+        block_arguments[idx].sort_by_key(|v| v.1.0);
         for (var, _) in &mut block_arguments[idx] {
             *var = allocate_var();
         }

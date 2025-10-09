@@ -17,7 +17,7 @@ A keymap can be turned into a compositor-side state machine or a client-side loo
 
 ## MSRV
 
-The MSRV is `max(1.83, stable - 3)`.
+The MSRV is `stable - 3`.
 
 ## License
 

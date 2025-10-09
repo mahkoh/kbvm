@@ -1,11 +1,11 @@
 use crate::{
+    GroupType, Keycode, ModifierMask,
     builder::{Builder, GroupBuilder, KeyBuilder, LevelBuilder},
     routine::RoutineBuilder,
     state_machine::{
         Direction::{Down, Up},
         Event,
     },
-    GroupType, Keycode, ModifierMask,
 };
 
 #[test]

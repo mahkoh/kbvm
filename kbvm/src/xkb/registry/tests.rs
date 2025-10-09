@@ -1,12 +1,12 @@
 use {
     crate::xkb::{
+        Context,
         diagnostic::WriteToStderr,
         registry::{
             Layout, Model, Opt, OptGroup,
             Popularity::{Exotic, Standard},
             Registry, Variant,
         },
-        Context,
     },
     std::path::Path,
 };

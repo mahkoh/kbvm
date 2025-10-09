@@ -1,4 +1,4 @@
-use crate::xkb::{diagnostic::WriteToStderr, Context};
+use crate::xkb::{Context, diagnostic::WriteToStderr};
 
 #[test]
 fn rename_long_keys() {

@@ -9,8 +9,8 @@ use {
             code_slice::CodeSlice,
             group::GroupIdx,
             include::error::{
-                invalid_group, missing_file_name, missing_merge_mode, unterminated_map_name,
-                ParseIncludeError,
+                ParseIncludeError, invalid_group, missing_file_name, missing_merge_mode,
+                unterminated_map_name,
             },
             interner::{Interned, Interner},
             kccgst::MergeMode,
@@ -42,7 +42,10 @@ pub(crate) struct IncludeIter<'a> {
     first: bool,
 }
 
-pub(crate) fn parse_include(interner: &mut Interner, include: Spanned<Interned>) -> IncludeIter {
+pub(crate) fn parse_include(
+    interner: &mut Interner,
+    include: Spanned<Interned>,
+) -> IncludeIter<'_> {
     IncludeIter {
         s: interner.get(include.val).to_owned(),
         interner,

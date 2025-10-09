@@ -1,6 +1,6 @@
 use {
     crate::routine::{
-        convert_to_ssa, run, Global, Hi, Register, Routine, RoutineBuilder, StateEventHandler,
+        Global, Hi, Register, Routine, RoutineBuilder, StateEventHandler, convert_to_ssa, run,
     },
     isnt::std_1::vec::IsntVecExt,
     linearize::{Linearize, StaticMap},

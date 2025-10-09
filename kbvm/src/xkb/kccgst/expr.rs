@@ -1,5 +1,6 @@
 use {
     crate::{
+        Keycode, Keysym, ModifierIndex, ModifierMask,
         from_bytes::FromBytes,
         syms,
         xkb::{
@@ -30,12 +31,11 @@ use {
             span::{Span, SpanExt, SpanResult1, SpanResult2, Spanned},
             string_cooker::StringCooker,
         },
-        Keycode, Keysym, ModifierIndex, ModifierMask,
     },
+    EvalError::*,
     smallvec::SmallVec,
     std::ops::{BitAnd, BitOr, Deref, Not},
     thiserror::Error,
-    EvalError::*,
 };
 
 #[derive(Copy, Clone, Debug, Error)]
@@ -1852,7 +1852,7 @@ pub(crate) fn eval_indicator_map_field(
             IndicatorMapField::WhichGroupState(components)
         }
         Meaning::Allowexplicit | Meaning::Indicatordriveskbd | Meaning::Indicatordriveskeyboard => {
-            return Err(UnimplementedIndicatorField.spanned2(var.path.span))
+            return Err(UnimplementedIndicatorField.spanned2(var.path.span));
         }
         _ => return Err(UnknownIndicatorField.spanned2(var.path.span)),
     };
