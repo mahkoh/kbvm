@@ -30,7 +30,7 @@ pub fn main(args: CompileXkbArgs) {
     let expanded = context.keymap_from_bytes(WriteToLog, Some(path.as_ref()), &source);
     match expanded {
         Ok(map) => {
-            format_keymap(map.format().multiple_actions_per_level(true));
+            format_keymap(args.compile_args.apply2(map.format()));
         }
         Err(_) => {
             log::error!("could not compile keymap");

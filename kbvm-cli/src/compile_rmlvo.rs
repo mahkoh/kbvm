@@ -24,5 +24,5 @@ pub fn main(args: CompileRmlvoArgs) {
         groups.as_deref(),
         options.as_deref(),
     );
-    format_keymap(expanded.format().multiple_actions_per_level(true));
+    format_keymap(args.compile_args.apply2(expanded.format()));
 }
