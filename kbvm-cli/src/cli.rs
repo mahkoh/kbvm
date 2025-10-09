@@ -8,7 +8,7 @@ use {
         generate::{self, GenerateArgs},
     },
     clap::{Args, Parser, Subcommand, ValueHint},
-    kbvm::xkb::ContextBuilder,
+    kbvm::xkb::{ContextBuilder, keymap::Formatter},
 };
 
 /// KBVM test utility.
@@ -44,6 +44,12 @@ pub struct CompileArgs {
     /// Append an include path.
     #[clap(long, value_hint = ValueHint::DirPath)]
     pub append_include: Vec<String>,
+    /// Don't include key actions or behaviors.
+    #[clap(long)]
+    pub lookup_only: bool,
+    /// Rename long key names for compatibility with other XKB implementations.
+    #[clap(long)]
+    pub rename_long_names: bool,
 }
 
 impl CompileArgs {
@@ -57,6 +63,16 @@ impl CompileArgs {
         for dir in &self.append_include {
             builder.append_path(dir);
         }
+    }
+
+    pub fn apply2<'a>(&self, mut formatter: Formatter<'a>) -> Formatter<'a> {
+        if self.lookup_only {
+            formatter = formatter.lookup_only(true);
+        }
+        if self.rename_long_names {
+            formatter = formatter.rename_long_keys(true);
+        }
+        formatter.multiple_actions_per_level(true)
     }
 }
 
