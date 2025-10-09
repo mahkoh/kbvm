@@ -64,7 +64,7 @@ xkb_keymap {
         };
         key <02> {
             type[Group1] = "TWO_LEVEL",
-            symbols[Group1] = [ 0x01000001, 0x01000001 ]
+            symbols[Group1] = [ U1, U1 ]
         };
         key <03> {
             type[Group1] = "TWO_LEVEL",
@@ -72,7 +72,7 @@ xkb_keymap {
         };
         key <04> {
             type[Group1] = "TWO_LEVEL",
-            symbols[Group1] = [ 0x0100001f, 0x0100001f ]
+            symbols[Group1] = [ U1f, U1f ]
         };
         key <05> {
             type[Group1] = "TWO_LEVEL",
@@ -88,11 +88,11 @@ xkb_keymap {
         };
         key <08> {
             type[Group1] = "TWO_LEVEL",
-            symbols[Group1] = [ 0x01000080, 0x01000080 ]
+            symbols[Group1] = [ U80, U80 ]
         };
         key <09> {
             type[Group1] = "TWO_LEVEL",
-            symbols[Group1] = [ 0x0100009f, 0x0100009f ]
+            symbols[Group1] = [ U9f, U9f ]
         };
         key <10> {
             type[Group1] = "TWO_LEVEL",

@@ -88,6 +88,7 @@ const KEYSYM_IS_CHAR: u8 = 1 << 1;
 const IS_LOWER: u8 = 1 << 2;
 const IS_UPPER: u8 = 1 << 3;
 const IS_SECONDARY_IDX: u8 = 1 << 4;
+const IS_DEPRECATED: u8 = 1 << 5;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[repr(Rust, packed)]
@@ -233,18 +234,15 @@ impl Keysym {
         if matches!(c, 0x08..=0x0b | 0x0d | 0x1b) {
             return Self(c | 0xff00);
         }
+        if matches!(c, 0x0) {
+            return syms::NoSymbol;
+        }
         if matches!(c, 0x7f) {
             return syms::Delete;
         }
-        if matches!(c, 0xfdd0..=0xfdef) {
-            return syms::NoSymbol;
-        }
-        if matches!(c & 0xffff, 0xfffe..=0xffff) {
-            return syms::NoSymbol;
-        }
         let idx = CHAR_TO_BESPOKE_IDX[&char];
         let data = &DATAS[idx as usize];
-        if data.flags & HAS_CHAR != 0 {
+        if data.flags & (HAS_CHAR | IS_DEPRECATED) == HAS_CHAR {
             let sym = Self(data.keysym_or_definitive_idx);
             if data.flags & KEYSYM_IS_CHAR != 0 && sym.0 == char as u32 {
                 return sym;
@@ -622,15 +620,11 @@ fn from_str<const CASE_INSENSITIVE: bool>(s: &[u8]) -> Option<Keysym> {
 }
 
 fn keysym_from_cp(cp: u32) -> Option<Keysym> {
-    let v = match cp {
-        0x000000..=0x00001f => None,
-        0x000020..=0x00007e => Some(cp),
-        0x00007f..=0x00009f => None,
-        0x0000a0..=0x0000ff => Some(cp),
-        0x000100..=0x10ffff => Some(cp | 0x01_00_00_00),
-        0x110000.. => None,
-    };
-    v.map(Keysym)
+    if matches!(cp, 0x000100..=0x10ffff) {
+        Some(Keysym(cp | 0x01_00_00_00))
+    } else {
+        char::from_u32(cp).map(Keysym::from_char)
+    }
 }
 
 impl FromStr for Keysym {

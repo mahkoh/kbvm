@@ -59,7 +59,7 @@ fn generate_output() -> String {
 #[derive(Debug)]
 struct KeysymInfo {
     keysym: u32,
-    definitive_name: Option<&'static str>,
+    definitive_name: Option<Cow<'static, str>>,
     code_point: Option<u32>,
     lower: Option<u32>,
     upper: Option<u32>,
@@ -221,7 +221,7 @@ fn handle_yaml(output: &mut IndexMap<u32, KeysymInfo>) {
         let Some(info) = output.get_mut(&keysym) else {
             unreachable!("keysym.yaml contains keysym 0x{keysym:x} not present in the header");
         };
-        info.definitive_name = Some(name);
+        info.definitive_name = Some(Cow::Borrowed(name));
         info.code_point = code_point;
         info.lower = lower;
         info.upper = upper;
@@ -230,6 +230,11 @@ fn handle_yaml(output: &mut IndexMap<u32, KeysymInfo>) {
         {
             info.is_lower = c.is_lowercase();
             info.is_upper = c.is_uppercase();
+        }
+    }
+    for info in output.values_mut() {
+        if info.definitive_name.is_none() && info.names.len() == 1 {
+            info.definitive_name = Some(info.names[0].name.clone());
         }
     }
 }
@@ -312,7 +317,7 @@ fn validate(output: &IndexMap<u32, KeysymInfo>) {
     for v in output.values() {
         let mut have_definitive_name = false;
         for name in &v.names {
-            if name.name == v.definitive_name.unwrap() {
+            if name.name == **v.definitive_name.as_ref().unwrap() {
                 have_definitive_name = true;
             }
             if let Some(alias) = name.alias_for {
@@ -341,7 +346,7 @@ fn assign_indices(output: &mut IndexMap<u32, KeysymInfo>) {
     for ks in output.values_mut() {
         for name in &mut ks.names {
             name.idx = i;
-            if name.name == ks.definitive_name.unwrap() {
+            if name.name == **ks.definitive_name.as_ref().unwrap() {
                 ks.definitive_idx = i;
             }
             i += 1;
@@ -547,6 +552,9 @@ fn generate_datas(output: &IndexMap<u32, KeysymInfo>) -> String {
         }
         if name.idx != v.definitive_idx {
             res.push_str(" | IS_SECONDARY_IDX");
+        }
+        if name.deprecated {
+            res.push_str(" | IS_DEPRECATED");
         }
         res.push_str(",\n");
         res.push_str("    },\n");

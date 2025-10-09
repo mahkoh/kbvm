@@ -26,15 +26,8 @@ fn from_char() {
         };
         let l = Keysym::from_char(c).0;
         let r = xkb_utf32_to_keysym(c as _);
-        if matches!(c, '─' | '│' | '┌' | '○') {
-            // xkbcommon returns deprecated keysyms for these characters
-            if l == r {
-                panic!("Expected different output for {c:?} but output is 0x{l:x}");
-            }
-        } else {
-            if l != r {
-                panic!("for {c:?}: self=0x{l:x}, xkbcommon=0x{r:x}");
-            }
+        if l != r {
+            panic!("for {c:?}: self=0x{l:x}, xkbcommon=0x{r:x}");
         }
     }
 }
