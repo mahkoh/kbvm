@@ -1,4 +1,6 @@
 #[cfg(unix)]
+use crate::dump_x11::{self, DumpX11Args};
+#[cfg(unix)]
 use crate::test_wayland::{self, TestWaylandArgs};
 use {
     crate::{
@@ -31,6 +33,9 @@ enum Cmd {
     CompileXkb(CompileXkbArgs),
     /// Generate shell completion scripts for kbvm.
     GenerateCompletion(GenerateArgs),
+    /// Loads the keymap from the X server and writes it to stdout.
+    #[cfg(unix)]
+    DumpX11(DumpX11Args),
 }
 
 #[derive(Args, Debug, Default)]
@@ -44,6 +49,10 @@ pub struct CompileArgs {
     /// Append an include path.
     #[clap(long, value_hint = ValueHint::DirPath)]
     pub append_include: Vec<String>,
+}
+
+#[derive(Args, Debug, Default)]
+pub struct FormatArgs {
     /// Don't include key actions or behaviors.
     #[clap(long)]
     pub lookup_only: bool,
@@ -64,8 +73,10 @@ impl CompileArgs {
             builder.append_path(dir);
         }
     }
+}
 
-    pub fn apply2<'a>(&self, mut formatter: Formatter<'a>) -> Formatter<'a> {
+impl FormatArgs {
+    pub fn apply<'a>(&self, mut formatter: Formatter<'a>) -> Formatter<'a> {
         if self.lookup_only {
             formatter = formatter.lookup_only(true);
         }
@@ -85,5 +96,7 @@ pub fn main() {
         Cmd::CompileRmlvo(args) => compile_rmlvo::main(args),
         Cmd::CompileXkb(args) => compile_xkb::main(args),
         Cmd::GenerateCompletion(args) => generate::main(args),
+        #[cfg(unix)]
+        Cmd::DumpX11(args) => dump_x11::main(args),
     }
 }

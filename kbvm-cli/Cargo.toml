@@ -32,6 +32,8 @@ utf8-console = "0.1.0"
 
 [target.'cfg(unix)'.dependencies]
 wl-client = "0.2.0"
+x11rb = { version = "0.13.2", default-features = false }
+kbvm = { version = "0.1.5", path = "../kbvm", features = ["x11"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 uapi = "0.2.13"

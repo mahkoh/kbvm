@@ -1,5 +1,9 @@
 use {
-    crate::{cli::CompileArgs, compile_xkb::format_keymap, expand_rmlvo::RmlvoArgs},
+    crate::{
+        cli::{CompileArgs, FormatArgs},
+        compile_xkb::format_keymap,
+        expand_rmlvo::RmlvoArgs,
+    },
     clap::Args,
     kbvm::xkb::{Context, diagnostic::WriteToLog},
 };
@@ -8,6 +12,8 @@ use {
 pub struct CompileRmlvoArgs {
     #[clap(flatten)]
     compile_args: CompileArgs,
+    #[clap(flatten)]
+    format_args: FormatArgs,
     #[clap(flatten)]
     rmlvo: RmlvoArgs,
 }
@@ -24,5 +30,5 @@ pub fn main(args: CompileRmlvoArgs) {
         groups.as_deref(),
         options.as_deref(),
     );
-    format_keymap(args.compile_args.apply2(expanded.format()));
+    format_keymap(args.format_args.apply(expanded.format()));
 }

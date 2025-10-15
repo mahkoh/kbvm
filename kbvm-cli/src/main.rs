@@ -6,6 +6,8 @@ use {error_reporter::Report, log::LevelFilter};
 mod cli;
 mod compile_rmlvo;
 mod compile_xkb;
+#[cfg(unix)]
+mod dump_x11;
 mod evdev;
 mod expand_rmlvo;
 mod generate;
