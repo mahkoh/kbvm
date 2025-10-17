@@ -1,5 +1,8 @@
 use {
-    crate::{cli::CompileArgs, utils::read_path},
+    crate::{
+        cli::{CompileArgs, FormatArgs},
+        utils::read_path,
+    },
     clap::{Args, ValueHint},
     error_reporter::Report,
     kbvm::xkb::{Context, diagnostic::WriteToLog},
@@ -14,6 +17,8 @@ use {
 pub struct CompileXkbArgs {
     #[clap(flatten)]
     compile_args: CompileArgs,
+    #[clap(flatten)]
+    format_args: FormatArgs,
     /// The path to the keymap.
     ///
     /// If the path is not specified or if the path is `-`, the keymap is read from stdin.
@@ -30,7 +35,7 @@ pub fn main(args: CompileXkbArgs) {
     let expanded = context.keymap_from_bytes(WriteToLog, Some(path.as_ref()), &source);
     match expanded {
         Ok(map) => {
-            format_keymap(args.compile_args.apply2(map.format()));
+            format_keymap(args.format_args.apply(map.format()));
         }
         Err(_) => {
             log::error!("could not compile keymap");
