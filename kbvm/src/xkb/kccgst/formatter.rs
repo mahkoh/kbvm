@@ -441,6 +441,7 @@ impl Format for InterpretMatch {
         match self.sym.val {
             InterpretSym::Ident(i) => f.write_interned(i)?,
             InterpretSym::String(i) => f.write_string(i)?,
+            InterpretSym::Integer(i, _) => f.write_interned(i)?,
         }
         if let Some(filter) = &self.filter {
             f.write_all(" + ")?;

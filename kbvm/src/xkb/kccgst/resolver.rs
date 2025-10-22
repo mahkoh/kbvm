@@ -1268,6 +1268,7 @@ impl ConfigWalker for CompatResolver<'_, '_, '_, '_> {
                 let expr = match e.match_.val.sym.val {
                     InterpretSym::Ident(i) => Expr::Path(Path::One(i)),
                     InterpretSym::String(s) => Expr::String(s),
+                    InterpretSym::Integer(i, v) => Expr::Integer(i, v),
                 };
                 let mut keysym = None;
                 let res = eval_keysyms(

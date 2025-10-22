@@ -1,0 +1,21 @@
+xkb_keymap {
+    xkb_keycodes {
+        <a> = 1;
+        <b> = 2;
+        <c> = 3;
+    };
+    xkb_compat {
+        interpret 0x61 {
+            repeat = false;
+        };
+        interpret 0x62 + Mod1 {
+            repeat = false;
+        };
+    };
+    xkb_symbols {
+        key <a> { [ a ] };
+        key <b> { [ b ] };
+        key <c> { [ c ] };
+        modmap Mod1 { b };
+    };
+};
