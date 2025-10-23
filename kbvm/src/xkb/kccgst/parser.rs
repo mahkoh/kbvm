@@ -597,6 +597,7 @@ impl Parser<'_, '_, '_> {
         let sym = match token.val {
             Token::Ident(i) => InterpretSym::Ident(i),
             Token::String(i) => InterpretSym::String(i),
+            Token::Integer(i, v) => InterpretSym::Integer(i, v),
             _ => return Err(self.unexpected_token(expected, token)),
         };
         let sym = sym.spanned2(token.span);

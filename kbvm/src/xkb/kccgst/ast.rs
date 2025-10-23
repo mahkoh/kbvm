@@ -208,6 +208,7 @@ pub(crate) struct InterpretMatch {
 pub(crate) enum InterpretSym {
     Ident(Interned),
     String(Interned),
+    Integer(Interned, i64),
 }
 
 #[derive(Debug, CloneWithDelta)]

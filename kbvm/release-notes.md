@@ -1,5 +1,17 @@
 # Unreleased
 
+- Fixed parsing of numbers as keysyms in interpret statements:
+
+  ```xkb
+  xkb_compat {
+      interpret 0x61 {
+          repeat = false;
+      };
+  };
+  ```
+  
+  This would previously not parse and the interpret statement would be ignored.
+
 # 0.1.5 (2025-10-09)
 
 - Added new keysyms from xorgproto.
