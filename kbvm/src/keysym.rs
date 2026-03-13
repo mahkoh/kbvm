@@ -12,7 +12,7 @@ use {
         keysym::{
             generated::{
                 CHAR_TO_BESPOKE_IDX, DATAS, KEYSYM_TO_CHAR, KEYSYM_TO_IDX, KEYSYM_TO_LOWER_KEYSYM,
-                KEYSYM_TO_UPPER_KEYSYM, LONGEST_NAME, LOWER_NAME_TO_IDX, NAMES,
+                KEYSYM_TO_UPPER_KEYSYM, KEYSYM32_TO_CHAR, LONGEST_NAME, LOWER_NAME_TO_IDX, NAMES,
             },
             hidden::Keysym,
         },
@@ -103,6 +103,12 @@ struct KeysymData {
 #[repr(Rust, packed)]
 struct KeysymChar {
     keysym: u16,
+    char: char,
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+struct Keysym32Char {
+    keysym: u32,
     char: char,
 }
 
@@ -247,15 +253,24 @@ impl Keysym {
             if data.flags & KEYSYM_IS_CHAR != 0 && sym.0 == char as u32 {
                 return sym;
             }
-            let sym16 = sym.0 as u16;
-            let pos = KEYSYM_TO_CHAR.binary_search_by(|k| {
-                let keysym = k.keysym;
-                keysym.cmp(&sym16)
-            });
-            if let Ok(pos) = pos {
-                if KEYSYM_TO_CHAR[pos].char == char {
-                    return Self(data.keysym_or_definitive_idx);
-                }
+            macro_rules! binary_search {
+                ($sym:expr, $map:expr) => {
+                    let pos = $map.binary_search_by(|k| {
+                        let keysym = k.keysym;
+                        keysym.cmp(&$sym)
+                    });
+                    if let Ok(pos) = pos {
+                        if $map[pos].char == char {
+                            return Self(data.keysym_or_definitive_idx);
+                        }
+                    }
+                };
+            }
+            if sym.0 > 0xff_ff {
+                binary_search!(sym.0, KEYSYM32_TO_CHAR);
+            } else {
+                let sym16 = sym.0 as u16;
+                binary_search!(sym16, KEYSYM_TO_CHAR);
             }
         }
         Self(0x01_00_00_00 | c)
@@ -301,20 +316,25 @@ impl Keysym {
                 return Some((c & 0x7f) as u8 as char);
             }
         }
+        macro_rules! binary_search {
+            ($c:expr, $array:expr) => {
+                let pos = $array
+                    .binary_search_by(|k| {
+                        let keysym = k.keysym;
+                        keysym.cmp(&$c)
+                    })
+                    .ok()?;
+                return Some($array[pos].char);
+            };
+        }
         if c > 0xffff {
             if c >> 24 == 0x01 {
                 return char::from_u32(c & 0xff_ff_ff);
             }
-            return None;
+            binary_search!(c, KEYSYM32_TO_CHAR);
         }
         let c = c as u16;
-        let pos = KEYSYM_TO_CHAR
-            .binary_search_by(|k| {
-                let keysym = k.keysym;
-                keysym.cmp(&c)
-            })
-            .ok()?;
-        Some(KEYSYM_TO_CHAR[pos].char)
+        binary_search!(c, KEYSYM_TO_CHAR);
     }
 
     /// Creates a keysym from a case-sensitive string.

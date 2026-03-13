@@ -3968,6 +3968,8 @@ pub(super) static KEYSYM_TO_CHAR: &[KeysymChar] = &[
         char: '\u{7f}',
     },
 ];
+pub(super) static KEYSYM32_TO_CHAR: &[Keysym32Char] = &[
+];
 
 pub(super) static CHAR_TO_BESPOKE_IDX: PhfMap<char, u16> = PhfMap {
     key: 12913932095322966823,
