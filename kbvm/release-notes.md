@@ -1,5 +1,8 @@
 # Unreleased
 
+# 0.1.6 (2026-03-13)
+
+- Added new keysyms from xorgproto.
 - Fixed parsing of numbers as keysyms in interpret statements:
 
   ```xkb
