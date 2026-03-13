@@ -289,7 +289,10 @@ fn validate(output: &IndexMap<u32, KeysymInfo>) {
                         transformed.clear();
                     }
                     if transformed.len() == 1 {
-                        let c = transformed[0] as u32 | 0x01_00_00_00;
+                        let mut c = transformed[0] as u32;
+                        if c != 'ß' as u32 {
+                            c |= 0x01_00_00_00;
+                        }
                         if v.$field != Some(c) {
                             unreachable!(
                                 "Expected {} variant {c:x} for keysym: {v:#x?}",
