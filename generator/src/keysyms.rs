@@ -249,9 +249,6 @@ fn validate(output: &IndexMap<u32, KeysymInfo>) {
             unreachable!("Keysym has both lower and upper variants: {v:#x?}");
         }
         if let Some(casing) = v.lower.or(v.upper) {
-            if v.keysym >> 24 != 0x01 && v.keysym > 0xff_ff {
-                unreachable!("Large non-unicode keysym has casing: {v:#x?}");
-            }
             if casing >> 24 != 0x01 && !output.contains_key(&casing) {
                 unreachable!("Other case does not exist: {v:#x?}");
             }
@@ -414,23 +411,32 @@ fn generate_keysym_to_idx(output: &IndexMap<u32, KeysymInfo>) -> String {
 }
 
 fn generate_keysym_to_other_case_keysym(output: &IndexMap<u32, KeysymInfo>, upper: bool) -> String {
-    struct MappingDebugger(u32, u32);
+    struct MappingDebugger(u32, u32, bool);
     impl Debug for MappingDebugger {
         fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            let suffix = match self.2 {
+                true => "32",
+                false => "",
+            };
             write!(
                 f,
-                "KeysymCaseMapping {{ keysym: 0x{:04x}, other: 0x{:08x} }}",
+                "Keysym{suffix}CaseMapping {{ keysym: 0x{:04x}, other: 0x{:08x} }}",
                 self.0, self.1
             )
         }
     }
-    let mut keys = vec![];
-    let mut values = vec![];
+    #[derive(Default)]
+    struct Set {
+        keys: Vec<u32>,
+        values: Vec<MappingDebugger>,
+    }
+    let mut small = Set::default();
+    let mut big = Set::default();
     for v in output.values() {
         if v.keysym < 0x80 {
             continue;
         }
-        if v.keysym > 0xff_ff {
+        if v.keysym >> 24 == 0x01 {
             continue;
         }
         let o = match upper {
@@ -440,14 +446,31 @@ fn generate_keysym_to_other_case_keysym(output: &IndexMap<u32, KeysymInfo>, uppe
         let Some(o) = o else {
             continue;
         };
-        keys.push(v.keysym);
-        values.push(MappingDebugger(v.keysym, o));
+        let is_big = v.keysym > 0xff_ff;
+        let set = if is_big { &mut big } else { &mut small };
+        set.keys.push(v.keysym);
+        set.values.push(MappingDebugger(v.keysym, o, is_big));
     }
-    let name = match upper {
-        false => "KEYSYM_TO_LOWER_KEYSYM",
-        true => "KEYSYM_TO_UPPER_KEYSYM",
-    };
-    generate_map(name, "u32", "KeysymCaseMapping", &keys, &mut values)
+    assert!(big.keys.is_empty());
+    let mut out = String::new();
+    for (suffix, mut set) in [("", small), ("32", big)] {
+        if set.keys.is_empty() {
+            continue;
+        }
+        let name = match upper {
+            false => format!("KEYSYM{suffix}_TO_LOWER_KEYSYM"),
+            true => format!("KEYSYM{suffix}_TO_UPPER_KEYSYM"),
+        };
+        let value_type = format!("Keysym{suffix}CaseMapping");
+        out.push_str(&generate_map(
+            &name,
+            "u32",
+            &value_type,
+            &set.keys,
+            &mut set.values,
+        ));
+    }
+    out
 }
 
 fn generate_idx_to_char(output: &IndexMap<u32, KeysymInfo>) -> String {

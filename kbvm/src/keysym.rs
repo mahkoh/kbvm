@@ -119,6 +119,12 @@ struct KeysymCaseMapping {
     other: u32,
 }
 
+// #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+// struct Keysym32CaseMapping {
+//     keysym: u32,
+//     other: u32,
+// }
+
 /// The error returned by [`Keysym::from_str`](FromStr::from_str).
 #[derive(Debug, Error)]
 #[error("The keysym name is unknown")]
@@ -171,7 +177,7 @@ impl DoubleEndedIterator for Keysyms {
 }
 
 macro_rules! case_change {
-    ($slf:ident, $ascii:ident, $unicode:ident, $map:ident) => {
+    ($slf:ident, $ascii:ident, $unicode:ident, $map:ident, $big_map:ident) => {
         if $slf.0 <= 0xffff {
             if $slf.0 < 0x80 {
                 return Keysym(($slf.0 as u8).$ascii() as u32);
@@ -207,6 +213,12 @@ macro_rules! case_change {
             }
             convert_unicode($slf)
         } else {
+            // let mapping = $big_map[&$slf.0];
+            // if mapping.keysym == $slf.0 {
+            //     Self(mapping.other)
+            // } else {
+            //     $slf
+            // }
             $slf
         }
     };
@@ -395,7 +407,8 @@ impl Keysym {
             self,
             to_ascii_uppercase,
             to_uppercase,
-            KEYSYM_TO_UPPER_KEYSYM
+            KEYSYM_TO_UPPER_KEYSYM,
+            KEYSYM32_TO_UPPER_KEYSYM
         )
     }
 
@@ -418,7 +431,8 @@ impl Keysym {
             self,
             to_ascii_lowercase,
             to_lowercase,
-            KEYSYM_TO_LOWER_KEYSYM
+            KEYSYM_TO_LOWER_KEYSYM,
+            KEYSYM32_TO_LOWER_KEYSYM
         )
     }
 
