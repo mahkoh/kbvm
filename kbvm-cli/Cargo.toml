@@ -1,6 +1,6 @@
 [package]
 name = "kbvm-cli"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2024"
 repository = "https://github.com/mahkoh/kbvm"
 license = "GPL-3.0-only"
@@ -14,7 +14,7 @@ name = "kbvm"
 path = "src/main.rs"
 
 [dependencies]
-kbvm = { version = "0.1.5", path = "../kbvm", features = ["compose"] }
+kbvm = { version = "0.1.6", path = "../kbvm", features = ["compose"] }
 clap = { version = "4.5.26", features = ["derive"] }
 clap_complete = "4.5.42"
 env_logger = "0.11.6"
@@ -33,7 +33,7 @@ utf8-console = "0.1.0"
 [target.'cfg(unix)'.dependencies]
 wl-client = "0.2.0"
 x11rb = { version = "0.13.2", default-features = false }
-kbvm = { version = "0.1.5", path = "../kbvm", features = ["x11"] }
+kbvm = { version = "0.1.6", path = "../kbvm", features = ["x11"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 uapi = "0.2.13"
