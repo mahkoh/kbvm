@@ -635,7 +635,7 @@ dependencies = [
 
 [[package]]
 name = "kbvm"
-version = "0.1.6"
+version = "0.1.7"
 dependencies = [
  "arrayvec",
  "bstr",
@@ -673,7 +673,7 @@ dependencies = [
 
 [[package]]
 name = "kbvm-cli"
-version = "0.1.6"
+version = "0.1.7"
 dependencies = [
  "clap",
  "clap_complete",
