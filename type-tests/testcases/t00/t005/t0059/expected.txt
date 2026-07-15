@@ -4,7 +4,7 @@ both h
     key_up(h)
 down rightalt
     key_down(rightalt)
-    sym = Mode_switch
+    sym = ISO_Group_Shift
     group_pressed = 1
     group_effective = 1
 both h
@@ -21,7 +21,7 @@ both h
     key_up(h)
 down rightalt
     key_down(rightalt)
-    sym = Mode_switch
+    sym = ISO_Group_Shift
     group_pressed = 1
     group_effective = 1
 both h

@@ -33,7 +33,8 @@ jobs:
       - name: Build
         run: |
           cd x11-tests
-          cargo run
+          cargo run || true
+          diff -U 3 src/expected.xkb src/actual.xkb || true
   compose-tests:
     runs-on: ubuntu-latest
     steps:

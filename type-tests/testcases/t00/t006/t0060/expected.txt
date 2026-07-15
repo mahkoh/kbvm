@@ -10,7 +10,7 @@ both compose
     key_up(compose)
 down leftalt
     key_down(leftalt)
-    sym = Mode_switch
+    sym = ISO_Group_Shift
     group_pressed = 1
     group_effective = 2
 both h
@@ -33,7 +33,7 @@ both compose
     key_up(compose)
 down leftalt
     key_down(leftalt)
-    sym = Mode_switch
+    sym = ISO_Group_Shift
     group_pressed = 1
     group_effective = 0
 # should wrap back to first group
@@ -62,7 +62,7 @@ both h
 # two SetGroup(+1+'s should add up
 down rightalt
     key_down(rightalt)
-    sym = Mode_switch
+    sym = ISO_Group_Shift
     group_pressed = 1
     group_effective = 1
 both h
@@ -71,7 +71,7 @@ both h
     key_up(h)
 down leftalt
     key_down(leftalt)
-    sym = Mode_switch
+    sym = ISO_Group_Shift
     group_pressed = 2
     group_effective = 2
 both h

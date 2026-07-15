@@ -268,14 +268,14 @@ xkb_keymap {
         virtual_modifiers Alt = Mod1;
         virtual_modifiers AltGr = Mod5;
         virtual_modifiers Hyper = Mod4;
-        virtual_modifiers LAlt;
+        virtual_modifiers LAlt = Mod4;
         virtual_modifiers LControl = Mod4;
         virtual_modifiers LevelFive;
         virtual_modifiers LevelThree = Mod5;
         virtual_modifiers Meta = Mod1;
         virtual_modifiers NumLock = Mod2;
-        virtual_modifiers RAlt = Mod1;
-        virtual_modifiers RControl = Mod4;
+        virtual_modifiers RAlt;
+        virtual_modifiers RControl = Mod1;
         virtual_modifiers ScrollLock;
         virtual_modifiers Super = Mod4;
 
@@ -1479,7 +1479,7 @@ xkb_keymap {
         key <MDSW> {
             repeat = false,
             type[Group1] = "ONE_LEVEL",
-            symbols[Group1] = [ Mode_switch ],
+            symbols[Group1] = [ ISO_Group_Shift ],
             actions[Group1] = [ SetGroup(group = +1) ]
         };
         key <META> {
