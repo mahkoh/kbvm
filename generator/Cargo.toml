@@ -7,5 +7,5 @@ publish = false
 [dependencies]
 regex = "1.11.1"
 indexmap = "2.7.0"
-rand = { version = "0.8.5", features = ["small_rng"] }
+rand = { version = "0.10.2", features = [] }
 permutation = "0.4.1"

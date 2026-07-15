@@ -30,8 +30,8 @@ thiserror = { version = "2.0.5", default-features = false }
 bstr = { version = "1.11.0", default-features = false, features = ["alloc"] }
 arrayvec = { version = "0.7.6", default-features = false }
 linearize = { version = "0.1.1", default-features = false, features = ["derive"] }
-hashbrown = { version = "0.15.2", default-features = false, features = ["default-hasher"] }
-isnt = { version = "0.1.0", default-features = false }
+hashbrown = { version = "0.17.1", default-features = false, features = ["default-hasher"] }
+isnt = { version = "0.2.0", default-features = false }
 debug-fn = { version = "1.0.0", default-features = false }
 smallvec = { version = "1.13.2", default-features = false, features = ["union"] }
 indexmap = { version = "2.7.0", default-features = false }
@@ -42,7 +42,7 @@ unicode-width = { version = "0.2.0", default-features = false }
 log = { version = "0.4", default-features = false, optional = true }
 # for registry feature:
 serde = { version = "1.0.217", default-features = false, features = ["derive"], optional = true }
-quick-xml = { version = "0.37.2", default-features = false, features = ["serde", "serialize"], optional = true }
+quick-xml = { version = "0.41.0", default-features = false, features = ["serde", "serialize"], optional = true }
 error_reporter = { version = "1.0.0", default-features = false, optional = true }
 # for x11 feature:
 x11rb = { version = "0.13.1", default-features = false, features = ["xkb"], optional = true }

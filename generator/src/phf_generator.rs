@@ -1,6 +1,6 @@
 use {
     crate::{phf, phf::PhfHash},
-    rand::{Rng, SeedableRng, distributions::Standard, rngs::SmallRng},
+    rand::{RngExt, SeedableRng, distr::StandardUniform, rngs::SmallRng},
 };
 
 const DEFAULT_LAMBDA: usize = 5;
@@ -18,7 +18,7 @@ where
     T: PhfHash,
 {
     SmallRng::seed_from_u64(FIXED_SEED)
-        .sample_iter(Standard)
+        .sample_iter(StandardUniform)
         .find_map(|key| try_generate_hash(entries, key))
         .expect("failed to solve PHF")
 }

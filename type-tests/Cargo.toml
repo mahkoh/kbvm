@@ -9,4 +9,4 @@ kbvm = { path = "../kbvm" }
 integration-test-utils = { path = "../integration-test-utils" }
 thiserror = "2.0.8"
 error_reporter = "1.0.0"
-isnt = "0.1.0"
+isnt = "0.2.0"

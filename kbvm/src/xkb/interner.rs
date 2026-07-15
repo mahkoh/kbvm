@@ -39,17 +39,12 @@ impl Interner {
                 self.0.as_bytes() == key.as_bytes()
             }
         }
-        impl From<&Ref<'_, '_>> for CodeSlice<'static> {
-            fn from(value: &Ref<'_, '_>) -> Self {
-                value.0.to_owned()
-            }
-        }
 
         match self.string_to_id.entry_ref(&Ref(code)) {
             EntryRef::Occupied(e) => *e.get(),
             EntryRef::Vacant(v) => {
                 let id = Interned(self.id_to_string.len());
-                let key = v.insert_entry(id).key().clone();
+                let key = v.insert_entry_with_key(code.to_owned(), id).key().clone();
                 self.id_to_string.push(key);
                 id
             }

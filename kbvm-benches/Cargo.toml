@@ -9,7 +9,7 @@ kbvm = { path = "../kbvm", features = ["compose"] }
 
 [dev-dependencies]
 libxkbcommon-test-linker = { path = "../libxkbcommon-test-linker" }
-criterion = "0.5.1"
+criterion = "0.8.2"
 walkdir = "2.5.0"
 parking_lot = "0.12.3"
 

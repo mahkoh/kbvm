@@ -19,13 +19,13 @@ clap = { version = "4.5.26", features = ["derive"] }
 clap_complete = "4.5.42"
 env_logger = "0.11.6"
 log = "0.4.25"
-hashbrown = "0.15.2"
+hashbrown = "0.17.1"
 memmap2 = "0.9.5"
 owo-colors = { version = "4.1.0", features = ["supports-color", "supports-colors"] }
 debug-fn = "1.0.0"
 serde = { version = "1.0.217", features = ["derive"] }
 serde_json = "1.0.135"
-isnt = "0.1.0"
+isnt = "0.2.0"
 error_reporter = "1.0.0"
 raw-stdio = "0.1.0"
 utf8-console = "0.1.0"
@@ -39,4 +39,4 @@ kbvm = { version = "0.1.6", path = "../kbvm", features = ["x11"] }
 uapi = "0.2.13"
 
 [build-dependencies]
-wl-client-builder = "0.2.0"
+wl-client-builder = "0.2.1"
