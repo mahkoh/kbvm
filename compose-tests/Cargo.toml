@@ -7,7 +7,7 @@ publish = false
 [dependencies]
 kbvm = { path = "../kbvm", features = ["compose"] }
 integration-test-utils = { path = "../integration-test-utils" }
-isnt = "0.1.0"
+isnt = "0.2.0"
 parking_lot = "0.12.3"
 thiserror = "2.0.8"
 error_reporter = "1.0.0"
