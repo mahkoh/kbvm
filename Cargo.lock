@@ -1443,9 +1443,9 @@ dependencies = [
 
 [[package]]
 name = "wl-client-builder"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cce22d12f03c9763c113b05fe515a8e0728864df3a061585fa67dd0c8d8c24b6"
+checksum = "9d0615232a671568d283a78b890d5d1151e3a3cc310769268c1270858d88a527"
 dependencies = [
  "debug-fn",
  "phf",

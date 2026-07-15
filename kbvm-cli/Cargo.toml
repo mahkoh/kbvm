@@ -39,4 +39,4 @@ kbvm = { version = "0.1.6", path = "../kbvm", features = ["x11"] }
 uapi = "0.2.13"
 
 [build-dependencies]
-wl-client-builder = "0.2.0"
+wl-client-builder = "0.2.1"

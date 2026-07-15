@@ -81,7 +81,9 @@
     clippy::should_implement_trait,
     clippy::assertions_on_constants,
     clippy::len_zero,
-    clippy::manual_range_contains
+    clippy::manual_range_contains,
+    clippy::manual_checked_ops,
+    clippy::byte_char_slices
 )]
 
 pub use {
