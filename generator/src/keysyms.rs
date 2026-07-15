@@ -289,7 +289,10 @@ fn validate(output: &IndexMap<u32, KeysymInfo>) {
                         transformed.clear();
                     }
                     if transformed.len() == 1 {
-                        let c = transformed[0] as u32 | 0x01_00_00_00;
+                        let mut c = transformed[0] as u32;
+                        if c != 'ß' as u32 {
+                            c |= 0x01_00_00_00;
+                        }
                         if v.$field != Some(c) {
                             unreachable!(
                                 "Expected {} variant {c:x} for keysym: {v:#x?}",
@@ -308,10 +311,6 @@ fn validate(output: &IndexMap<u32, KeysymInfo>) {
             }
             check_casing!(to_uppercase, upper);
             check_casing!(to_lowercase, lower);
-        } else {
-            if v.code_point.is_some() && v.keysym > 0xff_ff {
-                unreachable!("Bespoke keysym with code point does not fit into u16: {v:#x?}");
-            }
         }
     }
     for v in output.values() {
@@ -453,26 +452,42 @@ fn generate_keysym_to_other_case_keysym(output: &IndexMap<u32, KeysymInfo>, uppe
 
 fn generate_idx_to_char(output: &IndexMap<u32, KeysymInfo>) -> String {
     use std::fmt::Write;
-    let mut values: Vec<_> = output
-        .values()
-        .filter_map(|v| {
-            if v.keysym > 0xffff {
-                return None;
-            }
-            v.code_point.map(|c| (v.keysym, c))
-        })
-        .collect();
-    values.sort_by_key(|v| v.0);
-    let mut res = String::new();
-    writeln!(res, "pub(super) static KEYSYM_TO_CHAR: &[KeysymChar] = &[").unwrap();
-    for (keysym, char) in values {
-        let char = char::from_u32(char).unwrap();
-        writeln!(res, "    KeysymChar {{").unwrap();
-        writeln!(res, "        keysym: 0x{keysym:04x},").unwrap();
-        writeln!(res, "        char: {char:?},").unwrap();
-        writeln!(res, "    }},").unwrap();
+    let mut values = vec![];
+    let mut values32 = vec![];
+    for v in output.values() {
+        if v.keysym >> 24 == 0x01 {
+            continue;
+        }
+        let Some(c) = v.code_point else {
+            continue;
+        };
+        if v.keysym > 0xff_ff {
+            values32.push((v.keysym, c));
+        } else {
+            values.push((v.keysym, c));
+        }
     }
-    writeln!(res, "];").unwrap();
+    values.sort_by_key(|v| v.0);
+    values32.sort_by_key(|v| v.0);
+    let mut res = String::new();
+    for (suffix, vec) in [("", values), ("32", values32)] {
+        if !res.is_empty() {
+            writeln!(res).unwrap();
+        }
+        writeln!(
+            res,
+            "pub(super) static KEYSYM{suffix}_TO_CHAR: &[Keysym{suffix}Char] = &["
+        )
+        .unwrap();
+        for (keysym, char) in vec {
+            let char = char::from_u32(char).unwrap();
+            writeln!(res, "    Keysym{suffix}Char {{").unwrap();
+            writeln!(res, "        keysym: 0x{keysym:04x},").unwrap();
+            writeln!(res, "        char: {char:?},").unwrap();
+            writeln!(res, "    }},").unwrap();
+        }
+        writeln!(res, "];").unwrap();
+    }
     res
 }
 

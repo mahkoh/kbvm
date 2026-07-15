@@ -1,4 +1,4 @@
-#![expect(clippy::collapsible_else_if, clippy::single_char_add_str)]
+#![expect(clippy::single_char_add_str)]
 
 use {crate::phf::PhfHash, permutation::Permutation, std::fmt::Debug};
 

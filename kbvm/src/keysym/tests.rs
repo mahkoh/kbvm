@@ -46,6 +46,11 @@ fn to_char() {
 }
 
 #[test]
+fn large_bespoke_to_char() {
+    assert_eq!(syms::XF86Numeric2.char(), Some('2'));
+}
+
+#[test]
 fn name() {
     let mut buf = [0; LONGEST_NAME + 1];
     for sym in Keysym::all() {
@@ -169,6 +174,12 @@ fn to_lower() {
 #[test]
 fn ssharp_is_lower() {
     assert!(syms::ssharp.is_lowercase());
+}
+
+#[test]
+fn ssharp_casing() {
+    assert_eq!(syms::SSHARP.to_lowercase(), syms::ssharp);
+    assert_eq!(syms::ssharp.to_uppercase(), syms::SSHARP);
 }
 
 #[test]
