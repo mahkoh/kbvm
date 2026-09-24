@@ -42,10 +42,10 @@ unicode-width = { version = "0.2.0", default-features = false }
 log = { version = "0.4", default-features = false, optional = true }
 # for registry feature:
 serde = { version = "1.0.217", default-features = false, features = ["derive"], optional = true }
-quick-xml = { version = "0.41.0", default-features = false, features = ["serde", "serialize"], optional = true }
+quick-xml = { version = "0.42.0", default-features = false, features = ["serde", "serialize"], optional = true }
 error_reporter = { version = "1.0.0", default-features = false, optional = true }
 # for x11 feature:
-x11rb = { version = "0.13.1", default-features = false, features = ["xkb"], optional = true }
+x11rb = { version = "0.14.0", default-features = false, features = ["xkb"], optional = true }
 
 [build-dependencies]
 pkg-config = "0.3.31"
