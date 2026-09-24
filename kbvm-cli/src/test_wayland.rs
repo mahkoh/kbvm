@@ -42,22 +42,22 @@ use hashbrown::HashMap;
 use kbvm::Components;
 use kbvm::Keycode;
 use kbvm::lookup::LookupTable;
+use kbvm::state_machine;
 use kbvm::state_machine::Direction;
 use kbvm::state_machine::Event;
 use kbvm::state_machine::StateMachine;
-use kbvm::state_machine::{self};
 use kbvm::xkb::Context;
+use kbvm::xkb::compose;
 use kbvm::xkb::compose::ComposeTable;
 use kbvm::xkb::compose::FeedResult;
-use kbvm::xkb::compose::{self};
 use kbvm::xkb::diagnostic::WriteToLog;
 use memmap2::MmapOptions;
 use std::cell::RefCell;
 use std::os::fd::OwnedFd;
 use std::rc::Rc;
 use wl_client::Libwayland;
+use wl_client::proxy;
 use wl_client::proxy::OwnedProxy;
-use wl_client::proxy::{self};
 
 #[derive(Args, Debug, Default)]
 pub struct TestWaylandArgs {

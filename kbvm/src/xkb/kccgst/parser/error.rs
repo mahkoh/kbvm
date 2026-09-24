@@ -3,10 +3,10 @@ use crate::xkb::diagnostic::DiagnosticKind;
 use crate::xkb::interner::Interned;
 use crate::xkb::kccgst::parser::DeclCandidate;
 use crate::xkb::kccgst::parser::Parser;
+use crate::xkb::kccgst::token::Punctuation;
 use crate::xkb::kccgst::token::Punctuation::Cbrace;
 use crate::xkb::kccgst::token::Punctuation::Obrace;
 use crate::xkb::kccgst::token::Punctuation::Obracket;
-use crate::xkb::kccgst::token::Punctuation::{self};
 use crate::xkb::kccgst::token::Token;
 use crate::xkb::meaning::Meaning;
 use crate::xkb::span::Span;
@@ -15,8 +15,8 @@ use crate::xkb::span::Spanned;
 use Punctuation::Oparen;
 use bstr::ByteSlice;
 use debug_fn::debug_fn;
+use std::fmt;
 use std::fmt::Formatter;
-use std::fmt::{self};
 use thiserror::Error;
 
 #[derive(Debug, Clone, Error)]

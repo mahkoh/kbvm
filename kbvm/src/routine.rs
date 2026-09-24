@@ -128,8 +128,8 @@ use std::array;
 use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::fmt::Formatter;
+use std::mem;
 use std::mem::ManuallyDrop;
-use std::mem::{self};
 use std::sync::Arc;
 
 /// A variable in a routine.

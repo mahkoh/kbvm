@@ -10,8 +10,8 @@ use crate::xkb::span::SpanUnit;
 use crate::xkb::span::Spanned;
 use bstr::ByteSlice;
 use debug_fn::debug_fn;
+use std::fmt;
 use std::fmt::Formatter;
-use std::fmt::{self};
 use thiserror::Error;
 
 #[derive(Debug, Clone, Error)]

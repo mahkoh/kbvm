@@ -9,7 +9,7 @@ use std::os::unix::process::CommandExt;
 use std::process::Command;
 use std::process::Stdio;
 use uapi::OwnedFd;
-use uapi::c::{self};
+use uapi::c;
 use uapi::fork;
 use uapi::kill;
 use x11rb::rust_connection::RustConnection;

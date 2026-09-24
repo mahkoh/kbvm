@@ -5,14 +5,14 @@ use isnt::std_1::vec::IsntVecExt;
 use kbvm::xkb::Context;
 use kbvm::xkb::Keymap;
 use kbvm::xkb::diagnostic::Diagnostic;
+use kbvm::xkb::rmlvo;
 use kbvm::xkb::rmlvo::Element;
 use kbvm::xkb::rmlvo::Expanded;
 use kbvm::xkb::rmlvo::MergeMode;
-use kbvm::xkb::rmlvo::{self};
 use serde::Deserialize;
 use serde::Serialize;
+use std::io;
 use std::io::ErrorKind;
-use std::io::{self};
 use std::path::Path;
 use thiserror::Error;
 

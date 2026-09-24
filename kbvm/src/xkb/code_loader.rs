@@ -6,7 +6,7 @@ use crate::xkb::interner::Interned;
 use crate::xkb::interner::Interner;
 use cfg_if::cfg_if;
 use hashbrown::HashMap;
-use std::io::{self};
+use std::io;
 use std::ops::Range;
 use std::path::Path;
 use std::path::PathBuf;

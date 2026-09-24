@@ -12,16 +12,16 @@ use crate::ModifierIndex;
 use crate::ModifierMask;
 use crate::group::GroupIndex;
 use crate::key_storage::KeyStorage;
+use crate::lookup;
 use crate::lookup::LookupTable;
-use crate::lookup::{self};
 use crate::routine::Global;
 use crate::routine::Routine;
 #[expect(unused_imports)]
 use crate::routine::RoutineBuilder;
+use crate::state_machine;
 #[expect(unused_imports)]
 use crate::state_machine::State;
 use crate::state_machine::StateMachine;
-use crate::state_machine::{self};
 #[expect(unused_imports)]
 use crate::xkb::Keymap;
 use hashbrown::HashMap;

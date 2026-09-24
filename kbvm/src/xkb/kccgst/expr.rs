@@ -6,7 +6,7 @@ use crate::from_bytes::FromBytes;
 use crate::syms;
 use crate::xkb::code_map::CodeMap;
 use crate::xkb::controls::ControlMask;
-use crate::xkb::diagnostic::DiagnosticKind::{self};
+use crate::xkb::diagnostic::DiagnosticKind;
 use crate::xkb::diagnostic::DiagnosticSink;
 use crate::xkb::group::GroupChange;
 use crate::xkb::group::GroupIdx;

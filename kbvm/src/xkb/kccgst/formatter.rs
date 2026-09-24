@@ -59,8 +59,8 @@ use crate::xkb::kccgst::ast::VModDef;
 use crate::xkb::kccgst::ast::Var;
 use crate::xkb::kccgst::ast::VarDecl;
 use crate::xkb::kccgst::ast::VarOrExpr;
+use std::io;
 use std::io::Write;
-use std::io::{self};
 
 pub(crate) struct Formatter<'a, W> {
     interner: &'a Interner,

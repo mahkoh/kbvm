@@ -21,8 +21,8 @@ use phf_map::PhfMap;
 use std::fmt::Display;
 use std::fmt::Formatter;
 use std::fmt::Write;
+use std::io;
 use std::io::ErrorKind;
-use std::io::{self};
 use std::path::Path;
 use thiserror::Error;
 

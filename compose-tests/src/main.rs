@@ -8,8 +8,8 @@ use kbvm::xkb::Context;
 use kbvm::xkb::compose::FeedResult;
 use kbvm::xkb::diagnostic::Diagnostic;
 use std::fmt::Write;
+use std::io;
 use std::io::ErrorKind;
-use std::io::{self};
 use std::path::Path;
 use thiserror::Error;
 

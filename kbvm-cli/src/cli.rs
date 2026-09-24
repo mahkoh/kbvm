@@ -1,19 +1,19 @@
+use crate::compile_rmlvo;
 use crate::compile_rmlvo::CompileRmlvoArgs;
-use crate::compile_rmlvo::{self};
+use crate::compile_xkb;
 use crate::compile_xkb::CompileXkbArgs;
-use crate::compile_xkb::{self};
+#[cfg(unix)]
+use crate::dump_x11;
 #[cfg(unix)]
 use crate::dump_x11::DumpX11Args;
-#[cfg(unix)]
-use crate::dump_x11::{self};
+use crate::expand_rmlvo;
 use crate::expand_rmlvo::ExpandRmlvoArgs;
-use crate::expand_rmlvo::{self};
+use crate::generate;
 use crate::generate::GenerateArgs;
-use crate::generate::{self};
+#[cfg(unix)]
+use crate::test_wayland;
 #[cfg(unix)]
 use crate::test_wayland::TestWaylandArgs;
-#[cfg(unix)]
-use crate::test_wayland::{self};
 use clap::Args;
 use clap::Parser;
 use clap::Subcommand;

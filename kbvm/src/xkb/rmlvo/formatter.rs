@@ -5,8 +5,8 @@ use crate::xkb::rmlvo::parser::MappingKey;
 use crate::xkb::rmlvo::parser::MappingKeyIndex;
 use crate::xkb::rmlvo::parser::MappingValue;
 use crate::xkb::rmlvo::parser::RuleKey;
+use std::io;
 use std::io::Write;
-use std::io::{self};
 
 pub(crate) struct Formatter<'a, W> {
     interner: &'a Interner,
