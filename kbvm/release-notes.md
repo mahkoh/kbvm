@@ -1,5 +1,12 @@
 # Unreleased
 
+# 0.2.0 (2026-09-24)
+
+This release only updates dependencies. The public x11rb dependency has been
+updated from 0.13 to 0.14 which requires bumping the minor version.
+
+The MSRV is now 1.95.
+
 # 0.1.7 (2026-07-15)
 
 - Added new keysyms from xorgproto.
