@@ -1,24 +1,20 @@
-use {
-    crate::{
-        config::DEFAULT_INCLUDE_DIR,
-        xkb::{
-            code::Code,
-            code_map::CodeMap,
-            context::Environment,
-            diagnostic::{Diagnostic, DiagnosticSink},
-            interner::Interner,
-            meaning::MeaningCache,
-            rmlvo::{
-                formatter::{Format, Formatter},
-                lexer::Lexer,
-                parser::{ParserCache, parse_line},
-            },
-        },
-    },
-    bstr::ByteSlice,
-    std::{path::Path, sync::Arc},
-    walkdir::WalkDir,
-};
+use crate::config::DEFAULT_INCLUDE_DIR;
+use crate::xkb::code::Code;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::context::Environment;
+use crate::xkb::diagnostic::Diagnostic;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::interner::Interner;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::rmlvo::formatter::Format;
+use crate::xkb::rmlvo::formatter::Formatter;
+use crate::xkb::rmlvo::lexer::Lexer;
+use crate::xkb::rmlvo::parser::ParserCache;
+use crate::xkb::rmlvo::parser::parse_line;
+use bstr::ByteSlice;
+use std::path::Path;
+use std::sync::Arc;
+use walkdir::WalkDir;
 
 fn test_round_trip(interner: &mut Interner, meaning_cache: &mut MeaningCache, path: &Path) {
     let path = Arc::new(path.to_path_buf());

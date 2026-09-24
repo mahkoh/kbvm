@@ -1,11 +1,9 @@
-use {
-    crate::xkb::{
-        code::Code,
-        span::{Span, SpanUnit},
-    },
-    hashbrown::HashMap,
-    std::{path::PathBuf, sync::Arc},
-};
+use crate::xkb::code::Code;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanUnit;
+use hashbrown::HashMap;
+use std::path::PathBuf;
+use std::sync::Arc;
 
 #[derive(Default)]
 pub(crate) struct CodeMap {

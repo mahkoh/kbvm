@@ -1,10 +1,9 @@
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::xkb::Keymap,
-    std::fmt::{Debug, Display},
-};
+use crate::xkb::Keymap;
+use std::fmt::Debug;
+use std::fmt::Display;
 
 /// A formatter for keymaps.
 ///

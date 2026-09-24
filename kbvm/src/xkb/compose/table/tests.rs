@@ -1,7 +1,6 @@
-use crate::{
-    syms,
-    xkb::{Context, diagnostic::WriteToStderr},
-};
+use crate::syms;
+use crate::xkb::Context;
+use crate::xkb::diagnostic::WriteToStderr;
 
 #[test]
 fn iter() {

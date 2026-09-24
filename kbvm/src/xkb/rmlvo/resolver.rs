@@ -1,42 +1,62 @@
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::{
-        from_bytes::FromBytes,
-        xkb::{
-            code::Code,
-            code_loader::{CodeLoader, CodeType},
-            code_map::CodeMap,
-            context::Environment,
-            diagnostic::{DiagnosticKind, DiagnosticSink},
-            group::GroupIdx,
-            interner::{Interned, Interner},
-            kccgst::{
-                MergeMode,
-                ast::{
-                    Compat, CompatmapDecl, CompositeMap, ConfigItem, ConfigItemType, Decl, Decls,
-                    DirectOrIncluded, Geometry, GeometryDecl, Include, Item, ItemType, KeycodeDecl,
-                    Keycodes, NestedConfigItem, Symbols, SymbolsDecl, Types, TypesDecl,
-                },
-            },
-            meaning::MeaningCache,
-            rmlvo::{
-                lexer::Lexer,
-                parser::{
-                    Line, MappingKey, MappingKeyIndex, MappingValue, ParserCache, RuleKey,
-                    parse_line,
-                },
-            },
-            span::{Span, SpanExt, SpanUnit, Spanned},
-        },
-    },
-    hashbrown::{HashMap, HashSet, hash_set::Entry},
-    isnt::std_1::primitive::IsntSliceExt,
-    kbvm_proc::ad_hoc_display,
-    linearize::{StaticMap, static_map},
-    std::{collections::VecDeque, io::Write, path::PathBuf, sync::Arc},
-};
+use crate::from_bytes::FromBytes;
+use crate::xkb::code::Code;
+use crate::xkb::code_loader::CodeLoader;
+use crate::xkb::code_loader::CodeType;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::context::Environment;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::group::GroupIdx;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::MergeMode;
+use crate::xkb::kccgst::ast::Compat;
+use crate::xkb::kccgst::ast::CompatmapDecl;
+use crate::xkb::kccgst::ast::CompositeMap;
+use crate::xkb::kccgst::ast::ConfigItem;
+use crate::xkb::kccgst::ast::ConfigItemType;
+use crate::xkb::kccgst::ast::Decl;
+use crate::xkb::kccgst::ast::Decls;
+use crate::xkb::kccgst::ast::DirectOrIncluded;
+use crate::xkb::kccgst::ast::Geometry;
+use crate::xkb::kccgst::ast::GeometryDecl;
+use crate::xkb::kccgst::ast::Include;
+use crate::xkb::kccgst::ast::Item;
+use crate::xkb::kccgst::ast::ItemType;
+use crate::xkb::kccgst::ast::KeycodeDecl;
+use crate::xkb::kccgst::ast::Keycodes;
+use crate::xkb::kccgst::ast::NestedConfigItem;
+use crate::xkb::kccgst::ast::Symbols;
+use crate::xkb::kccgst::ast::SymbolsDecl;
+use crate::xkb::kccgst::ast::Types;
+use crate::xkb::kccgst::ast::TypesDecl;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::rmlvo::lexer::Lexer;
+use crate::xkb::rmlvo::parser::Line;
+use crate::xkb::rmlvo::parser::MappingKey;
+use crate::xkb::rmlvo::parser::MappingKeyIndex;
+use crate::xkb::rmlvo::parser::MappingValue;
+use crate::xkb::rmlvo::parser::ParserCache;
+use crate::xkb::rmlvo::parser::RuleKey;
+use crate::xkb::rmlvo::parser::parse_line;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::SpanUnit;
+use crate::xkb::span::Spanned;
+use hashbrown::HashMap;
+use hashbrown::HashSet;
+use hashbrown::hash_set::Entry;
+use isnt::std_1::primitive::IsntSliceExt;
+use kbvm_proc::ad_hoc_display;
+use linearize::StaticMap;
+use linearize::static_map;
+use std::collections::VecDeque;
+use std::io::Write;
+use std::path::PathBuf;
+use std::sync::Arc;
 
 pub(crate) struct Group {
     pub(crate) layout: Option<Interned>,

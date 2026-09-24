@@ -1,4 +1,5 @@
-use std::{ffi::c_int, ptr};
+use std::ffi::c_int;
+use std::ptr;
 
 unsafe extern "C" {
     pub safe fn xkb_keysym_to_lower(sym: u32) -> u32;

@@ -1,7 +1,6 @@
-use {
-    crate::generate_map,
-    std::fmt::{Debug, Formatter},
-};
+use crate::generate_map;
+use std::fmt::Debug;
+use std::fmt::Formatter;
 
 struct Meaning {
     orig: &'static str,

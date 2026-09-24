@@ -1,15 +1,13 @@
-use {
-    crate::xkb::{
-        code::Code,
-        interner::{Interned, Interner},
-        rmlvo::{
-            lexer::{Lexer, LexerError},
-            token::Token,
-        },
-        span::{SpanExt, Spanned},
-    },
-    std::{path::PathBuf, sync::Arc},
-};
+use crate::xkb::code::Code;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::rmlvo::lexer::Lexer;
+use crate::xkb::rmlvo::lexer::LexerError;
+use crate::xkb::rmlvo::token::Token;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::Spanned;
+use std::path::PathBuf;
+use std::sync::Arc;
 
 fn empty_path() -> Arc<PathBuf> {
     Arc::new(PathBuf::from(""))

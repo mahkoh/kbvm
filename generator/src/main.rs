@@ -1,6 +1,8 @@
 #![expect(clippy::single_char_add_str)]
 
-use {crate::phf::PhfHash, permutation::Permutation, std::fmt::Debug};
+use crate::phf::PhfHash;
+use permutation::Permutation;
+use std::fmt::Debug;
 
 mod evdev;
 mod keysyms;

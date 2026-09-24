@@ -1,13 +1,12 @@
-use {
-    crate::xkb::code::Code,
-    bstr::ByteSlice,
-    std::{
-        borrow::Borrow,
-        fmt::{Debug, Formatter},
-        hash::{Hash, Hasher},
-        ops::{Deref, Range},
-    },
-};
+use crate::xkb::code::Code;
+use bstr::ByteSlice;
+use std::borrow::Borrow;
+use std::fmt::Debug;
+use std::fmt::Formatter;
+use std::hash::Hash;
+use std::hash::Hasher;
+use std::ops::Deref;
+use std::ops::Range;
 
 #[derive(Clone)]
 enum OwnedOrBorrowed<'a> {

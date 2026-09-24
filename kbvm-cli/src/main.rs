@@ -1,7 +1,8 @@
 #![allow(clippy::single_match)]
 #![allow(clippy::collapsible_else_if)]
 
-use {error_reporter::Report, log::LevelFilter};
+use error_reporter::Report;
+use log::LevelFilter;
 
 mod cli;
 mod compile_rmlvo;

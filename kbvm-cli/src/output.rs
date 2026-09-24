@@ -1,4 +1,10 @@
-use kbvm::{ControlsMask, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask, xkb::Keymap};
+use kbvm::ControlsMask;
+use kbvm::GroupDelta;
+use kbvm::GroupIndex;
+use kbvm::Keycode;
+use kbvm::Keysym;
+use kbvm::ModifierMask;
+use kbvm::xkb::Keymap;
 
 pub mod ansi;
 pub mod json;

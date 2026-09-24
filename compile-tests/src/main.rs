@@ -1,19 +1,20 @@
-use {
-    error_reporter::Report,
-    integration_test_utils::run,
-    isnt::std_1::{primitive::IsntStrExt, vec::IsntVecExt},
-    kbvm::xkb::{
-        Context, Keymap,
-        diagnostic::Diagnostic,
-        rmlvo::{self, Element, Expanded, MergeMode},
-    },
-    serde::{Deserialize, Serialize},
-    std::{
-        io::{self, ErrorKind},
-        path::Path,
-    },
-    thiserror::Error,
-};
+use error_reporter::Report;
+use integration_test_utils::run;
+use isnt::std_1::primitive::IsntStrExt;
+use isnt::std_1::vec::IsntVecExt;
+use kbvm::xkb::Context;
+use kbvm::xkb::Keymap;
+use kbvm::xkb::diagnostic::Diagnostic;
+use kbvm::xkb::rmlvo;
+use kbvm::xkb::rmlvo::Element;
+use kbvm::xkb::rmlvo::Expanded;
+use kbvm::xkb::rmlvo::MergeMode;
+use serde::Deserialize;
+use serde::Serialize;
+use std::io;
+use std::io::ErrorKind;
+use std::path::Path;
+use thiserror::Error;
 
 // const SINGLE: Option<&str> = Some("t0451");
 const SINGLE: Option<&str> = None;

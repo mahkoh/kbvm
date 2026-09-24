@@ -6,26 +6,24 @@
 mod tests;
 mod xml;
 
+use crate::xkb::Context;
 #[expect(unused_imports)]
 use crate::xkb::ContextBuilder;
-use {
-    crate::xkb::{
-        Context,
-        code::Code,
-        code_map::CodeMap,
-        diagnostic::{DiagnosticHandler, DiagnosticKind, DiagnosticSink},
-        span::SpanExt,
-    },
-    arrayvec::ArrayVec,
-    error_reporter::Report,
-    std::{
-        fs::File,
-        io::{self, BufReader, ErrorKind},
-        path::PathBuf,
-        sync::Arc,
-    },
-    thiserror::Error,
-};
+use crate::xkb::code::Code;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::diagnostic::DiagnosticHandler;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::span::SpanExt;
+use arrayvec::ArrayVec;
+use error_reporter::Report;
+use std::fs::File;
+use std::io;
+use std::io::BufReader;
+use std::io::ErrorKind;
+use std::path::PathBuf;
+use std::sync::Arc;
+use thiserror::Error;
 
 /// The RMLVO registry.
 ///

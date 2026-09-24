@@ -1,17 +1,14 @@
-use {
-    crate::{
-        keysym::{
-            Keysym,
-            generated::{LEN, LONGEST_NAME},
-        },
-        syms,
-    },
-    bstr::ByteSlice,
-    libxkbcommon_test_linker::{
-        xkb_keysym_from_name, xkb_keysym_get_name, xkb_keysym_to_lower, xkb_keysym_to_upper,
-        xkb_keysym_to_utf32, xkb_utf32_to_keysym,
-    },
-};
+use crate::keysym::Keysym;
+use crate::keysym::generated::LEN;
+use crate::keysym::generated::LONGEST_NAME;
+use crate::syms;
+use bstr::ByteSlice;
+use libxkbcommon_test_linker::xkb_keysym_from_name;
+use libxkbcommon_test_linker::xkb_keysym_get_name;
+use libxkbcommon_test_linker::xkb_keysym_to_lower;
+use libxkbcommon_test_linker::xkb_keysym_to_upper;
+use libxkbcommon_test_linker::xkb_keysym_to_utf32;
+use libxkbcommon_test_linker::xkb_utf32_to_keysym;
 
 #[test]
 fn keysyms_len() {

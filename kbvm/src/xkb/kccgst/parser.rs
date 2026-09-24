@@ -4,45 +4,106 @@ pub(crate) mod error;
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::{
-        Keycode,
-        xkb::{
-            code_loader::CodeType,
-            code_map::CodeMap,
-            diagnostic::DiagnosticSink,
-            interner::{Interned, Interner},
-            kccgst::{
-                ast::{
-                    Call, CallArg, Compat, CompatmapDecl, CompositeMap, ConfigItem, ConfigItemType,
-                    Coord, CoordAssignment, Decl, Decls, DirectOrIncluded, DoodadDecl, DoodadType,
-                    Expr, ExprAssignment, Flag, FlagWrapper, Flags, Geometry, GeometryDecl,
-                    GroupCompatDecl, Include, IndicatorMapDecl, IndicatorNameDecl, InterpretDecl,
-                    InterpretMatch, InterpretSym, Item, ItemType, Key, KeyAliasDecl, KeyExprs,
-                    KeyNameDecl, KeySymbolsDecl, KeyTypeDecl, KeycodeDecl, Keycodes, Keys,
-                    MergeMode, ModMapDecl, NamedParam, NestedConfigItem, Outline, OverlayDecl,
-                    OverlayItem, Path, PathComponent, PathIndex, RowBody, RowBodyItem, SectionDecl,
-                    SectionItem, ShapeDecl, ShapeDeclType, Symbols, SymbolsDecl, Types, TypesDecl,
-                    VModDecl, VModDef, Var, VarDecl, VarOrExpr,
-                },
-                parser::error::{
-                    CONFIG_ITEM_EXPECTED, CompatmapDeclExpectation, EXPR_TOKENS, Expected,
-                    FLAGS_EXPECTED, GeometryDeclExpectation, KEY_EXPECTED, KeycodeDeclExpectation,
-                    OUTLINE_TOKENS, ParseDeclExpectation, ParserError, SECTION_ITEM_EXPECTED,
-                    SymbolsDeclExpectation, TypesDeclExpectation,
-                },
-                token::{
-                    Punctuation::{self, Cbracket, Cparen, Oparen},
-                    Token,
-                },
-            },
-            meaning::{Meaning, MeaningCache},
-            span::{Span, SpanExt, SpanResult1, SpanUnit, Spanned},
-        },
-    },
-    Punctuation::{Cbrace, Obrace, Obracket},
-    std::fmt::Debug,
-};
+use crate::Keycode;
+use crate::xkb::code_loader::CodeType;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::ast::Call;
+use crate::xkb::kccgst::ast::CallArg;
+use crate::xkb::kccgst::ast::Compat;
+use crate::xkb::kccgst::ast::CompatmapDecl;
+use crate::xkb::kccgst::ast::CompositeMap;
+use crate::xkb::kccgst::ast::ConfigItem;
+use crate::xkb::kccgst::ast::ConfigItemType;
+use crate::xkb::kccgst::ast::Coord;
+use crate::xkb::kccgst::ast::CoordAssignment;
+use crate::xkb::kccgst::ast::Decl;
+use crate::xkb::kccgst::ast::Decls;
+use crate::xkb::kccgst::ast::DirectOrIncluded;
+use crate::xkb::kccgst::ast::DoodadDecl;
+use crate::xkb::kccgst::ast::DoodadType;
+use crate::xkb::kccgst::ast::Expr;
+use crate::xkb::kccgst::ast::ExprAssignment;
+use crate::xkb::kccgst::ast::Flag;
+use crate::xkb::kccgst::ast::FlagWrapper;
+use crate::xkb::kccgst::ast::Flags;
+use crate::xkb::kccgst::ast::Geometry;
+use crate::xkb::kccgst::ast::GeometryDecl;
+use crate::xkb::kccgst::ast::GroupCompatDecl;
+use crate::xkb::kccgst::ast::Include;
+use crate::xkb::kccgst::ast::IndicatorMapDecl;
+use crate::xkb::kccgst::ast::IndicatorNameDecl;
+use crate::xkb::kccgst::ast::InterpretDecl;
+use crate::xkb::kccgst::ast::InterpretMatch;
+use crate::xkb::kccgst::ast::InterpretSym;
+use crate::xkb::kccgst::ast::Item;
+use crate::xkb::kccgst::ast::ItemType;
+use crate::xkb::kccgst::ast::Key;
+use crate::xkb::kccgst::ast::KeyAliasDecl;
+use crate::xkb::kccgst::ast::KeyExprs;
+use crate::xkb::kccgst::ast::KeyNameDecl;
+use crate::xkb::kccgst::ast::KeySymbolsDecl;
+use crate::xkb::kccgst::ast::KeyTypeDecl;
+use crate::xkb::kccgst::ast::KeycodeDecl;
+use crate::xkb::kccgst::ast::Keycodes;
+use crate::xkb::kccgst::ast::Keys;
+use crate::xkb::kccgst::ast::MergeMode;
+use crate::xkb::kccgst::ast::ModMapDecl;
+use crate::xkb::kccgst::ast::NamedParam;
+use crate::xkb::kccgst::ast::NestedConfigItem;
+use crate::xkb::kccgst::ast::Outline;
+use crate::xkb::kccgst::ast::OverlayDecl;
+use crate::xkb::kccgst::ast::OverlayItem;
+use crate::xkb::kccgst::ast::Path;
+use crate::xkb::kccgst::ast::PathComponent;
+use crate::xkb::kccgst::ast::PathIndex;
+use crate::xkb::kccgst::ast::RowBody;
+use crate::xkb::kccgst::ast::RowBodyItem;
+use crate::xkb::kccgst::ast::SectionDecl;
+use crate::xkb::kccgst::ast::SectionItem;
+use crate::xkb::kccgst::ast::ShapeDecl;
+use crate::xkb::kccgst::ast::ShapeDeclType;
+use crate::xkb::kccgst::ast::Symbols;
+use crate::xkb::kccgst::ast::SymbolsDecl;
+use crate::xkb::kccgst::ast::Types;
+use crate::xkb::kccgst::ast::TypesDecl;
+use crate::xkb::kccgst::ast::VModDecl;
+use crate::xkb::kccgst::ast::VModDef;
+use crate::xkb::kccgst::ast::Var;
+use crate::xkb::kccgst::ast::VarDecl;
+use crate::xkb::kccgst::ast::VarOrExpr;
+use crate::xkb::kccgst::parser::error::CONFIG_ITEM_EXPECTED;
+use crate::xkb::kccgst::parser::error::CompatmapDeclExpectation;
+use crate::xkb::kccgst::parser::error::EXPR_TOKENS;
+use crate::xkb::kccgst::parser::error::Expected;
+use crate::xkb::kccgst::parser::error::FLAGS_EXPECTED;
+use crate::xkb::kccgst::parser::error::GeometryDeclExpectation;
+use crate::xkb::kccgst::parser::error::KEY_EXPECTED;
+use crate::xkb::kccgst::parser::error::KeycodeDeclExpectation;
+use crate::xkb::kccgst::parser::error::OUTLINE_TOKENS;
+use crate::xkb::kccgst::parser::error::ParseDeclExpectation;
+use crate::xkb::kccgst::parser::error::ParserError;
+use crate::xkb::kccgst::parser::error::SECTION_ITEM_EXPECTED;
+use crate::xkb::kccgst::parser::error::SymbolsDeclExpectation;
+use crate::xkb::kccgst::parser::error::TypesDeclExpectation;
+use crate::xkb::kccgst::token::Punctuation;
+use crate::xkb::kccgst::token::Punctuation::Cbracket;
+use crate::xkb::kccgst::token::Punctuation::Cparen;
+use crate::xkb::kccgst::token::Punctuation::Oparen;
+use crate::xkb::kccgst::token::Token;
+use crate::xkb::meaning::Meaning;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::SpanResult1;
+use crate::xkb::span::SpanUnit;
+use crate::xkb::span::Spanned;
+use Punctuation::Cbrace;
+use Punctuation::Obrace;
+use Punctuation::Obracket;
+use std::fmt::Debug;
 
 struct Diag<'a, 'b, 'c> {
     map: &'a mut CodeMap,

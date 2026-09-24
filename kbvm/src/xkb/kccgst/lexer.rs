@@ -1,25 +1,28 @@
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::{
-        from_bytes::FromBytes,
-        xkb::{
-            code::Code,
-            code_slice::CodeSlice,
-            diagnostic::DiagnosticKind,
-            interner::Interner,
-            kccgst::token::{
-                Punctuation,
-                Token::{self, Float, Ident, Integer, KeyName, String},
-            },
-            span::{Span, SpanExt, SpanUnit, Spanned},
-            whitespace::consume_whitespace,
-        },
-    },
-    std::{num::ParseFloatError, path::PathBuf, str::FromStr, sync::Arc},
-    thiserror::Error,
-};
+use crate::from_bytes::FromBytes;
+use crate::xkb::code::Code;
+use crate::xkb::code_slice::CodeSlice;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::token::Punctuation;
+use crate::xkb::kccgst::token::Token;
+use crate::xkb::kccgst::token::Token::Float;
+use crate::xkb::kccgst::token::Token::Ident;
+use crate::xkb::kccgst::token::Token::Integer;
+use crate::xkb::kccgst::token::Token::KeyName;
+use crate::xkb::kccgst::token::Token::String;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::SpanUnit;
+use crate::xkb::span::Spanned;
+use crate::xkb::whitespace::consume_whitespace;
+use std::num::ParseFloatError;
+use std::path::PathBuf;
+use std::str::FromStr;
+use std::sync::Arc;
+use thiserror::Error;
 
 #[derive(Debug)]
 pub(crate) struct Lexer {

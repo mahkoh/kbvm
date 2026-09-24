@@ -1,31 +1,28 @@
-use {
-    crate::xkb::{
-        code::Code,
-        code_map::CodeMap,
-        diagnostic::DiagnosticSink,
-        interner::Interner,
-        kccgst::{
-            formatter::{Format, Formatter},
-            lexer::{Lexer, LexerError},
-            parser::{parse_item, snoop_ty_and_name},
-            token::Token,
-        },
-        meaning::MeaningCache,
-        span::Spanned,
-    },
-    bstr::ByteSlice,
-    std::sync::Arc,
-    walkdir::WalkDir,
-};
+use crate::xkb::code::Code;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::formatter::Format;
+use crate::xkb::kccgst::formatter::Formatter;
+use crate::xkb::kccgst::lexer::Lexer;
+use crate::xkb::kccgst::lexer::LexerError;
+use crate::xkb::kccgst::parser::parse_item;
+use crate::xkb::kccgst::parser::snoop_ty_and_name;
+use crate::xkb::kccgst::token::Token;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::span::Spanned;
+use bstr::ByteSlice;
+use std::sync::Arc;
+use walkdir::WalkDir;
 
 fn l(
     map: &mut CodeMap,
     i: &mut Interner,
     code: &Code,
 ) -> Result<Vec<Vec<Spanned<Token>>>, Spanned<LexerError>> {
-    let span = map.add(None, None, &code);
+    let span = map.add(None, None, code);
     let mut res = vec![];
-    let mut lexer = Lexer::new(None, &code, span.lo);
+    let mut lexer = Lexer::new(None, code, span.lo);
     loop {
         let mut tokens = vec![];
         lexer.lex_item(i, &mut tokens)?;

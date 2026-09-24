@@ -1,24 +1,24 @@
-use {
-    crate::{
-        ModifierIndex,
-        builder::Redirect,
-        group_type,
-        lookup::LookupTable,
-        syms,
-        xkb::{
-            Keymap,
-            group::GroupIdx,
-            keymap::{
-                Indicator, Key, KeyGroup, KeyLevel, KeyType, KeyTypeMapping, Keycode, ModMapValue,
-                VirtualModifier,
-            },
-            level::Level,
-            resolved::GroupsRedirect,
-        },
-    },
-    hashbrown::{HashMap, hash_map::Entry},
-    std::sync::Arc,
-};
+use crate::ModifierIndex;
+use crate::builder::Redirect;
+use crate::group_type;
+use crate::lookup::LookupTable;
+use crate::syms;
+use crate::xkb::Keymap;
+use crate::xkb::group::GroupIdx;
+use crate::xkb::keymap::Indicator;
+use crate::xkb::keymap::Key;
+use crate::xkb::keymap::KeyGroup;
+use crate::xkb::keymap::KeyLevel;
+use crate::xkb::keymap::KeyType;
+use crate::xkb::keymap::KeyTypeMapping;
+use crate::xkb::keymap::Keycode;
+use crate::xkb::keymap::ModMapValue;
+use crate::xkb::keymap::VirtualModifier;
+use crate::xkb::level::Level;
+use crate::xkb::resolved::GroupsRedirect;
+use hashbrown::HashMap;
+use hashbrown::hash_map::Entry;
+use std::sync::Arc;
 
 impl LookupTable {
     /// Creates a client-side XKB keymap from a lookup table.

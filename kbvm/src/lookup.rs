@@ -35,15 +35,19 @@
 mod tests;
 
 #[expect(unused_imports)]
-use crate::{Components, builder::Builder};
-use {
-    crate::{
-        GroupType, Keycode, Keysym, ModifierMask, builder::Redirect, group::GroupIndex,
-        key_storage::KeyStorage,
-    },
-    smallvec::SmallVec,
-    std::fmt::{Debug, Formatter},
-};
+use crate::Components;
+use crate::GroupType;
+use crate::Keycode;
+use crate::Keysym;
+use crate::ModifierMask;
+#[expect(unused_imports)]
+use crate::builder::Builder;
+use crate::builder::Redirect;
+use crate::group::GroupIndex;
+use crate::key_storage::KeyStorage;
+use smallvec::SmallVec;
+use std::fmt::Debug;
+use std::fmt::Formatter;
 
 /// A keysym lookup table.
 ///

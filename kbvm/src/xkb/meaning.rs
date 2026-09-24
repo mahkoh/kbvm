@@ -2,19 +2,15 @@
 #[allow(clippy::upper_case_acronyms)]
 mod generated;
 
+use crate::phf_map::PhfMap;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::meaning::generated::LONGEST;
+use arrayvec::ArrayVec;
+use bstr::ByteSlice;
 pub(crate) use generated::Meaning;
-use {
-    crate::{
-        phf_map::PhfMap,
-        xkb::{
-            interner::{Interned, Interner},
-            meaning::generated::LONGEST,
-        },
-    },
-    arrayvec::ArrayVec,
-    bstr::ByteSlice,
-    hashbrown::{HashMap, hash_map::Entry},
-};
+use hashbrown::HashMap;
+use hashbrown::hash_map::Entry;
 
 #[derive(Default)]
 pub(crate) struct MeaningCache {

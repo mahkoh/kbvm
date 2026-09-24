@@ -1,17 +1,12 @@
-use {
-    crate::{
-        Keycode,
-        xkb::{
-            include::IncludeGroup,
-            interner::Interned,
-            kccgst::token::Token,
-            span::{Span, Spanned},
-        },
-    },
-    arrayvec::ArrayVec,
-    kbvm_proc::CloneWithDelta,
-    std::fmt::Debug,
-};
+use crate::Keycode;
+use crate::xkb::include::IncludeGroup;
+use crate::xkb::interner::Interned;
+use crate::xkb::kccgst::token::Token;
+use crate::xkb::span::Span;
+use crate::xkb::span::Spanned;
+use arrayvec::ArrayVec;
+use kbvm_proc::CloneWithDelta;
+use std::fmt::Debug;
 
 #[derive(Debug, CloneWithDelta)]
 pub(crate) struct Item {

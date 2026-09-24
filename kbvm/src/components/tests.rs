@@ -1,4 +1,9 @@
-use crate::{Components, ControlsMask, GroupDelta, GroupIndex, ModifierMask, state_machine::Event};
+use crate::Components;
+use crate::ControlsMask;
+use crate::GroupDelta;
+use crate::GroupIndex;
+use crate::ModifierMask;
+use crate::state_machine::Event;
 
 #[test]
 fn apply_event() {

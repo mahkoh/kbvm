@@ -1,14 +1,14 @@
-use crate::xkb::{
-    code::Code,
-    code_map::CodeMap,
-    compose::{
-        lexer::{Lexer, LexerError},
-        token::Token,
-    },
-    diagnostic::{DiagnosticSink, WriteToStderr},
-    interner::{Interned, Interner},
-    span::{SpanExt, Spanned},
-};
+use crate::xkb::code::Code;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::compose::lexer::Lexer;
+use crate::xkb::compose::lexer::LexerError;
+use crate::xkb::compose::token::Token;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::diagnostic::WriteToStderr;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::Spanned;
 
 fn l_(interner: &mut Interner, input: &str) -> Result<Vec<Spanned<Token>>, Spanned<LexerError>> {
     let mut output = vec![];

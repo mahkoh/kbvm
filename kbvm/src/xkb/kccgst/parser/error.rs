@@ -1,24 +1,23 @@
-use {
-    crate::xkb::{
-        code_slice::CodeSlice,
-        diagnostic::DiagnosticKind,
-        interner::Interned,
-        kccgst::{
-            parser::{DeclCandidate, Parser},
-            token::{
-                Punctuation::{self, Cbrace, Obrace, Obracket},
-                Token,
-            },
-        },
-        meaning::Meaning,
-        span::{Span, SpanExt, Spanned},
-    },
-    Punctuation::Oparen,
-    bstr::ByteSlice,
-    debug_fn::debug_fn,
-    std::fmt::{self, Formatter},
-    thiserror::Error,
-};
+use crate::xkb::code_slice::CodeSlice;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::interner::Interned;
+use crate::xkb::kccgst::parser::DeclCandidate;
+use crate::xkb::kccgst::parser::Parser;
+use crate::xkb::kccgst::token::Punctuation;
+use crate::xkb::kccgst::token::Punctuation::Cbrace;
+use crate::xkb::kccgst::token::Punctuation::Obrace;
+use crate::xkb::kccgst::token::Punctuation::Obracket;
+use crate::xkb::kccgst::token::Token;
+use crate::xkb::meaning::Meaning;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::Spanned;
+use Punctuation::Oparen;
+use bstr::ByteSlice;
+use debug_fn::debug_fn;
+use std::fmt;
+use std::fmt::Formatter;
+use thiserror::Error;
 
 #[derive(Debug, Clone, Error)]
 pub(crate) enum ParserError {

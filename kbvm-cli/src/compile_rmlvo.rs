@@ -1,12 +1,10 @@
-use {
-    crate::{
-        cli::{CompileArgs, FormatArgs},
-        compile_xkb::format_keymap,
-        expand_rmlvo::RmlvoArgs,
-    },
-    clap::Args,
-    kbvm::xkb::{Context, diagnostic::WriteToLog},
-};
+use crate::cli::CompileArgs;
+use crate::cli::FormatArgs;
+use crate::compile_xkb::format_keymap;
+use crate::expand_rmlvo::RmlvoArgs;
+use clap::Args;
+use kbvm::xkb::Context;
+use kbvm::xkb::diagnostic::WriteToLog;
 
 #[derive(Args, Debug, Default)]
 pub struct CompileRmlvoArgs {

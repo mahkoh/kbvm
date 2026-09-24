@@ -1,11 +1,16 @@
-use {
-    crate::routine::{
-        Global, Hi, Register, Routine, RoutineBuilder, StateEventHandler, convert_to_ssa, run,
-    },
-    isnt::std_1::vec::IsntVecExt,
-    linearize::{Linearize, StaticMap},
-    std::{array, mem},
-};
+use crate::routine::Global;
+use crate::routine::Hi;
+use crate::routine::Register;
+use crate::routine::Routine;
+use crate::routine::RoutineBuilder;
+use crate::routine::StateEventHandler;
+use crate::routine::convert_to_ssa;
+use crate::routine::run;
+use isnt::std_1::vec::IsntVecExt;
+use linearize::Linearize;
+use linearize::StaticMap;
+use std::array;
+use std::mem;
 
 struct DummyHandler;
 

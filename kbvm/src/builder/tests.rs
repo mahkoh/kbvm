@@ -1,12 +1,14 @@
-use crate::{
-    GroupType, Keycode, ModifierMask,
-    builder::{Builder, GroupBuilder, KeyBuilder, LevelBuilder},
-    routine::RoutineBuilder,
-    state_machine::{
-        Direction::{Down, Up},
-        Event,
-    },
-};
+use crate::GroupType;
+use crate::Keycode;
+use crate::ModifierMask;
+use crate::builder::Builder;
+use crate::builder::GroupBuilder;
+use crate::builder::KeyBuilder;
+use crate::builder::LevelBuilder;
+use crate::routine::RoutineBuilder;
+use crate::state_machine::Direction::Down;
+use crate::state_machine::Direction::Up;
+use crate::state_machine::Event;
 
 #[test]
 fn radio_group() {

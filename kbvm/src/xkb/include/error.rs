@@ -1,12 +1,11 @@
-use {
-    crate::xkb::{
-        code_slice::CodeSlice,
-        diagnostic::DiagnosticKind,
-        span::{Span, SpanExt, SpanUnit, Spanned},
-    },
-    bstr::ByteSlice,
-    thiserror::Error,
-};
+use crate::xkb::code_slice::CodeSlice;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::SpanUnit;
+use crate::xkb::span::Spanned;
+use bstr::ByteSlice;
+use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq, Error)]
 pub(crate) enum ParseIncludeError {

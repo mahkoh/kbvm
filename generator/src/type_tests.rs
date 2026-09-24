@@ -1,7 +1,8 @@
-use {
-    crate::{evdev::MAP, generate_map},
-    std::collections::{HashMap, HashSet, hash_map::Entry},
-};
+use crate::evdev::MAP;
+use crate::generate_map;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::collections::hash_map::Entry;
 
 pub fn main() {
     let output = generate_rust();

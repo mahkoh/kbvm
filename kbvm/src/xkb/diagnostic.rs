@@ -4,27 +4,26 @@
 
 mod handlers;
 
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::code_slice::CodeSlice;
+use crate::xkb::span::Span;
+use crate::xkb::span::Spanned;
+use bstr::ByteSlice;
+use debug_fn::debug_fn;
 #[cfg(feature = "log")]
 pub use handlers::log::WriteToLog;
 pub use handlers::stderr::WriteToStderr;
-use {
-    crate::xkb::{
-        code_map::CodeMap,
-        code_slice::CodeSlice,
-        span::{Span, Spanned},
-    },
-    bstr::ByteSlice,
-    debug_fn::debug_fn,
-    kbvm_proc::diagnostic_kind,
-    std::{
-        error::Error,
-        fmt::{Debug, Display, Formatter, Write},
-        ops::Deref,
-        path::{Path, PathBuf},
-        sync::Arc,
-    },
-    unicode_width::UnicodeWidthChar,
-};
+use kbvm_proc::diagnostic_kind;
+use std::error::Error;
+use std::fmt::Debug;
+use std::fmt::Display;
+use std::fmt::Formatter;
+use std::fmt::Write;
+use std::ops::Deref;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
+use unicode_width::UnicodeWidthChar;
 
 /// A handler for diagnostic messages.
 ///

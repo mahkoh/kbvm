@@ -1,19 +1,18 @@
-use {
-    error_reporter::Report,
-    kbvm::xkb::{Context, diagnostic::WriteToLog, x11::KbvmX11Ext},
-    std::{
-        fs::File,
-        io::{Read, Write},
-        os::unix::process::CommandExt,
-        process::{Command, Stdio},
-    },
-    uapi::{
-        OwnedFd,
-        c::{self},
-        fork, kill,
-    },
-    x11rb::rust_connection::RustConnection,
-};
+use error_reporter::Report;
+use kbvm::xkb::Context;
+use kbvm::xkb::diagnostic::WriteToLog;
+use kbvm::xkb::x11::KbvmX11Ext;
+use std::fs::File;
+use std::io::Read;
+use std::io::Write;
+use std::os::unix::process::CommandExt;
+use std::process::Command;
+use std::process::Stdio;
+use uapi::OwnedFd;
+use uapi::c;
+use uapi::fork;
+use uapi::kill;
+use x11rb::rust_connection::RustConnection;
 
 fn main() {
     let xvfb = Xvfb::launch();

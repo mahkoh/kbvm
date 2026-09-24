@@ -2,31 +2,34 @@ pub(crate) mod error;
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::{
-        from_bytes::FromBytes,
-        xkb::{
-            code::Code,
-            code_map::CodeMap,
-            context::Environment,
-            diagnostic::{DiagnosticKind, DiagnosticSink},
-            group::GroupIdx,
-            interner::{Interned, Interner},
-            meaning::{Meaning, MeaningCache},
-            rmlvo::{
-                parser::error::{
-                    AFTER_EXCLAM, Expected, MAPPING_KEY, MAPPING_VALUE, MLVO, ParserError,
-                    RULE_KEY, START_OF_LINE,
-                },
-                token::{Punctuation, Token},
-            },
-            span::{Span, SpanExt, SpanUnit, Spanned},
-        },
-    },
-    kbvm_proc::ad_hoc_display,
-    linearize::Linearize,
-    std::sync::Arc,
-};
+use crate::from_bytes::FromBytes;
+use crate::xkb::code::Code;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::context::Environment;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::group::GroupIdx;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::meaning::Meaning;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::rmlvo::parser::error::AFTER_EXCLAM;
+use crate::xkb::rmlvo::parser::error::Expected;
+use crate::xkb::rmlvo::parser::error::MAPPING_KEY;
+use crate::xkb::rmlvo::parser::error::MAPPING_VALUE;
+use crate::xkb::rmlvo::parser::error::MLVO;
+use crate::xkb::rmlvo::parser::error::ParserError;
+use crate::xkb::rmlvo::parser::error::RULE_KEY;
+use crate::xkb::rmlvo::parser::error::START_OF_LINE;
+use crate::xkb::rmlvo::token::Punctuation;
+use crate::xkb::rmlvo::token::Token;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::SpanUnit;
+use crate::xkb::span::Spanned;
+use kbvm_proc::ad_hoc_display;
+use linearize::Linearize;
+use std::sync::Arc;
 
 #[derive(Default)]
 pub(crate) struct ParserCache {

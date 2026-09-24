@@ -1,21 +1,20 @@
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::xkb::{
-        code::Code,
-        code_map::CodeMap,
-        code_slice::CodeSlice,
-        compose::token::Token,
-        diagnostic::{DiagnosticKind, DiagnosticSink},
-        interner::Interner,
-        span::{SpanExt, SpanUnit, Spanned},
-        whitespace::consume_whitespace,
-    },
-    kbvm_proc::ad_hoc_display,
-    std::sync::Arc,
-    thiserror::Error,
-};
+use crate::xkb::code::Code;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::code_slice::CodeSlice;
+use crate::xkb::compose::token::Token;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::interner::Interner;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::SpanUnit;
+use crate::xkb::span::Spanned;
+use crate::xkb::whitespace::consume_whitespace;
+use kbvm_proc::ad_hoc_display;
+use std::sync::Arc;
+use thiserror::Error;
 
 #[derive(Debug)]
 pub(crate) struct Lexer {

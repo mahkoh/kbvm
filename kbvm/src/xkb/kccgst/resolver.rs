@@ -1,51 +1,98 @@
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::{
-        Keycode, Keysym, ModifierIndex, ModifierMask, syms,
-        xkb::{
-            code_map::CodeMap,
-            diagnostic::{DiagnosticKind, DiagnosticSink},
-            group::GroupIdx,
-            indicator::IndicatorIdx,
-            interner::{Interned, Interner},
-            kccgst::{
-                MergeMode,
-                ast::{
-                    CompatmapDecl, ConfigItemType, Decls, DirectOrIncluded, Expr, InterpretSym,
-                    Item, ItemType, KeycodeDecl, MergeModeExt, Path, SymbolsDecl, TypesDecl,
-                    VModDecl, VarDecl, VarOrExpr,
-                },
-                expr::{
-                    EvalError, GroupList, IndicatorMapField, InterpField, SymbolsField, TypeField,
-                    eval_action_default, eval_filter, eval_group, eval_indicator_map_field,
-                    eval_interp_field, eval_keysyms, eval_mod_map_field, eval_real_mods,
-                    eval_string, eval_symbols_field, eval_type_field, ident_to_real_mod_index,
-                },
-            },
-            level::Level,
-            meaning::{Meaning, MeaningCache},
-            modmap::Vmodmap,
-            resolved::{
-                BuiltInKeytype, Filter, GroupsRedirect, Indicator, IndicatorMap,
-                IndicatorMapWithKey, Interp, InterpWithKey, KeyTypeRef, ModMapEntryWithKey,
-                ModMapField, Predicate, Resolved, ResolvedAction, ResolvedCompat, ResolvedKey,
-                ResolvedKeyKind, ResolvedKeyType, ResolvedKeyTypeWithName, ResolvedKeycodes,
-                ResolvedSymbols, ResolvedTypes, SymbolsKey, SymbolsKeyBehavior, SymbolsKeyGroup,
-                SymbolsKeyLevel, SymbolsKeyWithKey,
-            },
-            span::{Span, SpanExt, Spanned},
-            string_cooker::StringCooker,
-        },
-    },
-    hashbrown::{DefaultHashBuilder, HashMap, HashSet, hash_map::Entry},
-    indexmap::IndexMap,
-    isnt::std_1::primitive::IsntSliceExt,
-    kbvm_proc::ad_hoc_display,
-    smallvec::SmallVec,
-    std::{fmt::Display, mem},
-};
+use crate::Keycode;
+use crate::Keysym;
+use crate::ModifierIndex;
+use crate::ModifierMask;
+use crate::syms;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::group::GroupIdx;
+use crate::xkb::indicator::IndicatorIdx;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::MergeMode;
+use crate::xkb::kccgst::ast::CompatmapDecl;
+use crate::xkb::kccgst::ast::ConfigItemType;
+use crate::xkb::kccgst::ast::Decls;
+use crate::xkb::kccgst::ast::DirectOrIncluded;
+use crate::xkb::kccgst::ast::Expr;
+use crate::xkb::kccgst::ast::InterpretSym;
+use crate::xkb::kccgst::ast::Item;
+use crate::xkb::kccgst::ast::ItemType;
+use crate::xkb::kccgst::ast::KeycodeDecl;
+use crate::xkb::kccgst::ast::MergeModeExt;
+use crate::xkb::kccgst::ast::Path;
+use crate::xkb::kccgst::ast::SymbolsDecl;
+use crate::xkb::kccgst::ast::TypesDecl;
+use crate::xkb::kccgst::ast::VModDecl;
+use crate::xkb::kccgst::ast::VarDecl;
+use crate::xkb::kccgst::ast::VarOrExpr;
+use crate::xkb::kccgst::expr::EvalError;
+use crate::xkb::kccgst::expr::GroupList;
+use crate::xkb::kccgst::expr::IndicatorMapField;
+use crate::xkb::kccgst::expr::InterpField;
+use crate::xkb::kccgst::expr::SymbolsField;
+use crate::xkb::kccgst::expr::TypeField;
+use crate::xkb::kccgst::expr::eval_action_default;
+use crate::xkb::kccgst::expr::eval_filter;
+use crate::xkb::kccgst::expr::eval_group;
+use crate::xkb::kccgst::expr::eval_indicator_map_field;
+use crate::xkb::kccgst::expr::eval_interp_field;
+use crate::xkb::kccgst::expr::eval_keysyms;
+use crate::xkb::kccgst::expr::eval_mod_map_field;
+use crate::xkb::kccgst::expr::eval_real_mods;
+use crate::xkb::kccgst::expr::eval_string;
+use crate::xkb::kccgst::expr::eval_symbols_field;
+use crate::xkb::kccgst::expr::eval_type_field;
+use crate::xkb::kccgst::expr::ident_to_real_mod_index;
+use crate::xkb::level::Level;
+use crate::xkb::meaning::Meaning;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::modmap::Vmodmap;
+use crate::xkb::resolved::BuiltInKeytype;
+use crate::xkb::resolved::Filter;
+use crate::xkb::resolved::GroupsRedirect;
+use crate::xkb::resolved::Indicator;
+use crate::xkb::resolved::IndicatorMap;
+use crate::xkb::resolved::IndicatorMapWithKey;
+use crate::xkb::resolved::Interp;
+use crate::xkb::resolved::InterpWithKey;
+use crate::xkb::resolved::KeyTypeRef;
+use crate::xkb::resolved::ModMapEntryWithKey;
+use crate::xkb::resolved::ModMapField;
+use crate::xkb::resolved::Predicate;
+use crate::xkb::resolved::Resolved;
+use crate::xkb::resolved::ResolvedAction;
+use crate::xkb::resolved::ResolvedCompat;
+use crate::xkb::resolved::ResolvedKey;
+use crate::xkb::resolved::ResolvedKeyKind;
+use crate::xkb::resolved::ResolvedKeyType;
+use crate::xkb::resolved::ResolvedKeyTypeWithName;
+use crate::xkb::resolved::ResolvedKeycodes;
+use crate::xkb::resolved::ResolvedSymbols;
+use crate::xkb::resolved::ResolvedTypes;
+use crate::xkb::resolved::SymbolsKey;
+use crate::xkb::resolved::SymbolsKeyBehavior;
+use crate::xkb::resolved::SymbolsKeyGroup;
+use crate::xkb::resolved::SymbolsKeyLevel;
+use crate::xkb::resolved::SymbolsKeyWithKey;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::Spanned;
+use crate::xkb::string_cooker::StringCooker;
+use hashbrown::DefaultHashBuilder;
+use hashbrown::HashMap;
+use hashbrown::HashSet;
+use hashbrown::hash_map::Entry;
+use indexmap::IndexMap;
+use isnt::std_1::primitive::IsntSliceExt;
+use kbvm_proc::ad_hoc_display;
+use smallvec::SmallVec;
+use std::fmt::Display;
+use std::mem;
 
 pub(crate) fn resolve(
     map: &mut CodeMap,

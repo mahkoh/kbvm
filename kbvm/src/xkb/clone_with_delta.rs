@@ -1,4 +1,5 @@
-use crate::xkb::span::{Span, SpanUnit};
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanUnit;
 
 pub(crate) trait CloneWithDelta: Sized {
     fn clone_with_delta(&self, delta: SpanUnit) -> Self;

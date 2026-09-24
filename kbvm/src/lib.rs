@@ -74,7 +74,7 @@
 //!    produced by this event, using the effective modifiers and group from your
 //!    [`Components`].
 
-#![expect(
+#![allow(
     clippy::collapsible_else_if,
     clippy::collapsible_if,
     clippy::field_reassign_with_default,
@@ -85,16 +85,24 @@
     clippy::manual_checked_ops,
     clippy::byte_char_slices
 )]
+#![cfg_attr(
+    test,
+    allow(
+        clippy::bool_assert_comparison,
+        clippy::needless_range_loop,
+        clippy::useless_format,
+    )
+)]
 
-pub use {
-    components::Components,
-    controls::ControlsMask,
-    group::{GroupDelta, GroupIndex},
-    group_type::hidden::GroupType,
-    keycode::Keycode,
-    keysym::hidden::Keysym,
-    modifier::hidden::{ModifierIndex, ModifierMask},
-};
+pub use components::Components;
+pub use controls::ControlsMask;
+pub use group::GroupDelta;
+pub use group::GroupIndex;
+pub use group_type::hidden::GroupType;
+pub use keycode::Keycode;
+pub use keysym::hidden::Keysym;
+pub use modifier::hidden::ModifierIndex;
+pub use modifier::hidden::ModifierMask;
 
 #[macro_use]
 mod macros;

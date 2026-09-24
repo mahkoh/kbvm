@@ -24,26 +24,30 @@
 #[cfg(test)]
 mod tests;
 
+use crate::GroupType;
+use crate::Keycode;
+use crate::ModifierMask;
+use crate::builder::Redirect;
+use crate::components::Components;
+use crate::controls::ControlsMask;
 #[allow(unused_imports)]
 use crate::evdev;
-use {
-    crate::{
-        GroupType, Keycode, ModifierMask,
-        builder::Redirect,
-        components::Components,
-        controls::ControlsMask,
-        group::{GroupDelta, GroupIndex},
-        key_storage::KeyStorage,
-        modifier::{NUM_MODS, NUM_MODS_MASK},
-        routine::{Flag, Lo, Register, Routine, StateEventHandler, run},
-    },
-    isnt::std_1::primitive::IsntSliceExt,
-    linearize::StaticMap,
-    std::{
-        fmt::{Debug, Formatter},
-        sync::Arc,
-    },
-};
+use crate::group::GroupDelta;
+use crate::group::GroupIndex;
+use crate::key_storage::KeyStorage;
+use crate::modifier::NUM_MODS;
+use crate::modifier::NUM_MODS_MASK;
+use crate::routine::Flag;
+use crate::routine::Lo;
+use crate::routine::Register;
+use crate::routine::Routine;
+use crate::routine::StateEventHandler;
+use crate::routine::run;
+use isnt::std_1::primitive::IsntSliceExt;
+use linearize::StaticMap;
+use std::fmt::Debug;
+use std::fmt::Formatter;
+use std::sync::Arc;
 
 /// The compositor-side state machine.
 ///

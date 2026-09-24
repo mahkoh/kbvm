@@ -1,21 +1,17 @@
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::xkb::{
-        code::Code,
-        interner::{Interned, Interner},
-    },
-    cfg_if::cfg_if,
-    hashbrown::HashMap,
-    std::{
-        io::{self},
-        ops::Range,
-        path::{Path, PathBuf},
-        sync::Arc,
-    },
-    thiserror::Error,
-};
+use crate::xkb::code::Code;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use cfg_if::cfg_if;
+use hashbrown::HashMap;
+use std::io;
+use std::ops::Range;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
+use thiserror::Error;
 
 pub(crate) struct CodeLoader {
     include_paths: Vec<Arc<PathBuf>>,

@@ -2,28 +2,27 @@ pub(crate) mod error;
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::{
-        Keysym, ModifierMask,
-        xkb::{
-            code::Code,
-            code_map::CodeMap,
-            code_slice::CodeSlice,
-            compose::{
-                parser::error::{Expected, LHS, ParserError},
-                token::Token,
-            },
-            context::Environment,
-            diagnostic::{DiagnosticKind, DiagnosticSink},
-            interner::Interner,
-            meaning::{Meaning, MeaningCache},
-            span::{SpanExt, SpanUnit, Spanned},
-        },
-    },
-    isnt::std_1::primitive::IsntSliceExt,
-    kbvm_proc::ad_hoc_display,
-    std::sync::Arc,
-};
+use crate::Keysym;
+use crate::ModifierMask;
+use crate::xkb::code::Code;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::code_slice::CodeSlice;
+use crate::xkb::compose::parser::error::Expected;
+use crate::xkb::compose::parser::error::LHS;
+use crate::xkb::compose::parser::error::ParserError;
+use crate::xkb::compose::token::Token;
+use crate::xkb::context::Environment;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::interner::Interner;
+use crate::xkb::meaning::Meaning;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::SpanUnit;
+use crate::xkb::span::Spanned;
+use isnt::std_1::primitive::IsntSliceExt;
+use kbvm_proc::ad_hoc_display;
+use std::sync::Arc;
 
 struct Parser<'a, 'b, 'c> {
     map: &'a mut CodeMap,

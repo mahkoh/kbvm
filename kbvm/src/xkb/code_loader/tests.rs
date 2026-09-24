@@ -1,7 +1,6 @@
-use crate::{
-    Keycode,
-    xkb::{Context, diagnostic::WriteToStderr},
-};
+use crate::Keycode;
+use crate::xkb::Context;
+use crate::xkb::diagnostic::WriteToStderr;
 
 #[test]
 fn absolute_path() {

@@ -1,8 +1,7 @@
-use {
-    crate::Keycode,
-    hashbrown::HashMap,
-    std::{collections::VecDeque, iter::Enumerate},
-};
+use crate::Keycode;
+use hashbrown::HashMap;
+use std::collections::VecDeque;
+use std::iter::Enumerate;
 
 #[derive(Debug, Clone)]
 pub(crate) struct KeyStorage<T> {

@@ -1,12 +1,17 @@
 //! Iterators over components of a keymap.
 
+use crate::xkb::keymap::Indicator;
+use crate::xkb::keymap::Key;
+use crate::xkb::keymap::KeyGroup;
+use crate::xkb::keymap::KeyLevel;
 #[expect(unused_imports)]
-use crate::xkb::keymap::{KeyType, Keymap};
-use {
-    crate::xkb::keymap::{Indicator, Key, KeyGroup, KeyLevel, KeyTypeMapping, VirtualModifier},
-    indexmap::map::Values,
-    std::slice::Iter,
-};
+use crate::xkb::keymap::KeyType;
+use crate::xkb::keymap::KeyTypeMapping;
+#[expect(unused_imports)]
+use crate::xkb::keymap::Keymap;
+use crate::xkb::keymap::VirtualModifier;
+use indexmap::map::Values;
+use std::slice::Iter;
 
 /// An iterator over the virtual modifiers of a keymap.
 ///

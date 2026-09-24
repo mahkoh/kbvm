@@ -1,10 +1,7 @@
-use {
-    crate::{
-        group::{GroupDelta, GroupIndex},
-        xkb::keymap,
-    },
-    kbvm_proc::CloneWithDelta,
-};
+use crate::group::GroupDelta;
+use crate::group::GroupIndex;
+use crate::xkb::keymap;
+use kbvm_proc::CloneWithDelta;
 
 #[derive(Copy, Clone, Debug, CloneWithDelta, PartialEq)]
 pub(crate) struct GroupIdx(u32);

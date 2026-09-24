@@ -1,11 +1,9 @@
-use {
-    kbvm_proc::CloneWithDelta,
-    std::{
-        fmt::{Debug, Formatter},
-        hash::{Hash, Hasher},
-        ops::Add,
-    },
-};
+use kbvm_proc::CloneWithDelta;
+use std::fmt::Debug;
+use std::fmt::Formatter;
+use std::hash::Hash;
+use std::hash::Hasher;
+use std::ops::Add;
 
 pub type SpanUnit = u32;
 

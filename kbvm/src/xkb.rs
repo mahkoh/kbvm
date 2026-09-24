@@ -50,10 +50,9 @@
 //! The `WriteToLog` type depends on the `log` crate and the feature of the same name,
 //! which is enabled by default.
 
-pub use {
-    context::{Context, ContextBuilder},
-    keymap::Keymap,
-};
+pub use context::Context;
+pub use context::ContextBuilder;
+pub use keymap::Keymap;
 
 #[macro_use]
 mod macros;

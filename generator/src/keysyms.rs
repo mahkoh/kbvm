@@ -1,13 +1,11 @@
-use {
-    crate::generate_map,
-    indexmap::IndexMap,
-    regex::Regex,
-    std::{
-        borrow::Cow,
-        collections::{HashMap, hash_map::Entry},
-        fmt::{Debug, Formatter},
-    },
-};
+use crate::generate_map;
+use indexmap::IndexMap;
+use regex::Regex;
+use std::borrow::Cow;
+use std::collections::HashMap;
+use std::collections::hash_map::Entry;
+use std::fmt::Debug;
+use std::fmt::Formatter;
 
 pub fn main() {
     let output = generate_output();

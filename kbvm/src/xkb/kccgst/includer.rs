@@ -1,24 +1,32 @@
-use {
-    crate::xkb::{
-        code_loader::{CodeLoader, CodeType},
-        code_map::CodeMap,
-        diagnostic::{DiagnosticKind, DiagnosticSink},
-        include::parse_include,
-        interner::{Interned, Interner},
-        kccgst::{
-            ast::{
-                Compat, CompatmapDecl, ConfigItemType, DirectOrIncluded, Geometry, GeometryDecl,
-                Include, Item, ItemType, KeycodeDecl, Keycodes, LoadedInclude, Symbols,
-                SymbolsDecl, Types, TypesDecl,
-            },
-            ast_cache::AstCache,
-        },
-        meaning::MeaningCache,
-        span::SpanExt,
-    },
-    hashbrown::HashSet,
-    kbvm_proc::ad_hoc_display,
-};
+use crate::xkb::code_loader::CodeLoader;
+use crate::xkb::code_loader::CodeType;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::include::parse_include;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::ast::Compat;
+use crate::xkb::kccgst::ast::CompatmapDecl;
+use crate::xkb::kccgst::ast::ConfigItemType;
+use crate::xkb::kccgst::ast::DirectOrIncluded;
+use crate::xkb::kccgst::ast::Geometry;
+use crate::xkb::kccgst::ast::GeometryDecl;
+use crate::xkb::kccgst::ast::Include;
+use crate::xkb::kccgst::ast::Item;
+use crate::xkb::kccgst::ast::ItemType;
+use crate::xkb::kccgst::ast::KeycodeDecl;
+use crate::xkb::kccgst::ast::Keycodes;
+use crate::xkb::kccgst::ast::LoadedInclude;
+use crate::xkb::kccgst::ast::Symbols;
+use crate::xkb::kccgst::ast::SymbolsDecl;
+use crate::xkb::kccgst::ast::Types;
+use crate::xkb::kccgst::ast::TypesDecl;
+use crate::xkb::kccgst::ast_cache::AstCache;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::span::SpanExt;
+use hashbrown::HashSet;
+use kbvm_proc::ad_hoc_display;
 
 #[expect(clippy::too_many_arguments)]
 pub(crate) fn resolve_includes(

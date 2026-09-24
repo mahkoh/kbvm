@@ -1,21 +1,29 @@
+use crate::GroupType;
+use crate::Keycode;
+use crate::ModifierIndex;
+use crate::builder::Builder;
+use crate::builder::GroupBuilder;
+use crate::builder::KeyBuilder;
+use crate::builder::LevelBuilder;
 #[expect(unused_imports)]
-use {crate::lookup::LookupTable, crate::state_machine::StateMachine};
-use {
-    crate::{
-        GroupType, Keycode, ModifierIndex,
-        builder::{Builder, GroupBuilder, KeyBuilder, LevelBuilder},
-        routine::{Global, Routine, RoutineBuilder, Var},
-        xkb::{
-            Keymap,
-            controls::ControlMask,
-            group::GroupChange,
-            keymap::{Action, KeyBehavior, KeyOverlay, KeyType},
-            radio_group::RadioGroup,
-        },
-    },
-    hashbrown::{HashMap, hash_map::Entry},
-    isnt::std_1::primitive::IsntSliceExt,
-};
+use crate::lookup::LookupTable;
+use crate::routine::Global;
+use crate::routine::Routine;
+use crate::routine::RoutineBuilder;
+use crate::routine::Var;
+#[expect(unused_imports)]
+use crate::state_machine::StateMachine;
+use crate::xkb::Keymap;
+use crate::xkb::controls::ControlMask;
+use crate::xkb::group::GroupChange;
+use crate::xkb::keymap::Action;
+use crate::xkb::keymap::KeyBehavior;
+use crate::xkb::keymap::KeyOverlay;
+use crate::xkb::keymap::KeyType;
+use crate::xkb::radio_group::RadioGroup;
+use hashbrown::HashMap;
+use hashbrown::hash_map::Entry;
+use isnt::std_1::primitive::IsntSliceExt;
 
 impl Keymap {
     /// Creates a [`Builder`] which can in turn create a (client-side) [`LookupTable`] or

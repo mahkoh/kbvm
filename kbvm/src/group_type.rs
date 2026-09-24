@@ -1,17 +1,23 @@
 //! [`GroupType`] helpers.
 
+use crate::GroupType;
+use crate::ModifierMask;
 #[allow(unused_imports)]
-use crate::lookup::{Lookup, LookupTable};
-use {
-    crate::{GroupType, ModifierMask},
-    hashbrown::HashMap,
-    std::sync::Arc,
-};
+use crate::lookup::Lookup;
+#[allow(unused_imports)]
+use crate::lookup::LookupTable;
+use hashbrown::HashMap;
+use std::sync::Arc;
 
 pub(crate) mod hidden {
     #[allow(unused_imports)]
-    use {crate::ModifierMask, crate::group_type::GroupTypeBuilder, crate::lookup::Lookup};
-    use {crate::group_type::Data, std::sync::Arc};
+    use crate::ModifierMask;
+    use crate::group_type::Data;
+    #[allow(unused_imports)]
+    use crate::group_type::GroupTypeBuilder;
+    #[allow(unused_imports)]
+    use crate::lookup::Lookup;
+    use std::sync::Arc;
 
     /// The type of a key group.
     ///

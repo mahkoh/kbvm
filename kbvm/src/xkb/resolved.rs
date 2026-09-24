@@ -1,26 +1,28 @@
-use {
-    crate::{
-        Keycode, Keysym, ModifierIndex, ModifierMask,
-        builder::Redirect,
-        xkb::{
-            controls::ControlMask,
-            group::{GroupChange, GroupIdx, GroupMask},
-            group_component::GroupComponent,
-            indicator::IndicatorIdx,
-            interner::Interned,
-            keymap::KeyOverlay,
-            level::Level,
-            mod_component::ModComponentMask,
-            modmap::{ModifierTree, Vmodmap},
-            radio_group::RadioGroup,
-            span::{Span, Spanned},
-        },
-    },
-    hashbrown::{DefaultHashBuilder, HashMap},
-    indexmap::IndexMap,
-    linearize::Linearize,
-    smallvec::SmallVec,
-};
+use crate::Keycode;
+use crate::Keysym;
+use crate::ModifierIndex;
+use crate::ModifierMask;
+use crate::builder::Redirect;
+use crate::xkb::controls::ControlMask;
+use crate::xkb::group::GroupChange;
+use crate::xkb::group::GroupIdx;
+use crate::xkb::group::GroupMask;
+use crate::xkb::group_component::GroupComponent;
+use crate::xkb::indicator::IndicatorIdx;
+use crate::xkb::interner::Interned;
+use crate::xkb::keymap::KeyOverlay;
+use crate::xkb::level::Level;
+use crate::xkb::mod_component::ModComponentMask;
+use crate::xkb::modmap::ModifierTree;
+use crate::xkb::modmap::Vmodmap;
+use crate::xkb::radio_group::RadioGroup;
+use crate::xkb::span::Span;
+use crate::xkb::span::Spanned;
+use hashbrown::DefaultHashBuilder;
+use hashbrown::HashMap;
+use indexmap::IndexMap;
+use linearize::Linearize;
+use smallvec::SmallVec;
 
 #[derive(Debug)]
 pub(crate) struct Resolved {

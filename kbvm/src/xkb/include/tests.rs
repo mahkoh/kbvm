@@ -1,14 +1,13 @@
-use {
-    crate::xkb::{
-        code::Code,
-        code_map::CodeMap,
-        include::{IncludeIter, error::ParseIncludeError, parse_include},
-        interner::{Interned, Interner},
-        kccgst::MergeMode,
-        span::SpanExt,
-    },
-    std::sync::Arc,
-};
+use crate::xkb::code::Code;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::include::IncludeIter;
+use crate::xkb::include::error::ParseIncludeError;
+use crate::xkb::include::parse_include;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::MergeMode;
+use crate::xkb::span::SpanExt;
+use std::sync::Arc;
 
 fn iter<'a>(map: &mut CodeMap, interner: &'a mut Interner, s: &str) -> IncludeIter<'a> {
     let code = Arc::new(s.as_bytes().to_vec());

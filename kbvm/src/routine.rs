@@ -109,22 +109,28 @@
 mod tests;
 
 #[allow(unused_imports)]
-use {crate::Components, crate::builder::Builder, crate::state_machine::StateMachine};
-use {
-    crate::{Keycode, ModifierMask},
-    debug_fn::debug_fn,
-    hashbrown::{HashMap, HashSet, hash_map::Entry},
-    isnt::std_1::primitive::IsntSliceExt,
-    linearize::{Linearize, StaticMap},
-    smallvec::SmallVec,
-    std::{
-        array,
-        collections::VecDeque,
-        fmt::{Debug, Formatter},
-        mem::{self, ManuallyDrop},
-        sync::Arc,
-    },
-};
+use crate::Components;
+use crate::Keycode;
+use crate::ModifierMask;
+#[allow(unused_imports)]
+use crate::builder::Builder;
+#[allow(unused_imports)]
+use crate::state_machine::StateMachine;
+use debug_fn::debug_fn;
+use hashbrown::HashMap;
+use hashbrown::HashSet;
+use hashbrown::hash_map::Entry;
+use isnt::std_1::primitive::IsntSliceExt;
+use linearize::Linearize;
+use linearize::StaticMap;
+use smallvec::SmallVec;
+use std::array;
+use std::collections::VecDeque;
+use std::fmt::Debug;
+use std::fmt::Formatter;
+use std::mem;
+use std::mem::ManuallyDrop;
+use std::sync::Arc;
 
 /// A variable in a routine.
 ///

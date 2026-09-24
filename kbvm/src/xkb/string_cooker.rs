@@ -1,23 +1,23 @@
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::{
-        from_bytes::FromBytes,
-        xkb::{
-            code::Code,
-            code_map::CodeMap,
-            code_slice::CodeSlice,
-            diagnostic::{DiagnosticKind, DiagnosticSink},
-            interner::{Interned, Interner},
-            span::{Span, SpanExt, SpanUnit, Spanned},
-        },
-    },
-    bstr::ByteSlice,
-    hashbrown::{HashMap, hash_map::Entry},
-    std::sync::Arc,
-    thiserror::Error,
-};
+use crate::from_bytes::FromBytes;
+use crate::xkb::code::Code;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::code_slice::CodeSlice;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::SpanUnit;
+use crate::xkb::span::Spanned;
+use bstr::ByteSlice;
+use hashbrown::HashMap;
+use hashbrown::hash_map::Entry;
+use std::sync::Arc;
+use thiserror::Error;
 
 #[derive(Default)]
 pub(crate) struct StringCooker {

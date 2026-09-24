@@ -1,20 +1,17 @@
 #![allow(clippy::single_char_add_str)]
 
-use {
-    error_reporter::Report,
-    integration_test_utils::run,
-    isnt::std_1::vec::IsntVecExt,
-    kbvm::{
-        Keysym,
-        xkb::{Context, compose::FeedResult, diagnostic::Diagnostic},
-    },
-    std::{
-        fmt::Write,
-        io::{self, ErrorKind},
-        path::Path,
-    },
-    thiserror::Error,
-};
+use error_reporter::Report;
+use integration_test_utils::run;
+use isnt::std_1::vec::IsntVecExt;
+use kbvm::Keysym;
+use kbvm::xkb::Context;
+use kbvm::xkb::compose::FeedResult;
+use kbvm::xkb::diagnostic::Diagnostic;
+use std::fmt::Write;
+use std::io;
+use std::io::ErrorKind;
+use std::path::Path;
+use thiserror::Error;
 
 // const SINGLE: Option<&str> = Some("t0019");
 const SINGLE: Option<&str> = None;

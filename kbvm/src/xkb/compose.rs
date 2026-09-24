@@ -2,36 +2,40 @@
 //!
 //! The entry point to this module is the [`ComposeTable`].
 
-pub use table::{ComposeTable, FeedResult, Iter, MatchRule, MatchStep, State};
+use crate::xkb::Context;
 #[expect(unused_imports)]
-use {crate::xkb::ContextBuilder, secure_execution::requires_secure_execution};
-use {
-    crate::xkb::{
-        Context,
-        code::Code,
-        code_map::CodeMap,
-        code_slice::CodeSlice,
-        compose::{
-            lexer::Lexer,
-            parser::{Line, parse_line},
-        },
-        diagnostic::{DiagnosticHandler, DiagnosticKind, DiagnosticSink},
-        interner::Interner,
-        meaning::MeaningCache,
-        span::SpanExt,
-    },
-    bstr::ByteSlice,
-    hashbrown::HashSet,
-    kbvm_proc::ad_hoc_display,
-    std::{
-        fs::File,
-        io::{BufRead, BufReader},
-        mem,
-        path::{Path, PathBuf},
-        sync::Arc,
-    },
-    thiserror::Error,
-};
+use crate::xkb::ContextBuilder;
+use crate::xkb::code::Code;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::code_slice::CodeSlice;
+use crate::xkb::compose::lexer::Lexer;
+use crate::xkb::compose::parser::Line;
+use crate::xkb::compose::parser::parse_line;
+use crate::xkb::diagnostic::DiagnosticHandler;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::interner::Interner;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::span::SpanExt;
+use bstr::ByteSlice;
+use hashbrown::HashSet;
+use kbvm_proc::ad_hoc_display;
+#[expect(unused_imports)]
+use secure_execution::requires_secure_execution;
+use std::fs::File;
+use std::io::BufRead;
+use std::io::BufReader;
+use std::mem;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
+pub use table::ComposeTable;
+pub use table::FeedResult;
+pub use table::Iter;
+pub use table::MatchRule;
+pub use table::MatchStep;
+pub use table::State;
+use thiserror::Error;
 
 #[macro_use]
 mod macros;

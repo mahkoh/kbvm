@@ -1,12 +1,15 @@
-use {
-    criterion::{Criterion, criterion_group, criterion_main},
-    kbvm::{
-        evdev::{A, B, C, CAPSLOCK, LEFTSHIFT},
-        state_machine::Direction,
-        xkb::{Context, diagnostic::WriteToLog},
-    },
-    libxkbcommon_test_linker::XState,
-};
+use criterion::Criterion;
+use criterion::criterion_group;
+use criterion::criterion_main;
+use kbvm::evdev::A;
+use kbvm::evdev::B;
+use kbvm::evdev::C;
+use kbvm::evdev::CAPSLOCK;
+use kbvm::evdev::LEFTSHIFT;
+use kbvm::state_machine::Direction;
+use kbvm::xkb::Context;
+use kbvm::xkb::diagnostic::WriteToLog;
+use libxkbcommon_test_linker::XState;
 
 fn shift_press_release(c: &mut Criterion) {
     let builder = Context::builder()

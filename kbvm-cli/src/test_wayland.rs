@@ -1,59 +1,63 @@
-use {
-    crate::{
-        output::{
-            Output,
-            ansi::{Ansi, Theme},
-            json::Json,
-        },
-        utils::read_path,
-        wayland_protocols::{
-            single_pixel_buffer_v1::wp_single_pixel_buffer_manager_v1::WpSinglePixelBufferManagerV1,
-            viewporter::{wp_viewport::WpViewport, wp_viewporter::WpViewporter},
-            wayland::{
-                wl_buffer::WlBuffer,
-                wl_compositor::WlCompositor,
-                wl_display::WlDisplay,
-                wl_fixes::WlFixes,
-                wl_keyboard::{
-                    WlKeyboard, WlKeyboardEventHandler, WlKeyboardKeyState, WlKeyboardKeymapFormat,
-                    WlKeyboardRef,
-                },
-                wl_registry::{WlRegistry, WlRegistryEventHandler, WlRegistryRef},
-                wl_seat::{WlSeat, WlSeatCapability, WlSeatEventHandler, WlSeatRef},
-                wl_shm::WlShm,
-                wl_surface::{WlSurface, WlSurfaceRef},
-            },
-            xdg_decoration_unstable_v1::{
-                zxdg_decoration_manager_v1::ZxdgDecorationManagerV1,
-                zxdg_toplevel_decoration_v1::ZxdgToplevelDecorationV1Mode,
-            },
-            xdg_shell::{
-                xdg_surface::{XdgSurface, XdgSurfaceEventHandler, XdgSurfaceRef},
-                xdg_toplevel::{XdgToplevel, XdgToplevelEventHandler, XdgToplevelRef},
-                xdg_wm_base::XdgWmBase,
-            },
-        },
-    },
-    clap::{Args, ValueEnum, ValueHint},
-    error_reporter::Report,
-    hashbrown::HashMap,
-    kbvm::{
-        Components, Keycode,
-        lookup::LookupTable,
-        state_machine::{self, Direction, Event, StateMachine},
-        xkb::{
-            Context,
-            compose::{self, ComposeTable, FeedResult},
-            diagnostic::WriteToLog,
-        },
-    },
-    memmap2::MmapOptions,
-    std::{cell::RefCell, os::fd::OwnedFd, rc::Rc},
-    wl_client::{
-        Libwayland,
-        proxy::{self, OwnedProxy},
-    },
-};
+use crate::output::Output;
+use crate::output::ansi::Ansi;
+use crate::output::ansi::Theme;
+use crate::output::json::Json;
+use crate::utils::read_path;
+use crate::wayland_protocols::single_pixel_buffer_v1::wp_single_pixel_buffer_manager_v1::WpSinglePixelBufferManagerV1;
+use crate::wayland_protocols::viewporter::wp_viewport::WpViewport;
+use crate::wayland_protocols::viewporter::wp_viewporter::WpViewporter;
+use crate::wayland_protocols::wayland::wl_buffer::WlBuffer;
+use crate::wayland_protocols::wayland::wl_compositor::WlCompositor;
+use crate::wayland_protocols::wayland::wl_display::WlDisplay;
+use crate::wayland_protocols::wayland::wl_fixes::WlFixes;
+use crate::wayland_protocols::wayland::wl_keyboard::WlKeyboard;
+use crate::wayland_protocols::wayland::wl_keyboard::WlKeyboardEventHandler;
+use crate::wayland_protocols::wayland::wl_keyboard::WlKeyboardKeyState;
+use crate::wayland_protocols::wayland::wl_keyboard::WlKeyboardKeymapFormat;
+use crate::wayland_protocols::wayland::wl_keyboard::WlKeyboardRef;
+use crate::wayland_protocols::wayland::wl_registry::WlRegistry;
+use crate::wayland_protocols::wayland::wl_registry::WlRegistryEventHandler;
+use crate::wayland_protocols::wayland::wl_registry::WlRegistryRef;
+use crate::wayland_protocols::wayland::wl_seat::WlSeat;
+use crate::wayland_protocols::wayland::wl_seat::WlSeatCapability;
+use crate::wayland_protocols::wayland::wl_seat::WlSeatEventHandler;
+use crate::wayland_protocols::wayland::wl_seat::WlSeatRef;
+use crate::wayland_protocols::wayland::wl_shm::WlShm;
+use crate::wayland_protocols::wayland::wl_surface::WlSurface;
+use crate::wayland_protocols::wayland::wl_surface::WlSurfaceRef;
+use crate::wayland_protocols::xdg_decoration_unstable_v1::zxdg_decoration_manager_v1::ZxdgDecorationManagerV1;
+use crate::wayland_protocols::xdg_decoration_unstable_v1::zxdg_toplevel_decoration_v1::ZxdgToplevelDecorationV1Mode;
+use crate::wayland_protocols::xdg_shell::xdg_surface::XdgSurface;
+use crate::wayland_protocols::xdg_shell::xdg_surface::XdgSurfaceEventHandler;
+use crate::wayland_protocols::xdg_shell::xdg_surface::XdgSurfaceRef;
+use crate::wayland_protocols::xdg_shell::xdg_toplevel::XdgToplevel;
+use crate::wayland_protocols::xdg_shell::xdg_toplevel::XdgToplevelEventHandler;
+use crate::wayland_protocols::xdg_shell::xdg_toplevel::XdgToplevelRef;
+use crate::wayland_protocols::xdg_shell::xdg_wm_base::XdgWmBase;
+use clap::Args;
+use clap::ValueEnum;
+use clap::ValueHint;
+use error_reporter::Report;
+use hashbrown::HashMap;
+use kbvm::Components;
+use kbvm::Keycode;
+use kbvm::lookup::LookupTable;
+use kbvm::state_machine;
+use kbvm::state_machine::Direction;
+use kbvm::state_machine::Event;
+use kbvm::state_machine::StateMachine;
+use kbvm::xkb::Context;
+use kbvm::xkb::compose;
+use kbvm::xkb::compose::ComposeTable;
+use kbvm::xkb::compose::FeedResult;
+use kbvm::xkb::diagnostic::WriteToLog;
+use memmap2::MmapOptions;
+use std::cell::RefCell;
+use std::os::fd::OwnedFd;
+use std::rc::Rc;
+use wl_client::Libwayland;
+use wl_client::proxy;
+use wl_client::proxy::OwnedProxy;
 
 #[derive(Args, Debug, Default)]
 pub struct TestWaylandArgs {
@@ -660,11 +664,10 @@ impl WlKeyboardEventHandler for RefCell<Keyboard> {
 
 #[cfg(target_os = "linux")]
 fn create_shm_buffer(wl_shm: Option<&WlShm>) -> WlBuffer {
-    use {
-        crate::wayland_protocols::wayland::wl_shm::WlShmFormat,
-        std::{io::Write, os::fd::AsFd},
-        uapi::c,
-    };
+    use crate::wayland_protocols::wayland::wl_shm::WlShmFormat;
+    use std::io::Write;
+    use std::os::fd::AsFd;
+    use uapi::c;
     let mem = uapi::memfd_create("buffer", c::MFD_CLOEXEC | c::MFD_ALLOW_SEALING);
     let mut mem = match mem {
         Ok(m) => m,

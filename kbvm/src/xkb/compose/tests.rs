@@ -1,7 +1,6 @@
-use {
-    crate::xkb::{Context, diagnostic::WriteToStderr},
-    std::path::Path,
-};
+use crate::xkb::Context;
+use crate::xkb::diagnostic::WriteToStderr;
+use std::path::Path;
 
 #[test]
 fn locale() {

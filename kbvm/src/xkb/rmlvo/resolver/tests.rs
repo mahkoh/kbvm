@@ -1,19 +1,18 @@
-use {
-    crate::xkb::{
-        code::Code,
-        code_loader::CodeLoader,
-        code_map::CodeMap,
-        context::Environment,
-        diagnostic::DiagnosticSink,
-        interner::Interner,
-        kccgst::formatter::{Format, Formatter},
-        meaning::MeaningCache,
-        rmlvo::resolver::{Group, create_item},
-        span::SpanExt,
-    },
-    bstr::ByteSlice,
-    std::{path::Path, sync::Arc},
-};
+use crate::xkb::code::Code;
+use crate::xkb::code_loader::CodeLoader;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::context::Environment;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::formatter::Format;
+use crate::xkb::kccgst::formatter::Formatter;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::rmlvo::resolver::Group;
+use crate::xkb::rmlvo::resolver::create_item;
+use crate::xkb::span::SpanExt;
+use bstr::ByteSlice;
+use std::path::Path;
+use std::sync::Arc;
 
 #[test]
 fn test() {

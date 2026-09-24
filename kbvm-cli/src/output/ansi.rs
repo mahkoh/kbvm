@@ -1,13 +1,20 @@
-use {
-    crate::{evdev::keycode_to_name, output::Output},
-    debug_fn::debug_fn,
-    kbvm::{ControlsMask, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask, xkb::Keymap},
-    owo_colors::{OwoColorize, Stream::Stdout},
-    std::{
-        fmt::{Display, Formatter},
-        time::{Duration, Instant, SystemTime},
-    },
-};
+use crate::evdev::keycode_to_name;
+use crate::output::Output;
+use debug_fn::debug_fn;
+use kbvm::ControlsMask;
+use kbvm::GroupDelta;
+use kbvm::GroupIndex;
+use kbvm::Keycode;
+use kbvm::Keysym;
+use kbvm::ModifierMask;
+use kbvm::xkb::Keymap;
+use owo_colors::OwoColorize;
+use owo_colors::Stream::Stdout;
+use std::fmt::Display;
+use std::fmt::Formatter;
+use std::time::Duration;
+use std::time::Instant;
+use std::time::SystemTime;
 
 pub struct Ansi {
     theme: Theme,
