@@ -23,9 +23,9 @@ fn l(
     i: &mut Interner,
     code: &Code,
 ) -> Result<Vec<Vec<Spanned<Token>>>, Spanned<LexerError>> {
-    let span = map.add(None, None, &code);
+    let span = map.add(None, None, code);
     let mut res = vec![];
-    let mut lexer = Lexer::new(None, &code, span.lo);
+    let mut lexer = Lexer::new(None, code, span.lo);
     loop {
         let mut tokens = vec![];
         lexer.lex_item(i, &mut tokens)?;

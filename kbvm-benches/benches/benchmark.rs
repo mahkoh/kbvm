@@ -1,10 +1,11 @@
 use {
-    criterion::{Criterion, black_box, criterion_group, criterion_main},
+    criterion::{Criterion, criterion_group, criterion_main},
     kbvm::Keysym,
     libxkbcommon_test_linker::{
         xkb_keysym_from_name, xkb_keysym_get_name, xkb_keysym_to_upper, xkb_keysym_to_utf32,
         xkb_utf32_to_keysym,
     },
+    std::hint::black_box,
 };
 
 const CHARS: [char; 4] = ['a', 'ァ', '字', 'Ü'];

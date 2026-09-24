@@ -74,7 +74,7 @@
 //!    produced by this event, using the effective modifiers and group from your
 //!    [`Components`].
 
-#![expect(
+#![allow(
     clippy::collapsible_else_if,
     clippy::collapsible_if,
     clippy::field_reassign_with_default,
@@ -84,6 +84,14 @@
     clippy::manual_range_contains,
     clippy::manual_checked_ops,
     clippy::byte_char_slices
+)]
+#![cfg_attr(
+    test,
+    allow(
+        clippy::bool_assert_comparison,
+        clippy::needless_range_loop,
+        clippy::useless_format,
+    )
 )]
 
 pub use {

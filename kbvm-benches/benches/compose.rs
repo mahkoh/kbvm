@@ -1,9 +1,10 @@
 use {
-    criterion::{Criterion, black_box, criterion_group, criterion_main},
+    criterion::{Criterion, criterion_group, criterion_main},
     kbvm::{
         syms,
         xkb::{Context, diagnostic::WriteToStderr},
     },
+    std::hint::black_box,
 };
 
 fn shift_press_release(c: &mut Criterion) {
