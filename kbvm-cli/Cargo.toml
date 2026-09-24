@@ -7,7 +7,7 @@ license = "GPL-3.0-only"
 description = "A CLI for working with XKB"
 keywords = ["cli", "linux", "xkb", "wayland"]
 categories = ["command-line-utilities", "compilers", "visualization"]
-rust-version = "1.85.0"
+rust-version = "1.95.0"
 
 [[bin]]
 name = "kbvm"

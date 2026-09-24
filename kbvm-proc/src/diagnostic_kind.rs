@@ -10,12 +10,12 @@ pub(crate) fn expand(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
         let mut severity = None;
         variant.attrs.retain(|a| {
             let mut retain = true;
-            if let Meta::NameValue(nv) = &a.meta {
-                if nv.path.is_ident("severity") {
-                    retain = false;
-                    let expr = &nv.value;
-                    severity = Some(parse_quote!(#expr));
-                }
+            if let Meta::NameValue(nv) = &a.meta
+                && nv.path.is_ident("severity")
+            {
+                retain = false;
+                let expr = &nv.value;
+                severity = Some(parse_quote!(#expr));
             }
             retain
         });

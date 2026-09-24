@@ -42,10 +42,10 @@ impl Ansi {
 
     fn handle_delta(&mut self) {
         let now = Instant::now();
-        if let Some(last_event) = self.last_event {
-            if now - last_event > Duration::from_millis(200) {
-                println!("{} {}", self.now(), "------------".color_time(self.theme));
-            }
+        if let Some(last_event) = self.last_event
+            && now - last_event > Duration::from_millis(200)
+        {
+            println!("{} {}", self.now(), "------------".color_time(self.theme));
         }
         self.last_event = Some(now);
     }
