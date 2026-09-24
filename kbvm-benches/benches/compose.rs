@@ -1,11 +1,10 @@
-use {
-    criterion::{Criterion, criterion_group, criterion_main},
-    kbvm::{
-        syms,
-        xkb::{Context, diagnostic::WriteToStderr},
-    },
-    std::hint::black_box,
-};
+use criterion::Criterion;
+use criterion::criterion_group;
+use criterion::criterion_main;
+use kbvm::syms;
+use kbvm::xkb::Context;
+use kbvm::xkb::diagnostic::WriteToStderr;
+use std::hint::black_box;
 
 fn shift_press_release(c: &mut Criterion) {
     let context = Context::default();

@@ -5,24 +5,26 @@ mod phf;
 #[path = "../../kbvm/src/phf_map.rs"]
 mod phf_map;
 
-use {
-    crate::generated::{CODE_TO_NAME, NAME_TO_CODE},
-    error_reporter::Report,
-    integration_test_utils::run,
-    isnt::std_1::vec::IsntVecExt,
-    kbvm::{
-        GroupIndex, Keycode, ModifierMask,
-        state_machine::{Direction, Event},
-        xkb::{Context, diagnostic::Diagnostic},
-    },
-    phf_map::PhfMap,
-    std::{
-        fmt::{Display, Formatter, Write},
-        io::{self, ErrorKind},
-        path::Path,
-    },
-    thiserror::Error,
-};
+use crate::generated::CODE_TO_NAME;
+use crate::generated::NAME_TO_CODE;
+use error_reporter::Report;
+use integration_test_utils::run;
+use isnt::std_1::vec::IsntVecExt;
+use kbvm::GroupIndex;
+use kbvm::Keycode;
+use kbvm::ModifierMask;
+use kbvm::state_machine::Direction;
+use kbvm::state_machine::Event;
+use kbvm::xkb::Context;
+use kbvm::xkb::diagnostic::Diagnostic;
+use phf_map::PhfMap;
+use std::fmt::Display;
+use std::fmt::Formatter;
+use std::fmt::Write;
+use std::io::ErrorKind;
+use std::io::{self};
+use std::path::Path;
+use thiserror::Error;
 
 // const SINGLE: Option<&str> = Some("t0106");
 const SINGLE: Option<&str> = None;

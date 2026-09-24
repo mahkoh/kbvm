@@ -1,15 +1,13 @@
-use {
-    crate::xkb::{
-        code::Code,
-        code_map::CodeMap,
-        diagnostic::{Diagnostic, DiagnosticKind, DiagnosticSink},
-        interner::Interner,
-        span::SpanExt,
-        string_cooker::StringCooker,
-    },
-    bstr::ByteSlice,
-    std::sync::Arc,
-};
+use crate::xkb::code::Code;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::diagnostic::Diagnostic;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::interner::Interner;
+use crate::xkb::span::SpanExt;
+use crate::xkb::string_cooker::StringCooker;
+use bstr::ByteSlice;
+use std::sync::Arc;
 
 fn cook_(s: &str) -> (String, Vec<Diagnostic>) {
     let mut interner = Interner::default();

@@ -1,9 +1,8 @@
-use {
-    crate::cli::Kbvm,
-    clap::{Args, CommandFactory},
-    clap_complete::Shell,
-    std::io::stdout,
-};
+use crate::cli::Kbvm;
+use clap::Args;
+use clap::CommandFactory;
+use clap_complete::Shell;
+use std::io::stdout;
 
 #[derive(Args, Debug)]
 pub struct GenerateArgs {

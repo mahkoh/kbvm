@@ -1,33 +1,54 @@
-use {
-    crate::{
-        ModifierMask,
-        xkb::{
-            Keymap,
-            controls::ControlMask,
-            group::GroupIdx,
-            interner::{Interned, Interner},
-            keymap::{
-                Action, GroupLatchAction, GroupLockAction, GroupSetAction, Indicator, Key,
-                KeyBehavior, KeyGroup, KeyLevel, KeyType, KeyTypeMapping, Keycode, ModMapValue,
-                ModsLatchAction, ModsLockAction, ModsSetAction, OverlayBehavior,
-                RadioGroupBehavior, VirtualModifier,
-                actions::{ControlsLockAction, ControlsSetAction, RedirectKeyAction},
-            },
-            level::Level,
-            mod_component::ModComponentMask,
-            resolved::{
-                BuiltInKeytype, GroupsRedirect, KeyTypeRef, ModMapField, Resolved, ResolvedAction,
-                ResolvedActionMods, ResolvedKeyKind, SymbolsKeyBehavior, SymbolsKeyGroup,
-            },
-            span::{Despan, Spanned},
-        },
-    },
-    arrayvec::ArrayVec,
-    bstr::ByteSlice,
-    hashbrown::{HashMap, HashSet, hash_map::Entry},
-    linearize::{Linearize, StaticMap, static_map},
-    std::sync::Arc,
-};
+use crate::ModifierMask;
+use crate::xkb::Keymap;
+use crate::xkb::controls::ControlMask;
+use crate::xkb::group::GroupIdx;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::keymap::Action;
+use crate::xkb::keymap::GroupLatchAction;
+use crate::xkb::keymap::GroupLockAction;
+use crate::xkb::keymap::GroupSetAction;
+use crate::xkb::keymap::Indicator;
+use crate::xkb::keymap::Key;
+use crate::xkb::keymap::KeyBehavior;
+use crate::xkb::keymap::KeyGroup;
+use crate::xkb::keymap::KeyLevel;
+use crate::xkb::keymap::KeyType;
+use crate::xkb::keymap::KeyTypeMapping;
+use crate::xkb::keymap::Keycode;
+use crate::xkb::keymap::ModMapValue;
+use crate::xkb::keymap::ModsLatchAction;
+use crate::xkb::keymap::ModsLockAction;
+use crate::xkb::keymap::ModsSetAction;
+use crate::xkb::keymap::OverlayBehavior;
+use crate::xkb::keymap::RadioGroupBehavior;
+use crate::xkb::keymap::VirtualModifier;
+use crate::xkb::keymap::actions::ControlsLockAction;
+use crate::xkb::keymap::actions::ControlsSetAction;
+use crate::xkb::keymap::actions::RedirectKeyAction;
+use crate::xkb::level::Level;
+use crate::xkb::mod_component::ModComponentMask;
+use crate::xkb::resolved::BuiltInKeytype;
+use crate::xkb::resolved::GroupsRedirect;
+use crate::xkb::resolved::KeyTypeRef;
+use crate::xkb::resolved::ModMapField;
+use crate::xkb::resolved::Resolved;
+use crate::xkb::resolved::ResolvedAction;
+use crate::xkb::resolved::ResolvedActionMods;
+use crate::xkb::resolved::ResolvedKeyKind;
+use crate::xkb::resolved::SymbolsKeyBehavior;
+use crate::xkb::resolved::SymbolsKeyGroup;
+use crate::xkb::span::Despan;
+use crate::xkb::span::Spanned;
+use arrayvec::ArrayVec;
+use bstr::ByteSlice;
+use hashbrown::HashMap;
+use hashbrown::HashSet;
+use hashbrown::hash_map::Entry;
+use linearize::Linearize;
+use linearize::StaticMap;
+use linearize::static_map;
+use std::sync::Arc;
 
 impl Keymap {
     pub(crate) fn from_resolved(interner: &Interner, resolved: &Resolved) -> Self {

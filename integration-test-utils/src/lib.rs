@@ -1,14 +1,12 @@
-use {
-    kbvm::xkb::diagnostic::Diagnostic,
-    parking_lot::Mutex,
-    std::{
-        fs::read_dir,
-        mem,
-        path::{Path, PathBuf},
-        sync::atomic::{AtomicUsize, Ordering::Relaxed},
-        thread::available_parallelism,
-    },
-};
+use kbvm::xkb::diagnostic::Diagnostic;
+use parking_lot::Mutex;
+use std::fs::read_dir;
+use std::mem;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering::Relaxed;
+use std::thread::available_parallelism;
 
 struct Results<E> {
     idx: AtomicUsize,

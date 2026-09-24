@@ -1,19 +1,18 @@
-use {
-    crate::xkb::{
-        code_slice::CodeSlice,
-        diagnostic::DiagnosticKind,
-        interner::Interned,
-        rmlvo::{
-            parser::Parser,
-            token::{Punctuation, Token},
-        },
-        span::{Span, SpanExt, SpanUnit, Spanned},
-    },
-    bstr::ByteSlice,
-    debug_fn::debug_fn,
-    std::fmt::{self, Formatter},
-    thiserror::Error,
-};
+use crate::xkb::code_slice::CodeSlice;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::interner::Interned;
+use crate::xkb::rmlvo::parser::Parser;
+use crate::xkb::rmlvo::token::Punctuation;
+use crate::xkb::rmlvo::token::Token;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::SpanUnit;
+use crate::xkb::span::Spanned;
+use bstr::ByteSlice;
+use debug_fn::debug_fn;
+use std::fmt::Formatter;
+use std::fmt::{self};
+use thiserror::Error;
 
 #[derive(Debug, Clone, Error)]
 pub(crate) enum ParserError {

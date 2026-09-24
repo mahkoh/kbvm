@@ -94,15 +94,15 @@
     )
 )]
 
-pub use {
-    components::Components,
-    controls::ControlsMask,
-    group::{GroupDelta, GroupIndex},
-    group_type::hidden::GroupType,
-    keycode::Keycode,
-    keysym::hidden::Keysym,
-    modifier::hidden::{ModifierIndex, ModifierMask},
-};
+pub use components::Components;
+pub use controls::ControlsMask;
+pub use group::GroupDelta;
+pub use group::GroupIndex;
+pub use group_type::hidden::GroupType;
+pub use keycode::Keycode;
+pub use keysym::hidden::Keysym;
+pub use modifier::hidden::ModifierIndex;
+pub use modifier::hidden::ModifierMask;
 
 #[macro_use]
 mod macros;

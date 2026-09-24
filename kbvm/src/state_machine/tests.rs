@@ -1,8 +1,9 @@
-use crate::{
-    GroupIndex, ModifierMask,
-    state_machine::{Direction, Event, Keycode},
-    xkb::Context,
-};
+use crate::GroupIndex;
+use crate::ModifierMask;
+use crate::state_machine::Direction;
+use crate::state_machine::Event;
+use crate::state_machine::Keycode;
+use crate::xkb::Context;
 
 const KEY_CONTROL_L: Keycode = Keycode(37);
 const KEY_Q: Keycode = Keycode(24);

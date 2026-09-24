@@ -5,21 +5,28 @@
 #[cfg(test)]
 mod tests;
 
+use crate::GroupType;
+use crate::Keycode;
+use crate::Keysym;
+use crate::ModifierIndex;
+use crate::ModifierMask;
+use crate::group::GroupIndex;
+use crate::key_storage::KeyStorage;
+use crate::lookup::LookupTable;
+use crate::lookup::{self};
+use crate::routine::Global;
+use crate::routine::Routine;
 #[expect(unused_imports)]
-use crate::{routine::RoutineBuilder, state_machine::State, xkb::Keymap};
-use {
-    crate::{
-        GroupType, Keycode, Keysym, ModifierIndex, ModifierMask,
-        group::GroupIndex,
-        key_storage::KeyStorage,
-        lookup::{self, LookupTable},
-        routine::{Global, Routine},
-        state_machine::{self, StateMachine},
-    },
-    hashbrown::HashMap,
-    isnt::std_1::primitive::IsntSliceExt,
-    smallvec::SmallVec,
-};
+use crate::routine::RoutineBuilder;
+#[expect(unused_imports)]
+use crate::state_machine::State;
+use crate::state_machine::StateMachine;
+use crate::state_machine::{self};
+#[expect(unused_imports)]
+use crate::xkb::Keymap;
+use hashbrown::HashMap;
+use isnt::std_1::primitive::IsntSliceExt;
+use smallvec::SmallVec;
 
 /// A builder for compositor-side [`StateMachine`]s and client-side [`LookupTable`]s.
 ///

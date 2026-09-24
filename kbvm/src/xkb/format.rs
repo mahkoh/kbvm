@@ -1,33 +1,40 @@
-use {
-    crate::{
-        Keysym, ModifierMask,
-        xkb::{
-            Keymap,
-            controls::ControlMask,
-            group::GroupChange,
-            group_component::GroupComponent,
-            keymap::{
-                self, Action, Indicator, KeyBehavior, KeyGroup, KeyLevel, KeyOverlay, KeyType,
-                actions::{
-                    ControlsLockAction, ControlsSetAction, GroupLatchAction, GroupLockAction,
-                    GroupSetAction, ModsLatchAction, ModsLockAction, ModsSetAction,
-                    RedirectKeyAction,
-                },
-            },
-            mod_component::ModComponentMask,
-            resolved::GroupsRedirect,
-            rmlvo::{self, MergeMode},
-        },
-    },
-    debug_fn::debug_fn,
-    hashbrown::{HashMap, HashSet},
-    isnt::std_1::vec::IsntVecExt,
-    smallvec::SmallVec,
-    std::{
-        fmt::{self, Display, Formatter, Write},
-        sync::Arc,
-    },
-};
+use crate::Keysym;
+use crate::ModifierMask;
+use crate::xkb::Keymap;
+use crate::xkb::controls::ControlMask;
+use crate::xkb::group::GroupChange;
+use crate::xkb::group_component::GroupComponent;
+use crate::xkb::keymap::Action;
+use crate::xkb::keymap::Indicator;
+use crate::xkb::keymap::KeyBehavior;
+use crate::xkb::keymap::KeyGroup;
+use crate::xkb::keymap::KeyLevel;
+use crate::xkb::keymap::KeyOverlay;
+use crate::xkb::keymap::KeyType;
+use crate::xkb::keymap::actions::ControlsLockAction;
+use crate::xkb::keymap::actions::ControlsSetAction;
+use crate::xkb::keymap::actions::GroupLatchAction;
+use crate::xkb::keymap::actions::GroupLockAction;
+use crate::xkb::keymap::actions::GroupSetAction;
+use crate::xkb::keymap::actions::ModsLatchAction;
+use crate::xkb::keymap::actions::ModsLockAction;
+use crate::xkb::keymap::actions::ModsSetAction;
+use crate::xkb::keymap::actions::RedirectKeyAction;
+use crate::xkb::keymap::{self};
+use crate::xkb::mod_component::ModComponentMask;
+use crate::xkb::resolved::GroupsRedirect;
+use crate::xkb::rmlvo::MergeMode;
+use crate::xkb::rmlvo::{self};
+use debug_fn::debug_fn;
+use hashbrown::HashMap;
+use hashbrown::HashSet;
+use isnt::std_1::vec::IsntVecExt;
+use smallvec::SmallVec;
+use std::fmt::Display;
+use std::fmt::Formatter;
+use std::fmt::Write;
+use std::fmt::{self};
+use std::sync::Arc;
 
 pub(crate) struct FormatFormat<'a, T>(pub(crate) &'a T);
 
@@ -932,10 +939,11 @@ impl Format for RmlvoIncludes<'_> {
 
 #[cfg(feature = "compose")]
 mod compose {
-    use crate::xkb::{
-        compose::{ComposeTable, MatchRule, MatchStep},
-        format::{Format, Writer},
-    };
+    use crate::xkb::compose::ComposeTable;
+    use crate::xkb::compose::MatchRule;
+    use crate::xkb::compose::MatchStep;
+    use crate::xkb::format::Format;
+    use crate::xkb::format::Writer;
 
     impl Format for MatchStep<'_> {
         fn format(&self, f: &mut Writer<'_, '_>) -> std::fmt::Result {

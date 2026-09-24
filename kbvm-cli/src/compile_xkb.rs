@@ -1,17 +1,15 @@
-use {
-    crate::{
-        cli::{CompileArgs, FormatArgs},
-        utils::read_path,
-    },
-    clap::{Args, ValueHint},
-    error_reporter::Report,
-    kbvm::xkb::{Context, diagnostic::WriteToLog},
-    raw_stdio::raw_stdout,
-    std::{
-        fmt::Display,
-        io::{BufWriter, Write},
-    },
-};
+use crate::cli::CompileArgs;
+use crate::cli::FormatArgs;
+use crate::utils::read_path;
+use clap::Args;
+use clap::ValueHint;
+use error_reporter::Report;
+use kbvm::xkb::Context;
+use kbvm::xkb::diagnostic::WriteToLog;
+use raw_stdio::raw_stdout;
+use std::fmt::Display;
+use std::io::BufWriter;
+use std::io::Write;
 
 #[derive(Args, Debug, Default)]
 pub struct CompileXkbArgs {

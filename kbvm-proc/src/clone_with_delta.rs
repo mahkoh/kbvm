@@ -1,8 +1,10 @@
-use {
-    proc_macro2::Ident,
-    quote::quote,
-    syn::{Data, GenericParam, Index, parse_quote, spanned::Spanned},
-};
+use proc_macro2::Ident;
+use quote::quote;
+use syn::Data;
+use syn::GenericParam;
+use syn::Index;
+use syn::parse_quote;
+use syn::spanned::Spanned;
 
 pub(crate) fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let mut item = syn::parse_macro_input!(input as syn::DeriveInput);

@@ -1,4 +1,5 @@
-use crate::xkb::{Context, diagnostic::WriteToStderr};
+use crate::xkb::Context;
+use crate::xkb::diagnostic::WriteToStderr;
 
 #[test]
 fn round_trip() {

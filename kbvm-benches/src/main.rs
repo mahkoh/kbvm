@@ -1,8 +1,7 @@
-use kbvm::{
-    evdev::A,
-    state_machine::Direction,
-    xkb::{Context, diagnostic::WriteToLog},
-};
+use kbvm::evdev::A;
+use kbvm::state_machine::Direction;
+use kbvm::xkb::Context;
+use kbvm::xkb::diagnostic::WriteToLog;
 
 fn main() {
     let builder = Context::builder()

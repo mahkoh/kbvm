@@ -1,27 +1,31 @@
 mod error;
 
-use {
-    crate::xkb::{
-        clone_with_delta::CloneWithDelta,
-        code::Code,
-        code_loader::{CodeLoader, CodeType},
-        code_map::CodeMap,
-        diagnostic::{DiagnosticKind, DiagnosticSink},
-        interner::{Interned, Interner},
-        kccgst::{
-            ast::Item,
-            ast_cache::error::{AstCacheError, not_found},
-            lexer::Lexer,
-            parser::{parse_item, snoop_ty_and_name},
-            token::Token,
-        },
-        meaning::MeaningCache,
-        span::{Span, SpanExt, Spanned},
-    },
-    hashbrown::{HashMap, hash_map::Entry},
-    kbvm_proc::ad_hoc_display,
-    std::{collections::VecDeque, path::PathBuf, sync::Arc},
-};
+use crate::xkb::clone_with_delta::CloneWithDelta;
+use crate::xkb::code::Code;
+use crate::xkb::code_loader::CodeLoader;
+use crate::xkb::code_loader::CodeType;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::ast::Item;
+use crate::xkb::kccgst::ast_cache::error::AstCacheError;
+use crate::xkb::kccgst::ast_cache::error::not_found;
+use crate::xkb::kccgst::lexer::Lexer;
+use crate::xkb::kccgst::parser::parse_item;
+use crate::xkb::kccgst::parser::snoop_ty_and_name;
+use crate::xkb::kccgst::token::Token;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::Spanned;
+use hashbrown::HashMap;
+use hashbrown::hash_map::Entry;
+use kbvm_proc::ad_hoc_display;
+use std::collections::VecDeque;
+use std::path::PathBuf;
+use std::sync::Arc;
 
 #[derive(Default)]
 pub(crate) struct AstCache {

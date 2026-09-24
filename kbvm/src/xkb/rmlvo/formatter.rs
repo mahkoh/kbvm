@@ -1,10 +1,12 @@
-use {
-    crate::xkb::{
-        interner::{Interned, Interner},
-        rmlvo::parser::{Line, MappingKey, MappingKeyIndex, MappingValue, RuleKey},
-    },
-    std::io::{self, Write},
-};
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::rmlvo::parser::Line;
+use crate::xkb::rmlvo::parser::MappingKey;
+use crate::xkb::rmlvo::parser::MappingKeyIndex;
+use crate::xkb::rmlvo::parser::MappingValue;
+use crate::xkb::rmlvo::parser::RuleKey;
+use std::io::Write;
+use std::io::{self};
 
 pub(crate) struct Formatter<'a, W> {
     interner: &'a Interner,

@@ -1,9 +1,8 @@
-use {
-    crate::{cli::FormatArgs, compile_xkb::format_keymap},
-    clap::Args,
-    error_reporter::Report,
-    kbvm::xkb::x11::KbvmX11Ext,
-};
+use crate::cli::FormatArgs;
+use crate::compile_xkb::format_keymap;
+use clap::Args;
+use error_reporter::Report;
+use kbvm::xkb::x11::KbvmX11Ext;
 
 #[derive(Args, Debug, Default)]
 pub struct DumpX11Args {

@@ -1,20 +1,66 @@
-use {
-    crate::xkb::{
-        interner::{Interned, Interner},
-        kccgst::ast::{
-            Call, CallArg, Compat, CompatmapDecl, Component, CompositeMap, ConfigItem,
-            ConfigItemType, Coord, Decl, Decls, DirectOrIncluded, DoodadDecl, DoodadType, Expr,
-            Flags, Geometry, GeometryDecl, GroupCompatDecl, Include, Included, IndicatorMapDecl,
-            IndicatorNameDecl, InterpretDecl, InterpretMatch, InterpretSym, Item, ItemType, Key,
-            KeyAliasDecl, KeyExprs, KeyNameDecl, KeySymbolsDecl, KeyTypeDecl, KeycodeDecl,
-            Keycodes, Keys, MergeMode, ModMapDecl, NamedParam, NestedConfigItem, Outline,
-            OverlayDecl, Path, RowBody, RowBodyItem, SectionDecl, SectionItem, ShapeDecl,
-            ShapeDeclType, Symbols, SymbolsDecl, Types, TypesDecl, VModDecl, VModDef, Var, VarDecl,
-            VarOrExpr,
-        },
-    },
-    std::io::{self, Write},
-};
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::ast::Call;
+use crate::xkb::kccgst::ast::CallArg;
+use crate::xkb::kccgst::ast::Compat;
+use crate::xkb::kccgst::ast::CompatmapDecl;
+use crate::xkb::kccgst::ast::Component;
+use crate::xkb::kccgst::ast::CompositeMap;
+use crate::xkb::kccgst::ast::ConfigItem;
+use crate::xkb::kccgst::ast::ConfigItemType;
+use crate::xkb::kccgst::ast::Coord;
+use crate::xkb::kccgst::ast::Decl;
+use crate::xkb::kccgst::ast::Decls;
+use crate::xkb::kccgst::ast::DirectOrIncluded;
+use crate::xkb::kccgst::ast::DoodadDecl;
+use crate::xkb::kccgst::ast::DoodadType;
+use crate::xkb::kccgst::ast::Expr;
+use crate::xkb::kccgst::ast::Flags;
+use crate::xkb::kccgst::ast::Geometry;
+use crate::xkb::kccgst::ast::GeometryDecl;
+use crate::xkb::kccgst::ast::GroupCompatDecl;
+use crate::xkb::kccgst::ast::Include;
+use crate::xkb::kccgst::ast::Included;
+use crate::xkb::kccgst::ast::IndicatorMapDecl;
+use crate::xkb::kccgst::ast::IndicatorNameDecl;
+use crate::xkb::kccgst::ast::InterpretDecl;
+use crate::xkb::kccgst::ast::InterpretMatch;
+use crate::xkb::kccgst::ast::InterpretSym;
+use crate::xkb::kccgst::ast::Item;
+use crate::xkb::kccgst::ast::ItemType;
+use crate::xkb::kccgst::ast::Key;
+use crate::xkb::kccgst::ast::KeyAliasDecl;
+use crate::xkb::kccgst::ast::KeyExprs;
+use crate::xkb::kccgst::ast::KeyNameDecl;
+use crate::xkb::kccgst::ast::KeySymbolsDecl;
+use crate::xkb::kccgst::ast::KeyTypeDecl;
+use crate::xkb::kccgst::ast::KeycodeDecl;
+use crate::xkb::kccgst::ast::Keycodes;
+use crate::xkb::kccgst::ast::Keys;
+use crate::xkb::kccgst::ast::MergeMode;
+use crate::xkb::kccgst::ast::ModMapDecl;
+use crate::xkb::kccgst::ast::NamedParam;
+use crate::xkb::kccgst::ast::NestedConfigItem;
+use crate::xkb::kccgst::ast::Outline;
+use crate::xkb::kccgst::ast::OverlayDecl;
+use crate::xkb::kccgst::ast::Path;
+use crate::xkb::kccgst::ast::RowBody;
+use crate::xkb::kccgst::ast::RowBodyItem;
+use crate::xkb::kccgst::ast::SectionDecl;
+use crate::xkb::kccgst::ast::SectionItem;
+use crate::xkb::kccgst::ast::ShapeDecl;
+use crate::xkb::kccgst::ast::ShapeDeclType;
+use crate::xkb::kccgst::ast::Symbols;
+use crate::xkb::kccgst::ast::SymbolsDecl;
+use crate::xkb::kccgst::ast::Types;
+use crate::xkb::kccgst::ast::TypesDecl;
+use crate::xkb::kccgst::ast::VModDecl;
+use crate::xkb::kccgst::ast::VModDef;
+use crate::xkb::kccgst::ast::Var;
+use crate::xkb::kccgst::ast::VarDecl;
+use crate::xkb::kccgst::ast::VarOrExpr;
+use std::io::Write;
+use std::io::{self};
 
 pub(crate) struct Formatter<'a, W> {
     interner: &'a Interner,

@@ -1,12 +1,16 @@
-use {
-    crate::{evdev::keycode_to_name, output::Output},
-    kbvm::{ControlsMask, GroupDelta, GroupIndex, Keycode, Keysym, ModifierMask, xkb::Keymap},
-    serde::Serialize,
-    std::{
-        io::{Write, stdout},
-        time::SystemTime,
-    },
-};
+use crate::evdev::keycode_to_name;
+use crate::output::Output;
+use kbvm::ControlsMask;
+use kbvm::GroupDelta;
+use kbvm::GroupIndex;
+use kbvm::Keycode;
+use kbvm::Keysym;
+use kbvm::ModifierMask;
+use kbvm::xkb::Keymap;
+use serde::Serialize;
+use std::io::Write;
+use std::io::stdout;
+use std::time::SystemTime;
 
 pub struct Json;
 

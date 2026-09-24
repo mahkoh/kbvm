@@ -3,54 +3,86 @@
 //! This module provides the extension trait [`KbvmX11Ext`] that can be used to create
 //! keymaps from [`RequestConnection`] objects.
 
-use {
-    crate::{
-        Components, Keycode, Keysym, ModifierIndex, ModifierMask,
-        controls::ControlsMask,
-        group::{GroupDelta, GroupIndex},
-        xkb::{
-            Keymap,
-            controls::ControlMask,
-            group::{GroupChange, GroupIdx, GroupMask},
-            group_component::GroupComponent,
-            indicator::IndicatorIdx,
-            keymap::{
-                self, Action, Indicator, Key, KeyBehavior, KeyGroup, KeyLevel, KeyOverlay, KeyType,
-                KeyTypeMapping, ModMapValue, OverlayBehavior, RadioGroupBehavior, VirtualModifier,
-                actions::{
-                    ControlsLockAction, ControlsSetAction, GroupLatchAction, GroupLockAction,
-                    GroupSetAction, ModsLatchAction, ModsLockAction, ModsSetAction,
-                    RedirectKeyAction,
-                },
-            },
-            level::Level,
-            mod_component::ModComponentMask,
-            radio_group::RadioGroup,
-            resolved::GroupsRedirect,
-            x11::sealed::Sealed,
-        },
-    },
-    bstr::ByteSlice,
-    hashbrown::{DefaultHashBuilder, HashMap, HashSet, hash_map::Entry},
-    indexmap::IndexMap,
-    std::sync::Arc,
-    thiserror::Error,
-    x11rb::{
-        connection::RequestConnection,
-        cookie::Cookie,
-        errors::{ConnectionError, ReplyError},
-        protocol::{
-            xkb::{
-                self, BehaviorType, BoolCtrl, ConnectionExt as E2, DeviceSpec, GetControlsReply,
-                GetIndicatorMapReply, GetMapReply, GetNamesReply, ID, IDSpec, IMGroupsWhich,
-                IMModsWhich, LedClass, MapPart, NameDetail, SA, SAIsoLockFlag, SAType, VMod,
-                XIFeature,
-            },
-            xproto::{Atom, ConnectionExt as E1, GetAtomNameReply},
-        },
-        x11_utils::Serialize,
-    },
-};
+use crate::Components;
+use crate::Keycode;
+use crate::Keysym;
+use crate::ModifierIndex;
+use crate::ModifierMask;
+use crate::controls::ControlsMask;
+use crate::group::GroupDelta;
+use crate::group::GroupIndex;
+use crate::xkb::Keymap;
+use crate::xkb::controls::ControlMask;
+use crate::xkb::group::GroupChange;
+use crate::xkb::group::GroupIdx;
+use crate::xkb::group::GroupMask;
+use crate::xkb::group_component::GroupComponent;
+use crate::xkb::indicator::IndicatorIdx;
+use crate::xkb::keymap::Action;
+use crate::xkb::keymap::Indicator;
+use crate::xkb::keymap::Key;
+use crate::xkb::keymap::KeyBehavior;
+use crate::xkb::keymap::KeyGroup;
+use crate::xkb::keymap::KeyLevel;
+use crate::xkb::keymap::KeyOverlay;
+use crate::xkb::keymap::KeyType;
+use crate::xkb::keymap::KeyTypeMapping;
+use crate::xkb::keymap::ModMapValue;
+use crate::xkb::keymap::OverlayBehavior;
+use crate::xkb::keymap::RadioGroupBehavior;
+use crate::xkb::keymap::VirtualModifier;
+use crate::xkb::keymap::actions::ControlsLockAction;
+use crate::xkb::keymap::actions::ControlsSetAction;
+use crate::xkb::keymap::actions::GroupLatchAction;
+use crate::xkb::keymap::actions::GroupLockAction;
+use crate::xkb::keymap::actions::GroupSetAction;
+use crate::xkb::keymap::actions::ModsLatchAction;
+use crate::xkb::keymap::actions::ModsLockAction;
+use crate::xkb::keymap::actions::ModsSetAction;
+use crate::xkb::keymap::actions::RedirectKeyAction;
+use crate::xkb::keymap::{self};
+use crate::xkb::level::Level;
+use crate::xkb::mod_component::ModComponentMask;
+use crate::xkb::radio_group::RadioGroup;
+use crate::xkb::resolved::GroupsRedirect;
+use crate::xkb::x11::sealed::Sealed;
+use bstr::ByteSlice;
+use hashbrown::DefaultHashBuilder;
+use hashbrown::HashMap;
+use hashbrown::HashSet;
+use hashbrown::hash_map::Entry;
+use indexmap::IndexMap;
+use std::sync::Arc;
+use thiserror::Error;
+use x11rb::connection::RequestConnection;
+use x11rb::cookie::Cookie;
+use x11rb::errors::ConnectionError;
+use x11rb::errors::ReplyError;
+use x11rb::protocol::xkb::BehaviorType;
+use x11rb::protocol::xkb::BoolCtrl;
+use x11rb::protocol::xkb::ConnectionExt as E2;
+use x11rb::protocol::xkb::DeviceSpec;
+use x11rb::protocol::xkb::GetControlsReply;
+use x11rb::protocol::xkb::GetIndicatorMapReply;
+use x11rb::protocol::xkb::GetMapReply;
+use x11rb::protocol::xkb::GetNamesReply;
+use x11rb::protocol::xkb::ID;
+use x11rb::protocol::xkb::IDSpec;
+use x11rb::protocol::xkb::IMGroupsWhich;
+use x11rb::protocol::xkb::IMModsWhich;
+use x11rb::protocol::xkb::LedClass;
+use x11rb::protocol::xkb::MapPart;
+use x11rb::protocol::xkb::NameDetail;
+use x11rb::protocol::xkb::SA;
+use x11rb::protocol::xkb::SAIsoLockFlag;
+use x11rb::protocol::xkb::SAType;
+use x11rb::protocol::xkb::VMod;
+use x11rb::protocol::xkb::XIFeature;
+use x11rb::protocol::xkb::{self};
+use x11rb::protocol::xproto::Atom;
+use x11rb::protocol::xproto::ConnectionExt as E1;
+use x11rb::protocol::xproto::GetAtomNameReply;
+use x11rb::x11_utils::Serialize;
 
 /// An error produced by one of the [`KbvmX11Ext`] functions.
 #[derive(Debug, Error)]

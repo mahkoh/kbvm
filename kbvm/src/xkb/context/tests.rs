@@ -1,7 +1,7 @@
-use {
-    crate::{config::DEFAULT_INCLUDE_DIR, xkb::Context},
-    std::{env::set_var, sync::Once},
-};
+use crate::config::DEFAULT_INCLUDE_DIR;
+use crate::xkb::Context;
+use std::env::set_var;
+use std::sync::Once;
 
 fn init_env() {
     static ONCE: Once = Once::new();

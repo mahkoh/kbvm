@@ -1,10 +1,10 @@
-use {
-    quote::quote,
-    syn::{
-        Expr, Index, Token, Type,
-        parse::{Parse, ParseStream},
-    },
-};
+use quote::quote;
+use syn::Expr;
+use syn::Index;
+use syn::Token;
+use syn::Type;
+use syn::parse::Parse;
+use syn::parse::ParseStream;
 
 pub(crate) fn expand(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let res = syn::parse_macro_input!(input as Input);

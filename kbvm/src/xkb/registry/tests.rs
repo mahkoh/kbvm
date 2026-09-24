@@ -1,15 +1,14 @@
-use {
-    crate::xkb::{
-        Context,
-        diagnostic::WriteToStderr,
-        registry::{
-            Layout, Model, Opt, OptGroup,
-            Popularity::{Exotic, Standard},
-            Registry, Variant,
-        },
-    },
-    std::path::Path,
-};
+use crate::xkb::Context;
+use crate::xkb::diagnostic::WriteToStderr;
+use crate::xkb::registry::Layout;
+use crate::xkb::registry::Model;
+use crate::xkb::registry::Opt;
+use crate::xkb::registry::OptGroup;
+use crate::xkb::registry::Popularity::Exotic;
+use crate::xkb::registry::Popularity::Standard;
+use crate::xkb::registry::Registry;
+use crate::xkb::registry::Variant;
+use std::path::Path;
 
 #[test]
 fn without_extra() {

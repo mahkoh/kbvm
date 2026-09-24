@@ -1,18 +1,21 @@
-use crate::{
-    Components, ControlsMask, GroupDelta, GroupIndex, ModifierMask,
-    builder::Redirect,
-    syms,
-    xkb::{
-        Context,
-        controls::ControlMask,
-        diagnostic::WriteToStderr,
-        group::GroupMask,
-        group_component::GroupComponent,
-        indicator::IndicatorIdx,
-        keymap::{Action, Indicator, KeyBehavior, actions::ModsSetAction},
-        mod_component::ModComponentMask,
-    },
-};
+use crate::Components;
+use crate::ControlsMask;
+use crate::GroupDelta;
+use crate::GroupIndex;
+use crate::ModifierMask;
+use crate::builder::Redirect;
+use crate::syms;
+use crate::xkb::Context;
+use crate::xkb::controls::ControlMask;
+use crate::xkb::diagnostic::WriteToStderr;
+use crate::xkb::group::GroupMask;
+use crate::xkb::group_component::GroupComponent;
+use crate::xkb::indicator::IndicatorIdx;
+use crate::xkb::keymap::Action;
+use crate::xkb::keymap::Indicator;
+use crate::xkb::keymap::KeyBehavior;
+use crate::xkb::keymap::actions::ModsSetAction;
+use crate::xkb::mod_component::ModComponentMask;
 
 #[test]
 fn from_lookup() {

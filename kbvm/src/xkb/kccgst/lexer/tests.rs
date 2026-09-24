@@ -1,21 +1,21 @@
-use crate::xkb::{
-    code::Code,
-    interner::{Interned, Interner},
-    kccgst::{
-        lexer::{
-            Lexer,
-            LexerError::{
-                self, InvalidIntegerLiteral, UnexpectedByte, UnterminatedKeyName,
-                UnterminatedString,
-            },
-        },
-        token::{
-            Punctuation,
-            Token::{self, Float, Ident, Integer, KeyName, String},
-        },
-    },
-    span::{SpanExt, Spanned},
-};
+use crate::xkb::code::Code;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::lexer::Lexer;
+use crate::xkb::kccgst::lexer::LexerError::InvalidIntegerLiteral;
+use crate::xkb::kccgst::lexer::LexerError::UnexpectedByte;
+use crate::xkb::kccgst::lexer::LexerError::UnterminatedKeyName;
+use crate::xkb::kccgst::lexer::LexerError::UnterminatedString;
+use crate::xkb::kccgst::lexer::LexerError::{self};
+use crate::xkb::kccgst::token::Punctuation;
+use crate::xkb::kccgst::token::Token::Float;
+use crate::xkb::kccgst::token::Token::Ident;
+use crate::xkb::kccgst::token::Token::Integer;
+use crate::xkb::kccgst::token::Token::KeyName;
+use crate::xkb::kccgst::token::Token::String;
+use crate::xkb::kccgst::token::Token::{self};
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::Spanned;
 
 fn l_(interner: &mut Interner, input: &str) -> Result<Vec<Spanned<Token>>, Spanned<LexerError>> {
     let mut output = vec![];

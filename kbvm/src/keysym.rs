@@ -6,32 +6,34 @@ pub(crate) mod generated;
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::{
-        from_bytes::FromBytes,
-        keysym::{
-            generated::{
-                CHAR_TO_BESPOKE_IDX, DATAS, KEYSYM_TO_CHAR, KEYSYM_TO_IDX, KEYSYM_TO_LOWER_KEYSYM,
-                KEYSYM_TO_UPPER_KEYSYM, KEYSYM32_TO_CHAR, LONGEST_NAME, LOWER_NAME_TO_IDX, NAMES,
-            },
-            hidden::Keysym,
-        },
-        phf_map::PhfMap,
-        syms,
-    },
-    arrayvec::ArrayVec,
-    generated::NAME_TO_IDX,
-    std::{
-        fmt::{Debug, Display, Formatter},
-        ops::Range,
-        str::FromStr,
-    },
-    thiserror::Error,
-};
+use crate::from_bytes::FromBytes;
+use crate::keysym::generated::CHAR_TO_BESPOKE_IDX;
+use crate::keysym::generated::DATAS;
+use crate::keysym::generated::KEYSYM_TO_CHAR;
+use crate::keysym::generated::KEYSYM_TO_IDX;
+use crate::keysym::generated::KEYSYM_TO_LOWER_KEYSYM;
+use crate::keysym::generated::KEYSYM_TO_UPPER_KEYSYM;
+use crate::keysym::generated::KEYSYM32_TO_CHAR;
+use crate::keysym::generated::LONGEST_NAME;
+use crate::keysym::generated::LOWER_NAME_TO_IDX;
+use crate::keysym::generated::NAMES;
+use crate::keysym::hidden::Keysym;
+use crate::phf_map::PhfMap;
+use crate::syms;
+use arrayvec::ArrayVec;
+use generated::NAME_TO_IDX;
+use std::fmt::Debug;
+use std::fmt::Display;
+use std::fmt::Formatter;
+use std::ops::Range;
+use std::str::FromStr;
+use thiserror::Error;
 
 pub(crate) mod hidden {
     #[allow(unused_imports)]
-    use std::fmt::{Debug, Display};
+    use std::fmt::Debug;
+    #[allow(unused_imports)]
+    use std::fmt::Display;
 
     /// A keysym.
     ///

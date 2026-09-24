@@ -1,9 +1,10 @@
-use {
-    crate::xkb::code_slice::CodeSlice,
-    hashbrown::{Equivalent, HashMap, hash_map::EntryRef},
-    kbvm_proc::CloneWithDelta,
-    std::fmt::{Debug, Formatter},
-};
+use crate::xkb::code_slice::CodeSlice;
+use hashbrown::Equivalent;
+use hashbrown::HashMap;
+use hashbrown::hash_map::EntryRef;
+use kbvm_proc::CloneWithDelta;
+use std::fmt::Debug;
+use std::fmt::Formatter;
 
 #[derive(Default)]
 pub(crate) struct Interner {

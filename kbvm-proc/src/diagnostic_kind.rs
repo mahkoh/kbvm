@@ -1,7 +1,7 @@
-use {
-    quote::quote,
-    syn::{Meta, Path, parse_quote},
-};
+use quote::quote;
+use syn::Meta;
+use syn::Path;
+use syn::parse_quote;
 
 pub(crate) fn expand(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let mut item = syn::parse_macro_input!(input as syn::ItemEnum);

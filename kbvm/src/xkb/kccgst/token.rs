@@ -1,8 +1,7 @@
-use {
-    crate::xkb::{interner::Interned, kccgst::parser::error::Expected},
-    kbvm_proc::CloneWithDelta,
-    std::slice,
-};
+use crate::xkb::interner::Interned;
+use crate::xkb::kccgst::parser::error::Expected;
+use kbvm_proc::CloneWithDelta;
+use std::slice;
 
 #[derive(Copy, Clone, Debug, PartialEq, CloneWithDelta)]
 pub(crate) enum Token {

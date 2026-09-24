@@ -1,27 +1,26 @@
 #[cfg(test)]
 mod tests;
 
+use crate::Keysym;
 #[allow(unused_imports)]
-use crate::{syms, xkb::Context};
-use {
-    crate::{
-        Keysym,
-        xkb::{
-            code_map::CodeMap,
-            compose::parser::{Production, Step},
-            diagnostic::{DiagnosticKind, DiagnosticSink},
-            format::FormatFormat,
-            span::{SpanExt, Spanned},
-        },
-    },
-    bstr::ByteSlice,
-    kbvm_proc::ad_hoc_display,
-    std::{
-        cell::Cell,
-        fmt::{Debug, Display, Formatter},
-        ops::Range,
-    },
-};
+use crate::syms;
+#[allow(unused_imports)]
+use crate::xkb::Context;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::compose::parser::Production;
+use crate::xkb::compose::parser::Step;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::format::FormatFormat;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::Spanned;
+use bstr::ByteSlice;
+use kbvm_proc::ad_hoc_display;
+use std::cell::Cell;
+use std::fmt::Debug;
+use std::fmt::Display;
+use std::fmt::Formatter;
+use std::ops::Range;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Payload {

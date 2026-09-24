@@ -3,10 +3,10 @@
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::modifier::hidden::{ModifierIndex, ModifierMask},
-    std::fmt::{Debug, Formatter},
-};
+use crate::modifier::hidden::ModifierIndex;
+use crate::modifier::hidden::ModifierMask;
+use std::fmt::Debug;
+use std::fmt::Formatter;
 
 pub(crate) mod hidden {
     use kbvm_proc::CloneWithDelta;

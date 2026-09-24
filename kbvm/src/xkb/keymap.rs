@@ -12,41 +12,49 @@ pub mod iterators;
 mod tests;
 mod to_builder;
 
-pub use crate::xkb::keymap::format::Formatter;
-use {
-    crate::{
-        Components, ControlsMask, Keysym, ModifierIndex, ModifierMask,
-        builder::Redirect,
-        group::{GroupDelta, GroupIndex},
-        xkb::{
-            controls::ControlMask,
-            group::{GroupIdx, GroupMask},
-            group_component::GroupComponent,
-            indicator::IndicatorIdx,
-            keymap::{
-                actions::{
-                    ControlsLockAction, ControlsSetAction, GroupLatchAction, GroupLockAction,
-                    GroupSetAction, ModsLatchAction, ModsLockAction, ModsSetAction,
-                    RedirectKeyAction,
-                },
-                iterators::{Groups, Indicators, Keys, Levels, Mappings, VirtualModifiers},
-            },
-            level::Level,
-            mod_component::ModComponentMask,
-            radio_group::RadioGroup,
-            resolved::GroupsRedirect,
-        },
-    },
-    hashbrown::DefaultHashBuilder,
-    indexmap::IndexMap,
-    smallvec::SmallVec,
-    std::sync::Arc,
-};
+use crate::Components;
+use crate::ControlsMask;
+use crate::Keysym;
+use crate::ModifierIndex;
+use crate::ModifierMask;
+use crate::builder::Redirect;
+use crate::group::GroupDelta;
+use crate::group::GroupIndex;
 #[expect(unused_imports)]
-use {
-    crate::{lookup::LookupTable, xkb::Context},
-    std::fmt::Display,
-};
+use crate::lookup::LookupTable;
+#[expect(unused_imports)]
+use crate::xkb::Context;
+use crate::xkb::controls::ControlMask;
+use crate::xkb::group::GroupIdx;
+use crate::xkb::group::GroupMask;
+use crate::xkb::group_component::GroupComponent;
+use crate::xkb::indicator::IndicatorIdx;
+use crate::xkb::keymap::actions::ControlsLockAction;
+use crate::xkb::keymap::actions::ControlsSetAction;
+use crate::xkb::keymap::actions::GroupLatchAction;
+use crate::xkb::keymap::actions::GroupLockAction;
+use crate::xkb::keymap::actions::GroupSetAction;
+use crate::xkb::keymap::actions::ModsLatchAction;
+use crate::xkb::keymap::actions::ModsLockAction;
+use crate::xkb::keymap::actions::ModsSetAction;
+use crate::xkb::keymap::actions::RedirectKeyAction;
+pub use crate::xkb::keymap::format::Formatter;
+use crate::xkb::keymap::iterators::Groups;
+use crate::xkb::keymap::iterators::Indicators;
+use crate::xkb::keymap::iterators::Keys;
+use crate::xkb::keymap::iterators::Levels;
+use crate::xkb::keymap::iterators::Mappings;
+use crate::xkb::keymap::iterators::VirtualModifiers;
+use crate::xkb::level::Level;
+use crate::xkb::mod_component::ModComponentMask;
+use crate::xkb::radio_group::RadioGroup;
+use crate::xkb::resolved::GroupsRedirect;
+use hashbrown::DefaultHashBuilder;
+use indexmap::IndexMap;
+use smallvec::SmallVec;
+#[expect(unused_imports)]
+use std::fmt::Display;
+use std::sync::Arc;
 
 /// A fully-resolved XKB keymap.
 ///
@@ -257,13 +265,10 @@ pub enum Action {
 
 /// The XKB actions supported by KBVM.
 pub mod actions {
-    use {
-        crate::{
-            ModifierMask,
-            xkb::{controls::ControlMask, group},
-        },
-        std::sync::Arc,
-    };
+    use crate::ModifierMask;
+    use crate::xkb::controls::ControlMask;
+    use crate::xkb::group;
+    use std::sync::Arc;
 
     /// A `SetMods` action.
     ///

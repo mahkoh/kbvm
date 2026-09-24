@@ -1,4 +1,7 @@
-use crate::xkb::diagnostic::{Diagnostic, DiagnosticHandler, DiagnosticKind, Severity};
+use crate::xkb::diagnostic::Diagnostic;
+use crate::xkb::diagnostic::DiagnosticHandler;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::Severity;
 
 impl DiagnosticHandler for Vec<Diagnostic> {
     fn filter(&self, _kind: DiagnosticKind, _is_fatal: bool) -> bool {
@@ -52,10 +55,11 @@ where
 
 #[cfg(feature = "log")]
 pub(crate) mod log {
-    use {
-        crate::xkb::diagnostic::{Diagnostic, DiagnosticHandler, DiagnosticKind, Severity},
-        log::Level,
-    };
+    use crate::xkb::diagnostic::Diagnostic;
+    use crate::xkb::diagnostic::DiagnosticHandler;
+    use crate::xkb::diagnostic::DiagnosticKind;
+    use crate::xkb::diagnostic::Severity;
+    use log::Level;
 
     /// A simple [`DiagnosticHandler`] that forwards diagnostics to the `log` crate.
     ///
@@ -94,7 +98,8 @@ pub(crate) mod log {
 }
 
 pub(crate) mod stderr {
-    use crate::xkb::diagnostic::{Diagnostic, DiagnosticHandler};
+    use crate::xkb::diagnostic::Diagnostic;
+    use crate::xkb::diagnostic::DiagnosticHandler;
 
     /// A simple [`DiagnosticHandler`] that forwards diagnostics to STDERR.
     ///

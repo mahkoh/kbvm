@@ -1,9 +1,10 @@
-use {
-    crate::{cli::CompileArgs, compile_xkb::format_keymap},
-    clap::Args,
-    isnt::std_1::vec::IsntVecExt,
-    kbvm::xkb::{Context, diagnostic::WriteToLog, rmlvo::Group},
-};
+use crate::cli::CompileArgs;
+use crate::compile_xkb::format_keymap;
+use clap::Args;
+use isnt::std_1::vec::IsntVecExt;
+use kbvm::xkb::Context;
+use kbvm::xkb::diagnostic::WriteToLog;
+use kbvm::xkb::rmlvo::Group;
 
 #[derive(Args, Debug, Default)]
 pub struct ExpandRmlvoArgs {

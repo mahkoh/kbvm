@@ -1,17 +1,25 @@
+use crate::compile_rmlvo::CompileRmlvoArgs;
+use crate::compile_rmlvo::{self};
+use crate::compile_xkb::CompileXkbArgs;
+use crate::compile_xkb::{self};
 #[cfg(unix)]
-use crate::dump_x11::{self, DumpX11Args};
+use crate::dump_x11::DumpX11Args;
 #[cfg(unix)]
-use crate::test_wayland::{self, TestWaylandArgs};
-use {
-    crate::{
-        compile_rmlvo::{self, CompileRmlvoArgs},
-        compile_xkb::{self, CompileXkbArgs},
-        expand_rmlvo::{self, ExpandRmlvoArgs},
-        generate::{self, GenerateArgs},
-    },
-    clap::{Args, Parser, Subcommand, ValueHint},
-    kbvm::xkb::{ContextBuilder, keymap::Formatter},
-};
+use crate::dump_x11::{self};
+use crate::expand_rmlvo::ExpandRmlvoArgs;
+use crate::expand_rmlvo::{self};
+use crate::generate::GenerateArgs;
+use crate::generate::{self};
+#[cfg(unix)]
+use crate::test_wayland::TestWaylandArgs;
+#[cfg(unix)]
+use crate::test_wayland::{self};
+use clap::Args;
+use clap::Parser;
+use clap::Subcommand;
+use clap::ValueHint;
+use kbvm::xkb::ContextBuilder;
+use kbvm::xkb::keymap::Formatter;
 
 /// KBVM test utility.
 #[derive(Parser, Debug)]

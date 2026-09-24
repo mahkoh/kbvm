@@ -2,23 +2,22 @@ mod error;
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::{
-        from_bytes::FromBytes,
-        xkb::{
-            code_slice::CodeSlice,
-            group::GroupIdx,
-            include::error::{
-                ParseIncludeError, invalid_group, missing_file_name, missing_merge_mode,
-                unterminated_map_name,
-            },
-            interner::{Interned, Interner},
-            kccgst::MergeMode,
-            span::{Span, SpanExt, SpanUnit, Spanned},
-        },
-    },
-    kbvm_proc::CloneWithDelta,
-};
+use crate::from_bytes::FromBytes;
+use crate::xkb::code_slice::CodeSlice;
+use crate::xkb::group::GroupIdx;
+use crate::xkb::include::error::ParseIncludeError;
+use crate::xkb::include::error::invalid_group;
+use crate::xkb::include::error::missing_file_name;
+use crate::xkb::include::error::missing_merge_mode;
+use crate::xkb::include::error::unterminated_map_name;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::MergeMode;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::SpanUnit;
+use crate::xkb::span::Spanned;
+use kbvm_proc::CloneWithDelta;
 
 #[derive(Debug)]
 pub(crate) struct Include {

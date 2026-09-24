@@ -1,7 +1,6 @@
-use {
-    serde::{Deserialize, Deserializer},
-    std::option,
-};
+use serde::Deserialize;
+use serde::Deserializer;
+use std::option;
 
 #[derive(Deserialize)]
 pub(super) struct Registry {

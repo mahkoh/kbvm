@@ -1,11 +1,14 @@
-use crate::{
-    GroupIndex, Keycode, Keysym, ModifierMask,
-    builder::Builder,
-    evdev,
-    lookup::{Lookup, LookupTable},
-    syms,
-    xkb::{Context, diagnostic::WriteToStderr},
-};
+use crate::GroupIndex;
+use crate::Keycode;
+use crate::Keysym;
+use crate::ModifierMask;
+use crate::builder::Builder;
+use crate::evdev;
+use crate::lookup::Lookup;
+use crate::lookup::LookupTable;
+use crate::syms;
+use crate::xkb::Context;
+use crate::xkb::diagnostic::WriteToStderr;
 
 fn lookup_table(map: &str) -> LookupTable {
     let mut context = Context::builder();

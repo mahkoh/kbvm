@@ -1,4 +1,5 @@
-use {crate::xkb::interner::Interned, kbvm_proc::CloneWithDelta};
+use crate::xkb::interner::Interned;
+use kbvm_proc::CloneWithDelta;
 
 #[derive(Copy, Clone, Debug, PartialEq, CloneWithDelta)]
 pub(crate) enum Token {

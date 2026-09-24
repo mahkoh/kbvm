@@ -1,9 +1,8 @@
 #[allow(unused_imports)]
 use crate::builder::Redirect;
-use std::{
-    fmt::{Debug, Formatter},
-    ops::Add,
-};
+use std::fmt::Debug;
+use std::fmt::Formatter;
+use std::ops::Add;
 
 /// A 0-based index into the groups of a keyboard.
 ///

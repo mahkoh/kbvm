@@ -1,40 +1,40 @@
 #[cfg(test)]
 mod tests;
 
-use {
-    crate::{
-        config::DEFAULT_INCLUDE_DIR,
-        xkb::{
-            code::Code,
-            code_loader::CodeLoader,
-            code_map::CodeMap,
-            diagnostic::{Diagnostic, DiagnosticHandler, DiagnosticKind, DiagnosticSink},
-            interner::{Interned, Interner},
-            kccgst::{
-                self,
-                ast::{Include, Item},
-                ast_cache::AstCache,
-                embedder::embed,
-                includer::resolve_includes,
-                parser::parse_item,
-                resolver::resolve,
-            },
-            keymap::Keymap,
-            meaning::MeaningCache,
-            rmlvo::{self, Element, parser::MappingValue, resolver::Group},
-            span::{SpanExt, Spanned},
-            string_cooker::StringCooker,
-        },
-    },
-    bstr::ByteSlice,
-    isnt::std_1::primitive::IsntStrExt,
-    kbvm_proc::ad_hoc_display,
-    secure_execution::requires_secure_execution,
-    std::{
-        path::{Path, PathBuf},
-        sync::Arc,
-    },
-};
+use crate::config::DEFAULT_INCLUDE_DIR;
+use crate::xkb::code::Code;
+use crate::xkb::code_loader::CodeLoader;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::diagnostic::Diagnostic;
+use crate::xkb::diagnostic::DiagnosticHandler;
+use crate::xkb::diagnostic::DiagnosticKind;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::ast::Include;
+use crate::xkb::kccgst::ast::Item;
+use crate::xkb::kccgst::ast_cache::AstCache;
+use crate::xkb::kccgst::embedder::embed;
+use crate::xkb::kccgst::includer::resolve_includes;
+use crate::xkb::kccgst::parser::parse_item;
+use crate::xkb::kccgst::resolver::resolve;
+use crate::xkb::kccgst::{self};
+use crate::xkb::keymap::Keymap;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::rmlvo::Element;
+use crate::xkb::rmlvo::parser::MappingValue;
+use crate::xkb::rmlvo::resolver::Group;
+use crate::xkb::rmlvo::{self};
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::Spanned;
+use crate::xkb::string_cooker::StringCooker;
+use bstr::ByteSlice;
+use isnt::std_1::primitive::IsntStrExt;
+use kbvm_proc::ad_hoc_display;
+use secure_execution::requires_secure_execution;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
 
 /// An XKB context.
 ///

@@ -1,11 +1,11 @@
-use {
-    crate::{
-        ModifierIndex, ModifierMask,
-        xkb::{interner::Interned, span::Spanned},
-    },
-    arrayvec::ArrayVec,
-    std::{cell::Cell, ops::Deref, rc::Rc},
-};
+use crate::ModifierIndex;
+use crate::ModifierMask;
+use crate::xkb::interner::Interned;
+use crate::xkb::span::Spanned;
+use arrayvec::ArrayVec;
+use std::cell::Cell;
+use std::ops::Deref;
+use std::rc::Rc;
 
 const MAX_VMODS: usize = 24;
 

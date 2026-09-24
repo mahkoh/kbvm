@@ -1,14 +1,13 @@
 #[cfg(test)]
 mod tests;
 
+use crate::ModifierMask;
+use crate::controls::ControlsMask;
+use crate::group::GroupDelta;
+use crate::group::GroupIndex;
+use crate::state_machine::Event;
 #[allow(unused_imports)]
 use crate::state_machine::StateMachine;
-use crate::{
-    ModifierMask,
-    controls::ControlsMask,
-    group::{GroupDelta, GroupIndex},
-    state_machine::Event,
-};
 
 /// The active modifiers/group of a keyboard.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Default)]

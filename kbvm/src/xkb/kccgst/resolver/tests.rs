@@ -1,20 +1,19 @@
-use {
-    crate::xkb::{
-        code::Code,
-        code_loader::CodeLoader,
-        code_map::CodeMap,
-        diagnostic::DiagnosticSink,
-        interner::Interner,
-        kccgst::{
-            ast_cache::AstCache, embedder::embed, includer::resolve_includes, lexer::Lexer,
-            parser::parse_item, resolver::resolve,
-        },
-        keymap::Keymap,
-        meaning::MeaningCache,
-        string_cooker::StringCooker,
-    },
-    std::{path::Path, sync::Arc},
-};
+use crate::xkb::code::Code;
+use crate::xkb::code_loader::CodeLoader;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::ast_cache::AstCache;
+use crate::xkb::kccgst::embedder::embed;
+use crate::xkb::kccgst::includer::resolve_includes;
+use crate::xkb::kccgst::lexer::Lexer;
+use crate::xkb::kccgst::parser::parse_item;
+use crate::xkb::kccgst::resolver::resolve;
+use crate::xkb::keymap::Keymap;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::string_cooker::StringCooker;
+use std::path::Path;
+use std::sync::Arc;
 
 #[test]
 fn test() {

@@ -1,12 +1,9 @@
-use {
-    crate::xkb::code_slice::CodeSlice,
-    bstr::ByteSlice,
-    std::{
-        fmt::{Debug, Formatter},
-        ops::Deref,
-        sync::Arc,
-    },
-};
+use crate::xkb::code_slice::CodeSlice;
+use bstr::ByteSlice;
+use std::fmt::Debug;
+use std::fmt::Formatter;
+use std::ops::Deref;
+use std::sync::Arc;
 
 #[derive(Clone, Eq, PartialEq)]
 pub(crate) struct Code {

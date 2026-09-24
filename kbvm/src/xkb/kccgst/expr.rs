@@ -1,42 +1,67 @@
-use {
-    crate::{
-        Keycode, Keysym, ModifierIndex, ModifierMask,
-        from_bytes::FromBytes,
-        syms,
-        xkb::{
-            code_map::CodeMap,
-            controls::ControlMask,
-            diagnostic::{
-                DiagnosticKind::{self},
-                DiagnosticSink,
-            },
-            group::{GroupChange, GroupIdx, GroupMask},
-            group_component::GroupComponent,
-            interner::{Interned, Interner},
-            kccgst::ast::{CallArg, Expr, Path, Var},
-            keymap::KeyOverlay,
-            level::Level,
-            meaning::{Meaning, MeaningCache},
-            mod_component::ModComponentMask,
-            modmap::{ModifierTree, Vmodmap},
-            radio_group::RadioGroup,
-            resolved::{
-                ActionDefaults, BuiltInKeytype, Filter, KeyTypeRef, ModMapField, Predicate,
-                ResolvedAction, ResolvedActionAffect, ResolvedActionMods, ResolvedGroupLatch,
-                ResolvedGroupLock, ResolvedGroupSet, ResolvedKeyKind, ResolvedKeycodes,
-                ResolvedLockControls, ResolvedModsLatch, ResolvedModsLock, ResolvedModsSet,
-                ResolvedNoAction, ResolvedRedirectKey, ResolvedSetControls, ResolvedTypes,
-                ResolvedVoidAction,
-            },
-            span::{Span, SpanExt, SpanResult1, SpanResult2, Spanned},
-            string_cooker::StringCooker,
-        },
-    },
-    EvalError::*,
-    smallvec::SmallVec,
-    std::ops::{BitAnd, BitOr, Deref, Not},
-    thiserror::Error,
-};
+use crate::Keycode;
+use crate::Keysym;
+use crate::ModifierIndex;
+use crate::ModifierMask;
+use crate::from_bytes::FromBytes;
+use crate::syms;
+use crate::xkb::code_map::CodeMap;
+use crate::xkb::controls::ControlMask;
+use crate::xkb::diagnostic::DiagnosticKind::{self};
+use crate::xkb::diagnostic::DiagnosticSink;
+use crate::xkb::group::GroupChange;
+use crate::xkb::group::GroupIdx;
+use crate::xkb::group::GroupMask;
+use crate::xkb::group_component::GroupComponent;
+use crate::xkb::interner::Interned;
+use crate::xkb::interner::Interner;
+use crate::xkb::kccgst::ast::CallArg;
+use crate::xkb::kccgst::ast::Expr;
+use crate::xkb::kccgst::ast::Path;
+use crate::xkb::kccgst::ast::Var;
+use crate::xkb::keymap::KeyOverlay;
+use crate::xkb::level::Level;
+use crate::xkb::meaning::Meaning;
+use crate::xkb::meaning::MeaningCache;
+use crate::xkb::mod_component::ModComponentMask;
+use crate::xkb::modmap::ModifierTree;
+use crate::xkb::modmap::Vmodmap;
+use crate::xkb::radio_group::RadioGroup;
+use crate::xkb::resolved::ActionDefaults;
+use crate::xkb::resolved::BuiltInKeytype;
+use crate::xkb::resolved::Filter;
+use crate::xkb::resolved::KeyTypeRef;
+use crate::xkb::resolved::ModMapField;
+use crate::xkb::resolved::Predicate;
+use crate::xkb::resolved::ResolvedAction;
+use crate::xkb::resolved::ResolvedActionAffect;
+use crate::xkb::resolved::ResolvedActionMods;
+use crate::xkb::resolved::ResolvedGroupLatch;
+use crate::xkb::resolved::ResolvedGroupLock;
+use crate::xkb::resolved::ResolvedGroupSet;
+use crate::xkb::resolved::ResolvedKeyKind;
+use crate::xkb::resolved::ResolvedKeycodes;
+use crate::xkb::resolved::ResolvedLockControls;
+use crate::xkb::resolved::ResolvedModsLatch;
+use crate::xkb::resolved::ResolvedModsLock;
+use crate::xkb::resolved::ResolvedModsSet;
+use crate::xkb::resolved::ResolvedNoAction;
+use crate::xkb::resolved::ResolvedRedirectKey;
+use crate::xkb::resolved::ResolvedSetControls;
+use crate::xkb::resolved::ResolvedTypes;
+use crate::xkb::resolved::ResolvedVoidAction;
+use crate::xkb::span::Span;
+use crate::xkb::span::SpanExt;
+use crate::xkb::span::SpanResult1;
+use crate::xkb::span::SpanResult2;
+use crate::xkb::span::Spanned;
+use crate::xkb::string_cooker::StringCooker;
+use EvalError::*;
+use smallvec::SmallVec;
+use std::ops::BitAnd;
+use std::ops::BitOr;
+use std::ops::Deref;
+use std::ops::Not;
+use thiserror::Error;
 
 #[derive(Copy, Clone, Debug, Error)]
 pub(crate) enum EvalError {

@@ -1,7 +1,6 @@
-use {
-    error_reporter::Report,
-    std::io::{Read, stdin},
-};
+use error_reporter::Report;
+use std::io::Read;
+use std::io::stdin;
 
 pub fn read_path(path: &str) -> (&str, Vec<u8>) {
     match path {

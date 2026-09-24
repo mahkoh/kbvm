@@ -1,12 +1,11 @@
-use {
-    pkg_config::get_variable,
-    std::{
-        env,
-        fs::{File, OpenOptions},
-        io::{self, BufWriter, Write},
-        path::PathBuf,
-    },
-};
+use pkg_config::get_variable;
+use std::env;
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::io::BufWriter;
+use std::io::Write;
+use std::io::{self};
+use std::path::PathBuf;
 
 fn main() {
     let default_include_dir =
