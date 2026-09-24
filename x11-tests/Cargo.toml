@@ -8,4 +8,4 @@ publish = false
 kbvm = { path = "../kbvm", features = ["x11"] }
 uapi = "0.2.13"
 error_reporter = "1.0.0"
-x11rb = "0.13.1"
+x11rb = "0.14.0"
