@@ -646,7 +646,7 @@ dependencies = [
 
 [[package]]
 name = "kbvm"
-version = "0.1.7"
+version = "0.2.0"
 dependencies = [
  "arrayvec",
  "bstr",
@@ -684,7 +684,7 @@ dependencies = [
 
 [[package]]
 name = "kbvm-cli"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "clap",
  "clap_complete",
@@ -709,7 +709,7 @@ dependencies = [
 
 [[package]]
 name = "kbvm-proc"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "proc-macro2",
  "quote",
